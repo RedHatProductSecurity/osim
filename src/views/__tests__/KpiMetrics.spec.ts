@@ -153,6 +153,96 @@ describe('kPI dashboard', () => {
     expect(getBot).toHaveBeenLastCalledWith(query);
   });
 
+  it('restores the full chart, summaries and export when the last version is deselected (OSIDB-5154)', async () => {
+    getFeedback.mockImplementation((_feature, query) => Promise.resolve(query.aegis_version
+      ? { 'suggest-impact': { acceptance_percentage: 100, entries: [feedback['suggest-impact'].entries[0]] } }
+      : feedback));
+    getBot.mockImplementation(query => Promise.resolve(query.aegis_version
+      ? { ...bot, entries: [], features: {}, total_flaws_processed: 0 }
+      : bot));
+    await mount();
+    const originalDataset = wrapper.findComponent({ name: 'VueUiXy' }).props('dataset');
+    await button('0.9.2').trigger('click');
+    await flushPromises();
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('100.0% — 1 of 1');
+    await button('0.9.2').trigger('click');
+    await flushPromises();
+    expect(button('0.9.2').attributes('aria-pressed')).toBe('false');
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ aegis_version: undefined }));
+    expect(wrapper.findComponent({ name: 'VueUiXy' }).props('dataset')).toEqual(originalDataset);
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+    await button('Download CSV').trigger('click');
+    expect(vi.mocked(downloadKpiCsv).mock.calls[0][0]).toContain('"2","3","66.7"');
+  });
+
+  it('clears every filter together and restores the original API scope (OSIDB-5154)', async () => {
+    await mount();
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await wrapper.get('#feature-select').setValue('suggest-impact');
+    await wrapper.get('#kpi-from').setValue('2026-09-01');
+    await wrapper.get('#kpi-to').setValue('2026-09-02');
+    await button('Unknown version').trigger('click');
+    await flushPromises();
+    await button('Clear All Filters').trigger('click');
+    await flushPromises();
+    expect((wrapper.get('#feature-select').element as HTMLSelectElement).value).toBe('all');
+    expect((wrapper.get('#kpi-component').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.get('#kpi-from').element as HTMLInputElement).value).toBe('');
+    expect(getFeedback).toHaveBeenLastCalledWith('all', {
+      detail: true,
+      component: undefined,
+      aegis_version: undefined,
+      recorded_after: undefined,
+      recorded_before: undefined,
+    });
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
+  });
+
+  it('uses inclusive week bounds and preserves range controls across narrowing and reset', async () => {
+    const multiWeek = { 'suggest-impact': { acceptance_percentage: 100,
+      entries: [
+        { datetime: '2026-08-01 00:00:00', accepted: true, aegis_version: '0.9.1' },
+        ...feedback['suggest-impact'].entries,
+        { datetime: '2026-10-01 00:00:00', accepted: true, aegis_version: '0.9.2' },
+      ] } };
+    getFeedback.mockResolvedValue(multiWeek);
+    await mount();
+    await wrapper.get('#kpi-range-start').setValue('5');
+    await flushPromises();
+    await wrapper.get('#kpi-range-end').setValue('5');
+    await flushPromises();
+    expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({
+      recorded_after: '2026-08-31T00:00:00.000Z', recorded_before: '2026-09-06T23:59:59.999Z',
+    }));
+    getFeedback.mockResolvedValueOnce(feedback);
+    await button('Refresh').trigger('click');
+    await flushPromises();
+    expect(wrapper.get('#kpi-range-end').attributes('max')).toBe('9');
+    await button('Clear All Filters').trigger('click');
+    await flushPromises();
+    expect((wrapper.get('#kpi-range-start').element as HTMLInputElement).value).toBe('0');
+    expect((wrapper.get('#kpi-range-end').element as HTMLInputElement).value).toBe('9');
+  });
+
+  it('keeps range controls usable for an empty date window between populated weeks', async () => {
+    getFeedback.mockResolvedValue({ 'suggest-impact': { acceptance_percentage: 100,
+      entries: [
+        { datetime: '2026-08-01 00:00:00', accepted: true, aegis_version: '0.9.1' },
+        ...feedback['suggest-impact'].entries,
+      ] } });
+    await mount();
+    getFeedback.mockResolvedValue({});
+    getBot.mockResolvedValue({ ...bot, entries: [], features: {}, total_flaws_processed: 0 });
+    await wrapper.get('#kpi-from').setValue('2026-08-10');
+    await wrapper.get('#kpi-to').setValue('2026-08-20');
+    await flushPromises();
+    expect((wrapper.get('#kpi-range-start').element as HTMLInputElement).value).toBe('2');
+    expect((wrapper.get('#kpi-range-end').element as HTMLInputElement).value).toBe('3');
+    await wrapper.get('#kpi-range-start').setValue('1');
+    await flushPromises();
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ recorded_after: '2026-08-03T00:00:00.000Z' }));
+  });
+
   it('uses server-filtered feedback, including historical records absent from the initial response', async () => {
     await mount();
     getFeedback.mockResolvedValue({

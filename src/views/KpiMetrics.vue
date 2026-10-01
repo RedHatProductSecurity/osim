@@ -11,7 +11,8 @@ import {
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
-  availableComponents, availableFeatures, availableVersions, bot, component, errors, feature, fromDate,
+  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, clearFilters,
+  component, errors, feature, fromDate,
   invalidRange, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
@@ -53,6 +54,26 @@ function downloadReport() {
 
 function applyComponent(event: Event) {
   component.value = (event.target as HTMLInputElement).value.trim();
+}
+
+const rangeStart = computed(() => {
+  if (!fromDate.value) return 0;
+  const index = availableWeeks.value.findIndex(week =>
+    parseKpiDate(week).endOf('week').toISODate()! >= fromDate.value);
+  return index < 0 ? Math.max(0, availableWeeks.value.length - 1) : index;
+});
+const rangeEnd = computed(() => {
+  if (!toDate.value) return availableWeeks.value.length - 1;
+  const index = availableWeeks.value.findIndex(week => week > toDate.value);
+  return index < 0 ? availableWeeks.value.length - 1 : Math.max(0, index - 1);
+});
+
+function changeRange(event: Event, edge: 'end' | 'start') {
+  const index = Number((event.target as HTMLInputElement).value);
+  const week = availableWeeks.value[index];
+  if (!week) return;
+  if (edge === 'start') fromDate.value = index === 0 ? '' : week;
+  else toDate.value = index === availableWeeks.value.length - 1 ? '' : parseKpiDate(week).endOf('week').toISODate()!;
 }
 </script>
 
@@ -113,6 +134,7 @@ function applyComponent(event: Event) {
         :disabled="loading || invalidRange || !!errors.length || (!observations.length && !botFeatures.length)"
         @click="downloadReport"
       >Download CSV</button>
+      <button type="button" class="btn btn-outline-secondary" @click="clearFilters">Clear All Filters</button>
     </div>
     <p v-if="component">Showing flaws affecting component: <strong>{{ component }}</strong></p>
     <section class="mb-3" aria-labelledby="version-heading">
@@ -135,6 +157,35 @@ function applyComponent(event: Event) {
         Clear Version Filters
       </button>
     </section>
+    <fieldset v-if="availableWeeks.length > 1" class="mb-3" :disabled="loading || invalidRange">
+      <legend class="h5">History window</legend>
+      <div class="row">
+        <div class="col-md-6">
+          <label for="kpi-range-start">Start: {{ fromDate || 'All earlier dates' }}</label>
+          <input
+            id="kpi-range-start"
+            type="range"
+            class="form-range"
+            min="0"
+            :max="rangeEnd"
+            :value="rangeStart"
+            @change="changeRange($event, 'start')"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="kpi-range-end">Through: {{ toDate || 'All later dates' }}</label>
+          <input
+            id="kpi-range-end"
+            type="range"
+            class="form-range"
+            :min="rangeStart"
+            :max="availableWeeks.length - 1"
+            :value="rangeEnd"
+            @change="changeRange($event, 'end')"
+          />
+        </div>
+      </div>
+    </fieldset>
     <p v-if="invalidRange" role="alert">The start date must be on or before the end date.</p>
     <p v-if="loading" role="status">Loading KPI metrics…</p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
