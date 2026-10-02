@@ -651,6 +651,11 @@ watch(
   max-height: calc(100vh - 3.5rem);
 }
 
+.srp-payload-dialog .modal-dialog {
+  max-width: 1400px !important;
+  width: 90vw !important;
+}
+
 .srp-payload-dialog .modal-content {
   height: 100%;
   max-height: 100%;
@@ -670,5 +675,15 @@ watch(
 .srp-payload-dialog .payload-date-control {
   width: 100%;
   max-width: 100%;
+}
+
+.srp-payload-dialog textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+</style>
+<style scoped>
+.payload-table .payload-field-column {
+  width: 30%;
 }
 </style>

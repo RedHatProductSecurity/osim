@@ -134,7 +134,7 @@ function setTimerToday() {
 </script>
 
 <template>
-  <Modal class="modal-lg" :show="show" @close="handleClose">
+  <Modal class="srp-report-dialog" :show="show" @close="handleClose">
     <template #title>
       {{ report ? 'Edit' : 'Add' }} SRP Report
     </template>
@@ -219,3 +219,16 @@ function setTimerToday() {
     </template>
   </Modal>
 </template>
+
+<style>
+.modal.srp-report-dialog .modal-dialog,
+.srp-report-dialog.modal-dialog {
+  max-width: 1200px !important;
+  width: 85vw !important;
+}
+
+.srp-report-dialog textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+</style>
