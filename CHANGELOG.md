@@ -12,6 +12,7 @@
 * Clarify CRA/SRP terminology: top-level entities are now "SRP Reportable Events", internal reports are "SRP Reports", and additional information requests are "Additional Information Responses" (`OSIDB-5555`)
 * Preserve unsaved/failed label edits and typed contributors for `context_based` and `bu` labels; restrict label field editing to those types (`OSIDB-5349`)
 * Align CRA SRP AEV and Severe Incident popup field ordering, bottom tracking-field grouping, and final AEV mitigation inheritance from the 72h report (`OSIDB-5616`)
+* Widen SRP dialogs for better readability: forms to 1200px/85vw, payload editor to 1400px/90vw with vertical textarea resizing (`OSIDB-5597`)
 
 ## [2026.9.0]
 ### Added

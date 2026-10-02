@@ -268,7 +268,7 @@ function handleClose() {
 </script>
 
 <template>
-  <Modal :show="show" @close="handleClose">
+  <Modal class="srp-milestone-dialog" :show="show" @close="handleClose">
     <template #title>
       {{ milestone ? 'Edit SRP Report' : 'Add Additional Information Response' }}
     </template>
@@ -424,3 +424,16 @@ function handleClose() {
     </template>
   </Modal>
 </template>
+
+<style>
+.modal.srp-milestone-dialog .modal-dialog,
+.srp-milestone-dialog.modal-dialog {
+  max-width: 1200px !important;
+  width: 85vw !important;
+}
+
+.srp-milestone-dialog textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+</style>
