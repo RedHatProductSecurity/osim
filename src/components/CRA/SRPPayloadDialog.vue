@@ -48,8 +48,8 @@ const payloadJson = computed(() => {
 
 const fieldValues = ref<Record<string, FieldValue>>({});
 const formData = ref({
-  due_at: '',
   manual_completion_notes: '',
+  manual_due_at: '',
   mitigation_created_at: '',
   mitigation_link: '',
   owner: null as null | string,
@@ -57,7 +57,7 @@ const formData = ref({
   updated_dt: '',
 });
 const initialTrackingFields = ref({
-  due_at: '',
+  manual_due_at: '',
   mitigation_created_at: '',
   mitigation_link: '',
 });
@@ -137,7 +137,7 @@ function handleMitigationCreatedAtInput() {
     props.milestone?.milestone_type === 'final'
     && !dueAtManuallyEdited.value
   ) {
-    formData.value.due_at = formData.value.mitigation_created_at
+    formData.value.manual_due_at = formData.value.mitigation_created_at
       ? addDays(formData.value.mitigation_created_at, 14)
       : '';
   }
@@ -291,8 +291,8 @@ function handleSave() {
     updated_dt: formData.value.updated_dt,
   };
 
-  if (formData.value.due_at !== initialTrackingFields.value.due_at) {
-    payload.due_at = formData.value.due_at ? toISO8601Date(formData.value.due_at) : null;
+  if (formData.value.manual_due_at !== initialTrackingFields.value.manual_due_at) {
+    payload.manual_due_at = formData.value.manual_due_at ? toISO8601Date(formData.value.manual_due_at) : null;
   }
   if (formData.value.mitigation_created_at !== initialTrackingFields.value.mitigation_created_at) {
     payload.mitigation_created_at = formData.value.mitigation_created_at
@@ -313,8 +313,8 @@ watch(
     if (!props.show || !props.milestone || !props.report) return;
     dueAtManuallyEdited.value = false;
     formData.value = {
-      due_at: fromISO8601Date(props.milestone.due_at),
       manual_completion_notes: props.milestone.manual_completion_notes || '',
+      manual_due_at: fromISO8601Date((props.milestone.manual_due_at ?? props.milestone.due_at) || ''),
       mitigation_created_at: fromISO8601Date(props.milestone.mitigation_created_at),
       mitigation_link: props.milestone.mitigation_link || '',
       owner: props.milestone.owner || null,
@@ -322,7 +322,7 @@ watch(
       updated_dt: props.milestone.updated_dt,
     };
     initialTrackingFields.value = {
-      due_at: formData.value.due_at,
+      manual_due_at: formData.value.manual_due_at,
       mitigation_created_at: formData.value.mitigation_created_at,
       mitigation_link: formData.value.mitigation_link,
     };
@@ -515,7 +515,7 @@ watch(
             <div class="col-md-3">
               <label class="form-label">Due Date</label>
               <input
-                v-model="formData.due_at"
+                v-model="formData.manual_due_at"
                 type="date"
                 class="form-control form-control-sm"
                 @input="handleDueAtInput"

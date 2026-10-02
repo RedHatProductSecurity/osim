@@ -340,7 +340,7 @@ describe('sRPPayloadDialog', () => {
     await wrapper.find('.modal-footer .btn-primary').trigger('click');
 
     expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
-      due_at: '2026-02-15T00:00:00.000Z',
+      manual_due_at: '2026-02-15T00:00:00.000Z',
       mitigation_created_at: '2026-02-01T00:00:00.000Z',
       mitigation_link: 'https://access.redhat.com/security/updates/example',
     }));
@@ -350,6 +350,7 @@ describe('sRPPayloadDialog', () => {
     const milestone = {
       ...mockSRPReport.milestones[0],
       due_at: '2026-02-15T00:00:00Z',
+      manual_due_at: '2026-02-15T00:00:00Z',
       milestone_type: 'final' as const,
       mitigation_created_at: '2026-02-01T00:00:00Z',
       mitigation_link: '',
@@ -361,7 +362,7 @@ describe('sRPPayloadDialog', () => {
     await wrapper.find('.modal-footer .btn-primary').trigger('click');
 
     expect(wrapper.emitted('save')?.[0][0]).toEqual(expect.objectContaining({
-      due_at: null,
+      manual_due_at: null,
       mitigation_created_at: null,
     }));
   });

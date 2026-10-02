@@ -42,8 +42,8 @@ const originalArrayKeys = ref<Set<string>>(new Set());
 
 const formData = ref({
   additional_details: {} as Record<string, string>,
-  due_at: '',
   manual_completion_notes: '',
+  manual_due_at: '',
   milestone_type: 'additional_information_response',
   owner: null as null | string,
   request_received_at: '',
@@ -156,8 +156,8 @@ watch(() => props.show, (newShow) => {
     }
     formData.value = {
       additional_details: details,
-      due_at: fromISO8601Date(props.milestone?.due_at || ''),
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
+      manual_due_at: fromISO8601Date((props.milestone?.manual_due_at ?? props.milestone?.due_at) || ''),
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
       owner: props.milestone?.owner || null,
       request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
@@ -254,8 +254,8 @@ function handleSave() {
     payload.updated_dt = formData.value.updated_dt;
   }
 
-  if (formData.value.due_at) {
-    payload.due_at = toISO8601Date(formData.value.due_at);
+  if (formData.value.manual_due_at) {
+    payload.manual_due_at = toISO8601Date(formData.value.manual_due_at);
   }
 
   emit('save', payload);
@@ -409,7 +409,7 @@ function handleClose() {
 
       <div class="mb-3">
         <label class="form-label">Due Date (Optional)</label>
-        <input v-model="formData.due_at" type="date" class="form-control" />
+        <input v-model="formData.manual_due_at" type="date" class="form-control" />
         <small class="text-muted">Leave empty to use automatically calculated due date</small>
       </div>
 

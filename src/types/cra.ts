@@ -73,6 +73,7 @@ export interface SRPReportMilestone {
   hours_remaining: null | number;
   is_overdue: boolean;
   manual_completion_notes: string;
+  manual_due_at?: null | string; // Added in OSIDB-5558
   milestone_type: SRPMilestoneType;
   missing_conditionally_required_fields?: string[];
   missing_required_fields: string;
