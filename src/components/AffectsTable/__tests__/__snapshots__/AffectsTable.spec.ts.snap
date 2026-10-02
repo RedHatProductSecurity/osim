@@ -325,9 +325,7 @@ exports[`affectsTable > should render 1`] = `
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">FIX</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">LOW</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">&nbsp;</span></td>
-        <td data-v-17587d65="" class="">
-          <!--v-if-->
-        </td>
+        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="text-secondary">none</span></td>
         <td data-v-17587d65="" class="">
           <!---->
         </td>

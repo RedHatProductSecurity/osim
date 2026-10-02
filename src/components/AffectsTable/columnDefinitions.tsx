@@ -46,7 +46,12 @@ const editableCellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, any>> =
  ({ column, getValue, row, table }) =>
    <EditableCell row={row} table={table} column={column} getValue={getValue} />;
 
-export default function AffectColumnDefinitions() {
+export default function AffectColumnDefinitions(
+  trackerDisplayValue: (affect: ZodAffectType) => string = affect => affect.tracker?.external_system_id ?? '',
+  trackerLoading: (affect: ZodAffectType) => boolean = () => false,
+  trackerFailureReason: (affect: ZodAffectType) => null | string = () => null,
+  trackerRequestError: (affect: ZodAffectType) => boolean = () => false,
+) {
   const columnHelper = createColumnHelper<ZodAffectType>();
   const { actions: { getRelatedCvesForAffect } } = useMultiFlawTrackers();
 
@@ -282,11 +287,21 @@ export default function AffectColumnDefinitions() {
         bulkEditable: true,
       },
     }),
-    columnHelper.accessor(row => `${row.tracker?.external_system_id || ''}`, {
-      cell: ({ row }) => <TrackerLink tracker={row.original.tracker} />,
+    columnHelper.accessor(row => trackerDisplayValue(row), {
+      id: 'tracker',
+      cell: ({ getValue, row }) => (
+        <TrackerLink
+          tracker={row.original.tracker}
+          statusValue={getValue()}
+          statusLoading={trackerLoading(row.original)}
+          statusError={trackerRequestError(row.original)}
+          failureReason={trackerFailureReason(row.original)}
+        />
+      ),
       header: 'Tracker',
       enableGlobalFilter: true,
       sortingFn: 'alphanumeric',
+      filterFn: 'includesString',
 
     }),
     columnHelper.accessor(row => row.tracker?.status, {

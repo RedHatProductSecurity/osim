@@ -20,6 +20,7 @@ const runtime = ref<OsimRuntimeType>({
     jiraDisplay: 'http://jira-service:8002',
     mitre: 'http://mitre-service:8004',
     aegisai: 'http://aegis-ai-service:8005',
+    trackerAutomanager: 'http://tracker-automanager-service:8006',
   },
   osimVersion: { rev: 'dev', tag: 'dev', timestamp: '1970-01-01T00:00:00Z' },
   error: 'error',

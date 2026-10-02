@@ -16,16 +16,11 @@ createTestingPinia();
 const mountAffectsTable = async () => {
   const wrapper = mount(AffectsTable, {
     global: {
-      directives: {
-        osimLoading: vi.fn(),
-      },
-      stubs: {
-        Teleport: true,
-      },
+      directives: { osimLoading: vi.fn() },
+      stubs: { Teleport: true },
     },
   });
-
-  await flushPromises(); // Needed for the onMounted hook
+  await flushPromises();
   return wrapper;
 };
 
@@ -40,7 +35,6 @@ describe('affectsTable', () => {
 
   it('should render', async () => {
     const wrapper = await mountAffectsTable();
-
     expect(wrapper.html()).toMatchSnapshot();
   });
 

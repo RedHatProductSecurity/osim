@@ -34,6 +34,7 @@ vi.mock('@/stores/osimRuntime', async (importOriginal) => {
         errata: '',
         jiraDisplay: '',
         mitre: '',
+        trackerAutomanager: '',
       },
     }),
   });
