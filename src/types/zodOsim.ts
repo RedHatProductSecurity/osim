@@ -17,6 +17,7 @@ export const OsimRuntime = z.object({
     jiraDisplay: z.string(),
     mitre: z.string(),
     aegisai: z.string().optional(),
+    trackerAutomanager: z.string().optional(),
   }),
   osimVersion: z.object({
     rev: z.string(),

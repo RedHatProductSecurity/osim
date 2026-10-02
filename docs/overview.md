@@ -85,11 +85,17 @@ OSIM_BACKENDS_ERRATA="http://errata-service:8003"
 OSIM_BACKENDS_JIRA_DISPLAY="http://jira-service:8002"
 OSIM_BACKENDS_MITRE="http://mitre-service:8084"
 OSIM_BACKENDS_AEGISAI="http://aegis-ai-service:8005"
+OSIM_BACKENDS_TRACKER_AUTOMANAGER="" # Browser-accessible origin; leave unset until deployed
 OSIM_READONLY_MODE="false"
 OSIM_NGINX_PROXY_MITRE=
 OSIM_NGINX_PROXY_JIRA=
 OSIM_NGINX_PROXY_CA=
 ```
+
+* `OSIM_BACKENDS_TRACKER_AUTOMANAGER`: Browser-accessible tracker-automanager origin (no trailing path).
+  The status endpoint is requested directly with browser credentials for Kerberos/LDAP visibility checks.
+  Configure CORS to allow the OSIM origin and credentials; when unset, status requests are disabled and affects without links show none.
+  There is no default stage/production URL. Users refresh the flaw page to see newer statuses.
 
 * `OSIM_NGINX_PROXY_JIRA`: If set, creates a /proxy/jira/ endpoint in the OSIM
   server, to simplify CORS configuration. `OSIM_BACKENDS_JIRA` should be updated
@@ -129,7 +135,8 @@ OSIM_FLAG_HISTORY="false"
         "errata": "http://localhost:8003",
         "jiraDisplay": "http://localhost:8002",
         "mitre": "https://localhost:8004",
-        "aegisai": "http://localhost:8005"
+        "aegisai": "http://localhost:8005",
+        "trackerAutomanager": ""
       },
       "osimVersion": {
         "rev":"dev",

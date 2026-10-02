@@ -1,4 +1,4 @@
-import { computed, reactive, ref, toRef, type MaybeRef, type Ref } from 'vue';
+import { computed, reactive, ref, toRef, watch, type MaybeRef, type Ref } from 'vue';
 
 import {
   getCoreRowModel,
@@ -29,6 +29,8 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import { closeJiraIssue } from '@/services/JiraService';
+import { getTrackerAutomanagerStatus, type TrackerAutomanagerRecordType } from '@/services/TrackerAutomanagerService';
+import { osimRuntime } from '@/stores/osimRuntime';
 import type { TrackerSuggestions, ZodAffectType } from '@/types/zodAffect';
 import { affectUUID } from '@/utils/helpers';
 
@@ -113,8 +115,70 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
   });
 
   const { flaw } = useFlaw();
+  const trackerStatusLoaded = ref(false);
+  const trackerStatusError = ref(false);
+  const trackerIdentity = new Map<string, Pick<ZodAffectType, 'ps_component' | 'ps_module' | 'ps_update_stream'>>();
+  const trackerMatches = new Map<string, TrackerAutomanagerRecordType>();
+  const trackerStatusRefresh = ref(0);
+  watch([() => flaw.value.uuid, trackerStatusRefresh], async ([flawUuid], _old, onCleanup) => {
+    trackerStatusLoaded.value = false;
+    trackerStatusError.value = false;
+    trackerIdentity.clear();
+    trackerMatches.clear();
+    currentAffects.value = [...currentAffects.value];
+    if (!flawUuid) return;
+    if (!osimRuntime.value.backends.trackerAutomanager) {
+      trackerStatusLoaded.value = true;
+      return;
+    }
+    for (const affect of flaw.value.affects) {
+      if (affect.uuid) trackerIdentity.set(affect.uuid, {
+        ps_update_stream: affect.ps_update_stream,
+        ps_module: affect.ps_module,
+        ps_component: affect.ps_component,
+      });
+    }
 
-  const columns = ref(columnDefinitions());
+    const controller = new AbortController();
+    onCleanup(() => controller.abort());
+    try {
+      const result = await getTrackerAutomanagerStatus(flawUuid, controller.signal);
+      if (controller.signal.aborted) return;
+      if (result.flaw_uuid !== flawUuid) throw new Error('Unexpected flaw in tracker status response.');
+      for (const [uuid, identity] of trackerIdentity) {
+        const match = result.trackers.find(record => record.ps_update_stream === identity.ps_update_stream
+          && record.ps_module === identity.ps_module && record.ps_component === identity.ps_component);
+        if (match) trackerMatches.set(uuid, match);
+      }
+      trackerStatusLoaded.value = true;
+      currentAffects.value = [...currentAffects.value];
+    } catch {
+      if (controller.signal.aborted) return;
+      trackerStatusError.value = true;
+      trackerStatusLoaded.value = true;
+      currentAffects.value = [...currentAffects.value];
+    }
+  }, { immediate: true, flush: 'post' });
+
+  function trackerDisplayValue(affect: ZodAffectType) {
+    if (affect.tracker?.external_system_id) return affect.tracker.external_system_id;
+    if (!affect.uuid || newAffects.has(affectUUID(affect) ?? '')) return '';
+    if (!trackerStatusLoaded.value) return '';
+    if (trackerStatusError.value) return 'Failed';
+    if (!osimRuntime.value.backends.trackerAutomanager) return 'none';
+    if (affect.tracker) return 'In Progress';
+    const match = trackerMatches.get(affect.uuid);
+    return match?.status === 'failed' ? 'Failed' : match ? 'In Progress' : 'none';
+  }
+
+  const columns = ref(columnDefinitions(
+    trackerDisplayValue,
+    affect => !!affect.uuid && !trackerStatusLoaded.value && !affect.tracker?.external_system_id,
+    affect => affect.uuid && trackerMatches.get(affect.uuid)?.status === 'failed'
+      ? trackerMatches.get(affect.uuid)?.failure_reason ?? null
+      : null,
+    affect => trackerStatusError.value && !affect.tracker?.external_system_id,
+  ));
   const sorting = ref<SortingState>([]);
   const showAll = ref(false);
   const globalFilter = ref('');
@@ -289,6 +353,7 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
         showSuccessToast(successCount, 'tracker', 'filed');
 
         refreshData();
+        if (successCount) trackerStatusRefresh.value++;
       },
       filingTracker: reactive(new Set()),
       unavailableTrackers: reactive(new Set()),
@@ -299,6 +364,7 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
       arrIncludesWithBlanks,
       cvssScore,
     },
+    globalFilterFn: 'includesString',
     onSortingChange: createChangeHandler(sorting),
     onGlobalFilterChange: createChangeHandler(globalFilter),
     onColumnFiltersChange: createChangeHandler(columnFilters),
