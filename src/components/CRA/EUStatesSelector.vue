@@ -5,6 +5,7 @@ import { EU_MEMBER_STATES, EU_STATE_CODES } from '@/constants/cra';
 
 const props = defineProps<{
   modelValue: string[];
+  options?: string[];
 }>();
 
 const emit = defineEmits<{
@@ -18,8 +19,10 @@ const selectedStates = computed({
   set: value => emit('update:modelValue', value),
 });
 
+const stateCodes = computed(() => props.options?.length ? props.options : EU_STATE_CODES);
+
 const availableStates = computed(() =>
-  EU_STATE_CODES.filter(code => !selectedStates.value.includes(code)),
+  stateCodes.value.filter(code => !selectedStates.value.includes(code)),
 );
 
 function addState(code: string) {
@@ -32,7 +35,7 @@ function removeState(code: string) {
 }
 
 function selectAll() {
-  selectedStates.value = [...EU_STATE_CODES];
+  selectedStates.value = [...stateCodes.value];
   showDropdown.value = false;
 }
 
@@ -92,10 +95,10 @@ function clearAll() {
       <button
         type="button"
         class="btn btn-sm btn-outline-secondary"
-        :disabled="selectedStates.length === EU_STATE_CODES.length"
+        :disabled="selectedStates.length === stateCodes.length"
         @click="selectAll"
       >
-        Select All ({{ EU_STATE_CODES.length }})
+        Select All ({{ stateCodes.length }})
       </button>
       <button
         type="button"
@@ -108,7 +111,7 @@ function clearAll() {
     </div>
 
     <small class="text-muted">
-      {{ selectedStates.length }} of {{ EU_STATE_CODES.length }} EU member states selected
+      {{ selectedStates.length }} of {{ stateCodes.length }} EU member states selected
     </small>
   </div>
 </template>

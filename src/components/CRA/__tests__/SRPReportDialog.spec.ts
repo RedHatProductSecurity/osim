@@ -3,6 +3,29 @@ import { describe, expect, it } from 'vitest';
 
 import SRPReportDialog from '@/components/CRA/SRPReportDialog.vue';
 
+import type { SRPReport } from '@/types/cra';
+
+const report: SRPReport = {
+  created_dt: '2026-01-01T00:00:00Z',
+  designated_csirt_country: '',
+  designated_csirt_source: '',
+  evidence: 'Existing evidence',
+  flaw_id: 'flaw-uuid',
+  manufacturer_or_steward_name: 'Red Hat',
+  member_states_available: [],
+  milestones: [],
+  missing_required_fields: '',
+  reportable_event_type: 'EXPLOITS_KEV_APPROVED',
+  responsibility_scope: 'manufacturer',
+  srp_reference_id: '',
+  srp_reference_url: '',
+  status: 'in_progress',
+  timer_started_at: '2026-01-01T12:30:45Z',
+  title: 'Existing report',
+  updated_dt: '2026-01-01T00:00:00Z',
+  uuid: 'report-uuid',
+};
+
 describe('sRPReportDialog', () => {
   it('renders when show is true', () => {
     const wrapper = mount(SRPReportDialog, {
@@ -50,8 +73,44 @@ describe('sRPReportDialog', () => {
     expect(eventTypeOptions).toEqual([
       'Actively Exploited Vulnerability',
       'Severe Incident',
-      'Additional Information Request',
     ]);
+  });
+
+  it('emits timer start with timezone information', async () => {
+    const wrapper = mount(SRPReportDialog, {
+      props: { show: true },
+    });
+
+    await wrapper.find('input[type="text"]').setValue('Sample SRP Report Title');
+    await wrapper.find('textarea').setValue('Sample evidence for the report');
+    await wrapper.find('input[type="datetime-local"]').setValue('2026-01-01T12:30');
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect((wrapper.emitted('save')?.[0][0] as any).timer_started_at).toMatch(/Z$/);
+  });
+
+  it('preserves existing timer start with seconds when saved unchanged', async () => {
+    const wrapper = mount(SRPReportDialog, {
+      props: { report, show: true },
+    });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect((wrapper.emitted('save')?.[0][0] as any).timer_started_at).toBe('2026-01-01T12:30:45Z');
+  });
+
+  it('preserves unchanged timer start during repeated daylight-saving hour', async () => {
+    const repeatedHourReport = {
+      ...report,
+      timer_started_at: '2026-11-01T01:30:00-05:00',
+    };
+    const wrapper = mount(SRPReportDialog, {
+      props: { report: repeatedHourReport, show: true },
+    });
+
+    await wrapper.find('.modal-footer .btn-primary').trigger('click');
+
+    expect((wrapper.emitted('save')?.[0][0] as any).timer_started_at).toBe('2026-11-01T01:30:00-05:00');
   });
 
   it('selects all EU member states and emits them as an array', async () => {

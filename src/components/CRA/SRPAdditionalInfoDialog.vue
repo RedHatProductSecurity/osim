@@ -160,6 +160,17 @@ function handleClose() {
     </template>
     <template #body>
       <form @submit.prevent="handleSave">
+        <div class="mb-3">
+          <label for="air_type" class="form-label">Type</label>
+          <input
+            id="air_type"
+            type="text"
+            class="form-control"
+            value="Additional Information Response"
+            disabled
+          />
+        </div>
+
         <!-- Request Source -->
         <div class="mb-3">
           <label for="request_source" class="form-label">
