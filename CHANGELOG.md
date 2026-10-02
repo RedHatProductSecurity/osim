@@ -1,5 +1,5 @@
 # OSIM Changelog
-## [Unreleased]
+## [2026.10.0]
 ### Added
 * Add a Full Flaw Suggestions button above Title to request all enabled AI field suggestions in one call, with per-field revert and feedback (`AEGIS-455`)
 * Add CRA SRP reportable event and payload edit dialogs for 24h AEV, 72h AEV, final AEV, 24h SI, 72h SI, and final SI reports (`OSIDB-5614`, `OSIDB-5615`, `OSIDB-5616`, `OSIDB-5617`, `OSIDB-5618`, `OSIDB-5619`, `OSIDB-5620`)
@@ -739,7 +739,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.9.0...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.0...HEAD
+[2026.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.9.0...v2026.10.0
 [2026.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.2...v2026.9.0
 [2026.8.2]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.1...v2026.8.2
 [2026.8.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.0-patch-missing-labels...v2026.8.1
