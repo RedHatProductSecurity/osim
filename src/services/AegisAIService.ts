@@ -8,6 +8,8 @@ import type {
   AegisFeedbackPayload,
   AegisFeatureResponseMap,
   AegisKpiMetrics,
+  AegisKpiQuery,
+  AegisBotKpiMetrics,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
   AegisMultiAnalysisParams,
@@ -133,7 +135,9 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
 function paramsFrom(params: Record<string, any>) {
   const urlParams = new URLSearchParams();
   for (const key in params) {
-    if (params[key] !== undefined) {
+    if (Array.isArray(params[key])) {
+      params[key].forEach((value: string) => urlParams.append(key, value));
+    } else if (params[key] !== undefined) {
       urlParams.set(key, params[key]);
     }
   }
@@ -272,6 +276,18 @@ export class AegisAIService {
     }
   }
 
+  async getBotKpiMetrics(query: AegisKpiQuery = {}): Promise<AegisBotKpiMetrics> {
+    const result = await this.fetch({
+      method: 'GET',
+      url: '/analysis/kpi/osidb-bot',
+      params: { ...query, detail: true },
+    });
+    if (!Array.isArray(result.data?.entries)) {
+      throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
+    }
+    return result.data;
+  }
+
   /**
    * Get the AEGIS-AI console page (returns HTML)
    */
@@ -289,12 +305,14 @@ export class AegisAIService {
     }
   }
 
-  async getKpiMetrics(feature: AegisKpiFeatureParamType = 'all'): Promise<AegisKpiMetrics> {
+  async getKpiMetrics(
+    feature: AegisKpiFeatureParamType = 'all', query: AegisKpiQuery = {},
+  ): Promise<AegisKpiMetrics> {
     try {
       const result = await this.fetch({
         method: 'GET',
         url: '/analysis/kpi/cve',
-        params: { feature },
+        params: { feature, ...query },
       });
 
       return result.data;
