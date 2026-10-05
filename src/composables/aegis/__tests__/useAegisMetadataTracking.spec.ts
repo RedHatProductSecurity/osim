@@ -188,6 +188,35 @@ describe('useAegisMetadataTracking', () => {
       expect(result).toBe(true);
     });
 
+    it.each([
+      ['NEW', 'NEW'],
+      ['empty', ''],
+      ['TRIAGE', 'TRIAGE'],
+      ['PRE_SECONDARY_ASSESSMENT', 'PRE_SECONDARY_ASSESSMENT'],
+      ['SECONDARY_ASSESSMENT', 'SECONDARY_ASSESSMENT'],
+      ['DONE', 'DONE'],
+      ['REJECTED', 'REJECTED'],
+    ])('should highlight a matching AI-Bot value in %s state', (_label, state) => {
+      vi.mocked(useFlaw).mockReturnValue({
+        flaw: ref({
+          classification: { state },
+        }),
+      } as any);
+
+      tracking.setAegisMetadata({
+        cwe_id: [
+          {
+            type: 'AI-Bot',
+            timestamp: '2026-03-26T10:53:57.174Z',
+            value: 'CWE-639',
+            explanation: 'Suggested from CVE analysis',
+          },
+        ],
+      });
+
+      expect(tracking.isFieldValueAIBot('cwe_id', 'CWE-639')).toBe(true);
+    });
+
     it('should return false when no matching entries exist', () => {
       tracking.setAegisMetadata({
         cwe_id: [
