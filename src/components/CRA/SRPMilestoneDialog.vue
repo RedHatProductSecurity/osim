@@ -53,6 +53,8 @@ const formData = ref({
   updated_dt: '',
 });
 
+const initialManualDueAt = ref('');
+
 function toISO8601Date(dateString: string): string {
   if (!dateString) return '';
   const date = new Date(dateString + 'T00:00:00Z');
@@ -166,6 +168,7 @@ watch(() => props.show, (newShow) => {
       status: props.milestone?.status || 'required',
       updated_dt: props.milestone?.updated_dt || '',
     };
+    initialManualDueAt.value = formData.value.manual_due_at;
   }
 });
 
@@ -254,8 +257,8 @@ function handleSave() {
     payload.updated_dt = formData.value.updated_dt;
   }
 
-  if (formData.value.manual_due_at) {
-    payload.manual_due_at = toISO8601Date(formData.value.manual_due_at);
+  if (formData.value.manual_due_at !== initialManualDueAt.value) {
+    payload.manual_due_at = formData.value.manual_due_at ? toISO8601Date(formData.value.manual_due_at) : null;
   }
 
   emit('save', payload);
