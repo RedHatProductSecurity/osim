@@ -314,7 +314,7 @@ watch(
     dueAtManuallyEdited.value = false;
     formData.value = {
       manual_completion_notes: props.milestone.manual_completion_notes || '',
-      manual_due_at: fromISO8601Date((props.milestone.manual_due_at ?? props.milestone.due_at) || ''),
+      manual_due_at: fromISO8601Date(props.milestone.manual_due_at || ''),
       mitigation_created_at: fromISO8601Date(props.milestone.mitigation_created_at),
       mitigation_link: props.milestone.mitigation_link || '',
       owner: props.milestone.owner || null,

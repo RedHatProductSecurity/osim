@@ -157,7 +157,7 @@ watch(() => props.show, (newShow) => {
     formData.value = {
       additional_details: details,
       manual_completion_notes: props.milestone?.manual_completion_notes || '',
-      manual_due_at: fromISO8601Date((props.milestone?.manual_due_at ?? props.milestone?.due_at) || ''),
+      manual_due_at: fromISO8601Date(props.milestone?.manual_due_at || ''),
       milestone_type: props.milestone?.milestone_type || 'additional_information_response',
       owner: props.milestone?.owner || null,
       request_received_at: fromISO8601Date(props.milestone?.request_received_at || ''),
