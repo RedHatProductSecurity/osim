@@ -269,6 +269,9 @@ exports[`affectsTable > should render 1`] = `
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
             <!--v-if-->
             <!--v-if-->
+            <!--v-if-->
+            <!--v-if-->
+            <!--v-if-->
           </div>
         </td>
       </tr>
@@ -300,6 +303,9 @@ exports[`affectsTable > should render 1`] = `
         <td data-v-17587d65="" class="">2024-11-01 13:06 UTC</td>
         <td data-v-17587d65="" class="sticky-column sticky-right">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
+            <!--v-if-->
+            <!--v-if-->
+            <!--v-if-->
             <!--v-if-->
             <!--v-if-->
           </div>
@@ -335,7 +341,9 @@ exports[`affectsTable > should render 1`] = `
         <td data-v-17587d65="" class=""></td>
         <td data-v-17587d65="" class="sticky-column sticky-right">
           <div data-v-17587d65="" class="btn-group"><button title="Remove affect" type="button" class="btn btn-dark btn-sm"><i class="bi-trash"></i></button>
-            <!--v-if--><button type="button" title="File tracker" class="btn btn-dark btn-sm"><i class="bi-file-earmark-diff"></i></button>
+            <!--v-if--><button type="button" title="File tracker" class="btn btn-dark btn-sm"><i class="bi-file-earmark-diff"></i></button><button type="button" title="Link existing tracker" aria-label="Link existing tracker" class="btn btn-dark btn-sm"><i class="bi-link-45deg"></i></button>
+            <!--v-if-->
+            <!--v-if-->
           </div>
         </td>
       </tr>
