@@ -671,4 +671,14 @@ watch(
   width: 100%;
   max-width: 100%;
 }
+
+.srp-payload-dialog .modal-dialog {
+  max-width: 1400px !important;
+  width: 90vw !important;
+}
+
+.srp-payload-dialog textarea {
+  resize: vertical;
+  min-height: 80px;
+}
 </style>
