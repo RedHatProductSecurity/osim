@@ -154,7 +154,7 @@ function handleClose() {
 </script>
 
 <template>
-  <Modal class="modal-lg" :show="show" @close="handleClose">
+  <Modal class="srp-additional-info-dialog" :show="show" @close="handleClose">
     <template #title>
       {{ air ? 'Edit Additional Information Response' : 'Add Additional Information Response' }}
     </template>
@@ -335,3 +335,16 @@ function handleClose() {
     </template>
   </Modal>
 </template>
+
+<style>
+.modal.srp-additional-info-dialog .modal-dialog,
+.srp-additional-info-dialog.modal-dialog {
+  max-width: 1200px !important;
+  width: 85vw !important;
+}
+
+.srp-additional-info-dialog textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+</style>

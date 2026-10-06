@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Changed
+* Widen SRP dialogs for better readability: forms to 1200px/85vw, payload editor to 1400px/90vw with vertical textarea resizing (`OSIDB-5597`)
+
 ## [2026.10.0]
 ### Added
 * Add a Full Flaw Suggestions button above Title to request all enabled AI field suggestions in one call, with per-field revert and feedback (`AEGIS-455`)
