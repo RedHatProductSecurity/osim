@@ -4,6 +4,11 @@ import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
 
+export async function getAffect(uuid: string): Promise<ZodAffectType> {
+  const { data } = await osidbFetch({ method: 'get', url: `/osidb/api/v2/affects/${uuid}`, cache: 'no-cache' });
+  return data as ZodAffectType;
+}
+
 type AffectFetchCallback = (fetchedCount: number, totalCount: number) => void;
 export async function getAffects(cveOrUuid: string, onFetchedCallback?: AffectFetchCallback):
 Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
