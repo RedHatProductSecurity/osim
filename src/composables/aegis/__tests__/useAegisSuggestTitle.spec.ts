@@ -26,10 +26,12 @@ vi.mock('@/stores/UserStore', () => ({
 const analyzeMock = vi.fn();
 const sendFeedbackMock = vi.fn();
 vi.mock('@/services/AegisAIService', () => ({
-  AegisAIService: vi.fn().mockImplementation(() => ({
-    analyzeCVEWithContext: analyzeMock,
-    sendFeedback: sendFeedbackMock,
-  })),
+  AegisAIService: vi.fn().mockImplementation(function () {
+    return {
+      analyzeCVEWithContext: analyzeMock,
+      sendFeedback: sendFeedbackMock,
+    };
+  }),
 }));
 
 beforeEach(() => {

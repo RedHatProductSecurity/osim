@@ -28,10 +28,12 @@ vi.mock('@/composables/aegis/useUnifiedAegisFeedback', () => ({
 }));
 
 vi.mock('@/services/AegisAIService', () => ({
-  AegisAIService: vi.fn(() => ({
-    isFetching: ref(false),
-    analyzeCVEWithContext: vi.fn(),
-  })),
+  AegisAIService: vi.fn(function () {
+    return {
+      isFetching: ref(false),
+      analyzeCVEWithContext: vi.fn(),
+    };
+  }),
 }));
 
 vi.mock('@/stores/ToastStore', () => ({

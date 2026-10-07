@@ -18,10 +18,12 @@ vi.mock('@/composables/useFlaw', () => ({
 }));
 
 vi.mock('@/services/AegisAIService', () => ({
-  AegisAIService: vi.fn().mockImplementation(() => ({
-    sendFeedback: vi.fn().mockResolvedValue({}),
-    requestDuration: { value: 100 },
-  })),
+  AegisAIService: vi.fn().mockImplementation(function () {
+    return {
+      sendFeedback: vi.fn().mockResolvedValue({}),
+      requestDuration: { value: 100 },
+    };
+  }),
 }));
 
 vi.mock('@/stores/UserStore', () => ({

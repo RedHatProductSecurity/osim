@@ -26,10 +26,12 @@ vi.mock('@/composables/useFlaw', () => ({
 
 const mockSendFeedback = vi.fn();
 vi.mock('@/services/AegisAIService', () => ({
-  AegisAIService: vi.fn(() => ({
-    sendFeedback: mockSendFeedback,
-    requestDuration: ref(1000),
-  })),
+  AegisAIService: vi.fn(function () {
+    return {
+      sendFeedback: mockSendFeedback,
+      requestDuration: ref(1000),
+    };
+  }),
 }));
 
 describe('useSimpleFeedback', () => {
