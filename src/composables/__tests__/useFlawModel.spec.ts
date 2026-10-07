@@ -27,9 +27,11 @@ vi.mock('@/composables/useFlawAttributionsModel', () => ({
 
 const sendProgrammaticFeedbackMock = vi.fn();
 vi.mock('@/services/AegisAIService', () => ({
-  AegisAIService: vi.fn().mockImplementation(() => ({
-    sendProgrammaticFeedback: sendProgrammaticFeedbackMock,
-  })),
+  AegisAIService: vi.fn().mockImplementation(function () {
+    return {
+      sendProgrammaticFeedback: sendProgrammaticFeedbackMock,
+    };
+  }),
 }));
 
 vi.mock('@/services/FlawService', () => ({

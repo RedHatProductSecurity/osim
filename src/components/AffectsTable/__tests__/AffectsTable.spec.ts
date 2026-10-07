@@ -1,3 +1,5 @@
+import type { Directive } from 'vue';
+
 import { flushPromises, mount, type DOMWrapper } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
@@ -16,7 +18,7 @@ createTestingPinia();
 const mountAffectsTable = async () => {
   const wrapper = mount(AffectsTable, {
     global: {
-      directives: { osimLoading: vi.fn() },
+      directives: { osimLoading: vi.fn() as Directive },
       stubs: { Teleport: true },
     },
   });

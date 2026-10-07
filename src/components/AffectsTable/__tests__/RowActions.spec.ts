@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, type Directive } from 'vue';
 
 import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
@@ -36,7 +36,7 @@ const mountRowActions = (row: Row<ZodAffectType>, table: Table<ZodAffectType>) =
     props: { row, table },
     global: {
       directives: {
-        osimLoading: vi.fn(),
+        osimLoading: vi.fn() as Directive,
       },
     },
   });

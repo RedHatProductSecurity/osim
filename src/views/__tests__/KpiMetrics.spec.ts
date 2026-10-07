@@ -141,11 +141,13 @@ describe('kpiMetrics', () => {
 
   beforeEach(() => {
     mockGetKpiMetrics = vi.fn();
-    vi.mocked(AegisAIService).mockImplementation(() => ({
-      getKpiMetrics: mockGetKpiMetrics,
-      isFetching: { value: false },
-      requestDuration: { value: 0 },
-    } as any));
+    vi.mocked(AegisAIService).mockImplementation(function () {
+      return {
+        getKpiMetrics: mockGetKpiMetrics,
+        isFetching: { value: false },
+        requestDuration: { value: 0 },
+      } as any;
+    });
     mockGetKpiMetrics.mockResolvedValue(createMockKpiMetrics());
   });
 
