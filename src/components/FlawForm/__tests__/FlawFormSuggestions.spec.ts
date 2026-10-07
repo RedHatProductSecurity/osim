@@ -1,4 +1,4 @@
-import { nextTick, ref, type Ref } from 'vue';
+import { nextTick, ref, type Directive, type Ref } from 'vue';
 
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
@@ -72,7 +72,7 @@ function setup(mode: 'create' | 'edit' = 'edit') {
     attachTo: document.body,
     global: {
       plugins: [createTestingPinia()],
-      directives: { osimLoading: vi.fn() },
+      directives: { osimLoading: vi.fn() as Directive },
       stubs: { LoadingSpinner: false },
     },
   });
