@@ -401,6 +401,39 @@ describe('aegisAIService', () => {
       expect(result).toEqual(mockKpiMetrics);
     });
 
+    it('encodes component, timestamp and repeated version filters on both KPI endpoints', async () => {
+      const query = {
+        detail: true,
+        component: 'kernel',
+        aegis_version: ['0.9.2+build1', ''],
+        recorded_after: '2026-09-01T00:00:00Z',
+        recorded_before: '2026-09-30T23:59:59.999Z',
+      };
+      for (const path of ['cve', 'osidb-bot']) {
+        server.use(http.get(`${mockBaseUrl}/analysis/kpi/${path}`, ({ request }) => {
+          const params = new URL(request.url).searchParams;
+          expect(params.get('detail')).toBe('true');
+          expect(params.get('component')).toBe('kernel');
+          expect(params.getAll('aegis_version')).toEqual(['0.9.2+build1', '']);
+          expect(params.get('recorded_after')).toBe(query.recorded_after);
+          expect(params.get('recorded_before')).toBe(query.recorded_before);
+          expect(params.has('changed_after')).toBe(false);
+          return HttpResponse.json(path === 'cve'
+            ? mockKpiMetrics
+            : { entries: [], features: {}, total_flaws_processed: 0 });
+        }));
+      }
+      await service.getKpiMetrics('all', query);
+      await service.getBotKpiMetrics(query);
+    });
+
+    it('does not silently treat an old aggregate-only bot endpoint as an empty report', async () => {
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, () =>
+        HttpResponse.json({ total_flaws_processed: 10, features: {} }),
+      ));
+      await expect(service.getBotKpiMetrics()).rejects.toThrow('does not support detailed bot KPI reports');
+    });
+
     it('should handle errors', async () => {
       server.use(
         http.get(`${mockBaseUrl}/analysis/kpi/cve`, () =>

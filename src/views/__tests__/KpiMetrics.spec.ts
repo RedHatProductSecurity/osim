@@ -1,907 +1,298 @@
 import { flushPromises, type VueWrapper } from '@vue/test-utils';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AegisKpiMetrics } from '@/types/aegisAI';
-// eslint-disable-next-line import/order
 import { mountWithConfig } from '@/__tests__/helpers';
-
-// Mock the AegisAIService - must be before component import
-vi.mock('@/services/AegisAIService');
-
-// eslint-disable-next-line import/first
 import KpiMetrics from '@/views/KpiMetrics.vue';
-// eslint-disable-next-line import/first
 import { AegisAIService } from '@/services/AegisAIService';
+import type { AegisBotKpiMetrics, AegisKpiMetrics } from '@/types/aegisAI';
+import { downloadKpiCsv } from '@/utils/kpiReport';
 
-// Mock vue-data-ui module
+vi.mock('@/services/AegisAIService');
+vi.mock('@/utils/kpiReport', async importOriginal => ({
+  ...await importOriginal<typeof import('@/utils/kpiReport')>(), downloadKpiCsv: vi.fn(),
+}));
 vi.mock('vue-data-ui/vue-ui-xy', () => ({
-  VueUiXy: {
-    name: 'VueUiXy',
-    template: '<div class="vue-ui-xy-stub"></div>',
-    props: ['dataset', 'config'],
-  },
+  VueUiXy: { name: 'VueUiXy', props: ['dataset', 'config'], template: '<div class="chart-stub"></div>' },
 }));
 
-const mountKpiMetrics = (options?: any) => {
-  return mountWithConfig(KpiMetrics, {
-    global: {
-      stubs: {
-        VueUiXy: true,
-      },
-      ...options?.global,
+const feedback: AegisKpiMetrics = {
+  'suggest-impact': {
+    acceptance_percentage: 50,
+    available_versions: ['0.9.2', '0.9.1'],
+    entries: [
+      { datetime: '2026-09-01 12:00:00', accepted: true, aegis_version: '0.9.2', feedback_source: 'manual' },
+      { datetime: '2026-09-02 23:59:59.999', accepted: false, aegis_version: '0.9.1', feedback_source: 'programmatic' },
+    ],
+  },
+};
+const bot: AegisBotKpiMetrics = {
+  total_flaws_processed: 1,
+  available_components: ['kernel', 'openssl', 'kernel'],
+  features: {
+    impact: {
+      suggested: 1,
+      skipped: 1,
+      kept: 1,
+      modified: 0,
+      acceptance_rate: 100,
+      avg_data_quality: 0.8,
+      avg_confidence: 0.9,
+      avg_suggestion_deviation: 0,
     },
-    ...options,
-  });
+  },
+  entries: [
+    { cve_id: 'CVE-2026-1000',
+      feature: 'impact',
+      datetime: '2026-09-01T00:00:00Z',
+      aegis_version: '',
+      type: 'AI-Bot-Skipped',
+      deviation: null,
+      data_quality: null,
+      confidence: null },
+    { cve_id: 'CVE-2026-1000',
+      feature: 'impact',
+      datetime: '2026-09-02T00:00:00Z',
+      aegis_version: '0.9.2',
+      type: 'AI-Bot',
+      deviation: 0,
+      data_quality: 0.8,
+      confidence: 0.9 },
+  ],
 };
 
-const createMockKpiMetrics = () => {
-  const mockKpiMetrics: Omit<AegisKpiMetrics, 'all'> = {
-    'suggest-cwe': {
-      acceptance_percentage: 75.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-        {
-          datetime: '2025-01-16 11:00:00.000',
-          accepted: false,
-          aegis_version: '1.0.0',
-        },
-        {
-          datetime: '2025-01-20 12:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
-    'suggest-description': {
-      acceptance_percentage: 80.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-        {
-          datetime: '2025-01-22 13:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
-    'suggest-title': {
-      acceptance_percentage: 78.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-        {
-          datetime: '2025-01-18 14:00:00.000',
-          accepted: false,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
-    'suggest-cvss': {
-      acceptance_percentage: 82.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-        {
-          datetime: '2025-01-19 15:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
-    'suggest-impact': {
-      acceptance_percentage: 70.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
-    'suggest-mitigation': {
-      acceptance_percentage: 73.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
-    'suggest-statement': {
-      acceptance_percentage: 85.0,
-      entries: [
-        {
-          datetime: '2025-01-15 10:00:00.000',
-          accepted: true,
-          aegis_version: '1.0.0',
-        },
-      ],
-    },
+describe('kPI dashboard', () => {
+  let wrapper: VueWrapper;
+  const getFeedback = vi.fn();
+  const getBot = vi.fn();
+  const mount = async () => {
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
   };
-  return mockKpiMetrics;
-};
-
-describe('kpiMetrics', () => {
-  let wrapper: VueWrapper<any>;
-  let mockGetKpiMetrics: ReturnType<typeof vi.fn>;
+  const button = (text: string) => wrapper.findAll('button').find(item => item.text() === text)!;
 
   beforeEach(() => {
-    mockGetKpiMetrics = vi.fn();
+    vi.mocked(downloadKpiCsv).mockClear();
+    getFeedback.mockReset().mockResolvedValue(feedback);
+    getBot.mockReset().mockResolvedValue(bot);
     vi.mocked(AegisAIService).mockImplementation(() => ({
-      getKpiMetrics: mockGetKpiMetrics,
-      isFetching: { value: false },
-      requestDuration: { value: 0 },
-    } as any));
-    mockGetKpiMetrics.mockResolvedValue(createMockKpiMetrics());
+      getKpiMetrics: getFeedback, getBotKpiMetrics: getBot,
+    }) as unknown as AegisAIService);
+  });
+  afterEach(() => wrapper?.unmount());
+
+  it('combines both endpoints using observation counts and displays bot processing metrics', async () => {
+    await mount();
+    expect(getFeedback).toHaveBeenCalledWith('all', expect.objectContaining({ detail: true }));
+    expect(getBot).toHaveBeenCalledWith(expect.objectContaining({ detail: true }));
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+    expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('1 processed flaws');
+    expect(wrapper.text()).toContain('Unknown version');
+    expect(wrapper.text()).toContain('manual: 100.0%');
+    expect(wrapper.text()).toContain('programmatic: 0.0%');
+    expect(wrapper.text()).toContain('osidb-bot: 100.0%');
+    expect(wrapper.get('tbody').text()).toContain('0.80');
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-    if (wrapper) wrapper.unmount();
-  });
-
-  it('should render correctly', () => {
-    wrapper = mountKpiMetrics();
-    expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('h1').text()).toBe('KPI Metrics');
-    expect(wrapper.find('label[for="feature-select"]').text()).toBe('Feature:');
-    expect(wrapper.find('select#feature-select').exists()).toBe(true);
-  });
-
-  it('should fetch KPI metrics on mount', async () => {
-    wrapper = mountKpiMetrics();
+  it('offers unique component suggestions and applies arbitrary component names to both sources', async () => {
+    await mount();
+    expect(wrapper.findAll('#kpi-components option').map(option => option.attributes('value')))
+      .toEqual(['kernel', 'openssl']);
+    await wrapper.get('#kpi-component').setValue('  kernel  ');
     await flushPromises();
-
-    expect(mockGetKpiMetrics).toHaveBeenCalledTimes(1);
-    expect(mockGetKpiMetrics).toHaveBeenCalledWith('all');
-  });
-
-  it('should display all feature options in select', () => {
-    wrapper = mountKpiMetrics();
-    const select = wrapper.find('select#feature-select');
-    const options = select.findAll('option');
-
-    expect(options.length).toBe(8); // 'all' + 7 features
-    expect(options[0].text()).toBe('All');
-    expect(options[0].attributes('value')).toBe('all');
-    expect(options[1].text()).toBe('Suggest CWE');
-    expect(options[1].attributes('value')).toBe('suggest-cwe');
-    expect(options[2].text()).toBe('Suggest Description');
-    expect(options[2].attributes('value')).toBe('suggest-description');
-    expect(options[3].text()).toBe('Suggest Title');
-    expect(options[3].attributes('value')).toBe('suggest-title');
-    expect(options[4].text()).toBe('Suggest CVSS');
-    expect(options[4].attributes('value')).toBe('suggest-cvss');
-    expect(options[5].text()).toBe('Suggest Impact');
-    expect(options[5].attributes('value')).toBe('suggest-impact');
-    expect(options[6].text()).toBe('Suggest Mitigation');
-    expect(options[6].attributes('value')).toBe('suggest-mitigation');
-    expect(options[7].text()).toBe('Suggest Statement');
-    expect(options[7].attributes('value')).toBe('suggest-statement');
-  });
-
-  it('should fetch metrics when feature selection changes', async () => {
-    wrapper = mountKpiMetrics();
+    expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({ component: 'kernel' }));
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'kernel' }));
+    await wrapper.get('#kpi-component').setValue('custom-component');
     await flushPromises();
-
-    const select = wrapper.find('select#feature-select');
-    await select.setValue('suggest-cwe');
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'custom-component' }));
+    await wrapper.get('#kpi-component').setValue('');
     await flushPromises();
-
-    expect(mockGetKpiMetrics).toHaveBeenCalledTimes(2);
-    expect(mockGetKpiMetrics).toHaveBeenNthCalledWith(1, 'all');
-    expect(mockGetKpiMetrics).toHaveBeenNthCalledWith(2, 'suggest-cwe');
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: undefined }));
   });
 
-  it('should display chart when metrics are loaded', async () => {
-    wrapper = mountKpiMetrics();
+  it('downloads the same scoped counts displayed on the dashboard', async () => {
+    await mount();
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await wrapper.get('#feature-select').setValue('suggest-impact');
     await flushPromises();
-
-    const chartContainer = wrapper.find('.kpi-chart-container');
-    expect(chartContainer.exists()).toBe(true);
-    expect(wrapper.findComponent({ name: 'VueUiXy' }).exists()).toBe(true);
+    await button('Download CSV').trigger('click');
+    expect(downloadKpiCsv).toHaveBeenCalledOnce();
+    const csv = vi.mocked(downloadKpiCsv).mock.calls[0][0];
+    expect(csv).toContain('"kernel","suggest-impact"');
+    expect(csv).toContain('"2","3","66.7"');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
   });
 
-  it('should not display chart when metrics are null', () => {
-    wrapper = mountKpiMetrics();
-    const chartContainer = wrapper.find('.kpi-chart-container');
-    expect(chartContainer.exists()).toBe(false);
-  });
-
-  it('should transform metrics data by week correctly', async () => {
-    wrapper = mountKpiMetrics();
+  it('disables complete-report downloads while loading or when either source fails', async () => {
+    getBot.mockRejectedValue(new Error('Offline'));
+    wrapper = mountWithConfig(KpiMetrics);
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
     await flushPromises();
-
-    const vm = wrapper.vm;
-    const dataByWeek = vm.dataByWeek;
-
-    // Check that data is grouped by week
-    expect(dataByWeek).toBeDefined();
-    expect(dataByWeek['suggest-cwe']).toBeDefined();
-    expect(dataByWeek['suggest-description']).toBeDefined();
-
-    // Check week format (e.g., "Jan 25 Week 3")
-    const weeks = Object.keys(dataByWeek['suggest-cwe']);
-    expect(weeks.length).toBeGreaterThan(0);
-    expect(weeks[0]).toMatch(/^[A-Z][a-z]{2} \d{2} Week \d+$/);
-
-    // Check that each week has the correct structure
-    const weekData = dataByWeek['suggest-cwe'][weeks[0]];
-    expect(weekData).toHaveProperty('accepted');
-    expect(weekData).toHaveProperty('total');
-    expect(weekData).toHaveProperty('percentage');
-    expect(typeof weekData.accepted).toBe('number');
-    expect(typeof weekData.total).toBe('number');
-    expect(typeof weekData.percentage).toBe('number');
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
   });
 
-  it('should calculate acceptance percentage correctly', async () => {
-    const mockMetrics: Omit<AegisKpiMetrics, 'all'> = {
-      'suggest-cwe': {
-        acceptance_percentage: 75.0,
+  it('shows a feature with no observations as empty, not a zero acceptance rate', async () => {
+    await mount();
+    await wrapper.get('#feature-select').setValue('suggest-cwe');
+    expect(wrapper.text()).toContain('No KPI records match');
+    expect(wrapper.find('[data-testid="overall-rate"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('0 processed flaws');
+  });
+
+  it('passes UTC inclusive date bounds and versions to both endpoints', async () => {
+    await mount();
+    await wrapper.get('#kpi-from').setValue('2026-09-01');
+    await wrapper.get('#kpi-to').setValue('2026-09-02');
+    await button('0.9.1').trigger('click');
+    await flushPromises();
+    const query = expect.objectContaining({
+      aegis_version: ['0.9.1'],
+      recorded_after: '2026-09-01T00:00:00.000Z',
+      recorded_before: '2026-09-02T23:59:59.999Z',
+    });
+    expect(getFeedback).toHaveBeenLastCalledWith('all', query);
+    expect(getBot).toHaveBeenLastCalledWith(query);
+  });
+
+  it('restores the full chart, summaries and export when the last version is deselected (OSIDB-5154)', async () => {
+    getFeedback.mockImplementation((_feature, query) => Promise.resolve(query.aegis_version
+      ? { 'suggest-impact': { acceptance_percentage: 100, entries: [feedback['suggest-impact'].entries[0]] } }
+      : feedback));
+    getBot.mockImplementation(query => Promise.resolve(query.aegis_version
+      ? { ...bot, entries: [], features: {}, total_flaws_processed: 0 }
+      : bot));
+    await mount();
+    const originalDataset = wrapper.findComponent({ name: 'VueUiXy' }).props('dataset');
+    await button('0.9.2').trigger('click');
+    await flushPromises();
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('100.0% — 1 of 1');
+    await button('0.9.2').trigger('click');
+    await flushPromises();
+    expect(button('0.9.2').attributes('aria-pressed')).toBe('false');
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ aegis_version: undefined }));
+    expect(wrapper.findComponent({ name: 'VueUiXy' }).props('dataset')).toEqual(originalDataset);
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+    await button('Download CSV').trigger('click');
+    expect(vi.mocked(downloadKpiCsv).mock.calls[0][0]).toContain('"2","3","66.7"');
+  });
+
+  it('clears every filter together and restores the original API scope (OSIDB-5154)', async () => {
+    await mount();
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await wrapper.get('#feature-select').setValue('suggest-impact');
+    await wrapper.get('#kpi-from').setValue('2026-09-01');
+    await wrapper.get('#kpi-to').setValue('2026-09-02');
+    await button('Unknown version').trigger('click');
+    await flushPromises();
+    await button('Clear All Filters').trigger('click');
+    await flushPromises();
+    expect((wrapper.get('#feature-select').element as HTMLSelectElement).value).toBe('all');
+    expect((wrapper.get('#kpi-component').element as HTMLInputElement).value).toBe('');
+    expect((wrapper.get('#kpi-from').element as HTMLInputElement).value).toBe('');
+    expect(getFeedback).toHaveBeenLastCalledWith('all', {
+      detail: true,
+      component: undefined,
+      aegis_version: undefined,
+      recorded_after: undefined,
+      recorded_before: undefined,
+    });
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
+  });
+
+  it('uses inclusive week bounds and preserves range controls across narrowing and reset', async () => {
+    const multiWeek = { 'suggest-impact': { acceptance_percentage: 100,
+      entries: [
+        { datetime: '2026-08-01 00:00:00', accepted: true, aegis_version: '0.9.1' },
+        ...feedback['suggest-impact'].entries,
+        { datetime: '2026-10-01 00:00:00', accepted: true, aegis_version: '0.9.2' },
+      ] } };
+    getFeedback.mockResolvedValue(multiWeek);
+    await mount();
+    await wrapper.get('#kpi-range-start').setValue('5');
+    await flushPromises();
+    await wrapper.get('#kpi-range-end').setValue('5');
+    await flushPromises();
+    expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({
+      recorded_after: '2026-08-31T00:00:00.000Z', recorded_before: '2026-09-06T23:59:59.999Z',
+    }));
+    getFeedback.mockResolvedValueOnce(feedback);
+    await button('Refresh').trigger('click');
+    await flushPromises();
+    expect(wrapper.get('#kpi-range-end').attributes('max')).toBe('9');
+    await button('Clear All Filters').trigger('click');
+    await flushPromises();
+    expect((wrapper.get('#kpi-range-start').element as HTMLInputElement).value).toBe('0');
+    expect((wrapper.get('#kpi-range-end').element as HTMLInputElement).value).toBe('9');
+  });
+
+  it('keeps range controls usable for an empty date window between populated weeks', async () => {
+    getFeedback.mockResolvedValue({ 'suggest-impact': { acceptance_percentage: 100,
+      entries: [
+        { datetime: '2026-08-01 00:00:00', accepted: true, aegis_version: '0.9.1' },
+        ...feedback['suggest-impact'].entries,
+      ] } });
+    await mount();
+    getFeedback.mockResolvedValue({});
+    getBot.mockResolvedValue({ ...bot, entries: [], features: {}, total_flaws_processed: 0 });
+    await wrapper.get('#kpi-from').setValue('2026-08-10');
+    await wrapper.get('#kpi-to').setValue('2026-08-20');
+    await flushPromises();
+    expect((wrapper.get('#kpi-range-start').element as HTMLInputElement).value).toBe('2');
+    expect((wrapper.get('#kpi-range-end').element as HTMLInputElement).value).toBe('3');
+    await wrapper.get('#kpi-range-start').setValue('1');
+    await flushPromises();
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ recorded_after: '2026-08-03T00:00:00.000Z' }));
+  });
+
+  it('uses server-filtered feedback, including historical records absent from the initial response', async () => {
+    await mount();
+    getFeedback.mockResolvedValue({
+      'suggest-impact': { acceptance_percentage: 100,
         entries: [
-          {
-            datetime: '2025-01-15 10:00:00.000',
-            accepted: true,
-            aegis_version: '1.0.0',
-          },
-          {
-            datetime: '2025-01-15 11:00:00.000',
-            accepted: false,
-            aegis_version: '1.0.0',
-          },
-        ],
-      },
-      'suggest-description': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-title': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-cvss': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-impact': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-mitigation': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-statement': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-    };
-
-    mockGetKpiMetrics.mockResolvedValueOnce(mockMetrics);
-    wrapper = mountKpiMetrics();
+          { datetime: '2026-08-01 00:00:00', accepted: true, aegis_version: '0.9.1' },
+        ] },
+    });
+    getBot.mockResolvedValue({ ...bot, entries: [], features: {}, total_flaws_processed: 0 });
+    await button('0.9.1').trigger('click');
     await flushPromises();
-
-    const vm = wrapper.vm;
-    const dataByWeek = vm.dataByWeek;
-    const weeks = Object.keys(dataByWeek['suggest-cwe']);
-
-    if (weeks.length > 0) {
-      const weekData = dataByWeek['suggest-cwe'][weeks[0]];
-      // Should have 1 accepted out of 2 total = 50%
-      // But the calculation is: (accepted + newAccepted) / (total + 1) * 100
-      // First entry: (0 + 1) / (0 + 1) * 100 = 100%
-      // Second entry: (1 + 0) / (1 + 1) * 100 = 50%
-      expect(weekData.total).toBe(2);
-    }
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('100.0% — 1 of 1');
+    expect(wrapper.findComponent({ name: 'VueUiXy' }).props('config').chart.grid.labels.xAxisLabels.values)
+      .toEqual(['Week of 2026-07-27']);
   });
 
-  it('should generate date range from all weeks', async () => {
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    const vm = wrapper.vm;
-    const dateRange = vm.dateRange;
-
-    expect(Array.isArray(dateRange)).toBe(true);
-    expect(dateRange.length).toBeGreaterThan(0);
-    // Should contain unique week identifiers
-    dateRange.forEach((week: string) => {
-      expect(week).toMatch(/^[A-Z][a-z]{2} \d{2} Week \d+$/);
-    });
+  it('labels partial results and preserves feedback when the bot endpoint fails', async () => {
+    getBot.mockRejectedValue(new Error('Offline'));
+    await mount();
+    expect(wrapper.get('[role="alert"]').text()).toContain('osidb-bot metrics could not be loaded');
+    expect(wrapper.text()).toContain('Available-source Acceptance Rate');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('50.0% — 1 of 2');
   });
 
-  it('should generate chart dataset correctly', async () => {
-    wrapper = mountKpiMetrics();
+  it('shows loading, empty and invalid-range states without NaN', async () => {
+    getFeedback.mockResolvedValue({});
+    getBot.mockResolvedValue({ ...bot, entries: [], features: {}, total_flaws_processed: 0 });
+    wrapper = mountWithConfig(KpiMetrics);
+    expect(wrapper.get('[role="status"]').text()).toContain('Loading');
     await flushPromises();
-
-    const vm = wrapper.vm;
-    const dataset = vm.dataset;
-
-    expect(Array.isArray(dataset)).toBe(true);
-    expect(dataset.length).toBeGreaterThan(0);
-
-    // Check dataset structure
-    dataset.forEach((series: any) => {
-      expect(series).toHaveProperty('name');
-      expect(series).toHaveProperty('series');
-      expect(series).toHaveProperty('suffix', '%');
-      expect(series).toHaveProperty('type', 'line');
-      expect(series).toHaveProperty('datalabels', false);
-      // The name should be one of the feature labels
-      expect([
-        'Suggest CWE',
-        'Suggest Description',
-        'Suggest Title',
-        'Suggest CVSS',
-        'Suggest Impact',
-        'Suggest Mitigation',
-        'Suggest Statement',
-      ]).toContain(series.name);
-      expect(Array.isArray(series.series)).toBe(true);
-    });
+    expect(wrapper.text()).toContain('No KPI records match');
+    expect(wrapper.text()).not.toContain('NaN');
+    await wrapper.get('#kpi-from').setValue('2026-09-03');
+    await flushPromises();
+    const calls = getFeedback.mock.calls.length;
+    await wrapper.get('#kpi-to').setValue('2026-09-01');
+    await flushPromises();
+    expect(getFeedback).toHaveBeenCalledTimes(calls);
+    expect(wrapper.get('[role="alert"]').text()).toContain('start date must be on or before');
   });
 
-  it('should generate chart config correctly', async () => {
-    wrapper = mountKpiMetrics();
+  it('ignores an older response that finishes after a newer filter request', async () => {
+    let resolveOld!: (value: AegisKpiMetrics) => void;
+    getFeedback.mockReturnValueOnce(new Promise((resolve) => { resolveOld = resolve; }));
+    wrapper = mountWithConfig(KpiMetrics);
+    await wrapper.get('#kpi-from').setValue('2026-09-01');
     await flushPromises();
-
-    const vm = wrapper.vm;
-    const config = vm.config;
-
-    expect(config).toHaveProperty('chart');
-    expect(config.chart).toHaveProperty('tooltip');
-    expect(config.chart.tooltip.showPercentage).toBe(false);
-    expect(config.chart).toHaveProperty('grid');
-    expect(config.chart.grid).toHaveProperty('labels');
-    expect(config.chart.grid.labels).toHaveProperty('xAxisLabels');
-    expect(config.chart.grid.labels.xAxisLabels).toHaveProperty('values');
-    expect(Array.isArray(config.chart.grid.labels.xAxisLabels.values)).toBe(true);
-    expect(config.chart.grid.labels).toHaveProperty('datetimeFormatter');
-    expect(config.chart.grid.labels.datetimeFormatter.enable).toBe(true);
-  });
-
-  it('should filter out non-allowed features', async () => {
-    const metricsWithExtraFeature: any = {
-      'suggest-cwe': {
-        acceptance_percentage: 75.0,
-        entries: [],
-      },
-      'suggest-description': {
-        acceptance_percentage: 80.0,
-        entries: [],
-      },
-      'suggest-impact': {
-        acceptance_percentage: 70.0,
-        entries: [],
-      },
-      'suggest-mitigation': {
-        acceptance_percentage: 75.0,
-        entries: [],
-      },
-      'suggest-statement': {
-        acceptance_percentage: 85.0,
-        entries: [],
-      },
-      'invalid-feature': {
-        acceptance_percentage: 90.0,
-        entries: [],
-      },
-      'suggest-title': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-cvss': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-    };
-
-    mockGetKpiMetrics.mockResolvedValueOnce(metricsWithExtraFeature);
-    wrapper = mountKpiMetrics();
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
+    resolveOld({});
     await flushPromises();
-
-    const vm = wrapper.vm;
-    expect(vm.kpiMetrics).not.toHaveProperty('invalid-feature');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-cwe');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-description');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-title');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-cvss');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-impact');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-mitigation');
-    expect(vm.kpiMetrics).toHaveProperty('suggest-statement');
-  });
-
-  it('should handle empty metrics gracefully', async () => {
-    const emptyMetrics: Omit<AegisKpiMetrics, 'all'> = {
-      'suggest-cwe': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-description': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-title': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-cvss': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-impact': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-mitigation': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-statement': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-    };
-
-    mockGetKpiMetrics.mockResolvedValueOnce(emptyMetrics);
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    const vm = wrapper.vm;
-    expect(vm.kpiMetrics).toEqual(emptyMetrics);
-    expect(vm.dataByWeek).toBeDefined();
-    // Dataset will have entries for each feature, but with empty series arrays
-    expect(vm.dataset).toBeDefined();
-    expect(Array.isArray(vm.dataset)).toBe(true);
-    // Each feature will have a dataset entry with an empty series array
-    vm.dataset.forEach((series: any) => {
-      expect(series).toHaveProperty('series');
-      expect(Array.isArray(series.series)).toBe(true);
-    });
-  });
-
-  it('should handle API errors gracefully', async () => {
-    // Prevent console.error from failing the test by mocking it
-    // due to config in tests__/setup.ts
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockGetKpiMetrics.mockRejectedValue(new Error('API Error'));
-
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    // Component should still render, but metrics should be null
-    expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('.kpi-chart-container').exists()).toBe(false);
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  it('should handle different week calculations correctly', async () => {
-    // Test with entries spanning multiple weeks
-    const multiWeekMetrics: Omit<AegisKpiMetrics, 'all'> = {
-      'suggest-cwe': {
-        acceptance_percentage: 75.0,
-        entries: [
-          {
-            datetime: '2025-01-01 10:00:00.000', // Week 1
-            accepted: true,
-            aegis_version: '1.0.0',
-          },
-          {
-            datetime: '2025-01-08 10:00:00.000', // Week 2
-            accepted: false,
-            aegis_version: '1.0.0',
-          },
-          {
-            datetime: '2025-01-15 10:00:00.000', // Week 3
-            accepted: true,
-            aegis_version: '1.0.0',
-          },
-        ],
-      },
-      'suggest-description': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-title': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-cvss': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-impact': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-mitigation': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-      'suggest-statement': {
-        acceptance_percentage: 100.0,
-        entries: [],
-      },
-    };
-
-    mockGetKpiMetrics.mockResolvedValueOnce(multiWeekMetrics);
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    const vm = wrapper.vm;
-    const dataByWeek = vm.dataByWeek;
-    const weeks = Object.keys(dataByWeek['suggest-cwe']);
-
-    // Should have multiple weeks
-    expect(weeks.length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('should update chart when feature changes', async () => {
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    const singleFeatureMetrics: Omit<AegisKpiMetrics, 'all'> = {
-      'suggest-cwe': {
-        acceptance_percentage: 75.0,
-        entries: [
-          {
-            datetime: '2025-01-15 10:00:00.000',
-            accepted: true,
-            aegis_version: '1.0.0',
-          },
-        ],
-      },
-      'suggest-description': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-title': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-cvss': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-impact': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-mitigation': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-statement': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-    };
-
-    mockGetKpiMetrics.mockResolvedValueOnce(singleFeatureMetrics);
-
-    const select = wrapper.find('select#feature-select');
-    await select.setValue('suggest-cwe');
-    await flushPromises();
-
-    const vm = wrapper.vm;
-    expect(vm.kpiMetrics).toBeDefined();
-    expect(mockGetKpiMetrics).toHaveBeenCalledTimes(2);
-  });
-
-  it('should handle feature change correctly', async () => {
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    // Reset mock call count
-    mockGetKpiMetrics.mockClear();
-
-    const singleFeatureResponse: Omit<AegisKpiMetrics, 'all'> = {
-      'suggest-cwe': {
-        acceptance_percentage: 75.0,
-        entries: [
-          {
-            datetime: '2025-01-15 10:00:00.000',
-            accepted: true,
-            aegis_version: '1.0.0',
-          },
-        ],
-      },
-      'suggest-description': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-title': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-cvss': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-impact': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-mitigation': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-      'suggest-statement': {
-        acceptance_percentage: 0,
-        entries: [],
-      },
-    };
-
-    mockGetKpiMetrics.mockResolvedValueOnce(singleFeatureResponse);
-
-    const select = wrapper.find('select#feature-select');
-    await select.setValue('suggest-description');
-    await flushPromises();
-
-    expect(mockGetKpiMetrics).toHaveBeenCalledWith('suggest-description');
-  });
-
-  describe('mean Acceptance Rates section', () => {
-    it('should display Mean Acceptance Rates heading when metrics are loaded', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const headings = wrapper.findAll('h3');
-      const meanAcceptanceHeading = headings.find(h => h.text() === 'Mean Acceptance Rates');
-      expect(meanAcceptanceHeading).toBeDefined();
-      expect(meanAcceptanceHeading?.exists()).toBe(true);
-    });
-
-    it('should display Overall acceptance percentage', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const overallSection = wrapper.findAll('h4').find(h => h.text() === 'Overall');
-      expect(overallSection).toBeDefined();
-      expect(overallSection?.exists()).toBe(true);
-
-      const overallText = wrapper.text();
-      expect(overallText).toContain('% Acceptance Rate');
-    });
-
-    it('should calculate and display correct overall acceptance percentage', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const vm = wrapper.vm;
-      const expectedOverall = (
-        75.0 + 80.0 + 78.0 + 82.0 + 70.0 + 73.0 + 85.0
-      ) / 7; // Average of all feature acceptance percentages
-
-      expect(vm.overallAcceptancePercentage).toBeCloseTo(expectedOverall, 1);
-
-      const overallParagraph = wrapper.findAll('p').find(p =>
-        p.text().includes('Acceptance Rate') && !p.text().includes('for'),
-      );
-      expect(overallParagraph?.exists()).toBe(true);
-      // Check that it contains the percentage (allowing for formatting differences)
-      expect(overallParagraph?.text()).toMatch(/\d+(\.\d+)?% Acceptance Rate/);
-    });
-
-    it('should display Per Feature heading', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const perFeatureHeading = wrapper.findAll('h4').find(h => h.text() === 'Per Feature');
-      expect(perFeatureHeading).toBeDefined();
-      expect(perFeatureHeading?.exists()).toBe(true);
-    });
-
-    it('should display acceptance percentage for each feature', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const vm = wrapper.vm;
-      const features = Object.keys(vm.metricsToDisplay);
-
-      // Should have 7 features (excluding 'all')
-      expect(features.length).toBe(7);
-
-      // Check that each feature is displayed
-      const text = wrapper.text();
-      expect(text).toContain('75% Acceptance Rate for Suggest CWE');
-      expect(text).toContain('80% Acceptance Rate for Suggest Description');
-      expect(text).toContain('78% Acceptance Rate for Suggest Title');
-      expect(text).toContain('82% Acceptance Rate for Suggest CVSS');
-      expect(text).toContain('70% Acceptance Rate for Suggest Impact');
-      expect(text).toContain('73% Acceptance Rate for Suggest Mitigation');
-      expect(text).toContain('85% Acceptance Rate for Suggest Statement');
-    });
-
-    it('should display all features with correct labels', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const featureParagraphs = wrapper.findAll('p').filter(p =>
-        p.text().includes('Acceptance Rate for'),
-      );
-
-      expect(featureParagraphs.length).toBe(7);
-
-      const featureLabels = [
-        'Suggest CWE',
-        'Suggest Description',
-        'Suggest Title',
-        'Suggest CVSS',
-        'Suggest Impact',
-        'Suggest Mitigation',
-        'Suggest Statement',
-      ];
-
-      featureLabels.forEach((label) => {
-        const found = featureParagraphs.some(p => p.text().includes(label));
-        expect(found).toBe(true);
-      });
-    });
-
-    it('should handle empty metrics for Mean Acceptance Rates', async () => {
-      const emptyMetrics: Omit<AegisKpiMetrics, 'all'> = {
-        'suggest-cwe': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-        'suggest-description': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-        'suggest-title': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-        'suggest-cvss': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-        'suggest-impact': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-        'suggest-mitigation': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-        'suggest-statement': {
-          acceptance_percentage: 0,
-          entries: [],
-        },
-      };
-
-      mockGetKpiMetrics.mockResolvedValueOnce(emptyMetrics);
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const vm = wrapper.vm;
-      expect(vm.overallAcceptancePercentage).toBe(0);
-
-      const overallParagraph = wrapper.findAll('p').find(p =>
-        p.text().includes('Acceptance Rate') && !p.text().includes('for'),
-      );
-      expect(overallParagraph?.text()).toContain('0% Acceptance Rate');
-    });
-
-    it('should not display Mean Acceptance Rates section when metrics are null', () => {
-      wrapper = mountKpiMetrics();
-      const chartContainer = wrapper.find('.kpi-chart-container');
-      expect(chartContainer.exists()).toBe(false);
-    });
-
-    it('should update overall acceptance percentage when metrics change', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const initialOverall = wrapper.vm.overallAcceptancePercentage;
-
-      const updatedMetrics: Omit<AegisKpiMetrics, 'all'> = {
-        'suggest-cwe': {
-          acceptance_percentage: 90.0,
-          entries: [],
-        },
-        'suggest-description': {
-          acceptance_percentage: 95.0,
-          entries: [],
-        },
-        'suggest-title': {
-          acceptance_percentage: 88.0,
-          entries: [],
-        },
-        'suggest-cvss': {
-          acceptance_percentage: 92.0,
-          entries: [],
-        },
-        'suggest-impact': {
-          acceptance_percentage: 85.0,
-          entries: [],
-        },
-        'suggest-mitigation': {
-          acceptance_percentage: 88.0,
-          entries: [],
-        },
-        'suggest-statement': {
-          acceptance_percentage: 93.0,
-          entries: [],
-        },
-      };
-
-      mockGetKpiMetrics.mockResolvedValueOnce(updatedMetrics);
-
-      // Trigger a re-fetch by changing feature
-      const select = wrapper.find('select#feature-select');
-      await select.setValue('suggest-cwe');
-      await flushPromises();
-
-      const updatedOverall = wrapper.vm.overallAcceptancePercentage;
-      const expectedUpdated = (90.0 + 95.0 + 88.0 + 92.0 + 85.0 + 88.0 + 93.0) / 7;
-
-      expect(updatedOverall).toBeCloseTo(expectedUpdated, 1);
-      expect(updatedOverall).not.toBe(initialOverall);
-    });
-
-    it('should format acceptance percentages correctly in the UI', async () => {
-      wrapper = mountKpiMetrics();
-      await flushPromises();
-
-      const featureParagraphs = wrapper.findAll('p').filter(p =>
-        p.text().includes('Acceptance Rate for'),
-      );
-
-      expect(featureParagraphs.length).toBeGreaterThan(0);
-      featureParagraphs.forEach((paragraph) => {
-        const text = paragraph.text();
-        expect(text).toContain('Acceptance Rate for ');
-      });
-    });
-  });
-
-  it('should handle filter deselection by clicking', async () => {
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    wrapper.vm.versionSelections = { '1.0.0': false };
-    await wrapper.vm.$nextTick();
-
-    const buttons = wrapper.findAll('button');
-    const filterButton = buttons.find(btn => btn.text() === '1.0.0');
-
-    await filterButton!.trigger('click');
-    expect(wrapper.vm.hasActiveVersionFilters).toBe(true);
-
-    await filterButton!.trigger('click');
-    expect(wrapper.vm.hasActiveVersionFilters).toBe(false);
-  });
-
-  it('should clear all filters when clicking clear button', async () => {
-    wrapper = mountKpiMetrics();
-    await flushPromises();
-
-    wrapper.vm.versionSelections = { '1.0.0': true, '2.0.0': true };
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.hasActiveVersionFilters).toBe(true);
-
-    const buttons = wrapper.findAll('button');
-    const clearButton = buttons.find(btn => btn.text() === 'Clear All Filters');
-
-    await clearButton!.trigger('click');
-    expect(wrapper.vm.hasActiveVersionFilters).toBe(false);
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
   });
 });
