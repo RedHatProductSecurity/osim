@@ -1,0 +1,35 @@
+---
+description: Git commit and branch conventions for osim
+alwaysApply: true
+---
+
+# Git Workflow
+
+## Branch Naming
+`feature/`, `fix/`, `refactor/`, `docs/` + short kebab-case description
+e.g. `feature/flaw-comment-pagination`, `fix/cvss-score-display`
+
+## Commit Messages
+Format: `<gitmoji> <short imperative sentence>`
+
+| Type | Gitmoji |
+|------|---------|
+| New feature | ✨ |
+| Bug fix | 🐛 |
+| Refactor | ♻️ |
+| Tests | ✅ |
+| Docs | 📝 |
+| Chore/deps | 🔧 |
+| Security | 🔒 |
+| Performance | ⚡ |
+| Types | 🏷️ |
+
+Examples:
+- `✨ add pagination to flaw comment list`
+- `🐛 fix CVSS score not updating on NVD import`
+- `♻️ extract comment parsing into useFlawComments composable`
+
+## PR Standards
+- Group related commits; minimize count before push
+- Run `yarn vibe-check` before opening PR
+- Reference issue/ticket in PR description
