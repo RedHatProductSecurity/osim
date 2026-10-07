@@ -18,6 +18,9 @@
 * Preserve unsaved/failed label edits and typed contributors for `context_based` and `bu` labels; restrict label field editing to those types (`OSIDB-5349`)
 * Align CRA SRP AEV and Severe Incident popup field ordering, bottom tracking-field grouping, and final AEV mitigation inheritance from the 72h report (`OSIDB-5616`)
 
+### Fixed
+* Fix timezone handling in SRP timer start date to prevent off-by-one-hour errors in due date calculations (`OSIDB-5624`)
+
 ## [2026.9.0]
 ### Added
 * Add bulk close functionality for Jira trackers in affects table with confirmation dialog
