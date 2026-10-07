@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { createPinia, setActivePinia } from 'pinia';
 
 import { osimRuntime } from '@/stores/osimRuntime';
+import { useAuthStore } from '@/stores/AuthStore';
 import { server } from '@/__tests__/setup';
 import type {
   AegisAIComponentFeatureNameType,
@@ -363,10 +364,12 @@ describe('aegisAIService', () => {
         http.get(`${mockBaseUrl}/analysis/kpi/cve`, ({ request }) => {
           const url = new URL(request.url);
           expect(url.searchParams.get('feature')).toBe('all');
+          expect(request.headers.get('Authorization')).toBe('Bearer test-user-token');
           return HttpResponse.json(mockKpiMetrics);
         }),
       );
 
+      useAuthStore().accessToken = 'test-user-token';
       const result = await service.getKpiMetrics('all');
       expect(result).toEqual(mockKpiMetrics);
     });
