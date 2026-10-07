@@ -1,6 +1,6 @@
 # Use a multi-stage build to separate the build environment from the production environment
 # App build stage
-FROM registry.access.redhat.com/ubi9/nodejs-20:9.6 AS dev
+FROM registry.access.redhat.com/ubi9/nodejs-22:9.6 AS dev
 RUN npm install -g yarn
 COPY . .
 RUN yarn
