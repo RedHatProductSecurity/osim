@@ -105,7 +105,7 @@ describe('linkExistingTracker', () => {
     wrapper.unmount();
   });
 
-  it('releases the row lock without toasting after unmount', async () => {
+  it('reports success when the row unmounts before the request finishes', async () => {
     let finish!: (value: { refreshFailed: boolean }) => void;
     mocks.linkExistingTracker.mockImplementation(() => new Promise((resolve) => { finish = resolve; }));
     const table = createTable();
@@ -117,7 +117,10 @@ describe('linkExistingTracker', () => {
     finish({ refreshFailed: false });
     await flushPromises();
     expect(table.options.meta?.filingTracker.has(affect.uuid!)).toBe(false);
-    expect(useToastStore().addToast).not.toHaveBeenCalled();
+    expect(useToastStore().addToast).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'Tracker linked',
+      body: expect.stringContaining('RHSA-1234'),
+    }));
   });
 
   it('closes on flaw navigation and suppresses the old flaw toast', async () => {

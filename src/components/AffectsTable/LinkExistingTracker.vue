@@ -107,7 +107,7 @@ async function submit() {
   filingTracker.add(rowId);
   try {
     const { refreshFailed } = await linkExistingTracker(affect, parsed.external_system_id);
-    if (mounted && flaw.value.uuid === flawUuid) {
+    if (flaw.value.uuid === flawUuid) {
       useToastStore().addToast({
         title: refreshFailed ? 'Tracker linked; refresh failed' : 'Tracker linked',
         body: refreshFailed
@@ -115,7 +115,7 @@ async function submit() {
           : `${parsed.external_system_id} linked to ${flawLabel.value}.`,
         css: refreshFailed ? 'warning' : 'success',
       });
-      emit('close');
+      if (mounted) emit('close');
     }
   } catch (error) {
     if (mounted && flaw.value.uuid === flawUuid) {
