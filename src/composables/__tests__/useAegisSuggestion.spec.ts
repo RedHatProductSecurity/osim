@@ -118,6 +118,7 @@ describe('useAegisSuggestion', () => {
     analyzeMock.mockResolvedValueOnce({
       cwe: ['CWE-89'],
       confidence: 0.9,
+      data_quality: 0.75,
       explanation: 'Reasoning',
       tools_used: ['cwe_tool'],
     });
@@ -132,6 +133,7 @@ describe('useAegisSuggestion', () => {
     expect(composable.details.value).toEqual({
       cwe: ['CWE-89'],
       confidence: 0.9,
+      data_quality: 0.75,
       explanation: 'Reasoning',
       impact: null,
       cvss3_vector: null,

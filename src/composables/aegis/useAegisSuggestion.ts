@@ -263,6 +263,7 @@ export function useAegisSuggestion(
           components: isValidComponents(rawData.components) ? rawData.components : null,
           ecosystems: rawData.ecosystems,
           confidence: rawData.confidence,
+          data_quality: rawData.data_quality,
           explanation: rawData.explanation,
           tools_used: rawData.tools_used,
         } as ComponentsSuggestionDetails;
@@ -290,6 +291,7 @@ export function useAegisSuggestion(
       confidence: data.confidence,
       explanation: data.explanation,
       tools_used: data.tools_used,
+      ...(data.data_quality != null ? { data_quality: data.data_quality } : {}),
     };
     return data;
   }

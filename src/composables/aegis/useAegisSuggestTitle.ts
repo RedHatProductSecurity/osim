@@ -97,6 +97,7 @@ export function useAegisSuggestTitle(options: UseAegisSuggestTitleOptions) {
       suggested_title: title,
       suggested_description: data.suggested_description,
       confidence: data.confidence,
+      data_quality: data.data_quality,
       explanation: data.explanation,
       tools_used: data.tools_used,
     };

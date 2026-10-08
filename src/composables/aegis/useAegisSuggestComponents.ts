@@ -26,6 +26,7 @@ export function useAegisSuggestComponents(
     components: null,
     ecosystems: null,
     confidence: undefined,
+    data_quality: undefined,
     explanation: undefined,
     tools_used: undefined,
   });
@@ -57,6 +58,7 @@ export function useAegisSuggestComponents(
       components: data.components,
       ecosystems: data.ecosystems,
       confidence: data.confidence,
+      data_quality: data.data_quality,
       explanation: data.explanation,
       tools_used: data.tools_used,
     };
@@ -86,6 +88,7 @@ export function useAegisSuggestComponents(
         components: isValidComponents(data.components) ? data.components : null,
         ecosystems: data.ecosystems,
         confidence: data.confidence,
+        data_quality: data.data_quality,
         explanation: data.explanation,
         tools_used: data.tools_used,
       } as ComponentsSuggestionDetails;
@@ -132,6 +135,7 @@ export function useAegisSuggestComponents(
       components: null,
       ecosystems: null,
       confidence: undefined,
+      data_quality: undefined,
       explanation: undefined,
       tools_used: undefined,
     };

@@ -95,6 +95,7 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     details.value = {
       suggested_description: description,
       confidence: data.confidence,
+      data_quality: data.data_quality,
       explanation: data.explanation,
       tools_used: data.tools_used,
     };
