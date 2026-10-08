@@ -4,6 +4,61 @@ import { osidbFetch } from '@/services/OsidbAuthService';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { ZodTrackerType } from '@/types';
 
+export function parseTrackerId(input: string): { external_system_id: string; type: 'BUGZILLA' | 'JIRA' } | null {
+  const id = input.trim().toUpperCase();
+  if (/^[A-Z][A-Z0-9_]*-[1-9][0-9]*$/.test(id)) {
+    return { external_system_id: id, type: 'JIRA' };
+  }
+  if (/^[1-9][0-9]*$/.test(id)) {
+    return { external_system_id: id, type: 'BUGZILLA' };
+  }
+  return null;
+}
+
+export async function findExistingTracker(externalId: string): Promise<ZodTrackerType> {
+  const parsed = parseTrackerId(externalId);
+  if (!parsed) throw new Error('Enter a valid Jira key or Bugzilla ID.');
+
+  let results: ZodTrackerType[];
+  let count: number;
+  try {
+    ({ data: { count, results } } = await osidbFetch({
+      method: 'get',
+      url: '/osidb/api/v2/trackers',
+      cache: 'no-cache',
+      params: { ...parsed, limit: 2 },
+    }));
+  } catch (error: any) {
+    if (error?.response?.status === 403 || error?.response?.status === 404) {
+      throw new Error('Tracker not found or inaccessible.');
+    }
+    throw error;
+  }
+  if (!count || !results?.length) throw new Error('Tracker not found or inaccessible.');
+  if (count !== 1 || results.length !== 1) throw new Error('More than one tracker matches this ID.');
+  const tracker = results[0];
+  if (!tracker.uuid || !tracker.updated_dt || !Array.isArray(tracker.affects)
+    || typeof tracker.embargoed !== 'boolean' || !tracker.ps_update_stream
+    || tracker.external_system_id !== parsed.external_system_id || tracker.type !== parsed.type) {
+    throw new Error('Tracker details are incomplete. Reload and try again.');
+  }
+  return tracker;
+}
+
+export async function updateExistingTracker(tracker: ZodTrackerType, affectUuid: string): Promise<ZodTrackerType> {
+  const { data } = await osidbFetch({
+    method: 'put',
+    url: `/osidb/api/v2/trackers/${tracker.uuid}`,
+    data: {
+      affects: [...new Set([...tracker.affects, affectUuid])],
+      updated_dt: tracker.updated_dt,
+      embargoed: tracker.embargoed,
+      ps_update_stream: tracker.ps_update_stream,
+    },
+  });
+  return data as ZodTrackerType;
+}
+
 export type TrackersPost = {
   affects: string[];
   embargoed: boolean;

@@ -27,6 +27,20 @@ function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace:
   initialFlaw.value = deepCopyFromRaw(flaw.value);
 }
 
+// Update only server-owned affect fields; setFlaw would reset the baseline for unrelated dirty flaw edits.
+function syncLinkedAffect(
+  loadedFlaw: ZodFlawType, affectUuid: string, tracker: ZodAffectType['tracker'], updatedDt?: null | string,
+) {
+  if (flaw.value !== loadedFlaw || initialFlaw.value.uuid !== loadedFlaw.uuid) return;
+  for (const snapshot of [flaw.value, initialFlaw.value]) {
+    snapshot.affects = snapshot.affects.map(affect => affect.uuid === affectUuid
+      ? { ...affect, tracker, ...(updatedDt ? { updated_dt: updatedDt } : {}) }
+      : affect);
+  }
+  // Tracker updates may synchronously save the related flaw (and advance its updated_dt).
+  // No flaw fetch here: later flaw PUTs may need a reload on 409 rather than a guessed timestamp.
+}
+
 const isFlawUpdated = computed(
   () => {
     const keysToExclude: Array<keyof ZodFlawType> = ['affects', 'trackers', 'cvss_scores'];
@@ -42,6 +56,7 @@ export function useFlaw() {
     isFlawUpdated,
     resetFlaw,
     setFlaw,
+    syncLinkedAffect,
   };
 }
 

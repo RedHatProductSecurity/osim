@@ -18,16 +18,18 @@ defineOptions({
   inheritAttrs: false,
 });
 const { show } = toRefs(props);
-watch(show, () => {
-  if (show.value) {
-    document.body.classList.add('modal-open');
-    document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = '0';
-  } else {
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = '';
-    document.body.style.padding = '';
-  }
+watch(show, (isShown, _previous, onCleanup) => {
+  if (!isShown) return;
+  const wasOpen = document.body.classList.contains('modal-open');
+  const { overflow, paddingRight } = document.body.style;
+  document.body.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
+  document.body.style.paddingRight = '0';
+  onCleanup(() => {
+    document.body.classList.toggle('modal-open', wasOpen);
+    document.body.style.overflow = overflow;
+    document.body.style.paddingRight = paddingRight;
+  });
 }, { immediate: true });
 </script>
 
@@ -41,13 +43,14 @@ watch(show, () => {
       :aria-hidden="!show"
       tabindex="-1"
       aria-labelledby="modalTitle"
+      aria-modal="true"
       :role="show ? 'dialog' : ''"
     >
-      <div class="modal-dialog" v-bind="$attrs">
+      <div class="modal-dialog" tabindex="-1" v-bind="$attrs">
         <div class="modal-content">
           <div v-if="$slots.header || $slots.title" class="modal-header">
             <slot name="header">
-              <h1 class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
+              <h1 id="modalTitle" class="modal-title fs-5"><slot name="title">Modal Title</slot></h1>
               <button
                 type="button"
                 class="btn-close"
