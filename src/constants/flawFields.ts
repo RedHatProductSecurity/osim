@@ -51,6 +51,8 @@ export const flawFields = fieldsFor(ZodFlawSchema)
 
 export const flawFieldNamesMapping: Record<string, string> = {
   owner: 'Owner',
+  flaw_id: 'Flaw ID',
+  name: 'Name',
   title: 'Title',
   cve_id: 'CVE ID',
   cwe_id: 'CWE ID',
@@ -64,6 +66,16 @@ export const flawFieldNamesMapping: Record<string, string> = {
   cve_description: 'Description',
   major_incident_state: 'Incident State',
   major_incident_start_dt: 'Incident Start Date',
+  affectedness: 'Affectedness',
+  delegated_resolution: 'Delegated Resolution',
+  external_system_id: 'External ID',
+  not_affected_justification: 'Not Affected Justification',
+  ps_component: 'Component',
+  ps_module: 'Module',
+  ps_update_stream: 'Stream',
+  resolution: 'Resolution',
+  tracker_id: 'Tracker ID',
+  type: 'Type',
 };
 
 export const allowedEmptyFieldMapping: Record<string, string> = {
