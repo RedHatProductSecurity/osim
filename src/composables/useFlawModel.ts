@@ -270,10 +270,7 @@ export function useFlawModel() {
           ...validatedFlaw.data,
           ...getAegisMetadataIfChanged(),
         }, shouldCreateJiraTask.value);
-        afterSuccessQueue.push(() => setFlaw({
-          ...response,
-          affects: flaw.value.affects,
-        }));
+        afterSuccessQueue.push(() => setFlaw(response));
       },
       );
     }
