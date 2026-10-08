@@ -77,12 +77,16 @@ export type MitigationSuggestionDetails = {
   suggested_mitigation: Nullable<string>;
 } & SuggestionDetailOptionals;
 
+export type AegisSuggestionMetadata = {
+  confidence?: null | number | string;
+  data_quality?: null | number | string;
+  tools_used?: null | string[];
+};
+
 export type SuggestionDetailOptionals = {
-  confidence?: number | string;
   ecosystems?: Nullable<string[]>;
   explanation?: string;
-  tools_used?: string[];
-};
+} & AegisSuggestionMetadata;
 
 export type DescriptionSuggestionDetails = {
   suggested_description?: string;
@@ -108,7 +112,7 @@ export type AegisChangeEntry = {
   timestamp: string;
   type: AegisChangeType;
   value?: string | string[];
-};
+} & AegisSuggestionMetadata;
 
 export type AegisMetadata = {
   [fieldName: string]: AegisChangeEntry[];
