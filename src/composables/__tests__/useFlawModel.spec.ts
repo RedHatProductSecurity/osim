@@ -121,6 +121,70 @@ describe('useFlawModel', () => {
       expect(putFlaw).not.toHaveBeenCalled();
     });
 
+    it('should apply the putFlaw response', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      const localAffects = [{ ...flawData.affects[0], uuid: 'local-affect' }];
+      flawData.affects = localAffects;
+      setFlaw(flawData);
+
+      const serverAffects = [{ ...flawData.affects[0], uuid: 'from-put' }];
+      vi.mocked(putFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'from-put',
+        affects: serverAffects,
+      });
+
+      const { updateFlaw } = mountFlawModel();
+      flaw.value.title = 'altered';
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenCalled();
+      expect(flaw.value.title).toBe('from-put');
+      expect(flaw.value.affects).toEqual(serverAffects);
+    });
+
+    it('should not initialize affects from server data when affect save fails', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      setFlaw(flawData);
+
+      const { actions, state } = useAffectsModel();
+      actions.initializeAffects(flawData.affects);
+      actions.markModified(flawData.affects[0].uuid!);
+      const localAffects = deepCopyFromRaw(state.currentAffects.value);
+
+      const initializeSpy = vi.spyOn(actions, 'initializeAffects');
+      const saveAffectsSpy = vi.spyOn(actions, 'saveAffects').mockResolvedValue({
+        hasErrors: true,
+        savedAffects: [],
+      });
+
+      vi.mocked(putFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'from-put',
+        affects: [{ ...flawData.affects[0], uuid: 'stale-from-put' }],
+      });
+
+      const { updateFlaw } = mountFlawModel();
+      flaw.value.title = 'altered';
+      initializeSpy.mockClear();
+      try {
+        await flushPromises();
+        await updateFlaw();
+        await flushPromises();
+
+        expect(putFlaw).toHaveBeenCalled();
+        expect(initializeSpy).not.toHaveBeenCalled();
+        expect(state.currentAffects.value).toEqual(localAffects);
+      } finally {
+        initializeSpy.mockRestore();
+        saveAffectsSpy.mockRestore();
+      }
+    });
+
     it('should call postFlaw on createFlaw', () => {
       const { flaw } = useFlaw();
       flaw.value = sampleFlawRequired as ZodFlawType;
