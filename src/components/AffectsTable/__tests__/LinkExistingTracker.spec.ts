@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { reactive, type Directive } from 'vue';
 
 import { flushPromises, mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
@@ -41,7 +41,7 @@ function mountDialog(table = createTable()) {
   return mount(LinkExistingTracker, {
     props: { affect, flawUuid: SampleFlawFull.uuid, rowId: affect.uuid!, table },
     attachTo: document.body,
-    global: { directives: { osimLoading: vi.fn() }, stubs: { teleport: true } },
+    global: { directives: { osimLoading: vi.fn() as Directive }, stubs: { teleport: true } },
   });
 }
 
