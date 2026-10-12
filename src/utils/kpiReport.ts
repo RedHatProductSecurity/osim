@@ -39,7 +39,6 @@ function reportGroups(observations: KpiObservation[]) {
 
 export function createKpiCsv(observations: KpiObservation[], scope: KpiReportScope) {
   const header = [
-    'row_type',
     'source',
     'feature',
     'week_start_utc',
@@ -59,6 +58,8 @@ export function createKpiCsv(observations: KpiObservation[], scope: KpiReportSco
     'avg_data_quality',
     'avg_confidence',
     'avg_suggestion_deviation',
+    'total_category',
+    'total_amount',
   ];
   const botFeatures = Object.fromEntries(Object.entries(scope.bot?.features ?? {})
     .map(([feature, metrics]) => [canonicalKpiFeature(feature), metrics]));
@@ -69,7 +70,7 @@ export function createKpiCsv(observations: KpiObservation[], scope: KpiReportSco
       groups.push({ entries: [], feature, source: 'osidb-bot', week: '' });
     }
   }
-  const rows = groups.map(({ entries, feature, source, week }) => {
+  const reportValues = ({ entries, feature, source, week }: typeof groups[number]) => {
     const metrics = summarizeKpi(entries);
     const botMetrics = summarizeKpi(entries.filter(entry => entry.source === 'osidb-bot'));
     const quality = !week && source === 'osidb-bot' ? botFeatures[feature] : undefined;
@@ -77,29 +78,49 @@ export function createKpiCsv(observations: KpiObservation[], scope: KpiReportSco
       && ['combined', 'osidb-bot'].includes(source)
       ? scope.bot?.total_flaws_processed ?? 0
       : metrics.processedFlaws;
-    return [
-      week ? 'weekly' : 'summary',
+    return {
+      metrics: [
+        metrics.accepted,
+        metrics.total,
+        metrics.percentage?.toFixed(1),
+        metrics.suggested,
+        metrics.skipped,
+        botMetrics.accepted,
+        botMetrics.total - botMetrics.accepted,
+        processed,
+        quality?.avg_data_quality,
+        quality?.avg_confidence,
+        quality?.avg_suggestion_deviation,
+      ],
       source,
       feature,
-      week,
+    };
+  };
+  const weeklyRows = groups.filter(group => group.week).map((group) => {
+    const values = reportValues(group);
+    return [
+      values.source,
+      values.feature,
+      group.week,
       scope.component || 'All',
       scope.feature,
       scope.versions.length ? scope.versions.map(kpiVersionLabel).join('; ') : 'All',
       scope.fromDate ? `${scope.fromDate}T00:00:00.000Z` : '',
       scope.toDate ? `${scope.toDate}T23:59:59.999Z` : '',
-      metrics.accepted,
-      metrics.total,
-      metrics.percentage?.toFixed(1),
-      metrics.suggested,
-      metrics.skipped,
-      botMetrics.accepted,
-      botMetrics.total - botMetrics.accepted,
-      processed,
-      quality?.avg_data_quality,
-      quality?.avg_confidence,
-      quality?.avg_suggestion_deviation,
+      ...values.metrics,
     ];
   });
+  const metricNames = header.slice(8, -2);
+  const totals = groups.filter(group => !group.week).flatMap((group) => {
+    const values = reportValues(group);
+    return values.metrics.flatMap((amount, index) => amount == null
+      ? []
+      : [[`${values.source} / ${values.feature} / ${metricNames[index]}`, amount]]);
+  });
+  const rows = Array.from({ length: Math.max(weeklyRows.length, totals.length) }, (_, index) => [
+    ...(weeklyRows[index] ?? Array.from({ length: header.length - 2 }, () => '')),
+    ...(totals[index] ?? ['', '']),
+  ]);
   return [header, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n') + '\r\n';
 }
 
