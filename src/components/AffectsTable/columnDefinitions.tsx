@@ -361,7 +361,7 @@ export default function AffectColumnDefinitions(
       enableColumnFilter: false,
       enableGlobalFilter: false,
       enableResizing: false,
-      size: 80,
+      size: 96,
       meta: {
         filter: false,
       },

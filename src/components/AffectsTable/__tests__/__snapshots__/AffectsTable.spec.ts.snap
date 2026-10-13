@@ -227,7 +227,7 @@ exports[`affectsTable > should render 1`] = `
           </div><span data-v-5a6b074b="" data-v-17587d65="" class="unsorted sort-icon"><i data-v-5a6b074b="" class="bi-caret-up-fill"></i><i data-v-5a6b074b="" class="bi-caret-down-fill"></i></span>
           <div data-v-17587d65="" class="resizer ltr"></div>
         </th>
-        <th data-v-17587d65="" colspan="1" class="sticky-column sticky-right" style="width: 80px;">Actions
+        <th data-v-17587d65="" colspan="1" class="sticky-column sticky-right" style="width: 96px;">Actions
           <!--v-if-->
           <!--v-if-->
           <!--v-if-->
