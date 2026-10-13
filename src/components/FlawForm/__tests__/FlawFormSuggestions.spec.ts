@@ -65,21 +65,33 @@ const response: AegisMultiAnalysisResponse = {
   results: { 'suggest-description': { suggested_title: 'AI title', suggested_description: 'AI description' } },
   errors: {},
 };
+const wrappers: ReturnType<typeof shallowMount>[] = [];
 
 function setup(mode: 'create' | 'edit' = 'edit') {
-  return shallowMount(FlawForm, {
+  const wrapper = shallowMount(FlawForm, {
     props: { mode },
     attachTo: document.body,
     global: {
       plugins: [createTestingPinia()],
       directives: { osimLoading: vi.fn() as Directive },
-      stubs: { LoadingSpinner: false },
+      stubs: { AegisMultiSuggest: false, LoadingSpinner: false },
     },
   });
+  wrappers.push(wrapper);
+  return wrapper;
 }
 
 function suggestionButton(wrapper: ReturnType<typeof setup>) {
-  return wrapper.findAll('button').find(button => button.text().includes('Full Flaw Suggestions'))!;
+  return wrapper.findAll('button').find(button => button.text().includes('Multi Suggest'))!;
+}
+
+async function submitAllSuggestions(wrapper: ReturnType<typeof setup>) {
+  await suggestionButton(wrapper).trigger('click');
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  const submit = wrapper.get<HTMLButtonElement>('.dropdown-menu > button');
+  expect(submit.attributes('type')).toBe('button');
+  submit.element.click();
+  await flushPromises();
 }
 
 beforeEach(() => {
@@ -98,18 +110,55 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  for (const wrapper of wrappers.splice(0)) wrapper.unmount();
+});
+
 it.each(['create', 'edit'] as const)('requests suggestions without submitting the %s form', async (mode) => {
   const wrapper = setup(mode);
   const button = suggestionButton(wrapper);
   expect(button.attributes('type')).toBe('button');
-  button.element.click();
-  await flushPromises();
+  await button.trigger('click');
+  expect(multiAnalysis).not.toHaveBeenCalled();
+  expect(wrapper.get<HTMLButtonElement>('.dropdown-menu > button').element.disabled).toBe(true);
+  await button.trigger('click');
+  await submitAllSuggestions(wrapper);
 
   expect(multiAnalysis).toHaveBeenCalledTimes(1);
   expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
     cve_id: 'CVE-2024-1234', features: ['suggest-description'], title: 'Original title',
   }));
   expect(useFlaw().flaw.value.title).toBe('AI title');
+  expect(useFlaw().flaw.value.cve_description).toBe('AI description');
+  expect(createFlaw).not.toHaveBeenCalled();
+  expect(updateFlaw).not.toHaveBeenCalled();
+});
+
+it('places the yellow Multi Suggest dropdown immediately below the external issue links', () => {
+  const wrapper = setup();
+  const header = wrapper.get('.osim-flaw-header-link');
+  const button = suggestionButton(wrapper);
+  expect(button.classes()).toContain('btn-warning');
+  expect(header.findAll('a').map(link => link.text())).toEqual(['Open in Bugzilla', 'Open in Jira']);
+  expect(header.element.lastElementChild?.contains(button.element)).toBe(true);
+  expect(header.element.lastElementChild?.previousElementSibling?.textContent).toContain('Open in Jira');
+  expect(wrapper.text()).not.toContain('Full Flaw Suggestions');
+});
+
+it('defaults to the currently empty unsaved field and leaves its unchecked paired result unchanged', async () => {
+  const wrapper = setup();
+  useFlaw().flaw.value.cve_description = ' \t\n ';
+  await nextTick();
+  await suggestionButton(wrapper).trigger('click');
+  expect(wrapper.get<HTMLInputElement>('#multi-suggest-title').element.checked).toBe(false);
+  expect(wrapper.get<HTMLInputElement>('#multi-suggest-cve_description').element.checked).toBe(true);
+  wrapper.get<HTMLButtonElement>('.dropdown-menu > button').element.click();
+  await flushPromises();
+
+  expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
+    title: 'Original title', cve_description: ' \t\n ', features: ['suggest-description'],
+  }));
+  expect(useFlaw().flaw.value.title).toBe('Original title');
   expect(useFlaw().flaw.value.cve_description).toBe('AI description');
   expect(createFlaw).not.toHaveBeenCalled();
   expect(updateFlaw).not.toHaveBeenCalled();
@@ -153,8 +202,7 @@ it('shows an accessible loading state, blocks repeated clicks, and recovers afte
   multiAnalysis.mockReturnValueOnce(new Promise((_, fail) => { reject = fail; }));
   const wrapper = setup();
   const button = suggestionButton(wrapper);
-  button.element.click();
-  await nextTick();
+  await submitAllSuggestions(wrapper);
 
   expect(button.element.disabled).toBe(true);
   expect(button.attributes('aria-busy')).toBe('true');
@@ -169,8 +217,7 @@ it('shows an accessible loading state, blocks repeated clicks, and recovers afte
   expect(button.find('[role="status"]').exists()).toBe(false);
   expect(useFlaw().flaw.value.title).toBe('Original title');
   expect(addToast).toHaveBeenCalledWith({ title: 'AI Suggestion Error', body: 'Service unavailable' });
-  button.element.click();
-  await flushPromises();
+  await submitAllSuggestions(wrapper);
   expect(useFlaw().flaw.value.title).toBe('AI title');
 });
 
@@ -179,8 +226,7 @@ it('uses the current flaw after replacing the form model', async () => {
   const oldFlaw = useFlaw().flaw.value;
   useFlaw().setFlaw({ ...oldFlaw, cve_id: 'CVE-2024-9999', title: 'Replacement title' });
   await nextTick();
-  suggestionButton(wrapper).element.click();
-  await flushPromises();
+  await submitAllSuggestions(wrapper);
 
   expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
     cve_id: 'CVE-2024-9999', title: 'Replacement title',
