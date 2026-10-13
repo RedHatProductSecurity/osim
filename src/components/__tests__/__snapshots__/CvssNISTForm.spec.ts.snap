@@ -14,11 +14,11 @@ exports[`cvssNISTForm > renders a button 1`] = `
 exports[`cvssNISTForm > renders a modal when clicking the button 1`] = `
 "<div data-v-b05c734f="" class="osim-cve-nist-form" flaw="any" nvdpage="string" cvssjustification="string"><button data-v-b05c734f="" type="button" class="osim-cve-email btn btn-secondary"> Email NIST </button>
   <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
-    <div data-v-296c460d="" class="modal fade show" style="display: block;" aria-hidden="false" tabindex="-1" aria-labelledby="modalTitle" role="dialog">
-      <div data-v-296c460d="" class="modal-dialog">
+    <div data-v-296c460d="" class="modal fade show" style="display: block;" aria-hidden="false" tabindex="-1" aria-labelledby="modalTitle" aria-modal="true" role="dialog">
+      <div data-v-296c460d="" class="modal-dialog" tabindex="-1">
         <div data-v-296c460d="" class="modal-content">
           <div data-v-296c460d="" class="modal-header">
-            <h1 data-v-296c460d="" class="modal-title fs-5"> Email NIST </h1><button data-v-296c460d="" type="button" class="btn-close" aria-label="Close"></button>
+            <h1 data-v-296c460d="" id="modalTitle" class="modal-title fs-5"> Email NIST </h1><button data-v-296c460d="" type="button" class="btn-close" aria-label="Close"></button>
           </div>
           <div data-v-296c460d="" class="modal-body">
             <div data-v-b05c734f="" class="osim-input mb-3 border-start ps-3">

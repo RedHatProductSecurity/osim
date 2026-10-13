@@ -40,6 +40,12 @@ describe('affectsTable', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
+  it('should render the actions column at the width of three buttons', async () => {
+    const wrapper = await mountAffectsTable();
+
+    expect(wrapper.find('th.sticky-right').attributes('style')).toContain('width: 96px');
+  });
+
   it('should render empty state', async () => {
     useFlaw().flaw.value.affects = [];
     const wrapper = await mountAffectsTable();

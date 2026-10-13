@@ -7,6 +7,7 @@ import type { Row, Table } from '@tanstack/vue-table';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
+import { osimRuntime } from '@/stores/osimRuntime';
 import type { ZodAffectType } from '@/types';
 
 import RowActions from '../RowActions.vue';
@@ -47,6 +48,7 @@ describe('rowActions', () => {
   const affectWithTracker = SampleFlawFull.affects.find(affect => !!affect.tracker) as ZodAffectType;
 
   beforeEach(() => {
+    (osimRuntime.value as any).readOnly = false;
     const { state: { modifiedAffects, newAffects, removedAffects } } = useAffectsModel();
     modifiedAffects.clear();
     newAffects.clear();
@@ -60,6 +62,49 @@ describe('rowActions', () => {
 
     const fileTrackerBtn = wrapper.find('button[title="File tracker"]');
     expect(fileTrackerBtn.exists()).toBe(true);
+  });
+
+  it('should render link existing tracker button for an unchanged persisted affect without a tracker', () => {
+    const row = createMockRow(affectWithoutTracker, affectWithoutTracker.uuid!);
+    const wrapper = mountRowActions(row, createMockTable());
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(true);
+  });
+
+  it('should not render link existing tracker button for an affect without a persisted UUID', () => {
+    const row = createMockRow({ ...affectWithoutTracker, uuid: null }, 'local-row');
+    const wrapper = mountRowActions(row, createMockTable());
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(false);
+  });
+
+  it('should not render link existing tracker button for an affect with a tracker', () => {
+    const wrapper = mountRowActions(createMockRow(affectWithTracker, affectWithTracker.uuid!), createMockTable());
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(false);
+  });
+
+  it('should keep link available when tracker filing is unavailable', () => {
+    const table = createMockTable(new Set([affectWithoutTracker.uuid!]));
+    const wrapper = mountRowActions(createMockRow(affectWithoutTracker, affectWithoutTracker.uuid!), table);
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(true);
+    expect(wrapper.find('button[title="Tracker not available"]').exists()).toBe(true);
+  });
+
+  it('should not render link existing tracker in read-only mode', () => {
+    (osimRuntime.value as any).readOnly = true;
+    const wrapper = mountRowActions(createMockRow(affectWithoutTracker, affectWithoutTracker.uuid!), createMockTable());
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(false);
+  });
+
+  it('should disable link and file actions while a row operation is in progress', () => {
+    const table = createMockTable(new Set(), new Set([affectWithoutTracker.uuid!]));
+    const wrapper = mountRowActions(createMockRow(affectWithoutTracker, affectWithoutTracker.uuid!), table);
+
+    expect(wrapper.find('button[title="Link existing tracker"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.find('button[title="File tracker"]').attributes('disabled')).toBeDefined();
   });
 
   it('should not render file tracker button for affect with tracker', async () => {
@@ -106,6 +151,15 @@ describe('rowActions', () => {
     expect(revertBtn.exists()).toBe(true);
   });
 
+  it('should not render link button for modified affects', async () => {
+    const row = createMockRow(affectWithoutTracker, 'row-1');
+    const wrapper = mountRowActions(row, createMockTable());
+    useAffectsModel().state.modifiedAffects.add('row-1');
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(false);
+  });
+
   it('should not render file tracker button for modified rows', async () => {
     const row = createMockRow(affectWithoutTracker, 'row-1');
     const table = createMockTable();
@@ -118,6 +172,24 @@ describe('rowActions', () => {
 
     const fileTrackerBtn = wrapper.find('button[title="File tracker"]');
     expect(fileTrackerBtn.exists()).toBe(false);
+  });
+
+  it('should not render link button for removed affects', async () => {
+    const row = createMockRow(affectWithoutTracker, 'row-1');
+    const wrapper = mountRowActions(row, createMockTable());
+    useAffectsModel().state.removedAffects.add('row-1');
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(false);
+  });
+
+  it('should not render link button for new affects', async () => {
+    const row = createMockRow(affectWithoutTracker, 'row-1');
+    const wrapper = mountRowActions(row, createMockTable());
+    useAffectsModel().state.newAffects.add('row-1');
+    await flushPromises();
+
+    expect(wrapper.find('button[title="Link existing tracker"]').exists()).toBe(false);
   });
 
   it('should not render file tracker button for new rows', async () => {

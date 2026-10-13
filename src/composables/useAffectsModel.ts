@@ -12,13 +12,14 @@ import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
 import {
   deleteAffectCvssScore,
   deleteAffects,
+  getAffect,
   postAffectCvssScore,
   postAffects,
   putAffectCvssScore,
   putAffects,
 } from '@/services/AffectService';
 import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
-import { fileTrackingFor } from '@/services/TrackerService';
+import { fileTrackingFor, findExistingTracker, parseTrackerId, updateExistingTracker } from '@/services/TrackerService';
 
 import { useFlaw } from './useFlaw';
 
@@ -353,6 +354,108 @@ function useAffects() {
     }
   }
 
+  async function linkExistingTracker(affect: ZodAffectType, externalId: string): Promise<{ refreshFailed: boolean }> {
+    if (!parseTrackerId(externalId)) throw new Error('Enter a valid Jira key or Bugzilla ID.');
+
+    const { flaw, syncLinkedAffect } = useFlaw();
+    const loadedFlaw = flaw.value;
+    const initialSnapshot = initialAffects.value;
+    const uuid = affect.uuid;
+    const original = initialSnapshot.find(a => a.uuid === uuid);
+    const current = () => currentAffects.value.find(a => a.uuid === uuid);
+    const stillHere = () => flaw.value === loadedFlaw && initialAffects.value === initialSnapshot
+      && current()?.uuid === uuid && !removedAffects.has(uuid!);
+
+    if (!uuid || !loadedFlaw.uuid || !original || !stillHere() || newAffects.has(affect._uuid ?? uuid)) {
+      throw new Error('Save this affect before linking a tracker.');
+    }
+    if (original.ps_update_stream !== current()!.ps_update_stream
+      || original.ps_component !== current()!.ps_component) {
+      throw new Error('Save affect stream and component changes before linking a tracker.');
+    }
+
+    const tracker = await findExistingTracker(externalId);
+    if (!stillHere()) throw new Error('Flaw changed while linking. Try again.');
+    if (current()!.tracker && current()!.tracker?.uuid !== tracker.uuid) {
+      throw new Error('This affect already has a different tracker.');
+    }
+
+    // ponytail: This GET and the tracker PUT cannot atomically guard an affect being re-linked;
+    // a server-side conditional link would be needed to close that race.
+    let target: ZodAffectType;
+    try {
+      target = await getAffect(uuid);
+    } catch (error: any) {
+      if (error?.response?.status === 403 || error?.response?.status === 404) {
+        throw new Error('Affect not found or inaccessible.');
+      }
+      throw error;
+    }
+    if (!stillHere()) throw new Error('Flaw changed while linking. Try again.');
+    if (target.flaw !== loadedFlaw.uuid || target.ps_update_stream !== original.ps_update_stream
+      || target.ps_component !== original.ps_component) {
+      throw new Error('Affect stream, component or flaw changed. Reload before linking.');
+    }
+    if (original.updated_dt && target.updated_dt !== original.updated_dt) {
+      throw new Error('This affect was modified. Reload before linking to preserve the latest changes.');
+    }
+    if (target.tracker && target.tracker.uuid !== tracker.uuid) {
+      throw new Error('This affect already has a different tracker.');
+    }
+    if (tracker.ps_update_stream !== target.ps_update_stream) {
+      throw new Error('Tracker and affect streams do not match.');
+    }
+    if (!target.tracker && tracker.affects.includes(uuid)) {
+      throw new Error('Tracker association changed. Reload before linking.');
+    }
+
+    if (!target.tracker) {
+      // The server enforces this too; compare an existing source when one is accessible.
+      for (const sourceUuid of tracker.affects) {
+        try {
+          const source = await getAffect(sourceUuid);
+          if (source.ps_update_stream !== target.ps_update_stream || source.ps_component !== target.ps_component) {
+            throw new Error('Tracker and affect stream/component do not match.');
+          }
+          break;
+        } catch (error: any) {
+          if (error?.response?.status !== 403 && error?.response?.status !== 404) throw error;
+        }
+      }
+    }
+    if (!stillHere()) throw new Error('Flaw changed while linking. Try again.');
+    if (current()!.ps_update_stream !== original.ps_update_stream
+      || current()!.ps_component !== original.ps_component
+      || (current()!.tracker && current()!.tracker?.uuid !== tracker.uuid)) {
+      throw new Error('Affect changed while linking. Try again.');
+    }
+
+    // A server-linked affect needs no PUT; never overwrite an existing association.
+    const linked = target.tracker ? tracker : await updateExistingTracker(tracker, uuid);
+    let refreshFailed = false;
+    let refreshed = target;
+    if (!target.tracker) {
+      try {
+        refreshed = await getAffect(uuid);
+        if (refreshed.tracker?.uuid !== tracker.uuid) throw new Error('Tracker was not returned on the affect.');
+      } catch {
+        refreshFailed = true;
+      }
+    }
+    if (stillHere()) {
+      const resolvedTracker = refreshed.tracker?.uuid === tracker.uuid ? refreshed.tracker : linked;
+      const timestamp = refreshFailed ? undefined : refreshed.updated_dt;
+      currentAffects.value = currentAffects.value.map(a => a.uuid === uuid
+        ? { ...a, tracker: resolvedTracker, ...(timestamp ? { updated_dt: timestamp } : {}) }
+        : a);
+      initialAffects.value = initialAffects.value.map(a => a.uuid === uuid
+        ? { ...a, tracker: resolvedTracker, ...(timestamp ? { updated_dt: timestamp } : {}) }
+        : a);
+      syncLinkedAffect(loadedFlaw, uuid, resolvedTracker, timestamp);
+    }
+    return { refreshFailed };
+  }
+
   async function removeAffects() {
     const uuidsToDelete = [...removedAffects.values()];
 
@@ -405,6 +508,7 @@ function useAffects() {
 
       // External
       fileTracker,
+      linkExistingTracker,
       saveAffects,
       removeAffects,
     },
