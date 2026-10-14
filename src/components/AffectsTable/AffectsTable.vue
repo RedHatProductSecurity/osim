@@ -19,7 +19,7 @@ import ColumnFilter from './ColumnFilter.vue';
 import ColumnOptions from './ColumnOptions.vue';
 import BulkEditCell from './BulkEditCell.vue';
 import MultiFlawTracker from './MultiFlawTracker.vue';
-import { sessionFailedSelection, sessionClosedKeys } from './closeTrackerSession';
+import { sessionFailedSelection } from './closeTrackerSession';
 
 const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
@@ -78,10 +78,9 @@ const {
     table,
     totalPages,
   },
-} = useAffectsTable(() => emit('refresh:flaw'), (failed, closed) => {
+} = useAffectsTable(() => emit('refresh:flaw'), (failed) => {
   sessionFailedSelection.set(flaw.value.uuid, failed);
-  sessionClosedKeys.set(flaw.value.uuid, closed);
-}, sessionClosedKeys.get(flaw.value.uuid));
+});
 
 watch(() => initialAffects.value, () => refreshData());
 // The parent temporarily unmounts the table while reloading affects; restore failed selection on remount.

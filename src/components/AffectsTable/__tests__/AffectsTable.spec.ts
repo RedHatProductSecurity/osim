@@ -202,6 +202,34 @@ describe('affectsTable', () => {
       remounted.unmount();
     });
 
+    it('allows explicitly closing a tracker reopened in Jira without reloading OSIM', async () => {
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      await wrapper.find('#close-resolution').setValue('2');
+      await wrapper.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(JiraService.closeJiraIssue).toHaveBeenCalledTimes(1);
+
+      // Jira reopens the issue; OSIM receives fresh affects without a browser reload.
+      const { flaw } = useFlaw();
+      flaw.value.affects = [...flaw.value.affects];
+      await flushPromises();
+      await select(wrapper, 0, 1);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      expect(wrapper.find('.modal .alert-danger').exists()).toBe(false);
+      expect(JiraService.getJiraTransitions).toHaveBeenCalledWith('XXXX-0001');
+      expect(JiraService.getJiraTransitions).toHaveBeenCalledWith('XXXX-0002');
+      await wrapper.find('#close-resolution').setValue('2');
+      await wrapper.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(vi.mocked(JiraService.closeJiraIssue).mock.calls.map(([key]) => key)).toEqual([
+        'XXXX-0001', 'XXXX-0001', 'XXXX-0002',
+      ]);
+    });
+
     it('retains failed selection after refresh and explicitly retries failures only', async () => {
       vi.mocked(JiraService.closeJiraIssue).mockImplementation(async (key) => {
         if (key === 'XXXX-0002' && vi.mocked(JiraService.closeJiraIssue).mock.calls.length === 2) {

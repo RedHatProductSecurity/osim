@@ -80,8 +80,7 @@ function jiraError(error: any): string {
 
 export function useAffectsTable(
   onRefreshFlaw?: () => void,
-  onFailedSelection?: (failed: Set<string>, closed: Set<string>) => void,
-  previouslyClosed?: Set<string>,
+  onFailedSelection?: (failed: Set<string>) => void,
 ) {
   const { settings } = storeToRefs(useSettingsStore());
 
@@ -215,12 +214,6 @@ export function useAffectsTable(
   const bulkEditChangedFields = ref<Set<keyof ZodAffectType>>(new Set());
   const bulkEditSelectedRowIds = ref<string[]>([]);
   const isClosingTrackers = ref(false);
-  const closedKeys = new Set(previouslyClosed);
-  watch(() => flaw.value.affects, (affects) => {
-    for (const key of closedKeys) {
-      if (!affects?.some(affect => affect.tracker?.external_system_id === key)) closedKeys.delete(key);
-    }
-  });
   const isDiscoveringClose = ref(false);
   let discoveryRun = 0;
   const showCloseDialog = ref(false);
@@ -473,13 +466,11 @@ export function useAffectsTable(
     const ineligible = rows.filter(row => row.original.tracker?.type !== 'JIRA'
       || !row.original.tracker.external_system_id);
     closeErrors.value.push(...ineligible.map(row => `${row.id}: no Jira tracker`));
-    closeErrors.value.push(...rows.filter(row => closedKeys.has(row.original.tracker?.external_system_id ?? ''))
-      .map(row => `${row.original.tracker?.external_system_id}: already closed in this session`));
     closeRows.value = rows.filter(row => !ineligible.includes(row))
       .map(row => ({ id: row.id, key: row.original.tracker!.external_system_id }));
     if (!closeRows.value.length) closeErrors.value.push('Select at least one Jira tracker.');
 
-    const keys = [...new Set(closeRows.value.map(row => row.key))].filter(key => !closedKeys.has(key));
+    const keys = [...new Set(closeRows.value.map(row => row.key))];
     const results = await Promise.allSettled(keys.map(key => getJiraTransitions(key)));
     if (run !== discoveryRun) return;
     results.forEach((result, i) => {
@@ -571,7 +562,6 @@ export function useAffectsTable(
       try {
         await closeJiraIssue(key, transition, choice);
         succeeded.add(key);
-        closedKeys.add(key);
       } catch (error) {
         failed.push(`${key}: ${jiraError(error)}`);
       }
@@ -583,10 +573,7 @@ export function useAffectsTable(
       css: 'warning',
     });
     if (succeeded.size) {
-      onFailedSelection?.(
-        new Set(closeRows.value.filter(row => !succeeded.has(row.key)).map(row => row.key)),
-        closedKeys,
-      );
+      onFailedSelection?.(new Set(closeRows.value.filter(row => !succeeded.has(row.key)).map(row => row.key)));
       for (const row of closeRows.value) {
         if (succeeded.has(row.key)) table.getRow(row.id)?.toggleSelected(false);
       }
