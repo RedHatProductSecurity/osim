@@ -74,9 +74,11 @@ describe('kPI dashboard', () => {
     vi.mocked(downloadKpiCsv).mockClear();
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
-    vi.mocked(AegisAIService).mockImplementation(() => ({
-      getKpiMetrics: getFeedback, getBotKpiMetrics: getBot,
-    }) as unknown as AegisAIService);
+    vi.mocked(AegisAIService).mockImplementation(function () {
+      return {
+        getKpiMetrics: getFeedback, getBotKpiMetrics: getBot,
+      } as unknown as AegisAIService;
+    });
   });
   afterEach(() => wrapper?.unmount());
 
