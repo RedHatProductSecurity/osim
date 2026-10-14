@@ -156,33 +156,72 @@ export async function postJiraComment(taskId: string, comment: string) {
     .catch(createCatchHandler('Error saving internal Jira comment'));
 }
 
+export type JiraTransitionField = {
+  allowedValues?: Array<{ id: string; name?: string; value?: string }>;
+  name: string;
+  operations?: string[];
+  required: boolean;
+};
+
+export type JiraTransition = {
+  fields?: Record<string, JiraTransitionField>;
+  id: string;
+  name: string;
+  to: { name: string };
+};
+
+export type JiraCloseChoice = {
+  comment?: string;
+  resolution: string;
+  vexJustification?: string;
+};
+
 export async function getJiraTransitions(issueKey: string) {
-  return jiraFetch<{ transitions: Array<{ id: string; name: string }> }>({
+  return jiraFetch<{ transitions: JiraTransition[] }>({
     method: 'get',
     url: `/rest/api/3/issue/${issueKey}/transitions`,
+    params: { expand: 'transitions.fields' },
   });
 }
 
-export async function postJiraTransition(issueKey: string, transitionId: string) {
+export function getCloseTransition(transitions: JiraTransition[]) {
+  return transitions.find(t => t.to?.name === 'Closed');
+}
+
+export async function postJiraTransition(issueKey: string, transition: JiraTransition, choice: JiraCloseChoice) {
+  const resolution = transition.fields?.resolution;
+  const vexField = Object.entries(transition.fields ?? {}).find(([, field]) => field.name === 'VEX Justification');
+  if (transition.to?.name !== 'Closed' || !resolution?.allowedValues?.some(v => v.id === choice.resolution)
+    || !resolution.operations?.includes('set')) {
+    throw new Error(`No valid close resolution for ${issueKey}`);
+  }
+  if (choice.vexJustification && (!vexField?.[1].allowedValues?.some(v => v.id === choice.vexJustification)
+    || !vexField[1].operations?.includes('set'))) {
+    throw new Error(`Invalid VEX justification for ${issueKey}`);
+  }
+  if (vexField?.[1].required && !choice.vexJustification) {
+    throw new Error(`VEX justification required for ${issueKey}`);
+  }
   return jiraFetch({
     method: 'post',
     url: `/rest/api/3/issue/${issueKey}/transitions`,
     data: {
-      transition: { id: transitionId },
+      transition: { id: transition.id },
+      fields: {
+        resolution: { id: choice.resolution },
+        ...(choice.vexJustification && vexField ? { [vexField[0]]: { id: choice.vexJustification } } : {}),
+      },
+      ...(choice.comment?.trim()
+        ? {
+            update: { comment: [{ add: { body: jiraMarkupToAdf(choice.comment.trim()) } }] },
+          }
+        : {}),
     },
   });
 }
 
-export async function closeJiraIssue(issueKey: string) {
-  const { data } = await getJiraTransitions(issueKey);
-  if (!data) {
-    throw new Error(`No transitions found for ${issueKey}`);
-  }
-  const closeTransition = data.transitions?.find(t => /close|done/i.test(t.name));
-  if (!closeTransition) {
-    throw new Error(`No close transition available for ${issueKey}`);
-  }
-  return postJiraTransition(issueKey, closeTransition.id);
+export async function closeJiraIssue(issueKey: string, transition: JiraTransition, choice: JiraCloseChoice) {
+  return postJiraTransition(issueKey, transition, choice);
 }
 
 export async function getJiraUsername() {

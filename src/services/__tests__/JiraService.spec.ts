@@ -3,126 +3,74 @@ import { vi } from 'vitest';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { getJiraTransitions, postJiraTransition, closeJiraIssue } from '@/services/JiraService';
+import { getJiraTransitions, postJiraTransition, closeJiraIssue, getCloseTransition,
+  type JiraTransition } from '@/services/JiraService';
 
-vi.mock('@/stores/UserStore', () => ({
-  useUserStore: () => ({
-    userEmail: 'test@example.com',
-  }),
-}));
+vi.mock('@/stores/UserStore', () => ({ useUserStore: () => ({ userEmail: 'test@example.com' }) }));
 
-describe('jiraService', () => {
+const transition: JiraTransition = {
+  id: '31',
+  name: 'Finish',
+  to: { name: 'Closed' },
+  fields: {
+    resolution: { name: 'Resolution',
+      required: true,
+      operations: ['set'],
+      allowedValues: [
+        { id: '10000', name: 'Done' }, { id: '10001', name: 'Won\'t Do' },
+      ] },
+    customfield_10873: { name: 'VEX Justification',
+      required: true,
+      operations: ['set'],
+      allowedValues: [{ id: '17000', value: 'Component not Present' }] },
+  },
+};
+
+const ok = (data: unknown) => ({
+  ok: true, status: 200, json: async () => data, headers: new Map(),
+}) as unknown as Response;
+const empty = () => ({ ok: true, status: 204, headers: new Map() }) as unknown as Response;
+
+describe('jira close transition', () => {
   beforeAll(() => {
     createTestingPinia();
-    const settingsStore = useSettingsStore();
-    settingsStore.apiKeys = { jiraApiKey: 'test-token', bugzillaApiKey: '' };
-    // @ts-expect-error osimRuntime is readonly in runtime, but mutable during testing
+    useSettingsStore().apiKeys = { jiraApiKey: 'test-token', bugzillaApiKey: '' };
+    // @ts-expect-error mutable in tests
     osimRuntime.value.backends.jira = 'https://jira.example.com';
   });
+  afterEach(() => vi.restoreAllMocks());
 
-  afterEach(() => {
-    vi.clearAllMocks();
+  it('discovers fields and finds Closed by destination, not transition name', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(ok({ transitions: [
+      { id: '11', name: 'Close', to: { name: 'Done' } }, transition,
+    ] }));
+    const { data } = await getJiraTransitions('RHEL-1');
+    expect((global.fetch as any).mock.calls[0][0]).toContain('expand=transitions.fields');
+    expect(getCloseTransition(data!.transitions)).toEqual(transition);
+    expect(getCloseTransition([{ id: '11', name: 'Done', to: { name: 'Done' } }])).toBeUndefined();
   });
 
-  describe('getJiraTransitions', () => {
-    it('returns transitions list', async () => {
-      const mockTransitions = { transitions: [{ id: '31', name: 'Close' }] };
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => mockTransitions,
-        headers: new Map(),
-      } as any);
-
-      const result = await getJiraTransitions('TEST-123');
-
-      const calls = (global.fetch as any).mock.calls;
-      expect(calls[0][0]).toContain('/rest/api/3/issue/TEST-123/transitions');
-      expect(calls[0][1].method.toUpperCase()).toBe('GET');
-      expect(result.data).toEqual(mockTransitions);
+  it('sends resolution, VEX and ADF comment together in one request', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(empty());
+    await closeJiraIssue('RHEL-1', transition, {
+      resolution: '10001', vexJustification: '17000', comment: 'Not affected',
     });
-  });
-
-  describe('postJiraTransition', () => {
-    it('sends correct body', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-        ok: true,
-        status: 204,
-        headers: new Map(),
-      } as any);
-
-      await postJiraTransition('TEST-123', '31');
-
-      const calls = (global.fetch as any).mock.calls;
-      expect(calls[0][0]).toContain('/rest/api/3/issue/TEST-123/transitions');
-      expect(calls[0][1].method.toUpperCase()).toBe('POST');
-      expect(calls[0][1].body).toBe(JSON.stringify({ transition: { id: '31' } }));
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(JSON.parse((global.fetch as any).mock.calls[0][1].body)).toEqual({
+      transition: { id: '31' },
+      fields: { resolution: { id: '10001' }, customfield_10873: { id: '17000' } },
+      update: { comment: [{ add: { body: { type: 'doc',
+        version: 1,
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Not affected' }] }] } } }] },
     });
   });
 
-  describe('closeJiraIssue', () => {
-    it('finds "Close" transition and calls it', async () => {
-      const mockTransitions = {
-        transitions: [
-          { id: '11', name: 'In Progress' },
-          { id: '31', name: 'Close' },
-        ],
-      };
-
-      vi.spyOn(global, 'fetch')
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => mockTransitions,
-          headers: new Map(),
-        } as any)
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 204,
-          headers: new Map(),
-        } as any);
-
-      await closeJiraIssue('TEST-123');
-
-      expect(global.fetch).toHaveBeenCalledTimes(2);
-    });
-
-    it('throws when no close transition exists', async () => {
-      const mockTransitions = {
-        transitions: [{ id: '11', name: 'In Progress' }],
-      };
-
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => mockTransitions,
-        headers: new Map(),
-      } as any);
-
-      await expect(closeJiraIssue('TEST-123')).rejects.toThrow(
-        /No close transition/,
-      );
-    });
-
-    it('matches "Done" as a close transition', async () => {
-      const mockTransitions = {
-        transitions: [{ id: '41', name: 'Done' }],
-      };
-
-      vi.spyOn(global, 'fetch')
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => mockTransitions,
-          headers: new Map(),
-        } as any)
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 204,
-          headers: new Map(),
-        } as any);
-
-      await expect(closeJiraIssue('TEST-123')).resolves.toBeDefined();
-    });
+  it('does not write for invalid or missing required choices', async () => {
+    const spy = vi.spyOn(global, 'fetch');
+    await expect(postJiraTransition('RHEL-1', transition, { resolution: 'invalid', vexJustification: '17000' }))
+      .rejects.toThrow(/resolution/);
+    await expect(postJiraTransition('RHEL-1', transition, { resolution: '10001' }))
+      .rejects.toThrow(/VEX justification required/);
+    expect(spy).not.toHaveBeenCalled();
   });
 });
