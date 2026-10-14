@@ -280,31 +280,34 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           class="col-12 osim-alerts-banner"
           @expandFocusedComponent="expandFocusedComponent"
         />
-        <div class="text-end osim-flaw-header-link order-2">
-          <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
-            <UnprocessedFlawLabel :flaw="flaw" variant="inline" />
-            <a
-              v-if="flaw.meta_attr?.bz_id"
-              :href="bugzillaLink"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
-            </a>
-          </div>
-          <a
-            v-if="flaw.task_key"
-            :href="jiraTaskUrl(flaw.task_key)"
-            target="_blank"
-            class="d-block"
-          >
-            Open in Jira <i class="bi-box-arrow-up-right ms-2" />
-          </a>
+        <div class="text-end osim-flaw-header-link order-2 align-items-start gap-3">
           <AegisMultiSuggest
             v-if="fullFlawSuggestions.isVisible.value"
+            :key="`${flaw.uuid}:${flaw.cve_id}`"
             :coordinator="fullFlawSuggestions"
             :disabled="isSaving || formDisabled"
           />
+          <div>
+            <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+              <UnprocessedFlawLabel :flaw="flaw" variant="inline" />
+              <a
+                v-if="flaw.meta_attr?.bz_id"
+                :href="bugzillaLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+              </a>
+            </div>
+            <a
+              v-if="flaw.task_key"
+              :href="jiraTaskUrl(flaw.task_key)"
+              target="_blank"
+              class="d-block"
+            >
+              Open in Jira <i class="bi-box-arrow-up-right ms-2" />
+            </a>
+          </div>
         </div>
       </div>
       <div class="row osim-flaw-form-section">
@@ -702,7 +705,6 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
 <style scoped lang="scss">
 .osim-flaw-header-link {
   display: flex;
-  flex-direction: column;
   width: auto;
 }
 

@@ -56,6 +56,25 @@ function checkedFields(wrapper: ReturnType<typeof setup>['wrapper']) {
     .map(input => input.element.value);
 }
 
+function chooser(wrapper: ReturnType<typeof setup>['wrapper']) {
+  return wrapper.get<HTMLButtonElement>('button[aria-label="Choose suggestion fields"]');
+}
+
+function actionButton(wrapper: ReturnType<typeof setup>['wrapper']) {
+  return wrapper.get('button');
+}
+
+function expectAllToggle(wrapper: ReturnType<typeof setup>['wrapper'], allSelected: boolean) {
+  const toggle = wrapper.get('thead button');
+  expect(toggle.attributes('title')).toBe(allSelected ? 'Unselect all' : 'Select all');
+  expect(toggle.attributes('aria-label')).toBe(
+    allSelected ? 'Unselect all suggestion fields' : 'Select all suggestion fields',
+  );
+  expect(toggle.get('i').classes()).toContain(allSelected ? 'bi-x' : 'bi-check-all');
+  expect(toggle.get('i').classes()).not.toContain(allSelected ? 'bi-check-all' : 'bi-x');
+  expect(toggle.classes()).toContain('border-0');
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   multiAnalysis.mockResolvedValue({ results: {}, errors: {} });
@@ -75,12 +94,20 @@ afterEach(() => {
   for (const wrapper of wrappers.splice(0)) wrapper.unmount();
 });
 
-it('shows eight fields in a yellow table dropdown with Select all and Submit at the bottom', async () => {
+it('shows a gray split action and an accessible field chooser with eight rows and no Submit button', async () => {
   const { wrapper } = setup();
-  const trigger = wrapper.get('button');
-  expect(trigger.text()).toBe('Multi Suggest');
+  const action = actionButton(wrapper);
+  const trigger = chooser(wrapper);
+  expect(action.text()).toBe('Multi Suggest');
+  expect(action.attributes('type')).toBe('button');
+  expect(action.classes()).toContain('btn-secondary');
+  expect(action.classes()).toContain('my-0');
   expect(trigger.attributes('type')).toBe('button');
-  expect(trigger.classes()).toContain('btn-warning');
+  expect(trigger.classes()).toContain('btn-secondary');
+  expect(trigger.classes()).toContain('my-0');
+  expect(wrapper.get('.btn-group').classes()).toContain('my-0');
+  expect(wrapper.get('.dropdown').classes()).not.toContain('align-self-end');
+  expect(wrapper.get('.dropdown').classes()).not.toContain('mt-2');
   expect(trigger.attributes('aria-expanded')).toBe('false');
   expect(wrapper.find('table').exists()).toBe(false);
   await trigger.trigger('click');
@@ -91,36 +118,191 @@ it('shows eight fields in a yellow table dropdown with Select all and Submit at 
   for (const row of wrapper.findAll('tbody tr')) {
     expect(row.get('label').attributes('for')).toBe(row.get('input').attributes('id'));
     expect(row.get('input').attributes('type')).toBe('checkbox');
+    expect(row.element.firstElementChild?.contains(row.get('input').element)).toBe(true);
+    expect(row.get('label').classes()).not.toContain('fst-italic');
   }
   expect(wrapper.get('button[title="Select all"] i').classes()).toContain('bi-check-all');
-  expect(wrapper.get('.dropdown-menu').element.lastElementChild?.textContent?.trim()).toBe('Submit');
-  expect(wrapper.get('.dropdown-menu > button').attributes('type')).toBe('button');
+  expect(wrapper.get('button[title="Select all"]').classes()).toContain('btn-primary');
+  expect(wrapper.get('button[title="Select all"]').classes()).toContain('border-0');
+  expect(wrapper.get('button[title="Select all"]').classes().some(css => css.startsWith('btn-outline'))).toBe(false);
+  expect(wrapper.findAll('button').some(button => button.text() === 'Submit')).toBe(false);
+  expect(wrapper.get('.dropdown-menu').findAll('button')).toHaveLength(1);
   expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('requests only current empty defaults directly without opening the chooser', async () => {
+  const { coordinator, wrapper } = setup({ cve_description: ' \t\n ', components: [] });
+  const suggestAll = vi.spyOn(coordinator, 'suggestAll');
+  await actionButton(wrapper).trigger('click');
+  await flushPromises();
+
+  expect(suggestAll).toHaveBeenCalledExactlyOnceWith(['cve_description', 'components']);
+  expect(multiAnalysis).toHaveBeenCalledTimes(1);
+  expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
+    features: [
+      'suggest-description', 'suggest-affected-components', 'suggest-impact', 'suggest-cwe', 'suggest-statement',
+    ],
+  }));
+  expect(wrapper.find('table').exists()).toBe(false);
+  expect(chooser(wrapper).attributes('aria-expanded')).toBe('false');
 });
 
 it.each([null, undefined, '', ' \t\n '])('default-selects empty text (%j) and an empty array', async (empty) => {
   const initialValues = Object.fromEntries(fields.map(field => [field, field === 'components' ? [] : empty]));
   const { wrapper } = setup(initialValues);
-  await wrapper.get('button').trigger('click');
+  expect(actionButton(wrapper).element.disabled).toBe(false);
+  await chooser(wrapper).trigger('click');
   expect(checkedFields(wrapper)).toEqual(fields);
-  expect(wrapper.get<HTMLButtonElement>('.dropdown-menu > button').element.disabled).toBe(false);
+  expectAllToggle(wrapper, true);
+  for (const label of wrapper.findAll('tbody label')) {
+    expect(label.text()).not.toContain('(override)');
+    expect(label.classes()).not.toContain('fst-italic');
+  }
+  await wrapper.get('button[title="Unselect all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual([]);
+  expectAllToggle(wrapper, false);
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  expect(multiAnalysis).not.toHaveBeenCalled();
 });
 
-it('leaves populated fields unchecked and disables Submit when no fields are selected', async () => {
-  const { wrapper } = setup({ title: '  A title  ', components: ['kernel'] });
-  await wrapper.get('button').trigger('click');
+it('toggles all fields, restores labels and icons, and preserves the cleared selection after reopening', async () => {
+  const { wrapper } = setup();
+  await chooser(wrapper).trigger('click');
+  expectAllToggle(wrapper, false);
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual(fields);
+  expect(actionButton(wrapper).element.disabled).toBe(false);
+  expectAllToggle(wrapper, true);
+  await wrapper.get('button[title="Unselect all"]').trigger('click');
   expect(checkedFields(wrapper)).toEqual([]);
-  const submit = wrapper.get<HTMLButtonElement>('.dropdown-menu > button');
-  expect(submit.element.disabled).toBe(true);
-  submit.element.click();
-  await flushPromises();
+  expectAllToggle(wrapper, false);
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  expect(chooser(wrapper).element.disabled).toBe(false);
+  for (const label of wrapper.findAll('tbody label')) {
+    expect(label.text()).not.toContain('(override)');
+    expect(label.classes()).not.toContain('fst-italic');
+  }
+  actionButton(wrapper).element.click();
+  await chooser(wrapper).trigger('click');
+  await chooser(wrapper).trigger('click');
+  expect(checkedFields(wrapper)).toEqual([]);
+  expectAllToggle(wrapper, false);
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual(fields);
+  expectAllToggle(wrapper, true);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('updates the toggle for manual choices and selects all from a partial selection', async () => {
+  const { wrapper } = setup();
+  await chooser(wrapper).trigger('click');
+  await wrapper.get('#multi-suggest-title').setValue(true);
+  expectAllToggle(wrapper, false);
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual(fields);
+  expectAllToggle(wrapper, true);
+  await wrapper.get('#multi-suggest-mitigation').setValue(false);
+  expectAllToggle(wrapper, false);
+  expect(checkedFields(wrapper)).toEqual(fields.filter(field => field !== 'mitigation'));
+  await wrapper.get('#multi-suggest-mitigation').setValue(true);
+  expectAllToggle(wrapper, true);
+  await wrapper.get('#multi-suggest-title').setValue(false);
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual(fields);
+  expectAllToggle(wrapper, true);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('determines the toggle state from enabled fields as runtime flags change', async () => {
+  runtime.value.flags = { aiTitleSuggestions: true };
+  const { wrapper } = setup({ title: '' });
+  await chooser(wrapper).trigger('click');
+  expect(checkedFields(wrapper)).toEqual(['title']);
+  expectAllToggle(wrapper, true);
+
+  runtime.value.flags.aiDescriptionSuggestions = true;
+  await nextTick();
+  expect(checkedFields(wrapper)).toEqual(['title']);
+  expectAllToggle(wrapper, false);
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual(['title', 'cve_description']);
+  expectAllToggle(wrapper, true);
+
+  runtime.value.flags.aiTitleSuggestions = false;
+  await nextTick();
+  expect(checkedFields(wrapper)).toEqual(['cve_description']);
+  expectAllToggle(wrapper, true);
+  await wrapper.get('button[title="Unselect all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual([]);
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  expectAllToggle(wrapper, false);
+
+  runtime.value.flags.aiTitleSuggestions = true;
+  await nextTick();
+  expect(checkedFields(wrapper)).toEqual([]);
+  expectAllToggle(wrapper, false);
+  runtime.value.flags = {};
+  await nextTick();
+  expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
+  expect(chooser(wrapper).element.disabled).toBe(true);
+  runtime.value.flags = { aiTitleSuggestions: true };
+  await nextTick();
+  await chooser(wrapper).trigger('click');
+  expect(checkedFields(wrapper)).toEqual([]);
+  expectAllToggle(wrapper, false);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('disables the main action for no selection but lets the chooser select a populated override', async () => {
+  const { wrapper } = setup({ title: '  A title  ', components: ['kernel'] });
+  const action = actionButton(wrapper);
+  expect(action.element.disabled).toBe(true);
+  expect(chooser(wrapper).element.disabled).toBe(false);
+  action.element.click();
+  await chooser(wrapper).trigger('click');
+  expect(checkedFields(wrapper)).toEqual([]);
+  await wrapper.get('#multi-suggest-title').setValue(true);
+  expect(action.element.disabled).toBe(false);
+  await wrapper.get('#multi-suggest-title').setValue(false);
+  expect(action.element.disabled).toBe(true);
+  action.element.click();
   expect(multiAnalysis).not.toHaveBeenCalled();
   expect(wrapper.find('.dropdown-menu').exists()).toBe(true);
 });
 
-it('preserves choices while open and recomputes defaults from unsaved values on every reopen', async () => {
+it('updates defaults from unsaved values until the chooser is first opened', async () => {
+  const { coordinator, values, wrapper } = setup();
+  const suggestAll = vi.spyOn(coordinator, 'suggestAll');
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  values.title.value = '';
+  await nextTick();
+  expect(actionButton(wrapper).element.disabled).toBe(false);
+  values.title.value = 'Unsaved title';
+  values.mitigation.value = ' \t ';
+  await nextTick();
+  await actionButton(wrapper).trigger('click');
+  await flushPromises();
+  expect(suggestAll).toHaveBeenCalledExactlyOnceWith(['mitigation']);
+  expect(wrapper.find('table').exists()).toBe(false);
+});
+
+it('freezes defaults on first open even without checkbox edits and keeps them after close and reopen', async () => {
+  const { values, wrapper } = setup({ title: '' });
+  await chooser(wrapper).trigger('click');
+  expect(checkedFields(wrapper)).toEqual(['title']);
+  values.title.value = 'Unsaved title';
+  values.cve_description.value = '';
+  await nextTick();
+  expect(checkedFields(wrapper)).toEqual(['title']);
+  await chooser(wrapper).trigger('click');
+  await chooser(wrapper).trigger('click');
+  expect(checkedFields(wrapper)).toEqual(['title']);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('preserves checkbox choices across value edits, close and reopen', async () => {
   const { values, wrapper } = setup({ cve_description: '', components: [] });
-  const trigger = wrapper.get('button');
+  const trigger = chooser(wrapper);
   await trigger.trigger('click');
   expect(checkedFields(wrapper)).toEqual(['cve_description', 'components']);
   await wrapper.get('#multi-suggest-cve_description').setValue(false);
@@ -134,19 +316,56 @@ it('preserves choices while open and recomputes defaults from unsaved values on 
   await trigger.trigger('click');
   expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
   await trigger.trigger('click');
-  expect(checkedFields(wrapper)).toEqual(['title', 'statement']);
+  expect(checkedFields(wrapper)).toEqual(['title', 'components']);
+  expect(multiAnalysis).not.toHaveBeenCalled();
 });
 
-it('selects every enabled field with Select all and submits only the fields that remain checked', async () => {
+it('marks only selected populated fields as italic overrides and removes the styling when unchecked', async () => {
+  const { wrapper } = setup();
+  await chooser(wrapper).trigger('click');
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  for (const field of fields) {
+    const label = wrapper.get(`label[for="multi-suggest-${field}"]`);
+    expect(label.text()).toBe(`${fieldLabels[field]} (override)`);
+    expect(label.classes()).toContain('fst-italic');
+    await wrapper.get(`#multi-suggest-${field}`).setValue(false);
+    expect(label.text()).toBe(fieldLabels[field]);
+    expect(label.classes()).not.toContain('fst-italic');
+  }
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('removes override styling when a selected field becomes empty without deselecting it', async () => {
+  const { values, wrapper } = setup();
+  await chooser(wrapper).trigger('click');
+  await wrapper.get('button[title="Select all"]').trigger('click');
+  for (const field of fields) values[field].value = field === 'components' ? [] : ' \t\n ';
+  await nextTick();
+  expect(checkedFields(wrapper)).toEqual(fields);
+  for (const field of fields) {
+    const label = wrapper.get(`label[for="multi-suggest-${field}"]`);
+    expect(label.text()).toBe(fieldLabels[field]);
+    expect(label.classes()).not.toContain('fst-italic');
+  }
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it('selects all without requesting and uses selected overrides from the main action after closing', async () => {
   const { coordinator, wrapper } = setup();
   const suggestAll = vi.spyOn(coordinator, 'suggestAll');
-  await wrapper.get('button').trigger('click');
+  await chooser(wrapper).trigger('click');
   await wrapper.get('button[title="Select all"]').trigger('click');
   expect(checkedFields(wrapper)).toEqual(fields);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+  expect(suggestAll).not.toHaveBeenCalled();
   for (const field of fields.filter(field => field !== 'title' && field !== 'mitigation')) {
     await wrapper.get(`#multi-suggest-${field}`).setValue(false);
   }
-  await wrapper.get('.dropdown-menu > button').trigger('click');
+  await chooser(wrapper).trigger('click');
+  expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+  await actionButton(wrapper).trigger('click');
   await flushPromises();
 
   expect(suggestAll).toHaveBeenCalledExactlyOnceWith(['title', 'mitigation']);
@@ -162,32 +381,40 @@ it('selects every enabled field with Select all and submits only the fields that
 it('renders only fields enabled by runtime flags, including a single member of a paired result', async () => {
   runtime.value.flags = { aiDescriptionSuggestions: true, aiCvssSuggestions: true, aiMitigationSuggestions: true };
   const { wrapper } = setup({ cve_description: '', _cvss3_vector: '', mitigation: '' });
-  await wrapper.get('button').trigger('click');
+  await chooser(wrapper).trigger('click');
   expect(wrapper.findAll('tbody label').map(label => label.text())).toEqual(['Description', 'CVSS v3', 'Mitigation']);
   expect(checkedFields(wrapper)).toEqual(['cve_description', '_cvss3_vector', 'mitigation']);
+  expectAllToggle(wrapper, true);
+  await wrapper.get('button[title="Unselect all"]').trigger('click');
+  expect(checkedFields(wrapper)).toEqual([]);
+  expectAllToggle(wrapper, false);
   await wrapper.get('button[title="Select all"]').trigger('click');
   expect(checkedFields(wrapper)).toEqual(['cve_description', '_cvss3_vector', 'mitigation']);
+  expectAllToggle(wrapper, true);
+  expect(multiAnalysis).not.toHaveBeenCalled();
 });
 
-it('disables Submit when the only checked field becomes disabled while the menu is open', async () => {
+it('disables the main action when the only checked field becomes disabled but leaves the chooser usable', async () => {
   const { wrapper } = setup({ title: '' });
-  await wrapper.get('button').trigger('click');
+  await chooser(wrapper).trigger('click');
   expect(checkedFields(wrapper)).toEqual(['title']);
   runtime.value.flags!.aiTitleSuggestions = false;
   await nextTick();
   expect(wrapper.find('#multi-suggest-title').exists()).toBe(false);
-  expect(wrapper.get<HTMLButtonElement>('.dropdown-menu > button').element.disabled).toBe(true);
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  expect(chooser(wrapper).element.disabled).toBe(false);
   expect(multiAnalysis).not.toHaveBeenCalled();
 });
 
 it('blocks opening when disabled and closes an open menu when the form becomes disabled', async () => {
   const { disabled, wrapper } = setup({ title: '' });
-  const trigger = wrapper.get<HTMLButtonElement>('button');
+  const trigger = chooser(wrapper);
   await trigger.trigger('click');
   disabled.value = true;
   await nextTick();
   expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
   expect(trigger.element.disabled).toBe(true);
+  expect(actionButton(wrapper).element.disabled).toBe(true);
   trigger.element.click();
   expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
   disabled.value = false;
@@ -198,7 +425,7 @@ it('blocks opening when disabled and closes an open menu when the form becomes d
 
 it('closes on Escape without submitting and returns focus to the trigger', async () => {
   const { wrapper } = setup({ title: '' });
-  const trigger = wrapper.get('button');
+  const trigger = chooser(wrapper);
   await trigger.trigger('click');
   const input = wrapper.get<HTMLInputElement>('#multi-suggest-title');
   input.element.focus();
@@ -208,15 +435,15 @@ it('closes on Escape without submitting and returns focus to the trigger', async
   expect(multiAnalysis).not.toHaveBeenCalled();
 });
 
-it('shows a busy state after Submit, blocks repeated requests, and restores defaults for an error retry', async () => {
+it('shows loading after a direct request, blocks both buttons and permits direct retry after an error', async () => {
   let reject!: (error: Error) => void;
   multiAnalysis.mockReturnValueOnce(new Promise((_, fail) => { reject = fail; }));
   const { wrapper } = setup({ title: '' });
-  const trigger = wrapper.get<HTMLButtonElement>('button');
+  const trigger = actionButton(wrapper);
   await trigger.trigger('click');
-  await wrapper.get('.dropdown-menu > button').trigger('click');
   expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
   expect(trigger.element.disabled).toBe(true);
+  expect(chooser(wrapper).element.disabled).toBe(true);
   expect(trigger.attributes('aria-busy')).toBe('true');
   expect(trigger.get('[role="status"]').text()).toBe('Loading...');
   trigger.element.click();
@@ -227,10 +454,27 @@ it('shows a busy state after Submit, blocks repeated requests, and restores defa
   expect(trigger.element.disabled).toBe(false);
   expect(trigger.attributes('aria-busy')).toBe('false');
   expect(trigger.find('[role="status"]').exists()).toBe(false);
+  expect(chooser(wrapper).element.disabled).toBe(false);
   expect(addToast).toHaveBeenCalledWith({ title: 'AI Suggestion Error', body: 'Service unavailable' });
   await trigger.trigger('click');
-  expect(checkedFields(wrapper)).toEqual(['title']);
-  await wrapper.get('.dropdown-menu > button').trigger('click');
   await flushPromises();
+  expect(multiAnalysis).toHaveBeenCalledTimes(2);
+});
+
+it('preserves selected populated overrides for a retry after the request fails', async () => {
+  multiAnalysis.mockRejectedValueOnce(new Error('Service unavailable'));
+  const { coordinator, wrapper } = setup();
+  const suggestAll = vi.spyOn(coordinator, 'suggestAll');
+  await chooser(wrapper).trigger('click');
+  await wrapper.get('#multi-suggest-title').setValue(true);
+  await actionButton(wrapper).trigger('click');
+  await flushPromises();
+  expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
+  expect(actionButton(wrapper).element.disabled).toBe(false);
+  await actionButton(wrapper).trigger('click');
+  await flushPromises();
+  expect(suggestAll).toHaveBeenCalledTimes(2);
+  expect(suggestAll).toHaveBeenNthCalledWith(1, ['title']);
+  expect(suggestAll).toHaveBeenNthCalledWith(2, ['title']);
   expect(multiAnalysis).toHaveBeenCalledTimes(2);
 });
