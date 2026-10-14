@@ -11,11 +11,13 @@ import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType, ZodAffectType } from '@/types';
 import { FlawLabelTypeEnum } from '@/types/zodFlaw';
-import { postFlaw, putFlaw } from '@/services/FlawService';
+import { getFlaw, postFlaw, putFlaw } from '@/services/FlawService';
+import { createLabel } from '@/services/LabelsService';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 import { useFlaw } from '../useFlaw';
 import { useAffectsModel } from '../useAffectsModel';
+import { useFlawLabels } from '../useFlawLabels';
 
 vi.mock('@/composables/useFlawCommentsModel', () => ({
   useFlawCommentsModel: vi.fn(),
@@ -35,12 +37,20 @@ vi.mock('@/services/AegisAIService', () => ({
 }));
 
 vi.mock('@/services/FlawService', () => ({
+  getFlaw: vi.fn().mockResolvedValue({}),
   getFlawBugzillaLink: vi.fn().mockResolvedValue({}),
   getFlawOsimLink: vi.fn().mockResolvedValue({}),
   postFlaw: vi.fn().mockResolvedValue({}),
   putFlaw: vi.fn().mockResolvedValue({}),
   putFlawCvssScores: vi.fn().mockResolvedValue({}),
   deleteFlawCvssScores: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock('@/services/LabelsService', () => ({
+  createLabel: vi.fn().mockResolvedValue({}),
+  deleteLabel: vi.fn().mockResolvedValue({}),
+  fetchLabels: vi.fn().mockResolvedValue([]),
+  updateLabel: vi.fn().mockResolvedValue({}),
 }));
 
 describe('useFlawModel', () => {
@@ -60,6 +70,7 @@ describe('useFlawModel', () => {
     vi.clearAllMocks();
     globalResetFlaw();
     initializeAffects([]); // Reset affects to empty array
+    useFlawLabels([]);
   });
 
   afterEach(() => {
@@ -139,6 +150,45 @@ describe('useFlawModel', () => {
       await flushPromises();
       await updateFlaw();
       expect(putFlaw).toHaveBeenCalled();
+    });
+
+    it('saves pending labels before applying the flaw updated_dt', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const savedFlaw = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      const loadedUpdatedDt = '2024-01-01T00:00:00Z';
+      const savedUpdatedDt = '2024-06-01T00:00:00Z';
+      savedFlaw.updated_dt = loadedUpdatedDt;
+      savedFlaw.labels = [];
+      setFlaw(savedFlaw);
+
+      const pendingLabel = { name: 'rejected', type: FlawLabelTypeEnum.WORKFLOW };
+      const { labels, newLabels } = useFlawLabels();
+      labels.value[pendingLabel.name] = pendingLabel;
+      newLabels.value.add(pendingLabel.name);
+      flaw.value.owner = 'user@redhat.com';
+
+      const saved = {
+        ...deepCopyFromRaw(savedFlaw),
+        owner: 'user@redhat.com',
+        updated_dt: savedUpdatedDt,
+        labels: [pendingLabel],
+      };
+      vi.mocked(putFlaw).mockResolvedValue(saved);
+      vi.mocked(getFlaw).mockResolvedValue(saved);
+
+      let updatedDtDuringLabelSave: null | string | undefined;
+      vi.mocked(createLabel).mockImplementation(async () => {
+        updatedDtDuringLabelSave = flaw.value.updated_dt;
+      });
+
+      const { updateFlaw } = mountFlawModel();
+      await updateFlaw();
+
+      expect(createLabel).toHaveBeenCalledWith(savedFlaw.uuid, pendingLabel);
+      // FlawEditView keys the form on updated_dt. Publishing the new token here
+      // would remount the form and drop this label before createLabel runs.
+      expect(updatedDtDuringLabelSave).toBe(loadedUpdatedDt);
+      expect(flaw.value.updated_dt).toBe(savedUpdatedDt);
     });
 
     it('should prevent saving if CVSS scores are invalid', async () => {
