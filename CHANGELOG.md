@@ -7,6 +7,7 @@
 * Widen SRP dialogs for better readability: forms to 1200px/85vw, payload editor to 1400px/90vw with vertical textarea resizing (`OSIDB-5597`)
 
 ### Fixed
+* Keep label additions and edits when Save Changes also updates other flaw fields (`OSIDB-5501`)
 * Use `manual_due_at` backend field instead of read-only `due_at` for editable due dates in SRP milestone dialogs (`OSIDB-5558`)
 
 ## [2026.10.0]
