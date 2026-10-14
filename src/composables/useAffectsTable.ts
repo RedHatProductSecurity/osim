@@ -556,31 +556,34 @@ export function useAffectsTable(
       return;
     }
     isClosingTrackers.value = true;
-    const failed: string[] = [];
-    const succeeded = new Set<string>();
-    for (const { choice, key, transition } of choices) {
-      try {
-        await closeJiraIssue(key, transition, choice);
-        succeeded.add(key);
-      } catch (error) {
-        failed.push(`${key}: ${jiraError(error)}`);
+    try {
+      const failed: string[] = [];
+      const succeeded = new Set<string>();
+      for (const { choice, key, transition } of choices) {
+        try {
+          await closeJiraIssue(key, transition, choice);
+          succeeded.add(key);
+        } catch (error) {
+          failed.push(`${key}: ${jiraError(error)}`);
+        }
       }
-    }
-    showSuccessToast(succeeded.size, 'tracker', 'closed');
-    if (failed.length) useToastStore().addToast({
-      title: 'Some trackers could not be closed',
-      body: `${failed.join('\n')}\nFailed trackers remain selected for the user to submit again.`,
-      css: 'warning',
-    });
-    if (succeeded.size) {
-      onFailedSelection?.(new Set(closeRows.value.filter(row => !succeeded.has(row.key)).map(row => row.key)));
-      for (const row of closeRows.value) {
-        if (succeeded.has(row.key)) table.getRow(row.id)?.toggleSelected(false);
+      showSuccessToast(succeeded.size, 'tracker', 'closed');
+      if (failed.length) useToastStore().addToast({
+        title: 'Some trackers could not be closed',
+        body: `${failed.join('\n')}\nFailed trackers remain selected for the user to submit again.`,
+        css: 'warning',
+      });
+      if (succeeded.size) {
+        onFailedSelection?.(new Set(closeRows.value.filter(row => !succeeded.has(row.key)).map(row => row.key)));
+        for (const row of closeRows.value) {
+          if (succeeded.has(row.key)) table.getRow(row.id)?.toggleSelected(false);
+        }
+        onRefreshFlaw?.();
       }
-      onRefreshFlaw?.();
+    } finally {
+      showCloseDialog.value = false;
+      isClosingTrackers.value = false;
     }
-    showCloseDialog.value = false;
-    isClosingTrackers.value = false;
   }
 
   function fitColumnWidth(column: Column<ZodAffectType>) {
