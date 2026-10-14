@@ -57,6 +57,7 @@ exports[`affectsTable > should render 1`] = `
     </ul>
   </div>
 </div>
+<!--v-if-->
 <div data-v-17587d65="" class="table-responsive">
   <table data-v-17587d65="" class="table table-striped mb-0 z-0">
     <thead data-v-17587d65="" class="sticky-top table-dark">
@@ -400,6 +401,7 @@ exports[`affectsTable > should render empty state 1`] = `
     </ul>
   </div>
 </div>
+<!--v-if-->
 <div data-v-17587d65="" class="table-responsive">
   <div data-v-17587d65="" class="my-2 ms-2"> This Flaw does not have affects </div>
 </div>"

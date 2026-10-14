@@ -10,6 +10,8 @@ import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import type { ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import * as TrackerService from '@/services/TrackerService';
+import * as JiraService from '@/services/JiraService';
+import { useToastStore } from '@/stores/ToastStore';
 
 import AffectsTable from '../AffectsTable.vue';
 
@@ -24,6 +26,21 @@ const mountAffectsTable = async () => {
   });
   await flushPromises();
   return wrapper;
+};
+
+const transition = (resolution = [{ id: '1', name: 'Done' }, { id: '2', name: 'Won\'t Do' }],
+  vex = [{ id: '10', value: 'Component not Present' }], required = false) => ({
+  id: '61',
+  name: 'Finish',
+  to: { name: 'Closed' },
+  fields: {
+    resolution: { name: 'Resolution', required: true, operations: ['set'], allowedValues: resolution },
+    customfield_10873: { name: 'VEX Justification', required, operations: ['set'], allowedValues: vex },
+  },
+});
+const select = async (wrapper: Awaited<ReturnType<typeof mountAffectsTable>>, ...indices: number[]) => {
+  for (const i of indices) await wrapper.findAll('tbody tr input[type="checkbox"]')[i].setValue(true);
+  await flushPromises();
 };
 
 describe('affectsTable', () => {
@@ -51,6 +68,135 @@ describe('affectsTable', () => {
     const wrapper = await mountAffectsTable();
 
     expect(wrapper.html()).toMatchSnapshot();
+  });
+
+  describe('closing Jira trackers', () => {
+    beforeEach(() => {
+      useSettingsStore().settings.affectsPerPage = SampleFlawFull.affects.length;
+      vi.spyOn(JiraService, 'getJiraTransitions').mockImplementation(async () => ({
+        data: { transitions: [transition()] }, response: {} as Response,
+      }));
+      vi.spyOn(JiraService, 'closeJiraIssue').mockImplementation(async () => ({
+        data: undefined, response: {} as Response,
+      }));
+    });
+    afterEach(() => vi.restoreAllMocks());
+
+    it('requires Jira-only selection and blocks preflight writes for mixed selection', async () => {
+      const wrapper = await mountAffectsTable();
+      expect(wrapper.find('button[title="Close Jira trackers for selected affects"]').exists()).toBe(false);
+      await select(wrapper, 0, 2);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      expect(wrapper.find('.modal .alert-danger').text()).toContain('no Jira tracker');
+      expect(wrapper.find('#close-resolution').exists()).toBe(false);
+      expect(wrapper.find('.modal button.btn-warning').attributes('disabled')).toBeDefined();
+      expect(JiraService.closeJiraIssue).not.toHaveBeenCalled();
+    });
+
+    it('intersects resolution choices across projects and requires VEX when required', async () => {
+      vi.mocked(JiraService.getJiraTransitions).mockImplementation(async key => ({
+        data: { transitions: [key === 'XXXX-0001'
+          ? transition(undefined, undefined, true)
+          : transition([{ id: '9', name: 'Won\'t Do' }, { id: '3', name: 'Other' }],
+            [{ id: '99', value: 'Component not Present' }])] },
+        response: {} as Response,
+      }));
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0, 1);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      expect(wrapper.findAll('#close-resolution option').map(o => o.text()))
+        .toEqual(['Select resolution', 'Won\'t Do']);
+      await wrapper.find('#close-resolution').setValue('2');
+      expect(wrapper.find('.modal button.btn-warning').attributes('disabled')).toBeDefined();
+      await wrapper.find('#close-vex').setValue('10');
+      await wrapper.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(JiraService.closeJiraIssue).toHaveBeenCalledTimes(2);
+      expect(vi.mocked(JiraService.closeJiraIssue).mock.calls[1][2]).toMatchObject({
+        resolution: '9', vexJustification: '99',
+      });
+    });
+
+    it('blocks the entire batch when a tracker has no close transition', async () => {
+      vi.mocked(JiraService.getJiraTransitions).mockImplementation(async key => ({
+        data: { transitions: key === 'XXXX-0001' ? [transition()] : [] }, response: {} as Response,
+      }));
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0, 1);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      expect(wrapper.find('.modal .alert-danger').text()).toContain('XXXX-0002: no transition to Closed');
+      expect(wrapper.find('#close-resolution').exists()).toBe(false);
+      expect(JiraService.closeJiraIssue).not.toHaveBeenCalled();
+    });
+
+    it('shows Jira request errors without showing unusable fields or writing', async () => {
+      vi.mocked(JiraService.getJiraTransitions).mockRejectedValueOnce({
+        response: { status: 403, statusText: 'Forbidden', data: {} },
+      });
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      expect(wrapper.find('.modal .alert-danger').text()).toContain(
+        'XXXX-0001: could not load Jira close options: Jira returned HTTP 403 Forbidden.',
+      );
+      expect(wrapper.find('.modal .alert-danger').text()).toContain('No changes were made');
+      expect(wrapper.find('#close-resolution').exists()).toBe(false);
+      expect(wrapper.find('#close-vex').exists()).toBe(false);
+      expect(wrapper.find('#close-comment').exists()).toBe(false);
+      expect(wrapper.find('.modal button.btn-warning').attributes('disabled')).toBeDefined();
+      expect(JiraService.closeJiraIssue).not.toHaveBeenCalled();
+    });
+
+    it('blocks the entire batch when no common resolution exists', async () => {
+      vi.mocked(JiraService.getJiraTransitions).mockImplementation(async key => ({
+        data: { transitions: [transition(key === 'XXXX-0001'
+          ? [{ id: '1', name: 'Done' }]
+          : [{ id: '2', name: 'Won\'t Do' }])] },
+        response: {} as Response,
+      }));
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0, 1);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      expect(wrapper.find('.modal .alert-danger').text()).toContain('No common close resolution');
+      expect(JiraService.closeJiraIssue).not.toHaveBeenCalled();
+    });
+
+    it('retains failed selection after refresh and explicitly retries failures only', async () => {
+      vi.mocked(JiraService.closeJiraIssue).mockImplementation(async (key) => {
+        if (key === 'XXXX-0002' && vi.mocked(JiraService.closeJiraIssue).mock.calls.length === 2) {
+          throw { response: { data: { errorMessages: ['workflow changed'] } } };
+        }
+        return { data: undefined, response: {} as Response };
+      });
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0, 1);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      await wrapper.find('#close-resolution').setValue('2');
+      await wrapper.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(wrapper.emitted('refresh:flaw')).toHaveLength(1);
+      expect(wrapper.find('.badge').text()).toContain('1 Selected');
+      expect(useToastStore().addToast).toHaveBeenCalledWith(expect.objectContaining({
+        body: expect.stringContaining('XXXX-0002: workflow changed'), css: 'warning',
+      }));
+      expect(useToastStore().addToast).toHaveBeenCalledWith(expect.objectContaining({
+        body: expect.stringContaining('remain selected'),
+      }));
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      await wrapper.find('#close-resolution').setValue('2');
+      await wrapper.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(vi.mocked(JiraService.closeJiraIssue).mock.calls.map(([key]) => key)).toEqual([
+        'XXXX-0001', 'XXXX-0002', 'XXXX-0002',
+      ]);
+    });
   });
 
   describe('table actions', () => {
