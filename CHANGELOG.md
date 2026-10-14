@@ -5,6 +5,7 @@
 * Link an existing Jira or Bugzilla tracker to another flaw's affect on demand, so one tracker can cover multiple flaws without a manual sync (`OSIDB-5471`)
 
 ### Changed
+* Replace Full Flaw Suggestions with a Multi Suggest split button beside the Bugzilla/Jira links, with field selection, empty-field defaults, override indicators, and a select/unselect-all toggle; apply AI suggestions only to checked fields (`AEGIS-527`)
 * Widen SRP dialogs for better readability: forms to 1200px/85vw, payload editor to 1400px/90vw with vertical textarea resizing (`OSIDB-5597`)
 
 ### Fixed
