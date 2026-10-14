@@ -14,6 +14,7 @@ import * as JiraService from '@/services/JiraService';
 import { useToastStore } from '@/stores/ToastStore';
 
 import AffectsTable from '../AffectsTable.vue';
+import { clearCloseTrackerSession } from '../closeTrackerSession';
 
 createTestingPinia();
 
@@ -49,6 +50,7 @@ describe('affectsTable', () => {
     resetFlaw();
 
     flaw.value = structuredClone(SampleFlawFull as unknown as ZodFlawType);
+    clearCloseTrackerSession(flaw.value.uuid);
     vi.useFakeTimers();
   });
 
@@ -164,6 +166,40 @@ describe('affectsTable', () => {
       await flushPromises();
       expect(wrapper.find('.modal .alert-danger').text()).toContain('No common close resolution');
       expect(JiraService.closeJiraIssue).not.toHaveBeenCalled();
+    });
+
+    it('restores failed selection on remount and retries without resubmitting successes', async () => {
+      vi.mocked(JiraService.closeJiraIssue).mockImplementation(async (key) => {
+        if (key === 'XXXX-0002' && vi.mocked(JiraService.closeJiraIssue).mock.calls.length === 2) {
+          throw { response: { data: { errorMessages: ['workflow changed'] } } };
+        }
+        return { data: undefined, response: {} as Response };
+      });
+      const wrapper = await mountAffectsTable();
+      await select(wrapper, 0, 1);
+      await wrapper.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      await wrapper.find('#close-resolution').setValue('2');
+      await wrapper.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(wrapper.emitted('refresh:flaw')).toHaveLength(1);
+      wrapper.unmount();
+
+      // Simulate the parent unmounting during reload and mounting with freshly fetched affects.
+      const remounted = await mountAffectsTable();
+      expect(remounted.find('.badge').text()).toContain('1 Selected');
+      expect(remounted.findAll('tbody tr.selected').map(row => row.text())).toEqual(
+        expect.arrayContaining([expect.stringContaining('XXXX-0002')]),
+      );
+      await remounted.find('button[title="Close Jira trackers for selected affects"]').trigger('click');
+      await flushPromises();
+      await remounted.find('#close-resolution').setValue('2');
+      await remounted.find('.modal button.btn-warning').trigger('click');
+      await flushPromises();
+      expect(vi.mocked(JiraService.closeJiraIssue).mock.calls.map(([key]) => key)).toEqual([
+        'XXXX-0001', 'XXXX-0002', 'XXXX-0002',
+      ]);
+      remounted.unmount();
     });
 
     it('retains failed selection after refresh and explicitly retries failures only', async () => {

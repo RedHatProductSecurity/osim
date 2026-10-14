@@ -19,13 +19,11 @@ import ColumnFilter from './ColumnFilter.vue';
 import ColumnOptions from './ColumnOptions.vue';
 import BulkEditCell from './BulkEditCell.vue';
 import MultiFlawTracker from './MultiFlawTracker.vue';
+import { sessionFailedSelection, sessionClosedKeys } from './closeTrackerSession';
 
 const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
 }>();
-
-const sessionFailedSelection = new Map<string, Set<string>>();
-const sessionClosedKeys = new Map<string, Set<string>>();
 
 const { settings } = storeToRefs(useSettingsStore());
 
