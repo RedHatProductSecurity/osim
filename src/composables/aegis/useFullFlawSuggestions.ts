@@ -59,7 +59,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
     && !isFetching.value
     && ![...participants].some(item => item.isFetching.value));
 
-  /** Requests each enabled feature once and applies results only to selected fields. */
+  /** Requests each selected feature once and applies results only to selected fields. */
   async function suggestAll(selectedFields?: SuggestionField[]) {
     if (!canSuggest.value) return;
     const selected = new Set(selectedFields ?? enabledParticipants.value.map(item => item.field));
@@ -69,7 +69,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
     if (!requested.length) return;
     const currentIdentity = identity();
     const contextData = serializeAegisContext(context);
-    const features = [...new Set(enabledParticipants.value.map(item => fieldConfig[item.field].feature))];
+    const features = [...new Set(requested.map(({ item }) => fieldConfig[item.field].feature))];
     isFetching.value = true;
     const started = Date.now();
     try {

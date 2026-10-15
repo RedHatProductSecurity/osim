@@ -139,9 +139,7 @@ it('requests only current empty defaults directly without opening the chooser', 
   expect(suggestAll).toHaveBeenCalledExactlyOnceWith(['cve_description', 'components']);
   expect(multiAnalysis).toHaveBeenCalledTimes(1);
   expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
-    features: [
-      'suggest-description', 'suggest-affected-components', 'suggest-impact', 'suggest-cwe', 'suggest-statement',
-    ],
+    features: ['suggest-description', 'suggest-affected-components'],
   }));
   expect(wrapper.find('table').exists()).toBe(false);
   expect(chooser(wrapper).attributes('aria-expanded')).toBe('false');
@@ -283,6 +281,7 @@ it('updates defaults from unsaved values until the chooser is first opened', asy
   await actionButton(wrapper).trigger('click');
   await flushPromises();
   expect(suggestAll).toHaveBeenCalledExactlyOnceWith(['mitigation']);
+  expect(multiAnalysis).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ features: ['suggest-statement'] }));
   expect(wrapper.find('table').exists()).toBe(false);
 });
 
@@ -372,9 +371,7 @@ it('selects all without requesting and uses selected overrides from the main act
   expect(wrapper.find('.dropdown-menu').exists()).toBe(false);
   expect(multiAnalysis).toHaveBeenCalledTimes(1);
   expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
-    features: [
-      'suggest-description', 'suggest-affected-components', 'suggest-impact', 'suggest-cwe', 'suggest-statement',
-    ],
+    features: ['suggest-description', 'suggest-statement'],
   }));
 });
 
@@ -459,6 +456,8 @@ it('shows loading after a direct request, blocks both buttons and permits direct
   await trigger.trigger('click');
   await flushPromises();
   expect(multiAnalysis).toHaveBeenCalledTimes(2);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(1, expect.objectContaining({ features: ['suggest-description'] }));
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({ features: ['suggest-description'] }));
 });
 
 it('preserves selected populated overrides for a retry after the request fails', async () => {
