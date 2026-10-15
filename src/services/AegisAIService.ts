@@ -8,11 +8,14 @@ import type {
   AegisFeedbackPayload,
   AegisFeatureResponseMap,
   AegisKpiMetrics,
+  AegisKpiQuery,
+  AegisBotKpiMetrics,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
   AegisMultiAnalysisParams,
   AegisMultiAnalysisResponse,
 } from '@/types/aegisAI';
+import { useAuthStore } from '@/stores/AuthStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 
 export type AegisAIFetchCallbacks = {
@@ -25,6 +28,7 @@ type CacheOptions = 'default' | 'force-cache' | 'no-cache' | 'only-if-cached' | 
 export type AegisAIGetFetchOptions = {
   cache?: CacheOptions;
   data?: never;
+  headers?: Record<string, string>;
   method: 'GET' | 'get';
   params?: Record<string, any>;
   url: string;
@@ -33,6 +37,7 @@ export type AegisAIGetFetchOptions = {
 export type AegisAIPostFetchOptions = {
   cache?: CacheOptions;
   data?: Record<string, any>;
+  headers?: Record<string, string>;
   method: 'POST' | 'post';
   params?: Record<string, any>;
   url: string;
@@ -61,7 +66,10 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
   try {
     response = await fetch(`${baseUrl}${config.url}${queryString}`, {
       method: config?.method ?? 'GET',
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      headers: {
+        ...(body ? { 'Content-Type': 'application/json' } : {}),
+        ...config.headers,
+      },
       mode: 'cors',
       credentials: 'include',
       cache: config?.cache,
@@ -130,10 +138,18 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
   }
 }
 
+function aegisAuthHeaders(): Record<string, string> {
+  const authStore = useAuthStore();
+  if (!authStore.accessToken) return {};
+  return { Authorization: `Bearer ${authStore.accessToken}` };
+}
+
 function paramsFrom(params: Record<string, any>) {
   const urlParams = new URLSearchParams();
   for (const key in params) {
-    if (params[key] !== undefined) {
+    if (Array.isArray(params[key])) {
+      params[key].forEach((value: string) => urlParams.append(key, value));
+    } else if (params[key] !== undefined) {
       urlParams.set(key, params[key]);
     }
   }
@@ -272,6 +288,19 @@ export class AegisAIService {
     }
   }
 
+  async getBotKpiMetrics(query: AegisKpiQuery = {}): Promise<AegisBotKpiMetrics> {
+    const result = await this.fetch({
+      method: 'GET',
+      url: '/analysis/kpi/osidb-bot',
+      headers: aegisAuthHeaders(),
+      params: { ...query, detail: true },
+    });
+    if (!Array.isArray(result.data?.entries)) {
+      throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
+    }
+    return result.data;
+  }
+
   /**
    * Get the AEGIS-AI console page (returns HTML)
    */
@@ -289,12 +318,15 @@ export class AegisAIService {
     }
   }
 
-  async getKpiMetrics(feature: AegisKpiFeatureParamType = 'all'): Promise<AegisKpiMetrics> {
+  async getKpiMetrics(
+    feature: AegisKpiFeatureParamType = 'all', query: AegisKpiQuery = {},
+  ): Promise<AegisKpiMetrics> {
     try {
       const result = await this.fetch({
         method: 'GET',
         url: '/analysis/kpi/cve',
-        params: { feature },
+        headers: aegisAuthHeaders(),
+        params: { feature, ...query },
       });
 
       return result.data;
