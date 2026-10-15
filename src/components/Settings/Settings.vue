@@ -46,6 +46,24 @@ const isValid = computed(() => ({
   <div class="osim-content">
     <h1 class="mb-3">Settings</h1>
 
+    <section class="osim-settings mb-4" aria-labelledby="appearance-heading">
+      <h2 id="appearance-heading" class="h4">Appearance</h2>
+      <div class="form-check form-switch">
+        <input
+          id="dark-mode"
+          v-model="settingsStore.settings.darkMode"
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          aria-describedby="dark-mode-help"
+        />
+        <label class="form-check-label" for="dark-mode">Dark mode</label>
+      </div>
+      <p id="dark-mode-help" class="form-text">
+        Applies immediately and is saved in this browser.
+      </p>
+    </section>
+
     <div class="alert alert-info" role="alert">
       API keys are saved securely on the backend and will persist across sessions.
     </div>

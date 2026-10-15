@@ -1,0 +1,43 @@
+// Custom surfaces and supplemental Bootstrap utilities also follow the selected theme.
+:root {
+  --osim-status-bar-bg: #efefef;
+  --osim-queue-striped-bg: var(--bs-light-gray);
+  --osim-queue-hover-bg: #ffe3d9;
+}
+
+[data-bs-theme='dark'] {
+  --osim-status-bar-bg: var(--bs-tertiary-bg);
+  --osim-queue-striped-bg: var(--bs-tertiary-bg);
+  --osim-queue-hover-bg: #492b1c;
+
+  .bg-white {
+    background-color: var(--bs-body-bg) !important;
+  }
+
+  .bg-light,
+  .bg-light-gray,
+  .bg-lighter-gray {
+    background-color: var(--bs-tertiary-bg) !important;
+  }
+
+  // Preserve the meaning of comment and edited-item highlights on dark surfaces.
+  $dark-highlights: (
+    'light-green': #1b3626,
+    'light-info': #16383b,
+    'light-orange': #492b1c,
+    'light-yellow': #403717,
+    'light-purple': #35264b,
+  );
+
+  @each $name, $color in $dark-highlights {
+    .bg-#{$name} {
+      background-color: $color !important;
+    }
+  }
+
+  // Explicit dark text remains appropriate on solid status badges and buttons.
+  .text-black:not(.badge, .btn, .bg-warning, .bg-info),
+  .text-dark:not(.badge, .btn, .bg-warning, .bg-info) {
+    color: var(--bs-body-color) !important;
+  }
+}

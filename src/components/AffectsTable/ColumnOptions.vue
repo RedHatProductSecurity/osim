@@ -121,7 +121,7 @@ function onDrop(event: DragEvent, targetIndex: number) {
   user-select: none;
 
   &:active {
-    background-color: white;
+    background-color: var(--bs-body-bg);
     color: inherit;
   }
 

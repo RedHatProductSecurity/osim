@@ -769,7 +769,7 @@ form.osim-flaw-form :deep(*) {
   span.form-label {
     text-align: right;
     margin-bottom: 0;
-    background-color: #dee2e6;
+    background-color: var(--bs-secondary-bg);
     border-bottom-left-radius: 0.5rem;
     border-top-left-radius: 0.5rem;
     margin-right: 0 !important;
@@ -819,8 +819,8 @@ form.osim-flaw-form :deep(*) {
 
 .osim-action-buttons {
   z-index: 1029; // Bootstrap 'sticky' sets index to 1020, but we want this one to be on top of every other sticky
-  background: white;
-  border-top: 1px solid #ddd;
+  background: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color);
   padding-right: 20px;
   padding-bottom: calc(var(--osim-status-bar-height) + 0.5rem);
   padding-top: 0.5rem;
