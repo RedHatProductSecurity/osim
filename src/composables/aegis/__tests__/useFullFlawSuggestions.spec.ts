@@ -7,7 +7,7 @@ import { osimRuntime } from '@/stores/osimRuntime';
 import type { OsimRuntimeType } from '@/types/zodOsim';
 import type { SuggestableFlawFields } from '@/types/aegisAI';
 
-import { provideFullFlawSuggestions } from '../useFullFlawSuggestions';
+import { provideFullFlawSuggestions, type SuggestionField } from '../useFullFlawSuggestions';
 import { useAegisSuggestTitle } from '../useAegisSuggestTitle';
 import { useAegisSuggestDescription } from '../useAegisSuggestDescription';
 import { useAegisSuggestion } from '../useAegisSuggestion';
@@ -30,6 +30,17 @@ const multiAnalysis = vi.spyOn(AegisAIService.prototype, 'analyzeCVEMultipleFeat
 const singleAnalysis = vi.spyOn(AegisAIService.prototype, 'analyzeCVEWithContext');
 const titleFeedback = vi.spyOn(AegisAIService.prototype, 'sendFeedback').mockResolvedValue();
 const fields: SuggestableFlawFields[] = ['components', 'impact', '_cvss3_vector', 'cwe_id', 'statement', 'mitigation'];
+const allFields: SuggestionField[] = ['title', 'cve_description', ...fields];
+const expectedFeatures: Record<SuggestionField, string> = {
+  title: 'suggest-description',
+  cve_description: 'suggest-description',
+  components: 'suggest-affected-components',
+  impact: 'suggest-impact',
+  _cvss3_vector: 'suggest-impact',
+  cwe_id: 'suggest-cwe',
+  statement: 'suggest-statement',
+  mitigation: 'suggest-statement',
+};
 const response = {
   results: {
     'suggest-description': {
@@ -41,6 +52,16 @@ const response = {
     'suggest-statement': { suggested_statement: 'AI statement', suggested_mitigation: 'AI mitigation' },
   },
   errors: {},
+};
+const suggestedValues = {
+  title: 'AI title',
+  cve_description: 'AI description',
+  components: ['kernel'],
+  impact: 'IMPORTANT',
+  _cvss3_vector: response.results['suggest-impact'].cvss3_vector,
+  cwe_id: 'CWE-79',
+  statement: 'AI statement',
+  mitigation: 'AI mitigation',
 };
 
 function setup() {
@@ -153,6 +174,217 @@ it('requests only enabled features and only applies enabled fields from shared r
   expect(values._cvss3_vector.value).toBe(response.results['suggest-impact'].cvss3_vector);
 });
 
+it.each(allFields)('requests and applies only the selected %s field', async (selectedField) => {
+  const { actions, coordinator, description, descriptionActions, title, titleActions, values } = setup();
+  const fieldValues = { title, cve_description: description, ...values };
+  const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
+  await coordinator.suggestAll([selectedField]);
+
+  expect(multiAnalysis).toHaveBeenCalledTimes(1);
+  expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
+    cve_id: 'CVE-2024-1234',
+    title: 'Original title',
+    cve_description: 'Original description',
+    comment_zero: 'Original report',
+    features: [expectedFeatures[selectedField]],
+  }));
+  expect(singleAnalysis).not.toHaveBeenCalled();
+  for (const field of allFields) {
+    expect(fieldValues[field].value).toEqual(field === selectedField ? suggestedValues[field] : originals[field]);
+  }
+  expect(trackAIChange).toHaveBeenCalledTimes(1);
+  expect(titleActions.canShowTitleFeedback.value).toBe(selectedField === 'title');
+  expect(descriptionActions.canShowDescriptionFeedback.value).toBe(selectedField === 'cve_description');
+  for (const field of fields) expect(actions[field].hasAppliedSuggestion.value).toBe(field === selectedField);
+  expect(addToast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Multi Suggest', css: 'info' }));
+
+  if (selectedField === 'title') titleActions.revertTitle();
+  else if (selectedField === 'cve_description') descriptionActions.revertDescription();
+  else actions[selectedField].revert();
+  for (const field of allFields) expect(fieldValues[field].value).toEqual(originals[field]);
+  expect(untrackAIChange).toHaveBeenCalledTimes(1);
+});
+
+it.each<{ features: string[]; selected: SuggestionField[] }>([
+  { selected: ['cve_description', 'title', 'title'], features: ['suggest-description'] },
+  { selected: ['_cvss3_vector', 'impact', 'impact'], features: ['suggest-impact'] },
+  { selected: ['mitigation', 'statement', 'mitigation'], features: ['suggest-statement'] },
+  {
+    selected: ['mitigation', 'title', '_cvss3_vector', 'title'],
+    features: ['suggest-description', 'suggest-impact', 'suggest-statement'],
+  },
+  {
+    selected: ['cwe_id', 'components', 'cwe_id'],
+    features: ['suggest-affected-components', 'suggest-cwe'],
+  },
+])('requests each feature once for $selected and applies only selected fields', async ({ features, selected }) => {
+  const { coordinator, description, title, values } = setup();
+  const fieldValues = { title, cve_description: description, ...values };
+  const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
+  await coordinator.suggestAll(selected);
+
+  expect(multiAnalysis).toHaveBeenCalledTimes(1);
+  expect([...multiAnalysis.mock.calls[0][0].features!].sort()).toEqual([...features].sort());
+  expect(singleAnalysis).not.toHaveBeenCalled();
+  for (const field of allFields) {
+    expect(fieldValues[field].value).toEqual(selected.includes(field) ? suggestedValues[field] : originals[field]);
+  }
+  expect(trackAIChange).toHaveBeenCalledTimes(new Set(selected).size);
+  expect(addToast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Multi Suggest', css: 'info' }));
+});
+
+it.each([
+  { field: 'title' as const, feature: 'suggest-description' as const },
+  { field: '_cvss3_vector' as const, feature: 'suggest-impact' as const },
+  { field: 'mitigation' as const, feature: 'suggest-statement' as const },
+])('accepts only $feature for selected $field without missing-result warnings', async ({ feature, field }) => {
+  multiAnalysis.mockResolvedValueOnce({ results: { [feature]: response.results[feature] }, errors: {} });
+  const { coordinator, description, title, values } = setup();
+  const fieldValues = { title, cve_description: description, ...values };
+  const originals = Object.fromEntries(allFields.map(key => [key, fieldValues[key].value]));
+  await coordinator.suggestAll([field]);
+
+  expect(multiAnalysis).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ features: [feature] }));
+  for (const key of allFields) {
+    expect(fieldValues[key].value).toEqual(key === field ? suggestedValues[key] : originals[key]);
+  }
+  expect(trackAIChange).toHaveBeenCalledTimes(1);
+  expect(addToast).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ css: 'info' }));
+});
+
+it('does not request or create suggestion state for an explicitly empty selection', async () => {
+  const { actions, coordinator, description, descriptionActions, title, titleActions, values } = setup();
+  const fieldValues = { title, cve_description: description, ...values };
+  const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
+  await coordinator.suggestAll([]);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+  expect(singleAnalysis).not.toHaveBeenCalled();
+  expect(trackAIChange).not.toHaveBeenCalled();
+  expect(addToast).not.toHaveBeenCalled();
+  expect(coordinator.isFetching.value).toBe(false);
+  expect(coordinator.canSuggest.value).toBe(true);
+  expect(titleActions.hasAppliedTitleSuggestion.value).toBe(false);
+  expect(descriptionActions.hasAppliedDescriptionSuggestion.value).toBe(false);
+  for (const field of fields) expect(actions[field].hasAppliedSuggestion.value).toBe(false);
+  for (const field of allFields) expect(fieldValues[field].value).toEqual(originals[field]);
+});
+
+it('filters disabled and duplicate selections without requesting unselected enabled features', async () => {
+  const { coordinator, description, title, values } = setup();
+  runtime.value.flags = { aiTitleSuggestions: true, aiCvssSuggestions: true };
+  await coordinator.suggestAll(['cve_description', 'impact']);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+  expect(singleAnalysis).not.toHaveBeenCalled();
+  expect(trackAIChange).not.toHaveBeenCalled();
+  expect(addToast).not.toHaveBeenCalled();
+  expect(coordinator.isFetching.value).toBe(false);
+  await coordinator.suggestAll(['title', 'title', 'cve_description', 'impact']);
+
+  expect(multiAnalysis).toHaveBeenCalledTimes(1);
+  expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
+    features: ['suggest-description'],
+  }));
+  expect(title.value).toBe('AI title');
+  expect(description.value).toBe('Original description');
+  expect(values.impact.value).toBe('original');
+  expect(values._cvss3_vector.value).toBe('original');
+  expect(trackAIChange).toHaveBeenCalledTimes(1);
+});
+
+it('recomputes requested features when runtime flags change between requests', async () => {
+  const { coordinator, description, title, values } = setup();
+  runtime.value.flags!.aiTitleSuggestions = false;
+  await coordinator.suggestAll(['title', 'impact']);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(1, expect.objectContaining({ features: ['suggest-impact'] }));
+  expect(title.value).toBe('Original title');
+  expect(values.impact.value).toBe('IMPORTANT');
+
+  runtime.value.flags!.aiTitleSuggestions = true;
+  runtime.value.flags!.aiImpactSuggestions = false;
+  await coordinator.suggestAll(['title', 'impact']);
+  expect(multiAnalysis).toHaveBeenCalledTimes(2);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({ features: ['suggest-description'] }));
+  expect(title.value).toBe('AI title');
+  expect(description.value).toBe('Original description');
+  expect(values._cvss3_vector.value).toBe('original');
+  expect(trackAIChange).toHaveBeenCalledTimes(2);
+});
+
+it('preserves selected text and in-place array edits during a request and leaves unchecked fields intact', async () => {
+  let resolve!: (result: typeof response) => void;
+  multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+  const { coordinator, description, title, values } = setup();
+  const pending = coordinator.suggestAll(['title', 'components', 'impact']);
+  title.value = 'Unsaved edit while waiting';
+  (values.components.value as string[]).push('added while waiting');
+  resolve(response);
+  await pending;
+
+  expect(title.value).toBe('Unsaved edit while waiting');
+  expect(values.components.value).toEqual(['original', 'added while waiting']);
+  expect(values.impact.value).toBe('IMPORTANT');
+  expect(description.value).toBe('Original description');
+  expect(values._cvss3_vector.value).toBe('original');
+  expect(trackAIChange).toHaveBeenCalledTimes(1);
+  expect(addToast).toHaveBeenCalledWith(expect.objectContaining({
+    css: 'warning', body: expect.stringContaining('title, components'),
+  }));
+});
+
+it('keeps failed selected fields intact and supports retry without applying successful unchecked results', async () => {
+  multiAnalysis.mockResolvedValueOnce({
+    results: { ...response.results, 'suggest-impact': null },
+    errors: { 'suggest-impact': { error: 'RuntimeError', detail: 'Analysis timed out' } },
+  });
+  const { coordinator, description, title, values } = setup();
+  await coordinator.suggestAll(['title', '_cvss3_vector']);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(1, expect.objectContaining({
+    features: ['suggest-description', 'suggest-impact'],
+  }));
+  expect(title.value).toBe('AI title');
+  expect(description.value).toBe('Original description');
+  expect(values._cvss3_vector.value).toBe('original');
+  expect(values.impact.value).toBe('original');
+  expect(values.components.value).toEqual(['original']);
+  expect(addToast).toHaveBeenCalledWith(expect.objectContaining({
+    css: 'warning', body: expect.stringContaining('suggest-impact: Analysis timed out'),
+  }));
+  await coordinator.suggestAll(['_cvss3_vector']);
+  expect(multiAnalysis).toHaveBeenCalledTimes(2);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({ features: ['suggest-impact'] }));
+  expect(values._cvss3_vector.value).toBe(response.results['suggest-impact'].cvss3_vector);
+  expect(values.impact.value).toBe('original');
+});
+
+it('reports only a missing selected feature and allows retry without applying unrelated results', async () => {
+  multiAnalysis.mockResolvedValueOnce({ results: { 'suggest-cwe': response.results['suggest-cwe'] }, errors: {} });
+  const { actions, coordinator, values } = setup();
+  await coordinator.suggestAll(['mitigation']);
+
+  expect(multiAnalysis).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ features: ['suggest-statement'] }));
+  expect(values.mitigation.value).toBe('original');
+  expect(values.statement.value).toBe('original');
+  expect(values.cwe_id.value).toBe('original');
+  expect(actions.mitigation.hasAppliedSuggestion.value).toBe(false);
+  expect(trackAIChange).not.toHaveBeenCalled();
+  expect(coordinator.isFetching.value).toBe(false);
+  expect(addToast).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+    css: 'warning',
+    body: expect.stringContaining('suggest-statement: No suggestion returned.'),
+  }));
+  expect(addToast.mock.calls[0][0].body).not.toMatch(
+    /suggest-description|suggest-impact|suggest-cwe|suggest-affected-components/,
+  );
+
+  await coordinator.suggestAll(['mitigation']);
+  expect(multiAnalysis).toHaveBeenCalledTimes(2);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({ features: ['suggest-statement'] }));
+  expect(values.mitigation.value).toBe('AI mitigation');
+  expect(values.statement.value).toBe('original');
+  expect(values.cwe_id.value).toBe('original');
+  expect(trackAIChange).toHaveBeenCalledTimes(1);
+});
+
 it('applies successful results and reports per-feature failures without clearing failed fields', async () => {
   multiAnalysis.mockResolvedValueOnce({
     results: { ...response.results, 'suggest-impact': null },
@@ -232,11 +464,11 @@ it('keeps user edits made during a request', async () => {
   }));
 });
 
-it.each(['identity', 'cve', 'unmount'])('ignores stale results after a change to %s', async (change) => {
+it.each(['identity', 'cve', 'unmount'])('ignores stale selected results after a change to %s', async (change) => {
   let resolve!: (result: typeof response) => void;
   multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
   const { context, coordinator, identity, title, wrapper } = setup();
-  const pending = coordinator.suggestAll();
+  const pending = coordinator.suggestAll(['title']);
   if (change === 'identity') identity.value = { uuid: 'flaw-2' };
   if (change === 'cve') context.cveId.value = 'CVE-2024-9999';
   if (change === 'unmount') wrapper.unmount();
@@ -244,6 +476,8 @@ it.each(['identity', 'cve', 'unmount'])('ignores stale results after a change to
   await pending;
   expect(title.value).toBe('Original title');
   expect(trackAIChange).not.toHaveBeenCalled();
+  expect(addToast).not.toHaveBeenCalled();
+  expect(coordinator.isFetching.value).toBe(false);
 });
 
 it('clears loading state on request failure and allows retry', async () => {
@@ -274,11 +508,11 @@ it('reports missing results without clearing fields or blocking successful sugge
   }));
 });
 
-it('skips fields whose feature flag is disabled while a request is pending', async () => {
+it('skips selected fields whose feature flag is disabled while a request is pending', async () => {
   let resolve!: (result: typeof response) => void;
   multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
   const { coordinator, description, title, titleActions } = setup();
-  const pending = coordinator.suggestAll();
+  const pending = coordinator.suggestAll(['title', 'cve_description']);
   runtime.value.flags!.aiTitleSuggestions = false;
   resolve(response);
   await pending;

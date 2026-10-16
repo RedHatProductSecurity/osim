@@ -479,7 +479,7 @@ describe('flawForm', () => {
     flaw.meta_attr = {};
     const subject = mountWithProps(flaw, { mode: 'edit' });
 
-    const bugzillaLink = subject.find('.osim-flaw-header-link > a');
+    const bugzillaLink = subject.find('.osim-flaw-header-link a[href*="show_bug.cgi"]');
     expect(bugzillaLink.exists()).toBe(false);
   });
 

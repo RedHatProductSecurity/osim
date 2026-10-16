@@ -8,17 +8,17 @@ import type { DescriptionSuggestionDetails, SuggestableFlawFields, SuggestionDet
 import { serializeAegisContext, type AegisSuggestionContextRefs } from './useAegisSuggestionContext';
 
 export type AegisSuggestionData = DescriptionSuggestionDetails & Partial<SuggestionDetails>;
-type SuggestionField = 'cve_description' | 'title' | SuggestableFlawFields;
+export type SuggestionField = 'cve_description' | 'title' | SuggestableFlawFields;
 
 const fieldConfig = {
-  title: { feature: 'suggest-description', flag: 'aiTitleSuggestions' },
-  cve_description: { feature: 'suggest-description', flag: 'aiDescriptionSuggestions' },
-  components: { feature: 'suggest-affected-components', flag: 'aiComponentSuggestions' },
-  impact: { feature: 'suggest-impact', flag: 'aiImpactSuggestions' },
-  _cvss3_vector: { feature: 'suggest-impact', flag: 'aiCvssSuggestions' },
-  cwe_id: { feature: 'suggest-cwe', flag: 'aiCweSuggestions' },
-  statement: { feature: 'suggest-statement', flag: 'aiStatementSuggestions' },
-  mitigation: { feature: 'suggest-statement', flag: 'aiMitigationSuggestions' },
+  title: { feature: 'suggest-description', flag: 'aiTitleSuggestions', label: 'Title' },
+  cve_description: { feature: 'suggest-description', flag: 'aiDescriptionSuggestions', label: 'Description' },
+  components: { feature: 'suggest-affected-components', flag: 'aiComponentSuggestions', label: 'Source Component' },
+  impact: { feature: 'suggest-impact', flag: 'aiImpactSuggestions', label: 'Impact' },
+  _cvss3_vector: { feature: 'suggest-impact', flag: 'aiCvssSuggestions', label: 'CVSS v3' },
+  cwe_id: { feature: 'suggest-cwe', flag: 'aiCweSuggestions', label: 'CWE' },
+  statement: { feature: 'suggest-statement', flag: 'aiStatementSuggestions', label: 'Statement' },
+  mitigation: { feature: 'suggest-statement', flag: 'aiMitigationSuggestions', label: 'Mitigation' },
 } as const;
 
 type SuggestionParticipant = {
@@ -46,18 +46,29 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
   onScopeDispose(() => { disposed = true; });
 
   const enabledParticipants = computed(() => [...participants].filter(item => isEnabled(item.field)));
+  const fields = computed(() => enabledParticipants.value.map(({ field, value }) => ({
+    field,
+    label: fieldConfig[field].label,
+    isEmpty: value.value == null
+    || (typeof value.value === 'string' && !value.value.trim())
+    || (Array.isArray(value.value) && value.value.length === 0),
+  })));
   const isVisible = computed(() => enabledParticipants.value.length > 0);
   const canSuggest = computed(() => isVisible.value
     && /^CVE-\d{4}-\d{4,7}$/i.test(context.cveId?.value ?? '')
     && !isFetching.value
     && ![...participants].some(item => item.isFetching.value));
 
-  /** Requests each enabled backend feature once and applies its result to registered fields. */
-  async function suggestAll() {
+  /** Requests each selected feature once and applies results only to selected fields. */
+  async function suggestAll(selectedFields?: SuggestionField[]) {
     if (!canSuggest.value) return;
+    const selected = new Set(selectedFields ?? enabledParticipants.value.map(item => item.field));
+    const requested = enabledParticipants.value
+      .filter(item => selected.has(item.field))
+      .map(item => ({ item, value: JSON.stringify(item.value.value) }));
+    if (!requested.length) return;
     const currentIdentity = identity();
     const contextData = serializeAegisContext(context);
-    const requested = enabledParticipants.value.map(item => ({ item, value: JSON.stringify(item.value.value) }));
     const features = [...new Set(requested.map(({ item }) => fieldConfig[item.field].feature))];
     isFetching.value = true;
     const started = Date.now();
@@ -87,7 +98,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
         }
       }
       toastStore.addToast({
-        title: 'Full Flaw Suggestions',
+        title: 'Multi Suggest',
         body: [
           'Request complete. Always review AI generated responses prior to use.',
           ...failures,
@@ -108,7 +119,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
     }
   }
 
-  const coordinator = { canSuggest, isFetching, isVisible, participants, suggestAll };
+  const coordinator = { canSuggest, fields, isFetching, isVisible, participants, suggestAll };
   provide(fullFlawSuggestionsKey, coordinator);
   return coordinator;
 }

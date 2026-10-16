@@ -25,6 +25,7 @@ import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
 import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
 import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
 import AegisComponentActions from '@/components/Aegis/AegisComponentActions.vue';
+import AegisMultiSuggest from '@/components/Aegis/AegisMultiSuggest.vue';
 import IncidentRequestButton from '@/components/IncidentRequestDialog/IncidentRequestButton.vue';
 import UnprocessedFlawLabel from '@/components/UnprocessedFlawLabel/UnprocessedFlawLabel.vue';
 import SRPSummary from '@/components/CRA/SRPSummary.vue';
@@ -279,39 +280,34 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
           class="col-12 osim-alerts-banner"
           @expandFocusedComponent="expandFocusedComponent"
         />
-        <div class="text-end osim-flaw-header-link order-2">
-          <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
-            <UnprocessedFlawLabel :flaw="flaw" variant="inline" />
+        <div class="text-end osim-flaw-header-link order-2 align-items-start gap-3">
+          <AegisMultiSuggest
+            v-if="fullFlawSuggestions.isVisible.value"
+            :key="`${flaw.uuid}:${flaw.cve_id}`"
+            :coordinator="fullFlawSuggestions"
+            :disabled="isSaving || formDisabled"
+          />
+          <div>
+            <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
+              <UnprocessedFlawLabel :flaw="flaw" variant="inline" />
+              <a
+                v-if="flaw.meta_attr?.bz_id"
+                :href="bugzillaLink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+              </a>
+            </div>
             <a
-              v-if="flaw.meta_attr?.bz_id"
-              :href="bugzillaLink"
+              v-if="flaw.task_key"
+              :href="jiraTaskUrl(flaw.task_key)"
               target="_blank"
-              rel="noopener noreferrer"
+              class="d-block"
             >
-              Open in Bugzilla <i class="bi-box-arrow-up-right ms-2" />
+              Open in Jira <i class="bi-box-arrow-up-right ms-2" />
             </a>
           </div>
-          <a
-            v-if="flaw.task_key"
-            :href="jiraTaskUrl(flaw.task_key)"
-            target="_blank"
-            class="d-block"
-          >
-            Open in Jira <i class="bi-box-arrow-up-right ms-2" />
-          </a>
-        </div>
-        <div v-if="fullFlawSuggestions.isVisible.value" class="col-6 me-auto order-1 align-self-end ps-2 pt-2 pb-0">
-          <button
-            type="button"
-            class="ms-2 my-0 btn btn-primary"
-            :disabled="!fullFlawSuggestions.canSuggest.value || isSaving || formDisabled"
-            :aria-busy="fullFlawSuggestions.isFetching.value"
-            @click="fullFlawSuggestions.suggestAll"
-          >
-            <LoadingSpinner v-if="fullFlawSuggestions.isFetching.value" type="border" class="me-2" />
-            <i v-else class="bi bi-stars me-2" aria-hidden="true" />
-            Full Flaw Suggestions
-          </button>
         </div>
       </div>
       <div class="row osim-flaw-form-section">
@@ -709,12 +705,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
 <style scoped lang="scss">
 .osim-flaw-header-link {
   display: flex;
-  flex-direction: column;
   width: auto;
-
-  .osim-alerts-banner + & {
-    position: absolute;
-  }
 }
 
 form.osim-flaw-form :deep(*) {
