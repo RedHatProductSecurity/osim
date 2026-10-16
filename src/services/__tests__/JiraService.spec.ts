@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { osimRuntime } from '@/stores/osimRuntime';
-import { getJiraTransitions, postJiraTransition, closeJiraIssue, getCloseTransition,
+import { getJiraTransitions, postJiraTransition, closeJiraIssue, getCloseTransition, prepareCloseTransition,
   type JiraTransition } from '@/services/JiraService';
 
 vi.mock('@/stores/UserStore', () => ({ useUserStore: () => ({ userEmail: 'test@example.com' }) }));
@@ -48,6 +48,26 @@ describe('jira close transition', () => {
     expect((global.fetch as any).mock.calls[0][0]).toContain('expand=transitions.fields');
     expect(getCloseTransition(data!.transitions)).toEqual(transition);
     expect(getCloseTransition([{ id: '11', name: 'Done', to: { name: 'Done' } }])).toBeUndefined();
+  });
+
+  it('prepares only close transitions with selectable required fields', () => {
+    expect(prepareCloseTransition([transition])).toEqual({ transition });
+    expect(prepareCloseTransition([])).toEqual({ error: 'no transition to Closed' });
+    expect(prepareCloseTransition([{ ...transition,
+      fields: {
+        ...transition.fields,
+        resolution: { name: 'Resolution', required: true, operations: ['set'], allowedValues: [] },
+      } }])).toEqual({ error: 'no selectable resolution on close transition' });
+    expect(prepareCloseTransition([{ ...transition,
+      fields: {
+        ...transition.fields,
+        customfield_10873: { name: 'VEX Justification', required: true, operations: [], allowedValues: [] },
+      } }])).toEqual({ error: 'required VEX justification is unavailable' });
+    expect(prepareCloseTransition([{ ...transition,
+      fields: {
+        ...transition.fields,
+        customfield_123: { name: 'Unsupported field', required: true },
+      } }])).toEqual({ error: 'required fields not supported: Unsupported field' });
   });
 
   it('sends resolution, VEX and ADF comment together in one request', async () => {

@@ -29,7 +29,7 @@ import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { getTrackersForFlaws } from '@/services/TrackerService';
 import {
-  closeJiraIssue, getCloseTransition, getJiraTransitions, type JiraCloseChoice, type JiraTransition,
+  closeJiraIssue, getJiraTransitions, prepareCloseTransition, type JiraCloseChoice, type JiraTransition,
 } from '@/services/JiraService';
 import { getTrackerAutomanagerStatus, type TrackerAutomanagerRecordType } from '@/services/TrackerAutomanagerService';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -449,6 +449,22 @@ export function useAffectsTable(
     }
   }
 
+  function addCloseOptions(transition: JiraTransition) {
+    const options = transition.fields!.resolution.allowedValues!.map(v =>
+      ({ id: v.id, name: v.name ?? v.value ?? v.id }));
+    closeResolutions.value = Object.keys(closeTransitions.value).length === 1
+      ? options
+      : closeResolutions.value.filter(option => options.some(v => v.name === option.name));
+    const vex = Object.values(transition.fields ?? {}).find(field => field.name === 'VEX Justification');
+    if (vex?.required) closeRequiresVex.value = true;
+    const vexOptions = vex?.operations?.includes('set')
+      ? (vex.allowedValues ?? []).map(v => ({ id: v.id, name: v.value ?? v.name ?? v.id }))
+      : [];
+    closeVexOptions.value = Object.keys(closeTransitions.value).length === 1
+      ? vexOptions
+      : closeVexOptions.value.filter(option => vexOptions.some(v => v.name === option.name));
+  }
+
   async function closeSelectedTrackers() {
     const rows = table.getSelectedRowModel().flatRows;
     if (!rows.length) return;
@@ -479,41 +495,13 @@ export function useAffectsTable(
         closeErrors.value.push(`${key}: could not load Jira close options: ${jiraError(result.reason)}`);
         return;
       }
-      const transition = getCloseTransition(result.value.data?.transitions ?? []);
-      if (!transition) {
-        closeErrors.value.push(`${key}: no transition to Closed`);
-        return;
-      }
-      const resolution = transition.fields?.resolution;
-      if (!resolution?.operations?.includes('set') || !resolution.allowedValues?.length) {
-        closeErrors.value.push(`${key}: no selectable resolution on close transition`);
-        return;
-      }
-      const vex = Object.values(transition.fields ?? {}).find(field => field.name === 'VEX Justification');
-      if (vex?.required && (!vex.operations?.includes('set') || !vex.allowedValues?.length)) {
-        closeErrors.value.push(`${key}: required VEX justification is unavailable`);
-        return;
-      }
-      const unsupported = Object.entries(transition.fields ?? {}).filter(([id, field]) =>
-        field.required && id !== 'resolution' && field.name !== 'VEX Justification');
-      if (unsupported.length) {
-        closeErrors.value.push(`${key}: required fields not supported: `
-        + unsupported.map(([, f]) => f.name).join(', '));
+      const { error, transition } = prepareCloseTransition(result.value.data?.transitions ?? []);
+      if (error || !transition) {
+        closeErrors.value.push(`${key}: ${error}`);
         return;
       }
       closeTransitions.value[key] = transition;
-      const options = resolution.allowedValues.map(v => ({ id: v.id, name: v.name ?? v.value ?? v.id }));
-      closeResolutions.value = Object.keys(closeTransitions.value).length === 1
-        ? options
-        : closeResolutions.value.filter(option => options.some(v => v.name === option.name));
-      if (vex?.required) closeRequiresVex.value = true;
-      const vexOptions = vex?.operations?.includes('set')
-        ? (vex.allowedValues ?? []).map(v => ({ id: v.id, name: v.value ?? v.name ?? v.id }))
-        : [];
-
-      closeVexOptions.value = Object.keys(closeTransitions.value).length === 1
-        ? vexOptions
-        : closeVexOptions.value.filter(option => vexOptions.some(v => v.name === option.name));
+      addCloseOptions(transition);
     });
     if (keys.length && !closeResolutions.value.length) closeErrors.value.push('No common close resolution.');
     if (closeRequiresVex.value && !closeVexOptions.value.length) closeErrors.value.push('No common VEX justification.');

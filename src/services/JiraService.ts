@@ -188,6 +188,25 @@ export function getCloseTransition(transitions: JiraTransition[]) {
   return transitions.find(t => t.to?.name === 'Closed');
 }
 
+export function prepareCloseTransition(transitions: JiraTransition[]): { error?: string; transition?: JiraTransition } {
+  const transition = getCloseTransition(transitions);
+  if (!transition) return { error: 'no transition to Closed' };
+  const resolution = transition.fields?.resolution;
+  if (!resolution?.operations?.includes('set') || !resolution.allowedValues?.length) {
+    return { error: 'no selectable resolution on close transition' };
+  }
+  const vex = Object.values(transition.fields ?? {}).find(field => field.name === 'VEX Justification');
+  if (vex?.required && (!vex.operations?.includes('set') || !vex.allowedValues?.length)) {
+    return { error: 'required VEX justification is unavailable' };
+  }
+  const unsupported = Object.entries(transition.fields ?? {}).filter(([id, field]) =>
+    field.required && id !== 'resolution' && field.name !== 'VEX Justification');
+  if (unsupported.length) {
+    return { error: `required fields not supported: ${unsupported.map(([, field]) => field.name).join(', ')}` };
+  }
+  return { transition };
+}
+
 export async function postJiraTransition(issueKey: string, transition: JiraTransition, choice: JiraCloseChoice) {
   const resolution = transition.fields?.resolution;
   const vexField = Object.entries(transition.fields ?? {}).find(([, field]) => field.name === 'VEX Justification');
