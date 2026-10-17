@@ -25,7 +25,7 @@ const isLoading = computed(() => !flaw.value && !didFetchFail);
   <main>
     <FlawForm
       v-if="flaw?.uuid"
-      :key="`${flaw.uuid}-${flaw.updated_dt}`"
+      :key="flaw.uuid"
       mode="edit"
       @refresh:flaw="fetchFlaw(id)"
     />
