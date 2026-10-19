@@ -572,6 +572,7 @@ exports[`flawForm > mounts and renders 1`] = `
           </ul>
         </div>
       </div>
+      <!--v-if-->
       <div data-v-17587d65="" class="table-responsive">
         <div data-v-17587d65="" class="my-2 ms-2"> This Flaw does not have affects </div>
       </div>

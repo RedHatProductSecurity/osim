@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, toRaw, watch } from 'vue';
+import { onMounted, toRaw, watch, nextTick } from 'vue';
 
 import { FlexRender } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
@@ -8,8 +8,9 @@ import PaginationControls from '@/components/AffectsTable/PaginationControls.vue
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useAffectsModel } from '@/composables/useAffectsModel';
-import { useAffectsTable } from '@/composables/useAffectsTable';
+import { useAffectsTable, sessionFailedSelection } from '@/composables/useAffectsTable';
 
+import Modal from '@/widgets/Modal/Modal.vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import SortIcon from '@/widgets/SortIcon/SortIcon.vue';
 import DebouncedInput from '@/widgets/DebouncedInput/DebouncedInput.vue';
@@ -35,6 +36,7 @@ const {
   actions: {
     changeItemsPerPage,
     changePage,
+    closeDialog,
     closeSelectedTrackers,
     commitBulkEdits,
     deleteSelectedRows,
@@ -45,30 +47,55 @@ const {
     refreshData,
     revertAllChanges,
     selectRelatedTrackers,
+    submitCloseTrackers,
     toggleColumnVisibility,
     updateBulkEditField,
   },
   state: {
     bulkEditData,
     bulkEditVirtualRow,
+    closeChoice,
+    closeErrors,
+    closeRequiresVex,
+    closeResolutions,
+    closeRows,
+    closeVexOptions,
     columnFilters,
     currentAffects,
     currentPage,
     globalFilter,
     isBulkEditMode,
     isClosingTrackers,
+    isDiscoveringClose,
     isFetchingSuggestedTrackers,
     modifiedAffects,
     newAffects,
     pages,
     removedAffects,
     showAll,
+    showCloseDialog,
     table,
     totalPages,
   },
-} = useAffectsTable(() => emit('refresh:flaw'));
+} = useAffectsTable(() => emit('refresh:flaw'), (failed) => {
+  sessionFailedSelection.set(flaw.value.uuid, failed);
+});
 
 watch(() => initialAffects.value, () => refreshData());
+// The parent temporarily unmounts the table while reloading affects; restore failed selection on remount.
+async function restoreFailedSelection() {
+  const saved = sessionFailedSelection.get(flaw.value.uuid);
+  if (!saved || !flaw.value.affects?.length) return;
+  await nextTick();
+  for (const row of table.getCoreRowModel().flatRows) {
+    if (row.original.tracker?.external_system_id && saved.has(row.original.tracker.external_system_id)) {
+      row.toggleSelected(true);
+    }
+  }
+  sessionFailedSelection.delete(flaw.value.uuid);
+}
+watch(() => flaw.value.affects, restoreFailedSelection);
+onMounted(restoreFailedSelection);
 
 onMounted(() => {
   initializeAffects(toRaw(flaw.value.affects));
@@ -110,7 +137,8 @@ onMounted(() => {
       </button>
       <button
         v-if="(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())
-          && table.getSelectedRowModel().flatRows.some(row => row.original.tracker?.type === 'JIRA')"
+          && table.getSelectedRowModel().flatRows.some(row => row.original.tracker?.type === 'JIRA'
+            && row.original.tracker?.external_system_id)"
         v-osim-loading="isClosingTrackers"
         :disabled="isClosingTrackers"
         class="btn btn-warning text-nowrap"
@@ -213,6 +241,72 @@ onMounted(() => {
       />
     </div>
   </div>
+  <Modal v-if="showCloseDialog" :show="showCloseDialog" @close="closeDialog">
+    <template #title>Close Jira trackers</template>
+    <template #body>
+      <div class="alert alert-warning" role="alert">
+        <strong>
+          <i class="bi-exclamation-triangle-fill" aria-hidden="true"></i>
+          Close {{ closeRows.length }} selected Jira tracker(s)?
+        </strong>
+        <br>
+        Trackers can be reopened, but closing them may trigger downstream changes that are difficult to undo.
+      </div>
+      <p v-if="isDiscoveringClose" role="status">Checking Jira transitions…</p>
+      <div v-if="closeErrors.length" class="alert alert-danger" role="alert">
+        <strong>Cannot close the selected trackers. No changes were made.</strong>
+        <p class="mb-1">Review the issues below, then change your selection or try again.</p>
+        <div v-for="error in closeErrors" :key="error">{{ error }}</div>
+      </div>
+      <template v-if="!isDiscoveringClose && !closeErrors.length">
+        <label for="close-resolution" class="form-label">Resolution</label>
+        <select
+          id="close-resolution"
+          v-model="closeChoice.resolution"
+          class="form-select mb-3"
+        >
+          <option value="">Select resolution</option>
+          <option v-for="option in closeResolutions" :key="option.id" :value="option.id">{{ option.name }}</option>
+        </select>
+        <label for="close-vex" class="form-label">
+          VEX Justification {{ closeRequiresVex ? '(required)' : '(optional)' }}
+        </label>
+        <select
+          id="close-vex"
+          v-model="closeChoice.vexJustification"
+          class="form-select mb-3"
+          :disabled="!closeVexOptions.length"
+        >
+          <option value="">None</option>
+          <option v-for="option in closeVexOptions" :key="option.id" :value="option.id">{{ option.name }}</option>
+        </select>
+        <label for="close-comment" class="form-label">Comment (optional)</label>
+        <textarea
+          id="close-comment"
+          v-model="closeChoice.comment"
+          class="form-control"
+          rows="3"
+        ></textarea>
+      </template>
+    </template>
+    <template #footer>
+      <button
+        class="btn btn-secondary"
+        type="button"
+        :disabled="isClosingTrackers"
+        @click="closeDialog"
+      >Cancel</button>
+      <button
+        class="btn btn-warning"
+        type="button"
+        :disabled="isClosingTrackers || isDiscoveringClose || !!closeErrors.length
+          || !closeChoice.resolution || (closeRequiresVex && !closeChoice.vexJustification)"
+        @click="submitCloseTrackers"
+      >
+        {{ isClosingTrackers ? 'Closing…' : 'Close trackers' }}
+      </button>
+    </template>
+  </Modal>
   <div class="table-responsive">
     <table v-if="currentAffects.length > 0" class="table table-striped mb-0 z-0">
       <thead class="sticky-top table-dark">

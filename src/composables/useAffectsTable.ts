@@ -28,7 +28,9 @@ import { showSuccessToast } from '@/composables/service-helpers';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { getTrackersForFlaws } from '@/services/TrackerService';
-import { closeJiraIssue } from '@/services/JiraService';
+import {
+  closeJiraIssue, getJiraTransitions, prepareCloseTransition, type JiraCloseChoice, type JiraTransition,
+} from '@/services/JiraService';
 import { getTrackerAutomanagerStatus, type TrackerAutomanagerRecordType } from '@/services/TrackerAutomanagerService';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { TrackerSuggestions, ZodAffectType } from '@/types/zodAffect';
@@ -65,7 +67,28 @@ function createChangeHandler<T, K extends keyof T>(stateRef: MaybeRef<T>, key?: 
   };
 }
 
-export function useAffectsTable(onRefreshFlaw?: () => void) {
+function jiraError(error: any): string {
+  const data = error?.response?.data ?? error?.data;
+  const details = [...(data?.errorMessages ?? []), ...Object.values(data?.errors ?? {})].join('; ');
+  if (details) return details;
+  if (error?.response?.status) {
+    const status = error.response.statusText ? ` ${error.response.statusText}` : '';
+    return `Jira returned HTTP ${error.response.status}${status}.`;
+  }
+  return error?.message || (typeof error === 'string' ? error : 'Could not reach Jira. Check your connection.');
+}
+
+// Survive AffectsTable unmounting while the parent reloads the flaw.
+export const sessionFailedSelection = new Map<string, Set<string>>();
+
+export function clearCloseTrackerSession(uuid: string) {
+  sessionFailedSelection.delete(uuid);
+}
+
+export function useAffectsTable(
+  onRefreshFlaw?: () => void,
+  onFailedSelection?: (failed: Set<string>) => void,
+) {
   const { settings } = storeToRefs(useSettingsStore());
 
   const {
@@ -198,6 +221,16 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
   const bulkEditChangedFields = ref<Set<keyof ZodAffectType>>(new Set());
   const bulkEditSelectedRowIds = ref<string[]>([]);
   const isClosingTrackers = ref(false);
+  const isDiscoveringClose = ref(false);
+  let discoveryRun = 0;
+  const showCloseDialog = ref(false);
+  const closeErrors = ref<string[]>([]);
+  const closeTransitions = ref<Record<string, JiraTransition>>({});
+  const closeResolutions = ref<Array<{ id: string; name: string }>>([]);
+  const closeVexOptions = ref<Array<{ id: string; name: string }>>([]);
+  const closeRequiresVex = ref(false);
+  const closeChoice = ref<JiraCloseChoice>({ resolution: '' });
+  const closeRows = ref<Array<{ id: string; key: string }>>([]);
 
   // Virtual row for bulk edit - represents the current bulk edit state
   // This allows enum functions and validations to work correctly
@@ -416,48 +449,136 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
     await table.options.meta?.fileTrackers(affectsWithoutTracker);
   }
 
+  function closeDialog() {
+    if (!isClosingTrackers.value) {
+      discoveryRun++;
+      showCloseDialog.value = false;
+    }
+  }
+
+  function addCloseOptions(transition: JiraTransition) {
+    const options = transition.fields!.resolution.allowedValues!.map(v =>
+      ({ id: v.id, name: v.name ?? v.value ?? v.id }));
+    closeResolutions.value = Object.keys(closeTransitions.value).length === 1
+      ? options
+      : closeResolutions.value.filter(option => options.some(v => v.name === option.name));
+    const vex = Object.values(transition.fields ?? {}).find(field => field.name === 'VEX Justification');
+    if (vex?.required) closeRequiresVex.value = true;
+    const vexOptions = vex?.operations?.includes('set')
+      ? (vex.allowedValues ?? []).map(v => ({ id: v.id, name: v.value ?? v.name ?? v.id }))
+      : [];
+    closeVexOptions.value = Object.keys(closeTransitions.value).length === 1
+      ? vexOptions
+      : closeVexOptions.value.filter(option => vexOptions.some(v => v.name === option.name));
+  }
+
   async function closeSelectedTrackers() {
-    const affectsWithJiraTracker = table.getSelectedRowModel().flatRows
-      .filter(row => row.original.tracker?.type === 'JIRA'
-      && row.original.tracker?.external_system_id)
-      .map(row => row.original);
+    const rows = table.getSelectedRowModel().flatRows;
+    if (!rows.length) return;
+    showCloseDialog.value = true;
+    const run = ++discoveryRun;
+    isDiscoveringClose.value = true;
+    closeErrors.value = [];
+    closeTransitions.value = {};
+    closeChoice.value = { resolution: '' };
+    closeRows.value = [];
+    closeResolutions.value = [];
+    closeVexOptions.value = [];
+    closeRequiresVex.value = false;
 
-    if (!affectsWithJiraTracker.length) return;
+    const ineligible = rows.filter(row => row.original.tracker?.type !== 'JIRA'
+      || !row.original.tracker.external_system_id);
+    closeErrors.value.push(...ineligible.map(row => `${row.id}: no Jira tracker`));
+    closeRows.value = rows.filter(row => !ineligible.includes(row))
+      .map(row => ({ id: row.id, key: row.original.tracker!.external_system_id }));
+    if (!closeRows.value.length) closeErrors.value.push('Select at least one Jira tracker.');
 
-    const count = affectsWithJiraTracker.length;
-    if (!confirm(`Close ${count} Jira tracker(s)? This cannot be undone.`)) return;
-
-    isClosingTrackers.value = true;
-    let successCount = 0;
-
-    const errors: string[] = [];
-    for (const affect of affectsWithJiraTracker) {
-      try {
-        await closeJiraIssue(affect.tracker!.external_system_id);
-        successCount++;
-      } catch (e) {
-        // HTTP errors are toasted by jiraFetch; surface logic errors (e.g. no close transition) here
-        if (e instanceof Error) {
-          errors.push(`${affect.tracker!.external_system_id}: ${e.message}`);
-        } else {
-          errors.push(`${affect.tracker!.external_system_id}: close failed`);
+    const keys = [...new Set(closeRows.value.map(row => row.key))];
+    const results = await Promise.allSettled(keys.map(key => getJiraTransitions(key)));
+    if (run !== discoveryRun) return;
+    results.forEach((result, i) => {
+      const key = keys[i];
+      if (result.status === 'rejected') {
+        closeErrors.value.push(`${key}: could not load Jira close options: ${jiraError(result.reason)}`);
+        return;
+      }
+      const { error, transition } = prepareCloseTransition(result.value.data?.transitions ?? []);
+      if (error || !transition) {
+        closeErrors.value.push(`${key}: ${error}`);
+        return;
+      }
+      closeTransitions.value[key] = transition;
+      addCloseOptions(transition);
+    });
+    if (keys.length && !closeResolutions.value.length) closeErrors.value.push('No common close resolution.');
+    if (closeRequiresVex.value && !closeVexOptions.value.length) closeErrors.value.push('No common VEX justification.');
+    if (closeRequiresVex.value) {
+      for (const key of Object.keys(closeTransitions.value)) {
+        if (!Object.values(closeTransitions.value[key].fields ?? {}).some(f =>
+          f.name === 'VEX Justification' && f.allowedValues?.length && f.operations?.includes('set'))) {
+          closeErrors.value.push(`${key}: no VEX justification options`);
         }
       }
     }
+    if (keys.length && Object.keys(closeTransitions.value).length !== keys.length && !closeErrors.value.length) {
+      closeErrors.value.push('Not all Jira trackers can be closed.');
+    }
+    isDiscoveringClose.value = false;
+  }
 
-    if (errors.length) {
-      useToastStore().addToast({
+  async function submitCloseTrackers() {
+    if (isClosingTrackers.value || isDiscoveringClose.value || closeErrors.value.length
+      || !closeChoice.value.resolution || (closeRequiresVex.value && !closeChoice.value.vexJustification)) return;
+    // All choices are checked against each issue before the first write.
+    const choices = [...new Set(closeRows.value.map(row => row.key))].map((key) => {
+      const transition = closeTransitions.value[key];
+      const resolution = transition.fields!.resolution.allowedValues!.find(v =>
+        (v.name ?? v.value ?? v.id) === closeResolutions.value.find(r => r.id === closeChoice.value.resolution)?.name);
+      const vexField = Object.values(transition.fields ?? {}).find(f => f.name === 'VEX Justification');
+      const selectedVex = closeVexOptions.value.find(o => o.id === closeChoice.value.vexJustification)?.name;
+      const vex = vexField?.allowedValues?.find(v => (v.value ?? v.name ?? v.id) === selectedVex);
+      return { key,
+        transition,
+        choice: { resolution: resolution?.id ?? '',
+          vexJustification: vex?.id,
+          comment: closeChoice.value.comment } };
+    });
+    if (choices.some(({ choice, transition }) => !choice.resolution
+      || (Object.values(transition.fields ?? {}).some(f => f.name === 'VEX Justification' && f.required)
+      && !choice.vexJustification)
+      || (closeChoice.value.vexJustification && !choice.vexJustification))) {
+      closeErrors.value.push('The selected choices are not valid for every tracker.');
+      return;
+    }
+    isClosingTrackers.value = true;
+    try {
+      const failed: string[] = [];
+      const succeeded = new Set<string>();
+      for (const { choice, key, transition } of choices) {
+        try {
+          await closeJiraIssue(key, transition, choice);
+          succeeded.add(key);
+        } catch (error) {
+          failed.push(`${key}: ${jiraError(error)}`);
+        }
+      }
+      showSuccessToast(succeeded.size, 'tracker', 'closed');
+      if (failed.length) useToastStore().addToast({
         title: 'Some trackers could not be closed',
-        body: errors.join('\n'),
+        body: `${failed.join('\n')}\nFailed trackers remain selected for the user to submit again.`,
         css: 'warning',
       });
+      if (succeeded.size) {
+        onFailedSelection?.(new Set(closeRows.value.filter(row => !succeeded.has(row.key)).map(row => row.key)));
+        for (const row of closeRows.value) {
+          if (succeeded.has(row.key)) table.getRow(row.id)?.toggleSelected(false);
+        }
+        onRefreshFlaw?.();
+      }
+    } finally {
+      showCloseDialog.value = false;
+      isClosingTrackers.value = false;
     }
-    if (successCount > 0) {
-      showSuccessToast(successCount, 'tracker', 'closed');
-      table.resetRowSelection();
-      onRefreshFlaw?.();
-    }
-    isClosingTrackers.value = false;
   }
 
   function fitColumnWidth(column: Column<ZodAffectType>) {
@@ -591,11 +712,21 @@ export function useAffectsTable(onRefreshFlaw?: () => void) {
       bulkEditSelectedRowIds,
       bulkEditVirtualRow,
       isClosingTrackers,
+      isDiscoveringClose,
+      showCloseDialog,
+      closeErrors,
+      closeRows,
+      closeResolutions,
+      closeVexOptions,
+      closeRequiresVex,
+      closeChoice,
     },
     actions: {
       changeItemsPerPage,
       changePage,
       closeSelectedTrackers,
+      closeDialog,
+      submitCloseTrackers,
       deleteSelectedRows,
       fileSelectedTrackers,
       fitColumnWidth,
