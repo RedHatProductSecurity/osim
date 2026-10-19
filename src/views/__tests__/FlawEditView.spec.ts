@@ -57,6 +57,14 @@ describe('flawEditView', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
+  it('keys the flaw form by uuid', async () => {
+    const wrapper = mountFlawEditView();
+
+    await flushPromises();
+
+    expect(wrapper.findComponent({ name: 'FlawForm' }).vm.$.vnode.key).toBe(sampleFlawRequired.uuid);
+  });
+
   it('should call `getFlaw` when mounted', () => {
     mountFlawEditView();
     expect(getFlaw).toHaveBeenNthCalledWith(1, 'some_fake_uuid');

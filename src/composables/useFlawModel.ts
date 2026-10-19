@@ -274,7 +274,10 @@ export function useFlawModel() {
         }, shouldCreateJiraTask.value);
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
-        afterSuccessQueue.push(() => setFlaw(response));
+        afterSuccessQueue.push(() => setFlaw({
+          ...response,
+          affects: flaw.value.affects,
+        }));
       },
       );
     }
