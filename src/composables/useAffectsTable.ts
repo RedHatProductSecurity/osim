@@ -78,6 +78,13 @@ function jiraError(error: any): string {
   return error?.message || (typeof error === 'string' ? error : 'Could not reach Jira. Check your connection.');
 }
 
+// Survive AffectsTable unmounting while the parent reloads the flaw.
+export const sessionFailedSelection = new Map<string, Set<string>>();
+
+export function clearCloseTrackerSession(uuid: string) {
+  sessionFailedSelection.delete(uuid);
+}
+
 export function useAffectsTable(
   onRefreshFlaw?: () => void,
   onFailedSelection?: (failed: Set<string>) => void,

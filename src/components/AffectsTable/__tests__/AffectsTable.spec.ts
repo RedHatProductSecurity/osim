@@ -5,6 +5,7 @@ import { createTestingPinia } from '@pinia/testing';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useAffectsModel } from '@/composables/useAffectsModel';
+import { clearCloseTrackerSession } from '@/composables/useAffectsTable';
 
 import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import type { ZodFlawType } from '@/types';
@@ -14,7 +15,6 @@ import * as JiraService from '@/services/JiraService';
 import { useToastStore } from '@/stores/ToastStore';
 
 import AffectsTable from '../AffectsTable.vue';
-import { clearCloseTrackerSession } from '../closeTrackerSession';
 
 createTestingPinia();
 

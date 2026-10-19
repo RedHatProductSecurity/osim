@@ -8,7 +8,7 @@ import PaginationControls from '@/components/AffectsTable/PaginationControls.vue
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useAffectsModel } from '@/composables/useAffectsModel';
-import { useAffectsTable } from '@/composables/useAffectsTable';
+import { useAffectsTable, sessionFailedSelection } from '@/composables/useAffectsTable';
 
 import Modal from '@/widgets/Modal/Modal.vue';
 import { useSettingsStore } from '@/stores/SettingsStore';
@@ -19,7 +19,6 @@ import ColumnFilter from './ColumnFilter.vue';
 import ColumnOptions from './ColumnOptions.vue';
 import BulkEditCell from './BulkEditCell.vue';
 import MultiFlawTracker from './MultiFlawTracker.vue';
-import { sessionFailedSelection } from './closeTrackerSession';
 
 const emit = defineEmits<{
   (e: 'refresh:flaw'): void;
