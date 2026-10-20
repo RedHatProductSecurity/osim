@@ -1,4 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { nextTick, type Ref } from 'vue';
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DateTime } from 'luxon';
 import { flushPromises } from '@vue/test-utils';
 
@@ -9,8 +11,17 @@ import CvssCalculator from '@/components/CvssCalculator/CvssCalculator.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
 import CweSelector from '@/components/CweSelector/CweSelector.vue';
+import AegisTitleActions from '@/components/Aegis/AegisTitleActions.vue';
+import AegisComponentActions from '@/components/Aegis/AegisComponentActions.vue';
+import AegisDescriptionActions from '@/components/Aegis/AegisDescriptionActions.vue';
+import AegisStatementActions from '@/components/Aegis/AegisStatementActions.vue';
+import AegisImpactActions from '@/components/Aegis/AegisImpactActions.vue';
+import AegisCvssActions from '@/components/Aegis/AegisCvssActions.vue';
+import AegisCweActions from '@/components/Aegis/AegisCweActions.vue';
+import AegisMitigationActions from '@/components/Aegis/AegisMitigationActions.vue';
 
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import DropDownMenu from '@/widgets/DropDownMenu/DropDownMenu.vue';
 import LabelEditable from '@/widgets/LabelEditable/LabelEditable.vue';
@@ -23,6 +34,9 @@ import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirectiv
 import { flawImpactEnum, FlawSourceEnumWithBlank, flawSources, type ZodFlawType } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { FlawClassificationStateEnum } from '@/generated-client';
+import { osimRuntime } from '@/stores/osimRuntime';
+import type { OsimRuntimeType } from '@/types/zodOsim';
+import type { AegisChangeEntry } from '@/types/aegisAI';
 
 import { osimFullFlawTest } from './test-suite-helpers';
 
@@ -805,6 +819,120 @@ describe('flawForm', () => {
         expect(vm.errors.cwe_id).toBe('Only a single CWE is allowed');
       }
     });
+
+  describe('skipped suggestions through the rendered form and field parents', () => {
+    const warningSelector = '[role="button"][aria-label="AI-Bot suggestion unavailable"]';
+    const fields = [
+      { field: 'title', label: 'Title', component: AegisTitleActions, value: 'Discarded title' },
+      {
+        field: 'components',
+        label: 'Source Component',
+        component: AegisComponentActions,
+        value: ['openssl', 'libxml2'],
+      },
+      {
+        field: 'cve_description',
+        label: 'Description',
+        component: AegisDescriptionActions,
+        value: 'Discarded description',
+      },
+      { field: 'statement', label: 'Statement', component: AegisStatementActions, value: 'Discarded statement' },
+      { field: 'impact', label: 'Impact', component: AegisImpactActions, value: 'IMPORTANT' },
+      {
+        field: '_cvss3_vector',
+        label: 'CVSS',
+        component: AegisCvssActions,
+        value: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+      },
+      { field: 'cwe_id', label: 'CWE ID', component: AegisCweActions, value: 'CWE-79' },
+      { field: 'mitigation', label: 'Mitigation', component: AegisMitigationActions, value: 'Discarded mitigation' },
+    ];
+    const skip: AegisChangeEntry = {
+      type: 'AI-Bot-Skipped',
+      timestamp: '2026-10-20T10:00:00Z',
+      skip_reason: 'confidence',
+      confidence: 0.6,
+      tools_used: ['external_references_tool'],
+    };
+    const runtime = osimRuntime as Ref<OsimRuntimeType>;
+    const tracking = useAegisMetadataTracking();
+    let previousFlags: OsimRuntimeType['flags'];
+    let subject: ReturnType<typeof mountWithProps> | undefined;
+
+    beforeEach(() => {
+      previousFlags = runtime.value.flags;
+      runtime.value.flags = {
+        aiTitleSuggestions: false,
+        aiComponentSuggestions: false,
+        aiDescriptionSuggestions: false,
+        aiStatementSuggestions: false,
+        aiImpactSuggestions: false,
+        aiCvssSuggestions: false,
+        aiCweSuggestions: false,
+        aiMitigationSuggestions: false,
+      };
+      tracking.setAegisMetadata({});
+    });
+
+    afterEach(() => {
+      subject?.unmount();
+      subject = undefined;
+      tracking.setAegisMetadata({});
+      runtime.value.flags = previousFlags;
+      useFlaw().resetFlaw();
+    });
+
+    it('renders all eight recorded warnings beside their fields when every suggestion flag is disabled', async () => {
+      tracking.setAegisMetadata(Object.fromEntries(fields.map(({ field, value }) => [field, [{
+        ...skip,
+        value,
+        skip_description: `${field}: recorded skip reason`,
+      }]])));
+      subject = mountWithProps({ ...blankFlaw(), uuid: 'test-skipped-flaw' }, { mode: 'edit' });
+      await flushPromises();
+
+      expect(subject.findAll(warningSelector)).toHaveLength(8);
+      for (const { component, field, label, value } of fields) {
+        const actions = subject.findComponent(component);
+        expect(actions.exists()).toBe(true);
+        const warning = actions.get(warningSelector);
+        expect(warning.isVisible()).toBe(true);
+        expect(warning.element.closest('.form-label')?.textContent).toContain(label);
+        expect(actions.get('.bi-stars').classes()).toContain('disabled');
+        await warning.trigger('click');
+        expect(actions.get('.aegis-tooltip').text()).toContain(`${field}: recorded skip reason`);
+        const displayedValue = field === 'components' ? 'openssl, libxml2' : value;
+        expect(actions.get('.aegis-tooltip').text()).toContain(`Discarded suggestion: ${displayedValue}`);
+        expect(actions.get('.aegis-tooltip').text()).toContain('Confidence: 0.60');
+        expect(actions.get('.aegis-tooltip').text()).toContain('external_references_tool');
+        await warning.trigger('blur');
+      }
+      expect(subject.find('.bi-robot, .bi-hand-thumbs-up, .bi-hand-thumbs-down').exists()).toBe(false);
+    });
+
+    it('mounts only the affected field and removes its actions after a superseding manual entry', async () => {
+      subject = mountWithProps({ ...blankFlaw(), uuid: 'test-skipped-flaw' }, { mode: 'edit' });
+      await flushPromises();
+      for (const { component } of fields) expect(subject.findComponent(component).exists()).toBe(false);
+
+      for (const { component, field } of fields) {
+        tracking.setAegisMetadata({ [field]: [skip] });
+        await nextTick();
+        const actions = subject.findComponent(component);
+        expect(actions.exists()).toBe(true);
+        expect(actions.get(warningSelector).isVisible()).toBe(true);
+        expect(subject.findAll(warningSelector)).toHaveLength(1);
+        await actions.get(warningSelector).trigger('click');
+        expect(actions.get('.aegis-tooltip').text()).toContain('Reason: confidence');
+
+        tracking.trackAIChange(field, 'Partial AI', 'Superseding manually edited value');
+        await nextTick();
+        expect(subject.findComponent(component).exists()).toBe(false);
+        expect(subject.find(warningSelector).exists()).toBe(false);
+        expect(subject.find('.aegis-tooltip').exists()).toBe(false);
+      }
+    });
+  });
 
   describe('field highlighting for AI-Bot suggestions', () => {
     it('should render Source Component field with highlighting when aegis metadata matches', async () => {

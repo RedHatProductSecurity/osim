@@ -51,7 +51,8 @@ const {
   'impact',
 );
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('impact'));
 
 const {
   canShowFeedbackExtended,
@@ -98,6 +99,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestImpact"
     @selectSuggestion="selectSuggestion"
     @revert="revertImpact"
