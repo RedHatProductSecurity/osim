@@ -137,8 +137,6 @@ function getLabelColor(label: string, type: string): string {
 </template>
 
 <style lang="scss" scoped>
-@import '@/scss/bootstrap-overrides';
-
 td.osim-issue-title {
   max-width: 10rem;
   overflow: hidden;
@@ -151,21 +149,21 @@ tr td {
 }
 
 tr.osim-shaded td {
-  background-color: $light-gray;
+  background-color: var(--osim-queue-striped-bg);
 }
 
 tr:hover {
   td {
-    background-color: #ffe3d9;
+    background-color: var(--osim-queue-hover-bg);
   }
 
   &.osim-issue-queue-item + tr.osim-badge-lane td {
-    background-color: #ffe3d9;
+    background-color: var(--osim-queue-hover-bg);
   }
 }
 
 tr.osim-issue-queue-item:has(+ tr.osim-badge-lane:hover) td {
-  background-color: #ffe3d9;
+  background-color: var(--osim-queue-hover-bg);
 }
 
 .osim-badge-lane {

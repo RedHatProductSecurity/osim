@@ -111,13 +111,13 @@ const shouldShowCreateJiraTaskButton = computed(
   }
 
   .osim-workflow-prefix {
-    color: #000;
+    color: var(--bs-body-color);
     font-size: 0.85em;
 
     .osim-state-value,
     .osim-workflow-value {
       font-weight: 600;
-      color: #000;
+      color: var(--bs-body-color);
     }
   }
 

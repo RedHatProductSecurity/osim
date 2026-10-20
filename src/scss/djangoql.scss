@@ -1,9 +1,9 @@
 .djangoql-completion {
   position: absolute;
   z-index: 1100;
-  color: #212529;
-  background-color: #fff;
-  border: 1px solid rgb(0 0 0 / 15%);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
   box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
   border-radius: 0.25rem;
 
@@ -17,7 +17,7 @@
 
   .active,
   li:hover {
-    background-color: #ffe3d9;
-    color: #212529;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-emphasis-color);
   }
 }
