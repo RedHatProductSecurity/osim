@@ -93,6 +93,19 @@ function getAIBotEntry(fieldName: string): AegisChangeEntry | undefined {
   return aegisMetadata.value[fieldName]?.findLast(entry => entry.type === 'AI-Bot');
 }
 
+function getAIBotSkipTooltip(fieldName: string): string {
+  const entries = aegisMetadata.value[fieldName];
+  if (!Array.isArray(entries)) return '';
+  // A later suggestion or user change supersedes an earlier skip.
+  const entry = entries[entries.length - 1];
+  if (entry?.type !== 'AI-Bot-Skipped') return '';
+
+  const reason = entry.skip_description?.trim() || entry.skip_reason?.trim();
+  const title = 'Aegis-AI-Bot suggestion unavailable';
+  const tooltip = reason ? `${title}\n\nReason: ${reason}` : title;
+  return appendAegisSuggestionMetadata(tooltip, entry);
+}
+
 function formatUnitInterval(value: null | number | string | undefined): null | string {
   if (typeof value === 'string') value = value.trim();
   if (value == null || value === '') return null;
@@ -179,6 +192,7 @@ export function useAegisMetadataTracking() {
     isFieldAegisChange,
     isFieldValueAIBot,
     getAIBotEntry,
+    getAIBotSkipTooltip,
     getAIBotTooltip,
     hasAIBotProcessing,
   };
