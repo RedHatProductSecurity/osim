@@ -33,7 +33,8 @@ defineExpose({
   isSuggesting,
 });
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('cve_description'));
 
 const {
   canShowFeedbackExtended: canShowDescriptionFeedbackExtended,
@@ -76,6 +77,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="[]"
     :selectedIndex="0"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestDescription"
     @revert="revertDescription"
     @feedback="handleDescriptionFeedback"

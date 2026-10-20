@@ -261,7 +261,7 @@ const aegisSuggestDescriptionComposable = useAegisSuggestDescription({
   descriptionRef: descriptionRefForAegis,
 });
 
-const { isFieldValueAIBot } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
 
 // Helper function to check if an array field was populated by AI-Bot
 const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[] | undefined): boolean => {
@@ -326,7 +326,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                 ></i>
                 <AegisTitleActions
                   v-if="osimRuntime.flags?.aiTitleSuggestions ||
-                    isFieldValueAIBot('title', flaw.title)"
+                    isFieldValueAIBot('title', flaw.title) || getAIBotSkipTooltip('title')"
                   :composable="aegisSuggestTitleComposable"
                   :titleValue="flaw.title"
                 />
@@ -352,7 +352,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                 ></i>
                 <AegisComponentActions
                   v-if="osimRuntime.flags?.aiComponentSuggestions ||
-                    isArrayFieldValueAIBot('components', flaw.components)"
+                    isArrayFieldValueAIBot('components', flaw.components) || getAIBotSkipTooltip('components')"
                   v-model="flaw.components"
                   :aegisContext="aegisContext"
                 />
@@ -527,7 +527,8 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                   ></i>
                   <AegisDescriptionActions
                     v-if="osimRuntime.flags?.aiDescriptionSuggestions ||
-                      isFieldValueAIBot('cve_description', flaw.cve_description)"
+                      isFieldValueAIBot('cve_description', flaw.cve_description) ||
+                      getAIBotSkipTooltip('cve_description')"
                     :composable="aegisSuggestDescriptionComposable"
                     :descriptionValue="flaw.cve_description"
                   />
@@ -559,7 +560,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                   ></i>
                   <AegisStatementActions
                     v-if="osimRuntime.flags?.aiStatementSuggestions ||
-                      isFieldValueAIBot('statement', flaw.statement)"
+                      isFieldValueAIBot('statement', flaw.statement) || getAIBotSkipTooltip('statement')"
                     v-model="flaw.statement"
                     :aegisContext="aegisContext"
                   />

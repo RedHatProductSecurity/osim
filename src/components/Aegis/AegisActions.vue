@@ -13,6 +13,7 @@ const props = defineProps<{
   isFetchingSuggestion: boolean;
   isFieldAIBot?: boolean;
   selectedIndex: number;
+  skipTooltipText?: string;
   suggestions: string[];
   tooltipText: string;
 }>();
@@ -32,8 +33,10 @@ const isEmbargoed = computed(() => Boolean(flaw.value.embargoed));
 const showFeedbackModal = ref(false);
 const showSuggestionTooltip = ref(false);
 
+const showSkipWarning = computed(() => !props.hasAppliedSuggestion && !!props.skipTooltipText);
+
 const hasSuggestionTooltip = computed(() => {
-  return props.hasAppliedSuggestion || props.isFieldAIBot;
+  return props.hasAppliedSuggestion || props.isFieldAIBot || showSkipWarning.value;
 });
 
 function toggleSuggestionTooltip() {
@@ -60,8 +63,9 @@ function handleFeedbackCancel() {
 }
 
 const safeTooltipText = computed(() => {
-  if (!props.tooltipText) return '';
-  return props.tooltipText
+  const text = showSkipWarning.value ? props.skipTooltipText : props.tooltipText;
+  if (!text) return '';
+  return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -87,9 +91,13 @@ const safeTooltipText = computed(() => {
       @click.stop
     >
       <i
-        class="bi bi-info-circle me-1"
-        style="cursor: pointer; font-size: 0.9em; color: #6c757d;"
-        title="Click to see suggestion details"
+        class="bi me-1"
+        :class="showSkipWarning ? 'bi-exclamation-triangle text-warning' : 'bi-info-circle text-secondary'"
+        style="cursor: pointer; font-size: 0.9em;"
+        :title="showSkipWarning
+          ? 'Click to see why the AI-Bot suggestion is unavailable'
+          : 'Click to see suggestion details'"
+        :aria-label="showSkipWarning ? 'AI-Bot suggestion unavailable' : 'AI suggestion details'"
         role="button"
         tabindex="0"
         @click.stop.prevent="toggleSuggestionTooltip"
