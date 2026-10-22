@@ -1,6 +1,7 @@
 # OSIM Changelog
 ## [2026.10.1]
 ### Added
+* Show why an automated workflow label was applied, on the flaw state badge and in the flaw queue (`OSIDB-5347`)
 * Show optional Aegis suggestion metadata in tooltips (`OSIDB-5272`)
 * Link an existing Jira or Bugzilla tracker to another flaw's affect on demand, so one tracker can cover multiple flaws without a manual sync (`OSIDB-5471`)
 * Show related entities audit entries in flaw history (`OSIDB-5687`)

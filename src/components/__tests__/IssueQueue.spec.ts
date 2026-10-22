@@ -271,6 +271,34 @@ describe('issueQueue', () => {
     expect(irrelevantLabel.classes()).toContain('text-decoration-line-through');
   });
 
+  it('should show a workflow label reason on the queue badge tooltip', () => {
+    const wrapper = mountIssueQueue({
+      issues: [{
+        ...mockData[0],
+        labels: [
+          {
+            name: 'potential-rejection',
+            type: 'workflow',
+            state: 'NEW',
+            contributor: '',
+            reason: 'The \'curl\' component is not in the strict package list.',
+          },
+          { name: 'alias-label', type: 'alias', state: 'NEW', contributor: '' },
+        ],
+      } as ZodFlawType],
+    });
+
+    const labels = wrapper.findComponent(IssueQueueItem).findAll('span.badge');
+    const workflowLabel = labels.find(label => label.text() === 'potential-rejection')!;
+    const aliasLabel = labels.find(label => label.text() === 'alias-label')!;
+
+    expect(workflowLabel.attributes('title')).toBe(
+      'The \'curl\' component is not in the strict package list.',
+    );
+    expect(workflowLabel.classes()).toContain('osim-label-reason');
+    expect(aliasLabel.attributes('title')).toBe('');
+  });
+
   it('should not render flaw labels that are already assigned', () => {
     const wrapper = mountIssueQueue({
       issues: [{

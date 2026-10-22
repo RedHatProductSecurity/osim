@@ -234,6 +234,8 @@ export const ZodFlawSchema = z.object({
     state: z.nativeEnum(StateEnum).optional(),
     contributor: z.string().optional(),
     relevant: z.boolean().optional(),
+    // Set by automation on workflow labels; absent on other label types.
+    reason: z.string().nullish(),
     type: z.nativeEnum(FlawLabelTypeEnum),
   })).nullish(),
   references: z.array(FlawReferenceSchema),

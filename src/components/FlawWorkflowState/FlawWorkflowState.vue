@@ -30,6 +30,10 @@ const workflowLabels = computed(() =>
   ),
 );
 
+function badgeTitle(label: ZodFlawLabelType): string {
+  return label.reason?.trim() || 'workflow label';
+}
+
 const shouldShowCreateJiraTaskButton = computed(
   () => props.classification?.state === FlawClassificationStateEnum.Empty,
 );
@@ -52,7 +56,8 @@ const shouldShowCreateJiraTaskButton = computed(
                 v-for="wfLabel in workflowLabels"
                 :key="wfLabel.name"
                 class="badge osim-workflow-label-badge me-1"
-                title="workflow label"
+                :class="{ 'osim-workflow-label-badge--explained': Boolean(wfLabel.reason?.trim()) }"
+                :title="badgeTitle(wfLabel)"
               >{{ wfLabel.name }}</span>
             </span>
           </template>
@@ -133,6 +138,12 @@ const shouldShowCreateJiraTaskButton = computed(
     background-color: #6c757d;
     color: #fff;
     border-radius: 0.25rem !important;
+
+    &--explained {
+      cursor: help;
+      text-decoration: underline dotted;
+      text-underline-offset: 0.15em;
+    }
   }
 
   .osim-next-state-btn {

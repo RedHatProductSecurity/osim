@@ -39,4 +39,41 @@ describe('flawWorkflowState', () => {
     const badges = wrapper.findAll('.osim-workflow-label-badge');
     expect(badges.length).toBe(0);
   });
+
+  it('should put a workflow label reason on the badge tooltip', () => {
+    const wrapper = mountWithConfig(FlawWorkflowState, {
+      props: {
+        flawUuid: 'test-uuid',
+        shouldCreateJiraTask: false,
+        classification: { workflow: 'MANUAL', state: 'NEW' },
+        labels: [
+          {
+            type: FlawLabelTypeEnum.WORKFLOW,
+            name: 'potential-rejection',
+            reason: 'The \'curl\' component is not in the strict package list, low confidence.',
+          },
+          {
+            type: FlawLabelTypeEnum.WORKFLOW,
+            name: 'auto-affects',
+            reason: '   ',
+          },
+          {
+            type: FlawLabelTypeEnum.CONTEXT_BASED,
+            name: 'ctx-label',
+            reason: 'Not a workflow explanation',
+          },
+        ],
+      },
+    });
+
+    const badges = wrapper.findAll('.osim-workflow-label-badge');
+    expect(badges.length).toBe(2);
+    expect(badges[0].attributes('title')).toBe(
+      'The \'curl\' component is not in the strict package list, low confidence.',
+    );
+    expect(badges[0].classes()).toContain('osim-workflow-label-badge--explained');
+    expect(badges[1].attributes('title')).toBe('workflow label');
+    expect(wrapper.text()).not.toContain('Not a workflow explanation');
+    expect(wrapper.find('.osim-workflow-explanation').exists()).toBe(false);
+  });
 });
