@@ -60,6 +60,12 @@ function hashLabelColor(label: string): string {
   return `hsl(${Math.abs(hash) % 360}, 55%, 82%)`;
 }
 
+function labelTooltip(label: NonNullable<FilteredIssue['labels']>[number]): string {
+  const reason = label.reason?.trim();
+  if (reason) return reason;
+  return label.state === 'REQ' ? 'Requested' : '';
+}
+
 function getLabelColor(label: string, type: string): string {
   if (type === 'context_based') {
     return '#B9BCCB';
@@ -125,8 +131,9 @@ function getLabelColor(label: string, type: string): string {
                 'text-bg-warning fw-bold border-warning': label.state == 'REQ',
                 'text-black': label.state != 'REQ' && label.relevant !== false,
                 'text-decoration-line-through text-bg-gray border-secondary': label.relevant === false,
+                'osim-label-reason': Boolean(label.reason?.trim()),
               }"
-              :title="label.state === 'REQ' ? 'Requested' : ''"
+              :title="labelTooltip(label)"
             >{{ label.name }}</span>
           </template>
         </template>
@@ -171,6 +178,12 @@ tr.osim-issue-queue-item:has(+ tr.osim-badge-lane:hover) td {
 .osim-badge-lane {
   .osim-show-all-labels {
     cursor: pointer;
+  }
+
+  .osim-label-reason {
+    cursor: help;
+    text-decoration: underline dotted;
+    text-underline-offset: 0.15em;
   }
 }
 </style>
