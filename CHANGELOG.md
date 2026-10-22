@@ -1,4 +1,9 @@
 # OSIM Changelog
+
+## [Unreleased]
+### Added
+* Show warning icons with recorded reasons and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled (`OSIDB-5469`)
+
 ## [2026.10.1]
 ### Added
 * Show why an automated workflow label was applied, on the flaw state badge and in the flaw queue (`OSIDB-5347`)

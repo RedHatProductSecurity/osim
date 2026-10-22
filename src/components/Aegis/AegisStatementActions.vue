@@ -42,7 +42,8 @@ const {
   'statement',
 );
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('statement'));
 
 const {
   canShowFeedbackExtended,
@@ -78,7 +79,7 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    v-if="osimRuntime.flags?.aiStatementSuggestions || isStatementAIBot"
+    v-if="osimRuntime.flags?.aiStatementSuggestions || isStatementAIBot || skipTooltip"
     :canSuggest="canSuggest && !!osimRuntime.flags?.aiStatementSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
@@ -88,6 +89,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestStatement"
     @selectSuggestion="selectSuggestion"
     @revert="revertStatement"
