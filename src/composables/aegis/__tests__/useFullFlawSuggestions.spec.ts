@@ -95,9 +95,55 @@ function setup() {
       return () => h(child);
     },
   }));
-  return {
-    coordinator, title, description, values, actions, titleActions, descriptionActions, context, identity, wrapper,
+  function fieldAction(field: SuggestableFlawFields, suggest: () => Promise<void>) {
+    return {
+      isLoading: actions[field].isFetchingSuggestion, canSuggest: actions[field].canSuggest, suggest,
+    };
+  }
+  const fieldActions: Record<SuggestionField, {
+    canSuggest: Ref<boolean>;
+    isLoading: Ref<boolean>;
+    suggest: () => Promise<void>;
+  }> = {
+    title: {
+      isLoading: titleActions.isSuggesting, canSuggest: titleActions.canSuggest, suggest: titleActions.suggestTitle,
+    },
+    cve_description: {
+      isLoading: descriptionActions.isSuggesting,
+      canSuggest: descriptionActions.canSuggest,
+      suggest: descriptionActions.suggestDescription,
+    },
+    components: fieldAction('components', actions.components.suggestComponents),
+    impact: fieldAction('impact', actions.impact.suggestImpact),
+    _cvss3_vector: fieldAction('_cvss3_vector', actions._cvss3_vector.suggestCvss),
+    cwe_id: fieldAction('cwe_id', actions.cwe_id.suggestCwe),
+    statement: fieldAction('statement', actions.statement.suggestStatement),
+    mitigation: fieldAction('mitigation', actions.mitigation.suggestMitigation),
   };
+  return {
+    coordinator,
+    title,
+    description,
+    values,
+    actions,
+    fieldActions,
+    titleActions,
+    descriptionActions,
+    context,
+    identity,
+    wrapper,
+  };
+}
+
+function expectFieldActivity(
+  fieldActions: ReturnType<typeof setup>['fieldActions'], loadingFields: SuggestionField[], busy: boolean,
+) {
+  for (const field of allFields) {
+    expect({ field, isLoading: fieldActions[field].isLoading.value }).toEqual({
+      field, isLoading: loadingFields.includes(field),
+    });
+    expect({ field, canSuggest: fieldActions[field].canSuggest.value }).toEqual({ field, canSuggest: !busy });
+  }
 }
 
 beforeEach(() => {
@@ -175,10 +221,18 @@ it('requests only enabled features and only applies enabled fields from shared r
 });
 
 it.each(allFields)('requests and applies only the selected %s field', async (selectedField) => {
-  const { actions, coordinator, description, descriptionActions, title, titleActions, values } = setup();
+  let resolve!: (result: typeof response) => void;
+  multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+  const { actions, coordinator, description, descriptionActions, fieldActions, title, titleActions, values } = setup();
   const fieldValues = { title, cve_description: description, ...values };
   const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
-  await coordinator.suggestAll([selectedField]);
+  const pending = coordinator.suggestAll([selectedField]);
+
+  expectFieldActivity(fieldActions, [selectedField], true);
+  for (const field of allFields) expect(fieldValues[field].value).toEqual(originals[field]);
+  resolve(response);
+  await pending;
+  expectFieldActivity(fieldActions, [], false);
 
   expect(multiAnalysis).toHaveBeenCalledTimes(1);
   expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({
@@ -203,6 +257,80 @@ it.each(allFields)('requests and applies only the selected %s field', async (sel
   else actions[selectedField].revert();
   for (const field of allFields) expect(fieldValues[field].value).toEqual(originals[field]);
   expect(untrackAIChange).toHaveBeenCalledTimes(1);
+});
+
+it('loads only CWE and Mitigation while blocking every suggestion action for the reported selection', async () => {
+  let resolve!: (result: typeof response) => void;
+  multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+  const { coordinator, description, fieldActions, title, values } = setup();
+  const fieldValues = { title, cve_description: description, ...values };
+  const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
+  const selected: SuggestionField[] = ['cwe_id', 'mitigation'];
+  const pending = coordinator.suggestAll(selected);
+
+  expectFieldActivity(fieldActions, selected, true);
+  expect(coordinator.canSuggest.value).toBe(false);
+  await coordinator.suggestAll(['title', 'statement']);
+  for (const field of allFields) await fieldActions[field].suggest();
+  expect(multiAnalysis).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+    features: ['suggest-cwe', 'suggest-statement'],
+  }));
+  expect(singleAnalysis).not.toHaveBeenCalled();
+  expectFieldActivity(fieldActions, selected, true);
+  for (const field of allFields) expect(fieldValues[field].value).toEqual(originals[field]);
+
+  resolve(response);
+  await pending;
+  expectFieldActivity(fieldActions, [], false);
+  expect(coordinator.canSuggest.value).toBe(true);
+  for (const field of allFields) {
+    expect(fieldValues[field].value).toEqual(selected.includes(field) ? suggestedValues[field] : originals[field]);
+  }
+});
+
+it.each(['completion', 'error'])('resets loading after %s and filters enabled selections on retry', async (outcome) => {
+  let resolveFirst!: (result: typeof response) => void;
+  let reject!: (error: Error) => void;
+  let resolve!: (result: typeof response) => void;
+  multiAnalysis
+    .mockReturnValueOnce(new Promise((done, fail) => { resolveFirst = done; reject = fail; }))
+    .mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+  const { coordinator, description, fieldActions, title, values } = setup();
+  const fieldValues = { title, cve_description: description, ...values };
+  const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
+  const first = coordinator.suggestAll(['cwe_id', 'mitigation']);
+  expectFieldActivity(fieldActions, ['cwe_id', 'mitigation'], true);
+  if (outcome === 'error') reject(new Error('Service unavailable'));
+  else resolveFirst(response);
+  await first;
+  expectFieldActivity(fieldActions, [], false);
+  expect(coordinator.canSuggest.value).toBe(true);
+  for (const field of allFields) {
+    expect(fieldValues[field].value).toEqual(
+      outcome === 'completion' && (field === 'cwe_id' || field === 'mitigation')
+        ? suggestedValues[field]
+        : originals[field],
+    );
+  }
+  const beforeRetry = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
+
+  runtime.value.flags!.aiImpactSuggestions = false;
+  const pending = coordinator.suggestAll(['title', 'impact', '_cvss3_vector']);
+  expectFieldActivity(fieldActions, ['title', '_cvss3_vector'], true);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({
+    features: ['suggest-description', 'suggest-impact'],
+  }));
+  runtime.value.flags!.aiImpactSuggestions = true;
+  expectFieldActivity(fieldActions, ['title', '_cvss3_vector'], true);
+  resolve(response);
+  await pending;
+  expectFieldActivity(fieldActions, [], false);
+  expect(coordinator.canSuggest.value).toBe(true);
+  for (const field of allFields) {
+    expect(fieldValues[field].value).toEqual(
+      field === 'title' || field === '_cvss3_vector' ? suggestedValues[field] : beforeRetry[field],
+    );
+  }
 });
 
 it.each<{ features: string[]; selected: SuggestionField[] }>([
