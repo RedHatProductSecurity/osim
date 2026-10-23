@@ -1,4 +1,8 @@
 # OSIM Changelog
+## [Unreleased]
+### Fixed
+* Show Aegis Multi Suggest loading indicators only for fields selected for generation
+
 ## [2026.10.1]
 ### Added
 * Show why an automated workflow label was applied, on the flaw state badge and in the flaw queue (`OSIDB-5347`)
