@@ -57,7 +57,12 @@ export function useFlawModel() {
   const aegisService = new AegisAIService();
 
   function getAegisMetadataIfChanged() {
-    return hasAegisChanges() ? { aegis_meta: getAegisMetadata() } : {};
+    if (!hasAegisChanges()) return {};
+    // Keep local notes, bot flags, and other non-history metadata authoritative.
+    const localMetadata = Object.fromEntries(
+      Object.entries(flaw.value.aegis_meta ?? {}).filter(([, value]) => !Array.isArray(value)),
+    );
+    return { aegis_meta: { ...getAegisMetadata(), ...localMetadata } };
   }
 
   function getFlawFieldValue(fieldName: string): string {

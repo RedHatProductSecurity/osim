@@ -31,7 +31,10 @@ function getAegisMetadata(): AegisMetadata {
 }
 
 function setAegisMetadata(metadata: AegisMetadata | null | undefined) {
-  aegisMetadata.value = metadata ? { ...metadata } : {};
+  // Analyst-authored notes belong to the local flaw, not the AI-change snapshot.
+  aegisMetadata.value = Object.fromEntries(
+    Object.entries(metadata ?? {}).filter(([fieldName]) => fieldName !== 'steering_notes'),
+  );
 }
 
 function hasAegisChanges(): boolean {

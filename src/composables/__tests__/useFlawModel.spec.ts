@@ -5,6 +5,7 @@ import { createTestingPinia } from '@pinia/testing';
 
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
+import { useAegisSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
 
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
@@ -61,7 +62,10 @@ describe('useFlawModel', () => {
   const mountFlawModel = () => {
     const pinia = createTestingPinia();
     const plugins = [router, pinia];
-    const [composable, _app] = withSetup(() => useFlawModel(), plugins);
+    const [composable, _app] = withSetup(() => ({
+      ...useFlawModel(),
+      steeringNotes: useAegisSteeringNotes(useFlaw().flaw),
+    }), plugins);
     app = _app;
     return composable;
   };
@@ -69,6 +73,7 @@ describe('useFlawModel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     globalResetFlaw();
+    useAegisMetadataTracking().setAegisMetadata({});
     initializeAffects([]); // Reset affects to empty array
     useFlawLabels([]);
   });
@@ -340,6 +345,120 @@ describe('useFlawModel', () => {
       expect(flaw.value.affects[0].purl).toBe('pkg:rpm/redhat/kernel@5.14.0');
       expect(currentAffects.value[0].purl).toBe('pkg:oci/namespace/image@1.0.0');
     });
+  });
+
+  describe.each(['create', 'update'] as const)('steering notes on %s', (mode) => {
+    function loadFlaw(metadata: unknown) {
+      const data = deepCopyFromRaw(sampleFlawRequired as ZodFlawType);
+      if (mode === 'create') data.uuid = '';
+      data.aegis_meta = metadata;
+      useFlaw().setFlaw(data);
+      useAegisMetadataTracking().setAegisMetadata(data.aegis_meta);
+    }
+
+    function mockSuccessfulSave() {
+      if (mode === 'create') {
+        vi.mocked(postFlaw).mockImplementationOnce(async data => ({
+          ...deepCopyFromRaw(data), uuid: 'created-flaw',
+        }));
+      } else {
+        vi.mocked(putFlaw).mockImplementationOnce(async (_uuid, data) => deepCopyFromRaw(data));
+      }
+    }
+
+    function savedPayload(call = 0) {
+      return mode === 'create'
+        ? vi.mocked(postFlaw).mock.calls[call][0]
+        : vi.mocked(putFlaw).mock.calls[call][1];
+    }
+
+    it.each(['  Internal context\n分析 🔒\t ', ''])('persists notes %j without AI changes or feedback', async (notes) => {
+      loadFlaw({ steering_notes: 'Loaded context' });
+      const { flaw, isFlawUpdated } = useFlaw();
+      const model = mountFlawModel();
+      model.steeringNotes.setDraft(notes);
+      expect(isFlawUpdated.value).toBe(false);
+      model.steeringNotes.save();
+      model.steeringNotes.setDraft('Unapplied draft');
+      expect(isFlawUpdated.value).toBe(true);
+      expect(useAegisMetadataTracking().hasAegisChanges()).toBe(false);
+      mockSuccessfulSave();
+
+      await (mode === 'create' ? model.createFlaw() : model.updateFlaw());
+      expect(mode === 'create' ? postFlaw : putFlaw).toHaveBeenCalledTimes(1);
+      expect(savedPayload().aegis_meta).toEqual({ steering_notes: notes });
+      expect(savedPayload()).not.toHaveProperty('steering_notes');
+      expect(flaw.value.aegis_meta.steering_notes).toBe(notes);
+      expect(sendProgrammaticFeedbackMock).not.toHaveBeenCalled();
+      expect(model.isSaving.value).toBe(false);
+    });
+
+    it.each(['Current analyst context', ''])('keeps notes %j authoritative alongside old and new AI histories',
+      async (notes) => {
+        const metadata = {
+          steering_notes: 'Stale snapshot context',
+          cwe_id: [{ type: 'AI-Bot', timestamp: '2024-01-01T00:00:00Z', value: 'CWE-79' }],
+          aegis_bot_processed: true,
+          custom: { source: 'original' },
+          sources: ['existing source'],
+        };
+        loadFlaw(metadata);
+        const { flaw } = useFlaw();
+        const model = mountFlawModel();
+        model.steeringNotes.setDraft(notes);
+        model.steeringNotes.save();
+        useAegisMetadataTracking().trackAIChange('title', 'AI', 'Fresh AI title');
+        flaw.value.title = 'Fresh AI title';
+        flaw.value.aegis_meta.aegis_bot_processed = false;
+        flaw.value.aegis_meta.custom = { source: 'current analyst' };
+        model.steeringNotes.setDraft('Unapplied draft');
+        mockSuccessfulSave();
+
+        await (mode === 'create' ? model.createFlaw() : model.updateFlaw());
+        expect(mode === 'create' ? postFlaw : putFlaw).toHaveBeenCalledTimes(1);
+        expect(savedPayload().aegis_meta).toEqual({
+          ...metadata,
+          steering_notes: notes,
+          aegis_bot_processed: false,
+          custom: { source: 'current analyst' },
+          title: [expect.objectContaining({ type: 'AI', value: 'Fresh AI title' })],
+        });
+        expect(sendProgrammaticFeedbackMock).not.toHaveBeenCalled();
+      });
+
+    it.each(['Recoverable context', ''])('retains applied notes %j and the draft after failure, then retries',
+      async (notes) => {
+        loadFlaw({ steering_notes: 'Loaded context' });
+        const { flaw, initialFlaw, isFlawUpdated } = useFlaw();
+        const model = mountFlawModel();
+        model.steeringNotes.setDraft(notes);
+        model.steeringNotes.save();
+        model.steeringNotes.setDraft('Recoverable unapplied draft');
+        const persistence = mode === 'create' ? vi.mocked(postFlaw) : vi.mocked(putFlaw);
+        persistence.mockRejectedValueOnce(new Error('OSIDB unavailable'));
+        const logError = vi.mocked(console.error);
+        const failOnError = logError.getMockImplementation()!;
+        logError.mockImplementation(() => {});
+        try {
+          await (mode === 'create' ? model.createFlaw() : model.updateFlaw());
+        } finally {
+          logError.mockImplementation(failOnError);
+        }
+
+        expect(persistence).toHaveBeenCalledTimes(1);
+        expect(savedPayload().aegis_meta).toEqual({ steering_notes: notes });
+        expect(flaw.value.aegis_meta).toEqual({ steering_notes: notes });
+        expect(initialFlaw.value.aegis_meta).toEqual({ steering_notes: 'Loaded context' });
+        expect(model.steeringNotes.draft.value).toBe('Recoverable unapplied draft');
+        expect(isFlawUpdated.value).toBe(true);
+        expect(model.isSaving.value).toBe(false);
+        expect(sendProgrammaticFeedbackMock).not.toHaveBeenCalled();
+
+        mockSuccessfulSave();
+        await (mode === 'create' ? model.createFlaw() : model.updateFlaw());
+        expect(persistence).toHaveBeenCalledTimes(2);
+        expect(savedPayload(1).aegis_meta).toEqual({ steering_notes: notes });
+      });
   });
 
   describe('labels validation', () => {
