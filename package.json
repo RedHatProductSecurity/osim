@@ -52,7 +52,7 @@
     "vue-data-ui": "^3.8.0",
     "vue-imask": "^7.1.2",
     "vue-router": "^4.2.4",
-    "zod": "^3.21.4"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
