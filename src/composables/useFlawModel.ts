@@ -23,6 +23,7 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
+import { flawRebaseFieldLabel } from '@/utils/flawRebase';
 import { deepMap, mergeBy } from '@/utils/helpers';
 import {
   flawSources,
@@ -37,6 +38,7 @@ import {
 
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useAffectsModel } from './useAffectsModel';
+import { useCollisionConflict } from './useCollisionConflict';
 
 // Map field names to feature names for programmatic feedback
 const FieldToFeatureName: Record<string, string> = {
@@ -51,6 +53,7 @@ export function useFlawModel() {
   const { flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
+  const { adopted, resolveFlawSave } = useCollisionConflict();
   const userStore = useUserStore();
   const shouldCreateJiraTask = ref(false);
   const { getAegisMetadata, hasAegisChanges } = useAegisMetadataTracking();
@@ -230,6 +233,30 @@ export function useFlawModel() {
     return validatedFlaw;
   }
 
+  async function putFlawResolvingDisjointConflict(payload: ZodFlawType): Promise<ZodFlawType> {
+    const saved = await resolveFlawSave(
+      initialFlaw.value,
+      payload,
+      (body, suppressConflictToast) => (
+        suppressConflictToast
+          ? putFlaw(flaw.value.uuid, body, shouldCreateJiraTask.value, { suppressConflictToast: true })
+          : putFlaw(flaw.value.uuid, body, shouldCreateJiraTask.value)
+      ),
+      () => getFlaw(flaw.value.uuid, true),
+      createCatchHandler('Could not update Flaw', false),
+    );
+    if (adopted.value.length > 0) {
+      addToast({
+        title: 'Flaw saved with newer changes',
+        body: `Kept your edits and took server updates for ${
+          adopted.value.map(flawRebaseFieldLabel).join(', ')
+        }.`,
+        css: 'info',
+      });
+    }
+    return saved;
+  }
+
   async function updateFlaw() {
     const { execute } = useNetworkQueue();
     const queue: (() => Promise<any>)[] = [];
@@ -268,10 +295,11 @@ export function useFlawModel() {
     if (isFlawUpdated.value || shouldCreateJiraTask.value) {
       queue.push(async () => {
         // Add aegis metadata if there are AI changes
-        const response = await putFlaw(flaw.value.uuid, {
+        const payload = {
           ...validatedFlaw.data,
           ...getAegisMetadataIfChanged(),
-        }, shouldCreateJiraTask.value);
+        };
+        const response = await putFlawResolvingDisjointConflict(payload);
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
         afterSuccessQueue.push(() => setFlaw({

@@ -55,7 +55,17 @@ export async function getFlaw(uuidOrCve: string, breakCache?: boolean): Promise<
   }).then(response => response.data);
 }
 
-export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraTask = false): Promise<ZodFlawType> {
+type PutFlawOptions = {
+  /** Leave a 409 for the caller. The retry path toasts only when it cannot merge. */
+  suppressConflictToast?: boolean;
+};
+
+export async function putFlaw(
+  uuid: string,
+  flawObject: ZodFlawType,
+  createJiraTask = false,
+  options: PutFlawOptions = {},
+): Promise<ZodFlawType> {
   try {
     const response = await osidbFetch({
       method: 'put',
@@ -70,7 +80,10 @@ export async function putFlaw(uuid: string, flawObject: ZodFlawType, createJiraT
     createSuccessHandler({ title: 'Success!', body: 'Flaw saved' })({ data: result });
     return result;
   } catch (error) {
-    createCatchHandler('Could not update Flaw', false)(error);
+    const isConflict = (error as { response?: { status?: number } })?.response?.status === 409;
+    if (!(isConflict && options.suppressConflictToast)) {
+      createCatchHandler('Could not update Flaw', false)(error);
+    }
     throw error;
   }
 }
