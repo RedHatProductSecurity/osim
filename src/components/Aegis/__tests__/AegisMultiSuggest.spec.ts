@@ -4,9 +4,13 @@ import { flushPromises, mount } from '@vue/test-utils';
 
 import { provideFullFlawSuggestions, useFullFlawSuggestionField } from '@/composables/aegis/useFullFlawSuggestions';
 import type { SuggestionField } from '@/composables/aegis/useFullFlawSuggestions';
+import { useAegisSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
+import { aegisSuggestionRequestBody } from '@/composables/aegis/useAegisSuggestionContext';
+import { blankFlaw } from '@/composables/useFlaw';
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { osimRuntime } from '@/stores/osimRuntime';
+import type { ZodFlawType } from '@/types';
 import type { OsimRuntimeType } from '@/types/zodOsim';
 
 import AegisMultiSuggest from '../AegisMultiSuggest.vue';
@@ -29,25 +33,28 @@ const fieldLabels: Record<SuggestionField, string> = {
 const fields = Object.keys(fieldLabels) as SuggestionField[];
 const wrappers: ReturnType<typeof mount>[] = [];
 
-function setup(initialValues: Partial<Record<SuggestionField, unknown>> = {}) {
+function setup(initialValues: Partial<Record<SuggestionField, unknown>> = {}, initialFlaw: Partial<ZodFlawType> = {}) {
   const values = Object.fromEntries(fields.map(field => [field, ref<unknown>(
     field in initialValues ? initialValues[field] : field === 'components' ? ['existing'] : 'Existing value',
   )]));
+  const flaw = ref({ ...blankFlaw(), cve_id: 'CVE-2024-1234', ...initialFlaw });
   const disabled = ref(false);
+  const participantFetching = ref(false);
   let coordinator!: ReturnType<typeof provideFullFlawSuggestions>;
   const wrapper = mount(defineComponent({
     setup() {
-      coordinator = provideFullFlawSuggestions({ cveId: ref('CVE-2024-1234') }, () => 'flaw-1');
+      coordinator = provideFullFlawSuggestions(aegisSuggestionRequestBody(flaw), () => flaw.value);
+      const steeringNotes = useAegisSteeringNotes(flaw);
       for (const field of fields) {
         useFullFlawSuggestionField({
-          field, value: values[field], isFetching: ref(false), apply: vi.fn(),
+          field, value: values[field], isFetching: participantFetching, apply: vi.fn(),
         }, coordinator);
       }
-      return () => h(AegisMultiSuggest, { coordinator, disabled: disabled.value });
+      return () => h(AegisMultiSuggest, { coordinator, disabled: disabled.value, steeringNotes });
     },
   }), { attachTo: document.body });
   wrappers.push(wrapper);
-  return { wrapper, values, disabled, coordinator };
+  return { wrapper, values, disabled, coordinator, flaw, participantFetching };
 }
 
 function checkedFields(wrapper: ReturnType<typeof setup>['wrapper']) {
@@ -62,6 +69,10 @@ function chooser(wrapper: ReturnType<typeof setup>['wrapper']) {
 
 function actionButton(wrapper: ReturnType<typeof setup>['wrapper']) {
   return wrapper.get('button');
+}
+
+function notesButton(wrapper: ReturnType<typeof setup>['wrapper'], label: 'Clear' | 'Save notes') {
+  return wrapper.findAll<HTMLButtonElement>('.dropdown-menu button').find(button => button.text() === label)!;
 }
 
 function expectAllToggle(wrapper: ReturnType<typeof setup>['wrapper'], allSelected: boolean) {
@@ -126,7 +137,95 @@ it('shows a gray split action and an accessible field chooser with eight rows an
   expect(wrapper.get('button[title="Select all"]').classes()).toContain('border-0');
   expect(wrapper.get('button[title="Select all"]').classes().some(css => css.startsWith('btn-outline'))).toBe(false);
   expect(wrapper.findAll('button').some(button => button.text() === 'Submit')).toBe(false);
-  expect(wrapper.get('.dropdown-menu').findAll('button')).toHaveLength(1);
+  const textarea = wrapper.get<HTMLTextAreaElement>('textarea');
+  expect(textarea.element.labels?.[0].textContent).toContain('Steering notes (internal)');
+  expect(wrapper.get('table').element.nextElementSibling?.contains(textarea.element)).toBe(true);
+  expect(notesButton(wrapper, 'Save notes').attributes('type')).toBe('button');
+  expect(notesButton(wrapper, 'Clear').attributes('type')).toBe('button');
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it.each(['', null, 'not-a-cve'])('allows notes editing with CVE %j while suggestions stay disabled', async (cveId) => {
+  const { flaw, wrapper } = setup({ title: '' }, { cve_id: cveId });
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  expect(chooser(wrapper).element.disabled).toBe(false);
+  await chooser(wrapper).trigger('click');
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.disabled).toBe(false);
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(true);
+  expect(notesButton(wrapper, 'Clear').element.disabled).toBe(true);
+
+  await wrapper.get('textarea').setValue('Internal analysis context');
+  await notesButton(wrapper, 'Save notes').trigger('click');
+  expect(flaw.value.aegis_meta).toEqual({ steering_notes: 'Internal analysis context' });
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(true);
+  expect(actionButton(wrapper).element.disabled).toBe(true);
+  actionButton(wrapper).element.click();
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it.each([
+  { metadata: undefined, initial: '' },
+  { metadata: null, initial: '' },
+  { metadata: { steering_notes: null }, initial: '' },
+  { metadata: { steering_notes: '  Existing\n分析 🔒\t ' }, initial: '  Existing\n分析 🔒\t ' },
+])('disables Save notes when the draft matches loaded notes $initial', async ({ initial, metadata }) => {
+  const { flaw, wrapper } = setup({}, { aegis_meta: metadata });
+  await chooser(wrapper).trigger('click');
+  const textarea = wrapper.get<HTMLTextAreaElement>('textarea');
+  expect(textarea.element.value).toBe(initial);
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(true);
+  expect(notesButton(wrapper, 'Clear').element.disabled).toBe(initial === '');
+  await textarea.setValue(`${initial}draft`);
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(false);
+  await textarea.setValue(initial);
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(true);
+  notesButton(wrapper, 'Save notes').element.click();
+  expect(flaw.value.aegis_meta).toEqual(metadata);
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it.each(['toggle', 'Escape', 'outside click'])('preserves a notes draft after closing by %s', async (dismissal) => {
+  const { flaw, wrapper } = setup({}, { aegis_meta: { steering_notes: 'Applied notes' } });
+  await chooser(wrapper).trigger('click');
+  const textarea = wrapper.get('textarea');
+  await textarea.setValue('  Draft\n分析 🔒\t ');
+  if (dismissal === 'toggle') await chooser(wrapper).trigger('click');
+  if (dismissal === 'Escape') await textarea.trigger('keydown', { key: 'Escape' });
+  if (dismissal === 'outside click') {
+    // Finish the opening click's event-loop turn before the next pointer gesture.
+    await new Promise(resolve => setTimeout(resolve, 0));
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+    await nextTick();
+  }
+
+  expect(wrapper.find('textarea').exists()).toBe(false);
+  await chooser(wrapper).trigger('click');
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('  Draft\n分析 🔒\t ');
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(false);
+  expect(flaw.value.aegis_meta.steering_notes).toBe('Applied notes');
+  expect(multiAnalysis).not.toHaveBeenCalled();
+});
+
+it.each(['form', 'single-field request'])('blocks the notes menu during %s and retains its draft', async (busy) => {
+  const { disabled, participantFetching, wrapper } = setup();
+  await chooser(wrapper).trigger('click');
+  await wrapper.get('textarea').setValue('Draft before disabling');
+  const busyState = busy === 'form' ? disabled : participantFetching;
+  busyState.value = true;
+  await nextTick();
+
+  expect(chooser(wrapper).element.disabled).toBe(true);
+  expect(wrapper.find('textarea').exists()).toBe(false);
+  chooser(wrapper).element.click();
+  await nextTick();
+  expect(wrapper.find('textarea').exists()).toBe(false);
+
+  busyState.value = false;
+  await nextTick();
+  await chooser(wrapper).trigger('click');
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('Draft before disabling');
+  expect(notesButton(wrapper, 'Save notes').element.disabled).toBe(false);
   expect(multiAnalysis).not.toHaveBeenCalled();
 });
 

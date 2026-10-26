@@ -4,11 +4,13 @@ import { flushPromises, shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import { AegisAIService } from '@/services/AegisAIService';
 import { osimRuntime } from '@/stores/osimRuntime';
 import type { OsimRuntimeType } from '@/types/zodOsim';
 import type { AegisMultiAnalysisResponse } from '@/types/aegisAI';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 import FlawForm from '../FlawForm.vue';
 
@@ -50,10 +52,14 @@ vi.mock('@/composables/useCvssScores', () => ({
     rhCvssString: ref(''),
     shouldDisplayEmailNistForm: ref(false),
     wasFlawCvssModified: ref(false),
+    reset: vi.fn(),
   }),
 }));
 vi.mock('@/composables/useAffectsModel', () => ({
-  useAffectsModel: () => ({ state: { removedAffects: new Set(), wereAffectsEditedOrAdded: ref(false) } }),
+  useAffectsModel: () => ({
+    state: { removedAffects: new Set(), wereAffectsEditedOrAdded: ref(false) },
+    actions: { initializeAffects: vi.fn() },
+  }),
 }));
 vi.mock('@/stores/DraftFlawStore', () => ({ useDraftFlawStore: () => ({ draftFlaw: null }) }));
 vi.mock('@/stores/ToastStore', () => ({ useToastStore: () => ({ addToast }) }));
@@ -85,6 +91,10 @@ function suggestionButton(wrapper: ReturnType<typeof setup>) {
   return wrapper.findAll('button').find(button => button.text().includes('Multi Suggest'))!;
 }
 
+function buttonByText(wrapper: ReturnType<typeof setup>, label: string) {
+  return wrapper.findAll<HTMLButtonElement>('button').find(button => button.text() === label)!;
+}
+
 async function submitAllSuggestions(wrapper: ReturnType<typeof setup>) {
   await wrapper.get('button[aria-label="Choose suggestion fields"]').trigger('click');
   const selectAll = wrapper.find('button[title="Select all"]');
@@ -99,6 +109,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   isSaving.value = false;
   multiAnalysis.mockResolvedValue(response);
+  useAegisMetadataTracking().setAegisMetadata({});
   runtime.value.flags = { aiTitleSuggestions: true, aiDescriptionSuggestions: true };
   useFlaw().setFlaw({
     ...blankFlaw(),
@@ -133,6 +144,143 @@ it.each(['create', 'edit'] as const)('requests suggestions without submitting th
   expect(createFlaw).not.toHaveBeenCalled();
   expect(updateFlaw).not.toHaveBeenCalled();
 });
+
+it.each(['create', 'edit'] as const)('applies notes locally before the normal %s form submission', async (mode) => {
+  const { flaw, isFlawUpdated, setFlaw } = useFlaw();
+  const metadata = { steering_notes: 'Existing notes', bot_processed: true, context: { source: 'analyst' } };
+  setFlaw({ ...flaw.value, aegis_meta: metadata });
+  const wrapper = setup(mode);
+  const mainSave = wrapper.get<HTMLButtonElement>('button[type="submit"]');
+  const notes = '  Internal only\n分析 🔒\t\n ';
+  expect(isFlawUpdated.value).toBe(false);
+  if (mode === 'edit') expect(mainSave.element.disabled).toBe(true);
+
+  await wrapper.get('button[aria-label="Choose suggestion fields"]').trigger('click');
+  const textarea = wrapper.get<HTMLTextAreaElement>('textarea');
+  expect(textarea.element.value).toBe('Existing notes');
+  expect(buttonByText(wrapper, 'Save notes').element.disabled).toBe(true);
+  await textarea.setValue(notes);
+  expect(flaw.value.aegis_meta).toEqual(metadata);
+  expect(isFlawUpdated.value).toBe(false);
+  if (mode === 'edit') expect(mainSave.element.disabled).toBe(true);
+
+  buttonByText(wrapper, 'Save notes').element.click();
+  await nextTick();
+  expect(flaw.value.aegis_meta).toEqual({ ...metadata, steering_notes: notes });
+  expect(isFlawUpdated.value).toBe(true);
+  expect(mainSave.element.disabled).toBe(false);
+  expect(buttonByText(wrapper, 'Save notes').element.disabled).toBe(true);
+  expect(flaw.value.cve_description).toBe('Original description');
+  expect(flaw.value.statement).toBe('');
+  expect(createFlaw).not.toHaveBeenCalled();
+  expect(updateFlaw).not.toHaveBeenCalled();
+  expect(multiAnalysis).not.toHaveBeenCalled();
+
+  await textarea.setValue('Unapplied draft');
+  let submittedMetadata: unknown;
+  const save = mode === 'create' ? createFlaw : updateFlaw;
+  save.mockImplementationOnce(() => { submittedMetadata = deepCopyFromRaw(flaw.value.aegis_meta); });
+  mainSave.element.click();
+  await flushPromises();
+  expect(save).toHaveBeenCalledTimes(1);
+  expect(submittedMetadata).toEqual({ ...metadata, steering_notes: notes });
+  expect(textarea.element.value).toBe('Unapplied draft');
+});
+
+it('uses applied notes in suggestions and preserves the draft across AI and unrelated metadata changes', async () => {
+  const { flaw, setFlaw } = useFlaw();
+  setFlaw({ ...flaw.value, aegis_meta: { steering_notes: 'Applied context', bot_processed: true } });
+  const wrapper = setup();
+  const chooser = wrapper.get('button[aria-label="Choose suggestion fields"]');
+  await chooser.trigger('click');
+  await wrapper.get('textarea').setValue('Draft context');
+  await wrapper.get('#multi-suggest-title').setValue(true);
+  await suggestionButton(wrapper).trigger('click');
+  await flushPromises();
+  expect(multiAnalysis).toHaveBeenNthCalledWith(1, expect.objectContaining({ steering_notes: 'Applied context' }));
+  expect(multiAnalysis.mock.calls[0][0]).not.toHaveProperty('aegis_meta');
+  expect(flaw.value.title).toBe('AI title');
+
+  await chooser.trigger('click');
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('Draft context');
+  flaw.value.aegis_meta = { ...flaw.value.aegis_meta, bot_processed: false, context: { changed: true } };
+  await nextTick();
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('Draft context');
+  await buttonByText(wrapper, 'Save notes').trigger('click');
+  await wrapper.get('textarea').setValue('Next unapplied draft');
+  await suggestionButton(wrapper).trigger('click');
+  await flushPromises();
+
+  expect(multiAnalysis).toHaveBeenCalledTimes(2);
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({ steering_notes: 'Draft context' }));
+  expect(flaw.value.aegis_meta).toEqual({
+    steering_notes: 'Draft context', bot_processed: false, context: { changed: true },
+  });
+  await chooser.trigger('click');
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('Next unapplied draft');
+  expect(createFlaw).not.toHaveBeenCalled();
+  expect(updateFlaw).not.toHaveBeenCalled();
+});
+
+it('clears only the draft until Save notes explicitly applies an empty string', async () => {
+  const { flaw, isFlawUpdated, setFlaw } = useFlaw();
+  setFlaw({ ...flaw.value, aegis_meta: { steering_notes: 'Applied context', bot_processed: true } });
+  const wrapper = setup();
+  const chooser = wrapper.get('button[aria-label="Choose suggestion fields"]');
+  await chooser.trigger('click');
+  await wrapper.get('#multi-suggest-title').setValue(true);
+  buttonByText(wrapper, 'Clear').element.click();
+  await nextTick();
+
+  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('');
+  expect(buttonByText(wrapper, 'Clear').element.disabled).toBe(true);
+  expect(buttonByText(wrapper, 'Save notes').element.disabled).toBe(false);
+  expect(flaw.value.aegis_meta.steering_notes).toBe('Applied context');
+  expect(isFlawUpdated.value).toBe(false);
+  expect(createFlaw).not.toHaveBeenCalled();
+  expect(updateFlaw).not.toHaveBeenCalled();
+  expect(multiAnalysis).not.toHaveBeenCalled();
+  await suggestionButton(wrapper).trigger('click');
+  await flushPromises();
+  expect(multiAnalysis).toHaveBeenNthCalledWith(1, expect.objectContaining({ steering_notes: 'Applied context' }));
+
+  await chooser.trigger('click');
+  await buttonByText(wrapper, 'Save notes').trigger('click');
+  expect(flaw.value.aegis_meta).toEqual({ steering_notes: '', bot_processed: true });
+  expect(buttonByText(wrapper, 'Save notes').element.disabled).toBe(true);
+  expect(buttonByText(wrapper, 'Clear').element.disabled).toBe(true);
+  await suggestionButton(wrapper).trigger('click');
+  await flushPromises();
+  expect(multiAnalysis).toHaveBeenNthCalledWith(2, expect.objectContaining({ steering_notes: '' }));
+  expect(createFlaw).not.toHaveBeenCalled();
+  expect(updateFlaw).not.toHaveBeenCalled();
+});
+
+it.each(['reset', 'reload', 'switch flaw'])('reinitializes a draft on %s even when applied notes are unchanged',
+  async (action) => {
+    const { flaw, setFlaw } = useFlaw();
+    setFlaw({ ...flaw.value, aegis_meta: { steering_notes: 'Saved context' } });
+    const wrapper = setup();
+    await wrapper.get('button[aria-label="Choose suggestion fields"]').trigger('click');
+    await wrapper.get('textarea').setValue('Discard this draft');
+    flaw.value.title = 'Unrelated local edit';
+    await nextTick();
+    expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('Discard this draft');
+
+    if (action === 'reset') await buttonByText(wrapper, 'Reset Changes').trigger('click');
+    if (action === 'reload') setFlaw({ ...flaw.value, title: 'Reloaded title' });
+    if (action === 'switch flaw') setFlaw({ ...flaw.value, uuid: 'another-flaw', cve_id: 'CVE-2024-9999' });
+    await nextTick();
+    if (!wrapper.find('textarea').exists()) {
+      await wrapper.get('button[aria-label="Choose suggestion fields"]').trigger('click');
+    }
+
+    expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).toBe('Saved context');
+    expect(buttonByText(wrapper, 'Save notes').element.disabled).toBe(true);
+    expect(createFlaw).not.toHaveBeenCalled();
+    expect(updateFlaw).not.toHaveBeenCalled();
+    expect(multiAnalysis).not.toHaveBeenCalled();
+  });
 
 it.each(['create', 'edit'] as const)('toggles all without requesting or saving the %s form', async (mode) => {
   const wrapper = setup(mode);
