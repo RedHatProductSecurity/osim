@@ -40,6 +40,7 @@ export type AegisAICVEAnalysisWithContextParamsType = {
   impact?: ImpactEnumWithBlankType | null;
   requires_cve_description?: string;
   statement?: string;
+  steering_notes?: string;
   title?: string;
   trackers?: any[];
 };

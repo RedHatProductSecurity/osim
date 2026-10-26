@@ -43,6 +43,7 @@ import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestD
 import { useAegisSuggestTitle } from '@/composables/aegis/useAegisSuggestTitle';
 import { provideFullFlawSuggestions } from '@/composables/aegis/useFullFlawSuggestions';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
+import { useAegisSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -242,6 +243,7 @@ const createdDate = computed(() => {
 
 const aegisContext: AegisSuggestionContextRefs = aegisSuggestionRequestBody(flaw);
 const fullFlawSuggestions = provideFullFlawSuggestions(aegisContext, () => flaw.value);
+const steeringNotes = useAegisSteeringNotes(flaw);
 
 const titleRefForAegis = computed({ get: () => flaw.value.title, set: (value) => { flaw.value.title = value; } });
 const descriptionRefForAegis = computed({
@@ -286,6 +288,7 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
             :key="`${flaw.uuid}:${flaw.cve_id}`"
             :coordinator="fullFlawSuggestions"
             :disabled="isSaving || formDisabled"
+            :steeringNotes="steeringNotes"
           />
           <div>
             <div class="d-flex justify-content-end align-items-center gap-2 mb-1">
