@@ -175,10 +175,27 @@ it('requests only enabled features and only applies enabled fields from shared r
 });
 
 it.each(allFields)('requests and applies only the selected %s field', async (selectedField) => {
+  let resolve!: (result: typeof response) => void;
+  multiAnalysis.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
   const { actions, coordinator, description, descriptionActions, title, titleActions, values } = setup();
+  const loadingRefs: Record<SuggestionField, Ref<boolean>> = {
+    title: titleActions.isSuggesting,
+    cve_description: descriptionActions.isSuggesting,
+    components: actions.components.isFetchingSuggestion,
+    impact: actions.impact.isFetchingSuggestion,
+    _cvss3_vector: actions._cvss3_vector.isFetchingSuggestion,
+    cwe_id: actions.cwe_id.isFetchingSuggestion,
+    statement: actions.statement.isFetchingSuggestion,
+    mitigation: actions.mitigation.isFetchingSuggestion,
+  };
   const fieldValues = { title, cve_description: description, ...values };
   const originals = Object.fromEntries(allFields.map(field => [field, fieldValues[field].value]));
-  await coordinator.suggestAll([selectedField]);
+  const pending = coordinator.suggestAll([selectedField]);
+
+  for (const field of allFields) expect(loadingRefs[field].value).toBe(field === selectedField);
+  resolve(response);
+  await pending;
+  for (const field of allFields) expect(loadingRefs[field].value).toBe(false);
 
   expect(multiAnalysis).toHaveBeenCalledTimes(1);
   expect(multiAnalysis).toHaveBeenCalledWith(expect.objectContaining({

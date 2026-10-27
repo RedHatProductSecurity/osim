@@ -42,6 +42,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
   const toastStore = useToastStore();
   const participants = shallowReactive(new Set<SuggestionParticipant>());
   const isFetching = ref(false);
+  const fetchingFields = ref<Set<SuggestionField>>(new Set());
   let disposed = false;
   onScopeDispose(() => { disposed = true; });
 
@@ -70,6 +71,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
     const currentIdentity = identity();
     const contextData = serializeAegisContext(context);
     const features = [...new Set(requested.map(({ item }) => fieldConfig[item.field].feature))];
+    fetchingFields.value = new Set(requested.map(({ item }) => item.field));
     isFetching.value = true;
     const started = Date.now();
     try {
@@ -116,10 +118,11 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
       }
     } finally {
       isFetching.value = false;
+      fetchingFields.value.clear();
     }
   }
 
-  const coordinator = { canSuggest, fields, isFetching, isVisible, participants, suggestAll };
+  const coordinator = { canSuggest, fields, fetchingFields, isFetching, isVisible, participants, suggestAll };
   provide(fullFlawSuggestionsKey, coordinator);
   return coordinator;
 }
@@ -132,7 +135,8 @@ export function useFullFlawSuggestionField(
   coordinator?.participants.add(participant);
   onScopeDispose(() => coordinator?.participants.delete(participant));
   return {
-    isBulkFetching: computed(() => !!coordinator?.isFetching.value && isEnabled(participant.field)),
+    isBulkFetching: computed(() => !!coordinator?.isFetching.value
+    && isEnabled(participant.field) && coordinator.fetchingFields.value.has(participant.field)),
     isBulkBusy: computed(() => !!coordinator?.isFetching.value),
   };
 }
