@@ -274,6 +274,7 @@ export function useFlawModel() {
   }
 
   async function confirmCollisionDialog(choices: Record<string, CollisionChoice>) {
+    if (isSaving.value) return;
     const pending = pendingFlawConflict.value;
     if (!pending) return;
 
