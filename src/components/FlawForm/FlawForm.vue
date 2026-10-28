@@ -4,6 +4,7 @@ import { computed, ref, watch, onMounted } from 'vue';
 import { DateTime } from 'luxon';
 
 import IssueFieldEmbargo from '@/components/IssueFieldEmbargo/IssueFieldEmbargo.vue';
+import CollisionConflictDialog from '@/components/CollisionConflictDialog/CollisionConflictDialog.vue';
 import CveRequestForm from '@/components/CveRequestForm/CveRequestForm.vue';
 import FlawFormOwner from '@/components/FlawFormOwner/FlawFormOwner.vue';
 import CvssSection from '@/components/CvssSection/CvssSection.vue';
@@ -81,7 +82,10 @@ const {
   bugzillaLink,
   cancelAddAcknowledgment,
   cancelAddReference,
+  cancelCollisionDialog,
+  collisionConflicts,
   commentsByType,
+  confirmCollisionDialog,
   createFlaw,
   deleteAcknowledgment,
   deleteReference,
@@ -97,6 +101,7 @@ const {
   saveAcknowledgments,
   saveReferences,
   shouldCreateJiraTask,
+  showCollisionDialog,
   toggleShouldCreateJiraTask,
   updateFlaw,
 } = useFlawModel();
@@ -700,6 +705,13 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
         </button>
       </template>
     </div>
+    <CollisionConflictDialog
+      :conflicts="collisionConflicts"
+      :saving="isSaving"
+      :show="showCollisionDialog"
+      @cancel="cancelCollisionDialog"
+      @confirm="confirmCollisionDialog"
+    />
   </form>
 </template>
 

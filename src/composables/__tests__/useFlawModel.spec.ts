@@ -284,6 +284,45 @@ describe('useFlawModel', () => {
       expect(flaw.value.affects).toEqual(localAffects);
     });
 
+    it('ignores a second confirm while the chosen save is in flight', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      setFlaw(flawData);
+
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      let finishSave!: (saved: ZodFlawType) => void;
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce({ response: { status: 409 } })
+        .mockImplementationOnce(() => new Promise((resolve) => {
+          finishSave = resolve;
+        }));
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'bot title',
+        updated_dt: serverUpdatedDt,
+      });
+
+      const { confirmCollisionDialog, updateFlaw } = mountFlawModel();
+      flaw.value.title = 'analyst title';
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      const firstConfirm = confirmCollisionDialog({ title: 'server' });
+      const secondConfirm = confirmCollisionDialog({ title: 'server' });
+      finishSave({
+        ...flawData,
+        title: 'bot title',
+        updated_dt: serverUpdatedDt,
+        affects: [],
+      });
+      await Promise.all([firstConfirm, secondConfirm]);
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenCalledTimes(2);
+    });
+
     it('should not initialize affects from server data when affect save fails', async () => {
       const { flaw, setFlaw } = useFlaw();
       const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
