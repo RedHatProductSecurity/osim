@@ -2,7 +2,7 @@ import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json
 import type { ZodFlawType } from '@/types';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
-import { isFlawConflict, rebaseDisjointFlaw } from '../flawRebase';
+import { formatCollisionValue, isFlawConflict, rebaseDisjointFlaw } from '../flawRebase';
 
 function flaw(overrides: Partial<ZodFlawType> = {}): ZodFlawType {
   return {
@@ -45,7 +45,11 @@ describe('rebaseDisjointFlaw', () => {
 
     const result = rebaseDisjointFlaw(base, mine, server);
 
-    expect(result.conflicts).toEqual(['title']);
+    expect(result.conflicts).toEqual([{
+      field: 'title',
+      mine: 'analyst title',
+      server: 'bot title',
+    }]);
     expect(result.adopted).toEqual(['statement']);
     expect(result.merged).toBeNull();
   });
@@ -75,6 +79,13 @@ describe('rebaseDisjointFlaw', () => {
 
     expect(result.conflicts).toEqual([]);
     expect(result.adopted).toEqual(['statement']);
+  });
+});
+
+describe('formatCollisionValue', () => {
+  it('lists plain values instead of a JSON array', () => {
+    expect(formatCollisionValue(['kernel', 'openssl'])).toBe('kernel\nopenssl');
+    expect(formatCollisionValue([])).toBe('Empty');
   });
 });
 

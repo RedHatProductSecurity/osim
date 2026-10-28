@@ -41,6 +41,29 @@ function syncLinkedAffect(
   // No flaw fetch here: later flaw PUTs may need a reload on 409 rather than a guessed timestamp.
 }
 
+const CHILD_COLLECTIONS = new Set<keyof ZodFlawType>([
+  'acknowledgments',
+  'affects',
+  'comments',
+  'cvss_scores',
+  'labels',
+  'references',
+  'trackers',
+]);
+
+function cloneField<T>(value: T): T {
+  return value === undefined ? value : structuredClone(value);
+}
+
+// Copy the saved flaw onto both snapshots, leaving child collections dirty when they still differ.
+function acceptServerFlaw(saved: ZodFlawType) {
+  for (const key of Object.keys(saved) as (keyof ZodFlawType)[]) {
+    if (CHILD_COLLECTIONS.has(key)) continue;
+    flaw.value[key] = cloneField(saved[key]) as never;
+    initialFlaw.value[key] = cloneField(saved[key]) as never;
+  }
+}
+
 const isFlawUpdated = computed(
   () => {
     const keysToExclude: Array<keyof ZodFlawType> = ['affects', 'trackers', 'cvss_scores'];
@@ -54,6 +77,7 @@ export function useFlaw() {
     flaw,
     initialFlaw: readonly(initialFlaw),
     isFlawUpdated,
+    acceptServerFlaw,
     resetFlaw,
     setFlaw,
     syncLinkedAffect,
