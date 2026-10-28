@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
+
 ### Fixed
 * Show Aegis Multi Suggest loading indicators only for selected fields and clear them when generation completes (`AEGIS-542`)
 

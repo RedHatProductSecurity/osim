@@ -2,6 +2,8 @@ import { computed, type Ref } from 'vue';
 
 import { omit } from 'ramda';
 
+import { getSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
+
 import type {
   ZodAffectCVSSType,
   ZodAffectType,
@@ -38,6 +40,7 @@ export type AegisSuggestionContextRefs = {
   impact?: DeepNullableRef<ImpactEnumWithBlankType>;
   references?: DeepNullableRef<ZodFlawReferenceType[]>;
   statement?: DeepNullableRef<string | undefined>;
+  steeringNotes?: DeepNullableRef<string | undefined>;
   title?: DeepNullableRef<string>;
 };
 
@@ -48,6 +51,7 @@ export function aegisSuggestionRequestBody(flaw: Ref<ZodFlawType>): AegisSuggest
     commentZero: computed(() => flaw.value.comment_zero),
     cveDescription: computed(() => flaw.value.cve_description),
     statement: computed(() => flaw.value.statement),
+    steeringNotes: computed(() => getSteeringNotes(flaw.value.aegis_meta)),
     components: computed(() => flaw.value.components),
     comments: computed(() => serializePublicComments(flaw.value.comments)),
     references: computed(() => flaw.value.references),
@@ -65,6 +69,7 @@ export function serializeAegisContext(ctx: AegisSuggestionContextRefs) {
     comment_zero: ctx.commentZero?.value ?? undefined,
     cve_description: ctx.cveDescription?.value ?? undefined,
     statement: ctx.statement?.value ?? undefined,
+    steering_notes: ctx.steeringNotes?.value ?? undefined,
     components: ctx.components?.value ?? undefined,
     comments: ctx.comments?.value ?? undefined,
     references: ctx.references?.value ?? undefined,

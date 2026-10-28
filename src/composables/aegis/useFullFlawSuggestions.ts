@@ -55,10 +55,10 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
     || (Array.isArray(value.value) && value.value.length === 0),
   })));
   const isVisible = computed(() => enabledParticipants.value.length > 0);
+  const isBusy = computed(() => isFetching.value || [...participants].some(item => item.isFetching.value));
   const canSuggest = computed(() => isVisible.value
     && /^CVE-\d{4}-\d{4,7}$/i.test(context.cveId?.value ?? '')
-    && !isFetching.value
-    && ![...participants].some(item => item.isFetching.value));
+    && !isBusy.value);
 
   /** Requests each selected feature once and applies results only to selected fields. */
   async function suggestAll(selectedFields?: SuggestionField[]) {
@@ -122,7 +122,7 @@ export function provideFullFlawSuggestions(context: AegisSuggestionContextRefs, 
     }
   }
 
-  const coordinator = { canSuggest, fields, fetchingFields, isFetching, isVisible, participants, suggestAll };
+  const coordinator = { canSuggest, fields, fetchingFields, isBusy, isFetching, isVisible, participants, suggestAll };
   provide(fullFlawSuggestionsKey, coordinator);
   return coordinator;
 }

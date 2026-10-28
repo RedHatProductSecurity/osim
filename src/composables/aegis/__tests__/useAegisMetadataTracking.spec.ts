@@ -4,6 +4,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { useFlaw } from '@/composables/useFlaw';
 
+import type { AegisMetadata } from '@/types/aegisAI';
+
 import { useAegisMetadataTracking } from '../useAegisMetadataTracking';
 
 // Mock useFlaw
@@ -101,6 +103,33 @@ describe('useAegisMetadataTracking', () => {
   });
 
   describe('setAegisMetadata', () => {
+    it.each([undefined, null, '', '  Analyst notes\n分析 🔒\t '])(
+      'does not treat incoming steering notes %j as an AI change', (notes) => {
+        const metadata = { steering_notes: notes };
+        tracking.setAegisMetadata(metadata as unknown as AegisMetadata);
+
+        expect(tracking.hasAegisChanges()).toBe(false);
+        expect(tracking.getAegisMetadata()).toEqual({});
+        expect(tracking.isFieldValueAIBot('steering_notes', notes)).toBe(false);
+        expect(metadata.steering_notes).toBe(notes);
+      },
+    );
+
+    it('retains existing and newly tracked history without copying analyst notes into the AI snapshot', () => {
+      const history = [{ type: 'AI-Bot' as const, timestamp: '2024-01-01T00:00:00Z', value: 'CWE-79' }];
+      const metadata = { steering_notes: 'Analyst context', cwe_id: history };
+      tracking.setAegisMetadata(metadata as unknown as AegisMetadata);
+      tracking.trackAIChange('impact', 'AI', 'IMPORTANT');
+
+      expect(tracking.hasAegisChanges()).toBe(true);
+      expect(tracking.getAegisMetadata()).toEqual({
+        cwe_id: history,
+        impact: [expect.objectContaining({ type: 'AI', value: 'IMPORTANT' })],
+      });
+      expect(tracking.isFieldValueAIBot('cwe_id', 'CWE-79')).toBe(true);
+      expect(metadata.steering_notes).toBe('Analyst context');
+    });
+
     it('should set metadata from external source (new format)', () => {
       const metadata = {
         cwe_id: [{ type: 'AI' as const, timestamp: '2024-01-01T00:00:00Z' }],
