@@ -76,7 +76,7 @@ table {
 }
 
 .accordion-button:not(.collapsed) {
-  color: #000 !important;
+  color: var(--bs-emphasis-color) !important;
 }
 
 ::-webkit-scrollbar {
@@ -84,7 +84,7 @@ table {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bs-gray-300);
+  background: var(--bs-secondary-bg);
 }
 
 ::-webkit-scrollbar-thumb {
