@@ -77,6 +77,10 @@ watch(showSuggestionTooltip, async (show) => {
   });
 });
 
+watch(hasSuggestionTooltip, (hasTooltip) => {
+  if (!hasTooltip) showSuggestionTooltip.value = false;
+});
+
 onBeforeUnmount(() => { suggestionTooltipPopper?.destroy(); });
 
 function toggleSuggestionTooltip() {

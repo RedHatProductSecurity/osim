@@ -385,6 +385,20 @@ describe.each(popupVariants)('$name popup', (variant) => {
   });
 });
 
+it('stays closed when tooltip availability is removed and restored', async () => {
+  const wrapper = mountActions(defaultProps);
+  await wrapper.get(detailsSelector).trigger('click');
+  expect(wrapper.get('[role="dialog"]').isVisible()).toBe(true);
+
+  await wrapper.setProps({ hasAppliedSuggestion: false });
+  expect(wrapper.find(detailsSelector).exists()).toBe(false);
+  expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+
+  await wrapper.setProps({ hasAppliedSuggestion: true });
+  expect(wrapper.get(detailsSelector).attributes('aria-expanded')).toBe('false');
+  expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+});
+
 it('copies only the chosen popup when different fields have details open', async () => {
   const warning = await openPopup(popupVariants[0]);
   const suggestion = await openPopup(popupVariants[1]);
