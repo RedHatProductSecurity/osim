@@ -40,7 +40,8 @@ const {
   'components',
 );
 
-const { getAIBotEntry, getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const { getAIBotEntry, getAIBotSkipTooltip, getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('components'));
 const { sendFeedback: sendBotFeedback } = useSimpleFeedback();
 
 const isComponentsAIBot = computed(() => isFieldValueAIBot('components', modelValue.value));
@@ -119,6 +120,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestComponents"
     @selectSuggestion="selectSuggestion"
     @revert="revertComponents"

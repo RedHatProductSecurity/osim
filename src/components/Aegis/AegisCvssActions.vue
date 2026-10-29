@@ -51,7 +51,8 @@ const {
   suggestCvss,
 } = useAegisSuggestion(props.aegisContext as AegisSuggestionContextRefs, suggestedCvssVector, '_cvss3_vector');
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('_cvss3_vector'));
 
 const {
   canShowFeedbackExtended,
@@ -97,6 +98,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="allSuggestions"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestCvss"
     @selectSuggestion="selectSuggestion"
     @revert="revertCvss"

@@ -44,7 +44,8 @@ const {
   suggestCwe,
 } = useAegisSuggestion(props.aegisContext as AegisSuggestionContextRefs, modelValue, 'cwe_id');
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('cwe_id'));
 
 const {
   canShowFeedbackExtended,
@@ -93,7 +94,7 @@ onMounted(() => {
 
 <template>
   <AegisActions
-    v-if="osimRuntime.flags?.aiCweSuggestions === true || isCweAIBot"
+    v-if="osimRuntime.flags?.aiCweSuggestions === true || isCweAIBot || skipTooltip"
     :canSuggest="canSuggest && !!osimRuntime.flags?.aiCweSuggestions"
     :hasAppliedSuggestion="hasAppliedSuggestion"
     :hasMultipleSuggestions="hasMultipleSuggestions"
@@ -103,6 +104,7 @@ onMounted(() => {
     :suggestions="allSuggestions as string[]"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestCwe"
     @selectSuggestion="selectSuggestion"
     @revert="revertCwe"

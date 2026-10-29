@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue';
+
+import { createPopper, type Instance as PopperInstance } from '@popperjs/core';
+import { onClickOutside } from '@vueuse/core';
 
 import { useFlaw } from '@/composables/useFlaw';
+
+import { useToastStore } from '@/stores/ToastStore';
 
 import AegisFeedbackModal from './AegisFeedbackModal.vue';
 
@@ -13,6 +18,7 @@ const props = defineProps<{
   isFetchingSuggestion: boolean;
   isFieldAIBot?: boolean;
   selectedIndex: number;
+  skipTooltipText?: string;
   suggestions: string[];
   tooltipText: string;
 }>();
@@ -28,16 +34,78 @@ const EMBARGOED_FEEDBACK_TOOLTIP = 'Aegis feedback is not allowed on embargoed f
 
 const { flaw } = useFlaw();
 const isEmbargoed = computed(() => Boolean(flaw.value.embargoed));
+const toastStore = useToastStore();
 
 const showFeedbackModal = ref(false);
 const showSuggestionTooltip = ref(false);
+const suggestionTooltipId = useId();
+const suggestionTooltipContainer = ref<HTMLElement>();
+const suggestionTooltipTrigger = ref<HTMLElement>();
+const suggestionTooltip = ref<HTMLElement>();
+const copiedTooltipText = ref<null | string>(null);
+let suggestionTooltipPopper: null | PopperInstance = null;
+
+const showSkipWarning = computed(() => !props.hasAppliedSuggestion && !!props.skipTooltipText);
+const suggestionTooltipText = computed(() => (showSkipWarning.value ? props.skipTooltipText : props.tooltipText) || '');
+const hasCopiedTooltipText = computed(() => copiedTooltipText.value === suggestionTooltipText.value);
 
 const hasSuggestionTooltip = computed(() => {
-  return props.hasAppliedSuggestion || props.isFieldAIBot;
+  return props.hasAppliedSuggestion || props.isFieldAIBot || showSkipWarning.value;
 });
 
+onClickOutside(
+  suggestionTooltipContainer,
+  () => { showSuggestionTooltip.value = false; },
+  { ignore: [suggestionTooltip] },
+);
+
+watch(showSuggestionTooltip, async (show) => {
+  suggestionTooltipPopper?.destroy();
+  suggestionTooltipPopper = null;
+  if (!show) return;
+  await nextTick();
+  if (!suggestionTooltipTrigger.value || !suggestionTooltip.value) return;
+  suggestionTooltip.value.querySelector<HTMLButtonElement>('button')?.focus();
+  suggestionTooltipPopper = createPopper(suggestionTooltipTrigger.value, suggestionTooltip.value, {
+    placement: 'right',
+    strategy: 'fixed',
+    modifiers: [
+      { name: 'offset', options: { offset: [0, 10] } },
+      { name: 'flip', options: { fallbackPlacements: ['left'] } },
+      { name: 'preventOverflow', options: { padding: 8 } },
+    ],
+  });
+});
+
+watch(hasSuggestionTooltip, (hasTooltip) => {
+  if (!hasTooltip) showSuggestionTooltip.value = false;
+});
+
+onBeforeUnmount(() => { suggestionTooltipPopper?.destroy(); });
+
 function toggleSuggestionTooltip() {
+  copiedTooltipText.value = null;
   showSuggestionTooltip.value = !showSuggestionTooltip.value;
+}
+
+function closeSuggestionTooltip() {
+  showSuggestionTooltip.value = false;
+  suggestionTooltipTrigger.value?.focus();
+}
+
+async function copySuggestionTooltip() {
+  const text = suggestionTooltipText.value;
+  try {
+    await navigator.clipboard.writeText(text);
+    copiedTooltipText.value = text;
+  } catch {
+    copiedTooltipText.value = null;
+    toastStore.addToast({
+      title: 'Copy failed',
+      body: 'Unable to copy text to the clipboard. Please select and copy the text manually.',
+      css: 'warning',
+    });
+  }
 }
 
 function handleThumbsUp() {
@@ -60,8 +128,9 @@ function handleFeedbackCancel() {
 }
 
 const safeTooltipText = computed(() => {
-  if (!props.tooltipText) return '';
-  return props.tooltipText
+  const text = suggestionTooltipText.value;
+  if (!text) return '';
+  return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -83,26 +152,71 @@ const safeTooltipText = computed(() => {
     />
     <span
       v-if="hasSuggestionTooltip"
+      ref="suggestionTooltipContainer"
       style="position: relative; display: inline-flex; align-items: center;"
       @click.stop
+      @keydown.esc.stop.prevent="closeSuggestionTooltip"
     >
       <i
-        class="bi bi-info-circle me-1"
-        style="cursor: pointer; font-size: 0.9em; color: #6c757d;"
-        title="Click to see suggestion details"
+        ref="suggestionTooltipTrigger"
+        class="bi me-1"
+        :class="showSkipWarning ? 'aegis-skip-warning' : 'bi-info-circle text-secondary'"
+        style="cursor: pointer; font-size: 0.9em;"
+        :title="showSkipWarning
+          ? 'Click to see why the AI-Bot suggestion is unavailable'
+          : 'Click to see suggestion details'"
+        :aria-label="showSkipWarning ? 'AI-Bot suggestion unavailable' : 'AI suggestion details'"
+        :aria-describedby="showSuggestionTooltip ? suggestionTooltipId : undefined"
+        :aria-expanded="showSuggestionTooltip"
+        aria-haspopup="dialog"
         role="button"
         tabindex="0"
         @click.stop.prevent="toggleSuggestionTooltip"
-        @blur="showSuggestionTooltip = false"
         @keydown.enter.space.stop.prevent="toggleSuggestionTooltip"
-      ></i>
-      <!-- eslint-disable vue/no-v-html -->
-      <div
-        v-if="showSuggestionTooltip"
-        class="aegis-tooltip"
-        v-html="safeTooltipText"
-      ></div>
-      <!-- eslint-enable vue/no-v-html -->
+      >
+        <template v-if="showSkipWarning">
+          <i class="bi bi-exclamation-triangle-fill text-warning" aria-hidden="true"></i>
+          <i class="bi bi-exclamation-triangle text-black" aria-hidden="true"></i>
+        </template>
+      </i>
+      <Teleport to="body">
+        <div
+          v-if="showSuggestionTooltip"
+          :id="suggestionTooltipId"
+          ref="suggestionTooltip"
+          class="aegis-tooltip"
+          role="dialog"
+          :aria-label="showSkipWarning ? 'AI-Bot suggestion unavailable' : 'AI suggestion details'"
+          @click.stop
+          @keydown.esc.stop.prevent="closeSuggestionTooltip"
+          @mousedown.stop
+          @mouseup.stop
+          @pointerdown.stop
+          @pointerup.stop
+        >
+          <div class="d-flex justify-content-end align-items-center gap-2 mb-2 flex-shrink-0">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-light m-0 py-0 px-2"
+              aria-label="Copy text"
+              title="Copy text"
+              @click.stop="copySuggestionTooltip"
+            >
+              <i class="bi me-1" :class="hasCopiedTooltipText ? 'bi-check' : 'bi-clipboard'" aria-hidden="true"></i>
+              <span aria-live="polite">{{ hasCopiedTooltipText ? 'Copied text' : 'Copy text' }}</span>
+            </button>
+            <button
+              type="button"
+              class="btn-close btn-close-white m-0"
+              aria-label="Close suggestion details"
+              title="Close"
+              @click.stop="closeSuggestionTooltip"
+            ></button>
+          </div>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div class="aegis-tooltip-content" v-html="safeTooltipText"></div>
+        </div>
+      </Teleport>
     </span>
     <div
       v-if="hasMultipleSuggestions && !isFetchingSuggestion"
@@ -210,6 +324,14 @@ i.bi-stars {
   }
 }
 
+.aegis-skip-warning {
+  display: inline-grid;
+
+  > .bi {
+    grid-area: 1 / 1;
+  }
+}
+
 .suggestion-dropdown {
   min-width: 200px;
   max-height: 300px;
@@ -247,11 +369,8 @@ i.bi-stars {
 }
 
 .aegis-tooltip {
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
   background: #333;
   color: white;
   padding: 8px 12px;
@@ -259,7 +378,7 @@ i.bi-stars {
   min-width: 350px;
   max-width: 500px;
   max-height: 300px;
-  overflow-y: auto;
+  pointer-events: auto;
   white-space: normal;
   word-wrap: break-word;
   z-index: 1060;
@@ -268,14 +387,30 @@ i.bi-stars {
   line-height: 1.4;
   text-align: left;
 
-  &::before {
+  &[data-popper-placement^='right']::before,
+  &[data-popper-placement^='left']::before {
     content: '';
     position: absolute;
-    right: 100%;
     top: 50%;
     transform: translateY(-50%);
     border: 6px solid transparent;
+  }
+
+  &[data-popper-placement^='right']::before {
+    right: 100%;
     border-right-color: #333;
   }
+
+  &[data-popper-placement^='left']::before {
+    left: 100%;
+    border-left-color: #333;
+  }
+}
+
+.aegis-tooltip-content {
+  min-height: 0;
+  overflow-y: auto;
+  cursor: text;
+  user-select: text;
 }
 </style>
