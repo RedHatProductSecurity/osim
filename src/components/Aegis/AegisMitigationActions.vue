@@ -41,7 +41,8 @@ const {
   'mitigation',
 );
 
-const { getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('mitigation'));
 const isMitigationAIBot = computed(() => isFieldValueAIBot('mitigation', modelValue.value));
 
 defineExpose({
@@ -74,6 +75,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="allSuggestions"
     :selectedIndex="selectedSuggestionIndex"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestMitigation"
     @selectSuggestion="selectSuggestion"
     @revert="revertMitigation"

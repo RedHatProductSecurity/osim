@@ -35,7 +35,7 @@ const isLoadingSuggestions = computed(() => {
   return aegisCweActionsRef.value?.isFetchingSuggestion || false;
 });
 
-const { isFieldValueAIBot } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
 
 function filterSuggestions(query: string) {
   queryRef.value = query;
@@ -121,7 +121,7 @@ function parseDisplayValue(value: null | string) {
       ></i>
       <AegisCweActions
         v-if="osimRuntime.flags?.aiCweSuggestions ||
-          isFieldValueAIBot('cwe_id', modelValue)"
+          isFieldValueAIBot('cwe_id', modelValue) || getAIBotSkipTooltip('cwe_id')"
         ref="aegisCweActionsRef"
         v-model="modelValue"
         :aegisContext="aegisContext"

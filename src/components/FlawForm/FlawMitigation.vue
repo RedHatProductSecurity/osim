@@ -14,7 +14,7 @@ defineProps<{
 
 const modelValue = defineModel<null | string | undefined>();
 
-const { isFieldValueAIBot } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
 </script>
 
 <template>
@@ -38,7 +38,7 @@ const { isFieldValueAIBot } = useAegisMetadataTracking();
         ></i>
         <AegisMitigationActions
           v-if="osimRuntime.flags?.aiMitigationSuggestions ||
-            isFieldValueAIBot('mitigation', modelValue)"
+            isFieldValueAIBot('mitigation', modelValue) || getAIBotSkipTooltip('mitigation')"
           v-model="modelValue"
           :aegisContext="aegisContext"
         />

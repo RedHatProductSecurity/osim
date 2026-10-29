@@ -33,7 +33,8 @@ defineExpose({
   isSuggesting,
 });
 
-const { getAIBotTooltip } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, getAIBotTooltip } = useAegisMetadataTracking();
+const skipTooltip = computed(() => getAIBotSkipTooltip('title'));
 
 const {
   canShowFeedbackExtended: canShowTitleFeedbackExtended,
@@ -66,7 +67,7 @@ const suggestionTooltip = computed(() => {
 
 <template>
   <AegisActions
-    v-if="osimRuntime.flags?.aiTitleSuggestions === true || isTitleAIBot"
+    v-if="osimRuntime.flags?.aiTitleSuggestions === true || isTitleAIBot || skipTooltip"
     :canSuggest="canSuggest && !!osimRuntime.flags?.aiTitleSuggestions"
     :hasAppliedSuggestion="hasAppliedTitleSuggestion"
     :hasMultipleSuggestions="false"
@@ -76,6 +77,7 @@ const suggestionTooltip = computed(() => {
     :suggestions="[]"
     :selectedIndex="0"
     :tooltipText="suggestionTooltip"
+    :skipTooltipText="skipTooltip"
     @suggest="suggestTitle"
     @revert="revertTitle"
     @feedback="handleTitleFeedback"

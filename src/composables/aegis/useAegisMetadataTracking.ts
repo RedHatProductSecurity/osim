@@ -73,6 +73,9 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
 
   // Check if the most recent entry that matches the current value is AI-Bot type
   const matchingEntries = metadata.filter((entry) => {
+    // Skipped attempts never change the provenance of the applied value.
+    if (entry.type === 'AI-Bot-Skipped') return false;
+
     // For array fields, compare arrays directly
     if (Array.isArray(currentValue) && Array.isArray(entry.value)) {
       return JSON.stringify(currentValue) === JSON.stringify(entry.value);
@@ -91,6 +94,30 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
 
 function getAIBotEntry(fieldName: string): AegisChangeEntry | undefined {
   return aegisMetadata.value[fieldName]?.findLast(entry => entry.type === 'AI-Bot');
+}
+
+function formatAegisSuggestionValue(value: unknown): string {
+  const values = Array.isArray(value) ? value : [value];
+  return values
+    .filter((item): item is string => typeof item === 'string')
+    .map(item => item.trim())
+    .filter(Boolean)
+    .join(', ');
+}
+
+function getAIBotSkipTooltip(fieldName: string): string {
+  const entries = aegisMetadata.value[fieldName];
+  if (!Array.isArray(entries)) return '';
+  // A later suggestion or user change supersedes an earlier skip.
+  const entry = entries[entries.length - 1];
+  if (entry?.type !== 'AI-Bot-Skipped') return '';
+
+  const reason = entry.skip_description?.trim() || entry.skip_reason?.trim();
+  const title = 'Aegis-AI-Bot suggestion unavailable';
+  let tooltip = reason ? `${title}\n\nReason: ${reason}` : title;
+  const suggestion = formatAegisSuggestionValue(entry.value);
+  if (suggestion) tooltip += `\n\nDiscarded suggestion: ${suggestion}`;
+  return appendAegisSuggestionMetadata(tooltip, entry);
 }
 
 function formatUnitInterval(value: null | number | string | undefined): null | string {
@@ -179,6 +206,7 @@ export function useAegisMetadataTracking() {
     isFieldAegisChange,
     isFieldValueAIBot,
     getAIBotEntry,
+    getAIBotSkipTooltip,
     getAIBotTooltip,
     hasAIBotProcessing,
   };

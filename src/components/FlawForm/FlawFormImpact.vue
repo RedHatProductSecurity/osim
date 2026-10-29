@@ -42,7 +42,7 @@ const shouldShowImpactNudge = computed(() => {
   return hasBeenTriaged && didImpactChange;
 });
 
-const { isFieldValueAIBot } = useAegisMetadataTracking();
+const { getAIBotSkipTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
 </script>
 
 <template>
@@ -61,7 +61,7 @@ const { isFieldValueAIBot } = useAegisMetadataTracking();
       ></i>
       <AegisImpactActions
         v-if="osimRuntime.flags?.aiImpactSuggestions ||
-          isFieldValueAIBot('impact', modelValue)"
+          isFieldValueAIBot('impact', modelValue) || getAIBotSkipTooltip('impact')"
         :aegisContext="aegisContext"
         :modelValue="modelValue"
         @update:impact="handleImpactChange"
