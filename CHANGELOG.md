@@ -1,5 +1,8 @@
 # OSIM Changelog
 ## [Unreleased]
+### Added
+* Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
+
 ### Fixed
 * Show Aegis Multi Suggest loading indicators only for selected fields and clear them when generation completes (`AEGIS-542`)
 
@@ -11,8 +14,6 @@
 * Show related entities audit entries in flaw history (`OSIDB-5687`)
 * Choose a resolution, applicable VEX justification, and optional comment when bulk-closing Jira trackers; show per-tracker failures and keep failed trackers selected for retry (`OSIDB-5739`)
 * Avoids overriding the affect when there was an error and the affect was not saved. (`OSIDB-5297`)
-
-
 
 ### Changed
 * Replace Full Flaw Suggestions with a Multi Suggest split button beside the Bugzilla/Jira links, with field selection, empty-field defaults, override indicators, and a select/unselect-all toggle; apply AI suggestions only to checked fields (`AEGIS-527`)

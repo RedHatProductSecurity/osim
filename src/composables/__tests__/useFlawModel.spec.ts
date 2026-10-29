@@ -157,6 +157,85 @@ describe('useFlawModel', () => {
       expect(flaw.value.affects).toEqual(localAffects);
     });
 
+    it('retries a 409 when the server changed fields the form did not edit', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      const localAffects = flawData.affects;
+      setFlaw(flawData);
+      initializeAffects(localAffects);
+
+      const conflict = { response: { status: 409, data: { detail: 'updated_dt mismatch' } } };
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce(conflict)
+        .mockResolvedValueOnce({
+          ...flawData,
+          title: 'analyst title',
+          statement: 'bot statement',
+          updated_dt: serverUpdatedDt,
+          affects: [],
+        });
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        statement: 'bot statement',
+        updated_dt: serverUpdatedDt,
+        affects: [],
+      });
+
+      const { updateFlaw } = mountFlawModel();
+      flaw.value.title = 'analyst title';
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenNthCalledWith(
+        1,
+        flawData.uuid,
+        expect.objectContaining({ title: 'analyst title', statement: flawData.statement }),
+        false,
+        { suppressConflictToast: true },
+      );
+      expect(getFlaw).toHaveBeenCalledWith(flawData.uuid, true);
+      expect(putFlaw).toHaveBeenNthCalledWith(
+        2,
+        flawData.uuid,
+        expect.objectContaining({
+          title: 'analyst title',
+          statement: 'bot statement',
+          updated_dt: serverUpdatedDt,
+          affects: localAffects,
+        }),
+        false,
+      );
+      expect(flaw.value.title).toBe('analyst title');
+      expect(flaw.value.statement).toBe('bot statement');
+      expect(flaw.value.affects).toEqual(localAffects);
+    });
+
+    it('keeps the form and does not retry when the same field changed on the server', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      setFlaw(flawData);
+
+      vi.mocked(putFlaw).mockRejectedValueOnce({ response: { status: 409 } });
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'bot title',
+        updated_dt: '2024-06-01T00:00:00Z',
+      });
+
+      const { updateFlaw } = mountFlawModel();
+      flaw.value.title = 'analyst title';
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenCalledTimes(1);
+      expect(flaw.value.title).toBe('analyst title');
+      expect(flaw.value.updated_dt).toBe(flawData.updated_dt);
+    });
+
     it('should not initialize affects from server data when affect save fails', async () => {
       const { flaw, setFlaw } = useFlaw();
       const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
