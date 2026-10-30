@@ -4,16 +4,26 @@ import type { ZodFlawType } from '@/types';
 import {
   isFlawConflict,
   rebaseDisjointFlaw,
+  type FlawFieldConflict,
   type FlawRebaseField,
 } from '@/utils/flawRebase';
+
+export type PendingFlawConflict = {
+  adopted: FlawRebaseField[];
+  conflicts: FlawFieldConflict[];
+  formEdits: FlawRebaseField[];
+  mine: ZodFlawType;
+  server: ZodFlawType;
+};
 
 /**
  * Shared check for a flaw save that the server rejected as stale.
  * Section screens and the conflict dialog use the tracked field lists.
  */
 export function useCollisionConflict() {
-  const conflicts = ref<FlawRebaseField[]>([]);
+  const conflicts = ref<FlawFieldConflict[]>([]);
   const adopted = ref<FlawRebaseField[]>([]);
+  const pendingFlawConflict = ref<null | PendingFlawConflict>(null);
 
   async function resolveFlawSave(
     base: DeepReadonly<ZodFlawType>,
@@ -24,6 +34,7 @@ export function useCollisionConflict() {
   ): Promise<ZodFlawType> {
     conflicts.value = [];
     adopted.value = [];
+    pendingFlawConflict.value = null;
 
     try {
       return await save(mine, true);
@@ -42,7 +53,17 @@ export function useCollisionConflict() {
       const result = rebaseDisjointFlaw(base, mine, serverFlaw);
       conflicts.value = result.conflicts;
       adopted.value = result.adopted;
-      if (result.conflicts.length > 0 || result.merged === null) {
+      if (result.conflicts.length > 0) {
+        pendingFlawConflict.value = {
+          adopted: result.adopted,
+          conflicts: result.conflicts,
+          formEdits: result.formEdits,
+          mine,
+          server: serverFlaw,
+        };
+        throw error;
+      }
+      if (result.merged === null) {
         onUnresolved(error);
         throw error;
       }
@@ -54,6 +75,7 @@ export function useCollisionConflict() {
   return {
     adopted,
     conflicts,
+    pendingFlawConflict,
     resolveFlawSave,
   };
 }

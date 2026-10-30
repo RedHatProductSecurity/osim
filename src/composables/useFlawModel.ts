@@ -23,7 +23,13 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
-import { flawRebaseFieldLabel } from '@/utils/flawRebase';
+import {
+  flawBodyFromChoices,
+  flawRebaseFieldLabel,
+  formatCollisionValue,
+  type CollisionChoice,
+  type FlawRebaseField,
+} from '@/utils/flawRebase';
 import { deepMap, mergeBy } from '@/utils/helpers';
 import {
   flawSources,
@@ -50,10 +56,10 @@ const FieldToFeatureName: Record<string, string> = {
 };
 
 export function useFlawModel() {
-  const { flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
+  const { acceptServerFlaw, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
-  const { adopted, resolveFlawSave } = useCollisionConflict();
+  const { adopted, pendingFlawConflict, resolveFlawSave } = useCollisionConflict();
   const userStore = useUserStore();
   const shouldCreateJiraTask = ref(false);
   const { getAegisMetadata, hasAegisChanges } = useAegisMetadataTracking();
@@ -245,16 +251,50 @@ export function useFlawModel() {
       () => getFlaw(flaw.value.uuid, true),
       createCatchHandler('Could not update Flaw', false),
     );
-    if (adopted.value.length > 0) {
-      addToast({
-        title: 'Flaw saved with newer changes',
-        body: `Kept your edits and took server updates for ${
-          adopted.value.map(flawRebaseFieldLabel).join(', ')
-        }.`,
-        css: 'info',
-      });
-    }
+    toastAdoptedFields(adopted.value);
     return saved;
+  }
+
+  function toastAdoptedFields(fields: FlawRebaseField[]) {
+    if (fields.length === 0) return;
+    addToast({
+      title: 'Flaw saved with newer changes',
+      body: `Kept your edits and took server updates for ${fields.map(flawRebaseFieldLabel).join(', ')}.`,
+      css: 'info',
+    });
+  }
+
+  const collisionConflicts = computed(() => (pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
+    id: conflict.field,
+    label: flawRebaseFieldLabel(conflict.field),
+    mine: formatCollisionValue(conflict.mine),
+    server: formatCollisionValue(conflict.server),
+  })));
+
+  function cancelCollisionDialog() {
+    pendingFlawConflict.value = null;
+  }
+
+  async function confirmCollisionDialog(choices: Record<string, CollisionChoice>) {
+    if (isSaving.value) return;
+    const pending = pendingFlawConflict.value;
+    if (!pending) return;
+
+    isSaving.value = true;
+    try {
+      const saved = await putFlaw(
+        flaw.value.uuid,
+        flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
+        shouldCreateJiraTask.value,
+      );
+      acceptServerFlaw(saved);
+      pendingFlawConflict.value = null;
+      toastAdoptedFields(pending.adopted);
+    } catch {
+      // putFlaw already shows the error. Leave the dialog open.
+    } finally {
+      isSaving.value = false;
+    }
   }
 
   async function updateFlaw() {
@@ -423,7 +463,11 @@ export function useFlawModel() {
     areLabelsUpdated,
     shouldCreateJiraTask,
     toggleShouldCreateJiraTask,
+    cancelCollisionDialog,
+    collisionConflicts,
+    confirmCollisionDialog,
     createFlaw,
+    showCollisionDialog: computed(() => pendingFlawConflict.value !== null),
     updateFlaw,
     afterSaveSuccess,
     updateVector,
