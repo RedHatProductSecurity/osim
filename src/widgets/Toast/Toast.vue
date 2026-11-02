@@ -111,6 +111,7 @@ if (props.timeoutMs) {
 
 // Initialize ref
 const timestampRelative = ref<string>(props.timestamp.toRelative() || '');
+let relativeTimeTimeout: ReturnType<typeof setTimeout>;
 
 // Update function
 const updateTimestamp = () => {
@@ -120,7 +121,7 @@ const updateTimestamp = () => {
 const updateTimestampSecond = (updatesRemaining: number = 60) => {
   updateTimestamp();
   if (updatesRemaining > 0) {
-    setTimeout(updateTimestampSecond.bind(null, updatesRemaining - 1), 1000);
+    relativeTimeTimeout = setTimeout(updateTimestampSecond.bind(null, updatesRemaining - 1), 1000);
   } else {
     updateTimestampMinute();
   }
@@ -130,7 +131,7 @@ let relativeTimeInterval: ReturnType<typeof setInterval>;
 const updateTimestampMinute = (updatesRemaining: number = 60) => {
   updateTimestamp();
   if (updatesRemaining > 0) {
-    setTimeout(updateTimestampMinute.bind(null, updatesRemaining - 1), 60000);
+    relativeTimeTimeout = setTimeout(updateTimestampMinute.bind(null, updatesRemaining - 1), 60000);
   } else {
     relativeTimeInterval = setInterval(updateTimestamp, 60000 * 5); // 5 minutes
   }
@@ -138,6 +139,7 @@ const updateTimestampMinute = (updatesRemaining: number = 60) => {
 updateTimestampSecond();
 
 onBeforeUnmount(() => {
+  clearTimeout(relativeTimeTimeout);
   clearInterval(relativeTimeInterval);
 });
 
