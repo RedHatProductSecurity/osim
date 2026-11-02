@@ -66,4 +66,13 @@ describe('toast', () => {
     expect(wrapper.emitted('close')).toBeFalsy();
     expect(wrapper.emitted('stale')).toBeTruthy();
   });
+
+  it('should not start a timestamp interval after the toast is unmounted', () => {
+    const wrapper = mountToast();
+    wrapper.unmount();
+
+    vi.advanceTimersByTime(62 * 60 * 1000);
+
+    expect(vi.getTimerCount()).toBe(0);
+  });
 });
