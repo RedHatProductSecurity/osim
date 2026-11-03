@@ -2,7 +2,6 @@ import { computed, ref } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { type ZodIssue } from 'zod';
-import { modifyPath } from 'ramda';
 
 import { useFlaw } from '@/composables/useFlaw';
 import { useFlawCommentsModel } from '@/composables/useFlawCommentsModel';
@@ -23,15 +22,13 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
-import { deepMap, mergeBy } from '@/utils/helpers';
+import { mergeBy } from '@/utils/helpers';
 import {
   flawSources,
   flawImpacts,
   flawIncidentStates,
+  ZodFlawFormSchema,
   ZodFlawSchema,
-  type DeepMapValues,
-  type DeepNullable,
-  type ZodFlawType,
   type ZodAffectType,
 } from '@/types';
 
@@ -371,12 +368,23 @@ export function useFlawModel() {
     }
   }
 
-  const errors = computed<ReturnType<typeof flawErrors>>((previousErrors) => {
-    const newErrors = flawErrors(flaw.value);
-    if (previousErrors && JSON.stringify(previousErrors) === JSON.stringify(newErrors)) {
-      return previousErrors;
+  let cachedFormErrors: { ackCount: number; errors: FlawFormErrors; refCount: number } | null = null;
+
+  const errors = computed(() => {
+    const parsed = ZodFlawFormSchema.safeParse(flaw.value);
+    const refCount = flaw.value.references?.length ?? 0;
+    const ackCount = flaw.value.acknowledgments?.length ?? 0;
+    if (parsed.success) {
+      if (cachedFormErrors?.refCount === refCount && cachedFormErrors.ackCount === ackCount) {
+        return cachedFormErrors.errors;
+      }
+      const next = blankFormErrors(refCount, ackCount);
+      cachedFormErrors = { ackCount, errors: next, refCount };
+      return next;
     }
-    return newErrors;
+
+    cachedFormErrors = null;
+    return formErrorsFromIssues(parsed.error.issues, refCount, ackCount);
   });
 
   const toggleShouldCreateJiraTask = () => {
@@ -404,19 +412,72 @@ export function useFlawModel() {
   };
 }
 
-function flawErrors(flaw: ZodFlawType): DeepNullable<DeepMapValues<ZodFlawType, string>> {
-  const parsedFlaw = ZodFlawSchema.safeParse(flaw);
-  let mirroredFlaw = deepMap(() => null, flaw);
+type NestedFormError = Record<string, null | string>;
 
-  if (parsedFlaw.success) {
-    return mirroredFlaw;
+type FlawFormErrors = {
+  acknowledgments: NestedFormError[];
+  comment_zero: null | string;
+  components: null | string;
+  cve_description: null | string;
+  cve_id: null | string;
+  cwe_id: null | string;
+  impact: null | string;
+  major_incident_state: null | string;
+  mitigation: null | string;
+  owner: null | string;
+  references: NestedFormError[];
+  reported_dt: null | string;
+  source: null | string;
+  statement: null | string;
+  title: null | string;
+  unembargo_dt: null | string;
+};
+
+function blankFormErrors(refCount: number, ackCount: number): FlawFormErrors {
+  return {
+    acknowledgments: Array.from({ length: ackCount }, () => ({})),
+    comment_zero: null,
+    components: null,
+    cve_description: null,
+    cve_id: null,
+    cwe_id: null,
+    impact: null,
+    major_incident_state: null,
+    mitigation: null,
+    owner: null,
+    references: Array.from({ length: refCount }, () => ({})),
+    reported_dt: null,
+    source: null,
+    statement: null,
+    title: null,
+    unembargo_dt: null,
+  };
+}
+
+function formErrorsFromIssues(
+  issues: { message: string; path: PropertyKey[] }[],
+  refCount: number,
+  ackCount: number,
+): FlawFormErrors {
+  const errors: FlawFormErrors = blankFormErrors(refCount, ackCount);
+  for (const { message, path } of issues) {
+    assignFormIssue(errors, path, message);
   }
+  return errors;
+}
 
-  parsedFlaw.error.errors
-    .map(({ message, path }) => ({ path, message }))
-    .forEach(({ message, path }) => {
-      mirroredFlaw = modifyPath(path, () => message, mirroredFlaw);
-    });
+function assignFormIssue(errors: FlawFormErrors, path: PropertyKey[], message: string) {
+  if (path.length === 0) return;
 
-  return mirroredFlaw;
+  let cursor: Record<PropertyKey, unknown> = errors;
+  for (let index = 0; index < path.length - 1; index++) {
+    const key = path[index];
+    const next = path[index + 1];
+    const current = cursor[key];
+    if (current == null || typeof current !== 'object') {
+      cursor[key] = typeof next === 'number' ? [] : {};
+    }
+    cursor = cursor[key] as Record<PropertyKey, unknown>;
+  }
+  cursor[path[path.length - 1]] = message;
 }
