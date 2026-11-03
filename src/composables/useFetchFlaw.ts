@@ -18,7 +18,7 @@ const currentlyFetchedAffectCount = ref(0);
 const historyFetchError = ref(false);
 
 export function useFetchFlaw() {
-  const { flaw, resetFlaw, setFlaw } = useFlaw();
+  const { flaw, resetFlaw, setFlaw, setLateFlawField } = useFlaw();
   const { addToast } = useToastStore();
   const { setAegisMetadata } = useAegisMetadataTracking();
 
@@ -69,23 +69,20 @@ export function useFetchFlaw() {
       if (osimRuntime.value.flags?.flawHistory) {
         getFlawAuditHistory(flawResult.uuid)
           .then((auditHistory) => {
-            flaw.value.history = auditHistory;
             historyFetchError.value = false;
-            setFlaw(flaw.value);
+            setLateFlawField('history', auditHistory);
           })
           .catch((historyError) => {
             console.error('useFetchFlaw::fetchFlaw() Error loading audit history:', historyError);
             // Don't fail the entire flaw fetch if history fails, but set error flag
-            flaw.value.history = [];
             historyFetchError.value = true;
-            setFlaw(flaw.value);
+            setLateFlawField('history', []);
           });
       }
 
       const affectResults = (await fetchedAffects).data.results;
-      flaw.value.affects = affectResults;
       isFetchingAffects.value = false;
-      setFlaw(flaw.value);
+      setLateFlawField('affects', affectResults);
     } catch (error) {
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;

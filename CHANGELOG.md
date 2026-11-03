@@ -8,6 +8,7 @@
 ### Fixed
 * Keep flaw text fields responsive on flaws with many affects by checking only form fields while typing (`OSIDB-5839`)
 * Show Aegis Multi Suggest loading indicators only for selected fields and clear them when generation completes (`AEGIS-542`)
+* Keep AI-suggested flaw field values that race with background loads or model refreshes: late-arriving affects/history no longer mark applied suggestions as already saved, wiped suggestions are restored after the flaw model is resynchronized, and responses from a left flaw page are no longer applied to another flaw (`AEGIS-502`)
 
 ## [2026.10.1]
 ### Added
