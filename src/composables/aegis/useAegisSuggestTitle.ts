@@ -92,6 +92,9 @@ export function useAegisSuggestTitle(options: UseAegisSuggestTitleOptions) {
     if (!aegisTitleSuggestionWatcher.hasAppliedSuggestion.value && previousTitleValue.value == null) {
       previousTitleValue.value = options.titleRef.value;
     }
+    // A false return means the owning form was replaced while the request was
+    // in flight; the response belongs to a flaw that is no longer displayed.
+    if (!aegisTitleSuggestionWatcher.applyAISuggestion(title)) return;
     requestDuration.value = duration;
     details.value = {
       suggested_title: title,
@@ -101,7 +104,6 @@ export function useAegisSuggestTitle(options: UseAegisSuggestTitleOptions) {
       explanation: data.explanation,
       tools_used: data.tools_used,
     };
-    aegisTitleSuggestionWatcher.applyAISuggestion(title);
     if (!isBulkBusy.value) {
       toastStore.addToast({
         title: 'AI Suggestion Applied',

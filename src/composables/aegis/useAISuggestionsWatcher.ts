@@ -1,4 +1,4 @@
-import { ref, readonly, watch, type Ref } from 'vue';
+import { onScopeDispose, ref, readonly, watch, type Ref } from 'vue';
 
 import { useFlaw } from '@/composables/useFlaw';
 
@@ -20,6 +20,11 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
   const originalFieldValue = ref<null | string | string[] | undefined>(null);
   const hasPartialModification = ref(false);
   const hasTrackedPartialChange = ref(false);
+  // Requests outlive the component that started them. Once the owning scope
+  // is gone (the form was remounted for another flaw), a late response must
+  // not be written into whichever flaw model is current.
+  let disposed = false;
+  onScopeDispose(() => { disposed = true; });
 
   watch(valueRef, (newValue, oldValue) => {
     if (hasAppliedSuggestion.value
@@ -49,7 +54,8 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
     hasTrackedPartialChange.value = false;
   });
 
-  const applyAISuggestion = (suggestion: string | string[]) => {
+  const applyAISuggestion = (suggestion: string | string[]): boolean => {
+    if (disposed) return false;
     if (!hasAppliedSuggestion.value) {
       originalFieldValue.value = Array.isArray(valueRef.value) ? [...valueRef.value] : valueRef.value;
     }
@@ -63,9 +69,11 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
     // For arrays, serialize for metadata storage
     const metadataValue = Array.isArray(suggestion) ? JSON.stringify(suggestion) : suggestion;
     trackAIChange(fieldName, 'AI', metadataValue);
+    return true;
   };
 
   const revertAISuggestion = () => {
+    if (disposed) return;
     // Restore using copy for arrays
     valueRef.value = Array.isArray(originalFieldValue.value)
       ? [...originalFieldValue.value]
