@@ -17,6 +17,7 @@ import type {
 } from '@/types/aegisAI';
 import { useAuthStore } from '@/stores/AuthStore';
 import { osimRuntime } from '@/stores/osimRuntime';
+import { getNextAccessToken } from '@/services/OsidbAuthService';
 
 export type AegisAIFetchCallbacks = {
   beforeFetch?: (options: AegisAIFetchOptions) => Promise<void> | void;
@@ -138,10 +139,20 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
   }
 }
 
-function aegisAuthHeaders(): Record<string, string> {
+// Both KPI sources load in parallel. Share token acquisition per auth store so
+// an expired token cannot trigger competing refreshes (including token rotation).
+const pendingAuthHeaders = new WeakMap<ReturnType<typeof useAuthStore>, Promise<Record<string, string>>>();
+
+function aegisAuthHeaders(): Promise<Record<string, string>> {
   const authStore = useAuthStore();
-  if (!authStore.accessToken) return {};
-  return { Authorization: `Bearer ${authStore.accessToken}` };
+  let pending = pendingAuthHeaders.get(authStore);
+  if (!pending) {
+    pending = getNextAccessToken()
+      .then(token => ({ Authorization: `Bearer ${token}` }))
+      .finally(() => pendingAuthHeaders.delete(authStore));
+    pendingAuthHeaders.set(authStore, pending);
+  }
+  return pending;
 }
 
 function paramsFrom(params: Record<string, any>) {
@@ -292,8 +303,11 @@ export class AegisAIService {
     const result = await this.fetch({
       method: 'GET',
       url: '/analysis/kpi/osidb-bot',
-      headers: aegisAuthHeaders(),
       params: { ...query, detail: true },
+    }, {
+      beforeFetch: async (options) => {
+        options.headers = await aegisAuthHeaders();
+      },
     });
     if (!Array.isArray(result.data?.entries)) {
       throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
@@ -325,8 +339,11 @@ export class AegisAIService {
       const result = await this.fetch({
         method: 'GET',
         url: '/analysis/kpi/cve',
-        headers: aegisAuthHeaders(),
         params: { feature, ...query },
+      }, {
+        beforeFetch: async (options) => {
+          options.headers = await aegisAuthHeaders();
+        },
       });
 
       return result.data;
