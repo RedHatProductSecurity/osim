@@ -31,7 +31,7 @@ import LabelTextarea from '@/widgets/LabelTextarea/LabelTextarea.vue';
 import LabelTagsInput from '@/widgets/LabelTagsInput/LabelTagsInput.vue';
 import LabelStatic from '@/widgets/LabelStatic/LabelStatic.vue';
 import { LoadingAnimationDirective } from '@/directives/LoadingAnimationDirective.js';
-import { flawImpactEnum, FlawSourceEnumWithBlank, flawSources, type ZodFlawType } from '@/types/zodFlaw';
+import { flawImpactEnum, FlawSourceEnumWithBlank, flawSources, ZodFlawSchema, type ZodFlawType } from '@/types/zodFlaw';
 import { mountWithConfig } from '@/__tests__/helpers';
 import { FlawClassificationStateEnum } from '@/generated-client';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -39,6 +39,14 @@ import type { OsimRuntimeType } from '@/types/zodOsim';
 import type { AegisChangeEntry } from '@/types/aegisAI';
 
 import { osimFullFlawTest } from './test-suite-helpers';
+
+const affectIssueMessages = (flaw: ZodFlawType) => {
+  const parsed = ZodFlawSchema.safeParse(flaw);
+  if (parsed.success) return [];
+  return parsed.error.issues
+    .filter(issue => issue.path[0] === 'affects')
+    .map(issue => issue.message);
+};
 
 vi.mock('@/services/TrackerService', () => {
   return {
@@ -606,9 +614,10 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const vm = subject.findComponent(FlawForm).vm as any;
 
-    expect(vm.errors.affects[1].ps_component).toBe(
+    expect(affectIssueMessages(flaw)).toContain(
       'Affected component cannot be registered on the affected component/PURL twice',
     );
+    expect(vm.errors.affects).toBeUndefined();
   });
 
   osimFullFlawTest('should trigger validation error for duplicate affects with same purl', async ({ flaw }) => {
@@ -642,9 +651,10 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const vm = subject.findComponent(FlawForm).vm as any;
 
-    expect(vm.errors.affects[1].ps_component).toBe(
+    expect(affectIssueMessages(flaw)).toContain(
       'Affected component cannot be registered on the affected component/PURL twice',
     );
+    expect(vm.errors.affects).toBeUndefined();
   });
 
   osimFullFlawTest('should not trigger validation error for purls with different qualifiers',
@@ -681,7 +691,8 @@ describe('flawForm', () => {
       const vm = subject.findComponent(FlawForm).vm as any;
 
       // No validation error expected - different qualifiers means different affects
-      expect(vm.errors.affects?.[1]?.ps_component).toBeNull();
+      expect(affectIssueMessages(flaw)).toEqual([]);
+      expect(vm.errors.affects).toBeUndefined();
     });
 
   osimFullFlawTest('should not trigger validation error for purls with different versions', async ({ flaw }) => {
@@ -715,7 +726,8 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const vm = subject.findComponent(FlawForm).vm as any;
 
-    expect(vm.errors.affects[1].ps_component).toBe(null);
+    expect(affectIssueMessages(flaw)).toEqual([]);
+    expect(vm.errors.affects).toBeUndefined();
   });
 
   osimFullFlawTest('should not trigger validation error for different affects', async ({ flaw }) => {
@@ -773,9 +785,8 @@ describe('flawForm', () => {
     const subject = mountWithProps(flaw, { mode: 'edit' });
     const vm = subject.findComponent(FlawForm).vm as any;
 
-    for (let i = 0; i < flaw.affects.length; i++) {
-      expect(vm.errors.affects[i].ps_component).toBe(null);
-    }
+    expect(affectIssueMessages(flaw)).toEqual([]);
+    expect(vm.errors.affects).toBeUndefined();
   });
 
   osimFullFlawTest('should trigger validation error when multiple CWEs are present', async ({ flaw }) => {
