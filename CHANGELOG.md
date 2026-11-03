@@ -1,6 +1,6 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2026.11.0]
 ### Added
 * Show black-outlined, yellow-filled warning icons with recorded reasons, discarded suggestions, and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled, with copy and close controls in the detail popups (`OSIDB-5469`)
 
@@ -772,7 +772,8 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.11.0...HEAD
+[2026.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.1...v2026.11.0
 [2026.10.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.0...v2026.10.1
 [2026.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.9.0...v2026.10.0
 [2026.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.2...v2026.9.0
