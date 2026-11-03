@@ -78,11 +78,7 @@ function mountActions(props: InstanceType<typeof AegisActions>['$props']) {
   return wrapper;
 }
 
-function mountWithRealTeleport(props: InstanceType<typeof AegisActions>['$props']) {
-  const elevatedCvssLayer = document.createElement('div');
-  elevatedCvssLayer.className = 'input-wrapper';
-  elevatedCvssLayer.style.zIndex = '3';
-  host.append(elevatedCvssLayer);
+function mountTeleportedActions(props: InstanceType<typeof AegisActions>['$props']) {
   const wrapper = mount(AegisActions, {
     attachTo: host,
     props,
@@ -93,6 +89,15 @@ function mountWithRealTeleport(props: InstanceType<typeof AegisActions>['$props'
     },
   });
   wrappers.push(wrapper);
+  return wrapper;
+}
+
+function mountWithRealTeleport(props: InstanceType<typeof AegisActions>['$props']) {
+  const elevatedCvssLayer = document.createElement('div');
+  elevatedCvssLayer.className = 'input-wrapper';
+  elevatedCvssLayer.style.zIndex = '3';
+  host.append(elevatedCvssLayer);
+  const wrapper = mountTeleportedActions(props);
   return { elevatedCvssLayer, wrapper };
 }
 
@@ -477,5 +482,101 @@ describe.each(popupVariants)('$name popup with CVSS z-index isolation', (variant
     await nextTick();
     expect(document.body.contains(outsideDialog)).toBe(false);
     expect(trigger.attributes('aria-expanded')).toBe('false');
+  });
+});
+
+type FocusInvocation = { element: HTMLElement; options?: FocusOptions };
+
+describe.each(popupVariants)('$name popup focus and page scrolling', (variant) => {
+  const { props, triggerSelector } = variant;
+
+  // When the popup opens, its dialog is teleported to the end of <body> and is
+  // not yet positioned by Popper, so the browser scrolls the newly focused copy
+  // button into view and jumps the page to the very bottom. Browsers only skip
+  // that scroll when the focus call opts out with preventScroll. JSDOM performs
+  // no layout or scrolling, so the side effect is emulated by recording every
+  // focus call: one without preventScroll counts as a potential page scroll.
+  let focusInvocations: FocusInvocation[] = [];
+  let restoreFocusTracking!: () => void;
+
+  beforeEach(() => {
+    focusInvocations = [];
+    const originalFocus = HTMLElement.prototype.focus;
+    const focusSpy = vi
+      .spyOn(HTMLElement.prototype, 'focus')
+      .mockImplementation(function (this: HTMLElement, options?: FocusOptions) {
+        focusInvocations.push({ element: this, options });
+        originalFocus.call(this, options);
+      });
+    restoreFocusTracking = () => focusSpy.mockRestore();
+  });
+
+  afterEach(() => restoreFocusTracking());
+
+  function focusCallsWithinPopups() {
+    return focusInvocations.filter(({ element }) => element.closest('[role="dialog"]') !== null);
+  }
+
+  // Focus calls able to scroll the page. The trigger is exempt because the user
+  // just interacted with it, so it is already in view when it regains focus.
+  function scrollingFocusCalls(trigger: Element) {
+    return focusInvocations.filter(({ element, options }) =>
+      !options?.preventScroll && !trigger.contains(element));
+  }
+
+  it.each(['click', 'Enter'])('moves focus into the popup without a page scroll on %j', async (activation) => {
+    const wrapper = mountTeleportedActions(props);
+    const trigger = wrapper.get<HTMLElement>(triggerSelector);
+    if (activation === 'Enter') {
+      // Emulate the browser focusing the trigger natively on interaction.
+      trigger.element.focus();
+    }
+    const activate = () => activation === 'click'
+      ? trigger.trigger('click')
+      : trigger.trigger('keydown', { key: activation });
+    await activate();
+    await flushPromises();
+
+    const dialog = document.getElementById(trigger.attributes('aria-describedby')!)!;
+    expect(dialog.parentElement).toBe(document.body);
+    const copy = dialog.querySelector<HTMLButtonElement>(copySelector)!;
+    expect(document.activeElement).toBe(copy);
+
+    const popupFocusCalls = focusCallsWithinPopups();
+    expect(popupFocusCalls).toHaveLength(1);
+    expect(popupFocusCalls[0]!.element).toBe(copy);
+    expect(popupFocusCalls[0]!.options).toEqual({ preventScroll: true });
+    expect(scrollingFocusCalls(trigger.element)).toEqual([]);
+  });
+
+  it('moves focus back into the popup without scrolling after closing and reopening', async () => {
+    const wrapper = mountTeleportedActions(props);
+    const trigger = wrapper.get<HTMLElement>(triggerSelector);
+    await trigger.trigger('click');
+    await flushPromises();
+    const firstDialog = document.getElementById(trigger.attributes('aria-describedby')!)!;
+    expect(document.activeElement).toBe(firstDialog.querySelector(copySelector));
+
+    firstDialog.dispatchEvent(new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Escape',
+    }));
+    await nextTick();
+    expect(document.body.contains(firstDialog)).toBe(false);
+    expect(document.activeElement).toBe(trigger.element);
+
+    await trigger.trigger('keydown', { key: 'Enter' });
+    await flushPromises();
+    const secondDialog = document.getElementById(trigger.attributes('aria-describedby')!)!;
+    expect(document.activeElement).toBe(secondDialog.querySelector(copySelector));
+
+    const popupFocusCalls = focusCallsWithinPopups();
+    expect(popupFocusCalls).toHaveLength(2);
+    expect(popupFocusCalls.map(({ options }) => options)).toEqual([
+      { preventScroll: true },
+      { preventScroll: true },
+    ]);
+    expect(scrollingFocusCalls(trigger.element)).toEqual([]);
   });
 });
