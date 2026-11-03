@@ -6,6 +6,9 @@ import type { ZodAffectType } from '@/types';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
 const initialFlaw = ref<ZodFlawType>(blankFlaw());
+// Counts same-flaw model replacements (post-save syncs, refetches) so field
+// state wiped by a resync can be restored. Navigation is not a resync.
+const flawResyncCount = ref(0);
 
 function resetFlaw() {
   flaw.value = blankFlaw();
@@ -17,8 +20,12 @@ type RelatedDataType = ZodAffectType[] | ZodFlawCVSSType[] | ZodFlawLabelType[];
 type FlawFieldsWithEndpoints = 'affects' | 'cvss_scores' | 'labels';
 type WithUUID = { uuid: string }[];
 function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace: boolean = true) {
+  const previousFlaw = flaw.value;
   if (!key) {
     flaw.value = flawData as ZodFlawType;
+    if (flawData !== previousFlaw && previousFlaw.uuid && (flawData as ZodFlawType).uuid === previousFlaw.uuid) {
+      flawResyncCount.value += 1;
+    }
   } else if (!replace && Array.isArray(flawData)) {
     flaw.value[key] = mergeBy(flaw.value[key] as WithUUID, flawData as WithUUID, 'uuid') as any;
   } else {
@@ -63,6 +70,7 @@ const isFlawUpdated = computed(
 export function useFlaw() {
   return {
     flaw,
+    flawResyncCount: readonly(flawResyncCount),
     initialFlaw: readonly(initialFlaw),
     isFlawUpdated,
     resetFlaw,

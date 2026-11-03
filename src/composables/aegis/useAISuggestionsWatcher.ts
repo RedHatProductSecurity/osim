@@ -1,5 +1,7 @@
 import { ref, readonly, watch, type Ref } from 'vue';
 
+import { useFlaw } from '@/composables/useFlaw';
+
 import { useAegisMetadataTracking } from './useAegisMetadataTracking';
 
 const isValueEqual = (a: unknown, b: unknown): boolean => {
@@ -11,6 +13,7 @@ const isValueEqual = (a: unknown, b: unknown): boolean => {
 
 export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string | string[] | undefined>) {
   const { trackAIChange, untrackAIChange } = useAegisMetadataTracking();
+  const { flawResyncCount } = useFlaw();
 
   const hasAppliedSuggestion = ref(false);
   const originalSuggestion = ref<null | string | string[]>(null);
@@ -29,6 +32,21 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
         hasTrackedPartialChange.value = true;
       }
     }
+  });
+
+  // A same-flaw resync (post-save sync, refetch) replaces the flaw model and
+  // with it values that were only applied locally. When a previously applied
+  // suggestion was wiped back to its pre-suggestion value, restore it rather
+  // than losing it. Server-side changes (a value differing from the baseline)
+  // and user edits are respected, and the suggestion metadata is not re-tracked.
+  watch(flawResyncCount, () => {
+    if (!hasAppliedSuggestion.value) return;
+    if (!isValueEqual(valueRef.value, originalFieldValue.value)) return;
+    valueRef.value = Array.isArray(originalSuggestion.value)
+      ? [...originalSuggestion.value]
+      : originalSuggestion.value;
+    hasPartialModification.value = false;
+    hasTrackedPartialChange.value = false;
   });
 
   const applyAISuggestion = (suggestion: string | string[]) => {
