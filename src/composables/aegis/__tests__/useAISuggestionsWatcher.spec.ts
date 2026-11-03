@@ -66,9 +66,9 @@ describe('useAISuggestionsWatcher', () => {
       expect(flaw.value.cve_description).toBe('AI description');
       expect(watcher.hasAppliedSuggestion.value).toBe(true);
       expect(isFlawUpdated.value).toBe(true);
-      const aiEntries = metadataEntries().filter(entry => entry.type === 'AI');
-      expect(aiEntries).toHaveLength(1);
-      expect(aiEntries[0].value).toBe('AI description');
+      // The restore is not a user modification: exactly one entry, no 'Partial AI'.
+      expect(metadataEntries()).toHaveLength(1);
+      expect(metadataEntries()[0]).toMatchObject({ type: 'AI', value: 'AI description' });
     });
 
     it('keeps the server value when the resync changed the field on the server', async () => {
@@ -80,6 +80,50 @@ describe('useAISuggestionsWatcher', () => {
       await nextTick();
 
       expect(flaw.value.cve_description).toBe('Edited on the server');
+      // A server-side change during an applied suggestion is not a user edit.
+      expect(metadataEntries()).toHaveLength(1);
+      expect(metadataEntries()[0]).toMatchObject({ type: 'AI', value: 'AI description' });
+    });
+
+    it('does not resurrect a suggestion over a field the user modified since it was applied', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // The user edits the applied suggestion: an ordinary value change, no resync.
+      flaw.value.cve_description = 'AI description (user edited)';
+      await nextTick();
+      expect(watcher.hasPartialModification.value).toBe(true);
+
+      // A same-flaw resync brings the pre-suggestion value back from the server.
+      setFlaw({ ...flaw.value, cve_description: 'Original description' });
+      await nextTick();
+
+      expect(flaw.value.cve_description).toBe('Original description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+      // The user's modification is still the only partial change on record.
+      const partialEntries = metadataEntries().filter(entry => entry.type === 'Partial AI');
+      expect(partialEntries).toHaveLength(1);
+      expect(partialEntries[0].value).toBe('AI description (user edited)');
+    });
+
+    it('tracks partial modifications made after a resync restore', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      setFlaw({ ...flaw.value, cve_description: 'Original description' });
+      await nextTick();
+      expect(flaw.value.cve_description).toBe('AI description');
+
+      // The user edits the restored suggestion; the resync skip must not be sticky.
+      flaw.value.cve_description = 'AI description (user edited)';
+      await nextTick();
+
+      expect(watcher.hasPartialModification.value).toBe(true);
+      const partialEntries = metadataEntries().filter(entry => entry.type === 'Partial AI');
+      expect(partialEntries).toHaveLength(1);
+      expect(partialEntries[0].value).toBe('AI description (user edited)');
     });
 
     it('does not restore a suggestion the user reverted before the resync', async () => {

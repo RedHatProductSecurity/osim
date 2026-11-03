@@ -26,7 +26,13 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
   let disposed = false;
   onScopeDispose(() => { disposed = true; });
 
+  // Value changes caused by a flaw model resync are not user modifications;
+  // remember the resync count seen by the last partial-modification check.
+  let resyncCountAtLastChange = flawResyncCount.value;
   watch(valueRef, (newValue, oldValue) => {
+    const resynced = flawResyncCount.value !== resyncCountAtLastChange;
+    resyncCountAtLastChange = flawResyncCount.value;
+    if (resynced) return;
     if (hasAppliedSuggestion.value
       && !isValueEqual(newValue, originalSuggestion.value)
       && !isValueEqual(newValue, oldValue)) {
@@ -43,9 +49,11 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
   // with it values that were only applied locally. When a previously applied
   // suggestion was wiped back to its pre-suggestion value, restore it rather
   // than losing it. Server-side changes (a value differing from the baseline)
-  // and user edits are respected, and the suggestion metadata is not re-tracked.
+  // and fields the user modified since the suggestion are left alone, and the
+  // suggestion metadata is not re-tracked.
   watch(flawResyncCount, () => {
     if (!hasAppliedSuggestion.value) return;
+    if (hasPartialModification.value) return;
     if (!isValueEqual(valueRef.value, originalFieldValue.value)) return;
     valueRef.value = Array.isArray(originalSuggestion.value)
       ? [...originalSuggestion.value]
