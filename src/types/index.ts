@@ -43,6 +43,7 @@ export {
   flawImpacts,
   flawIncidentStates,
   flawSources,
+  ZodFlawFormSchema,
   ZodFlawOwnerSchema,
   ZodFlawSchema,
 } from '@/types/zodFlaw';

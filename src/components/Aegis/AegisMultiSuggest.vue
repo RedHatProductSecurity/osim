@@ -4,12 +4,14 @@ import { computed, ref, watch } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 
 import type { FullFlawSuggestions, SuggestionField } from '@/composables/aegis/useFullFlawSuggestions';
+import type { AegisSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
 
 import LoadingSpinner from '@/widgets/LoadingSpinner/LoadingSpinner.vue';
 
 const props = defineProps<{
   coordinator: FullFlawSuggestions;
   disabled: boolean;
+  steeringNotes: AegisSteeringNotes;
 }>();
 
 const dropdown = ref<HTMLElement>();
@@ -21,6 +23,12 @@ const selectedFields = computed({
   set: (fields: SuggestionField[]) => { choices.value = fields; },
 });
 const isDisabled = computed(() => props.disabled || !props.coordinator.canSuggest.value);
+const isMenuDisabled = computed(() => props.disabled
+  || !props.coordinator.isVisible.value || props.coordinator.isBusy.value);
+const notesDraft = computed({
+  get: () => props.steeringNotes.draft.value,
+  set: (value: string) => props.steeringNotes.setDraft(value),
+});
 const selectedEnabledFields = computed(() => selectedFields.value.filter(field =>
   props.coordinator.fields.value.some(item => item.field === field),
 ));
@@ -28,12 +36,12 @@ const allSelected = computed(() => props.coordinator.fields.value.length > 0
   && selectedEnabledFields.value.length === props.coordinator.fields.value.length);
 
 onClickOutside(dropdown, () => { isOpen.value = false; });
-watch(isDisabled, (disabled) => {
+watch(isMenuDisabled, (disabled) => {
   if (disabled) isOpen.value = false;
 });
 
 function toggle() {
-  if (isDisabled.value) return;
+  if (isMenuDisabled.value) return;
   if (!isOpen.value && choices.value === null) {
     selectedFields.value = [...selectedFields.value];
   }
@@ -74,7 +82,7 @@ function submit() {
         ref="trigger"
         type="button"
         class="btn btn-secondary dropdown-toggle dropdown-toggle-split my-0"
-        :disabled="isDisabled"
+        :disabled="isMenuDisabled"
         :aria-expanded="isOpen"
         aria-label="Choose suggestion fields"
         @click="toggle"
@@ -120,6 +128,34 @@ function submit() {
           </tr>
         </tbody>
       </table>
+      <div class="border-top mt-2 pt-2">
+        <label class="d-block">
+          <span class="form-label">Steering notes (internal)</span>
+          <textarea
+            v-model="notesDraft"
+            class="form-control"
+            rows="5"
+            :disabled="isMenuDisabled"
+          ></textarea>
+        </label>
+        <p class="form-text mb-2">
+          Save notes to use them in Aegis suggestions. Use the form's Save Changes to persist them.
+        </p>
+        <div class="d-flex gap-2">
+          <button
+            type="button"
+            class="btn btn-primary btn-sm my-0"
+            :disabled="isMenuDisabled || !steeringNotes.hasChanges.value"
+            @click="steeringNotes.save"
+          >Save notes</button>
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm my-0"
+            :disabled="isMenuDisabled || !notesDraft.length"
+            @click="steeringNotes.clear"
+          >Clear</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -139,7 +175,7 @@ function submit() {
 .multi-suggest-menu {
   right: 0;
   left: auto;
-  min-width: 17rem;
+  width: 26rem;
   max-width: calc(100vw - 2rem);
 }
 </style>

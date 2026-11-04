@@ -175,7 +175,7 @@ export const ZodFlawOwnerSchema = z.preprocess(
   ]),
 );
 
-export const ZodFlawSchema = z.object({
+const ZodFlawObjectSchema = z.object({
   uuid: z.string().default(''),
   cve_id: z.string().nullable().refine(
     cve => !cve || cveRegex.test(cve),
@@ -245,7 +245,19 @@ export const ZodFlawSchema = z.object({
   alerts: z.array(ZodAlertSchema).default([]),
   task_key: z.string().max(60).nullish(),
   created_dt: zodOsimDateTime().nullish(),
-}).superRefine((zodFlaw, zodContext) => {
+});
+
+type FlawFormChecks = {
+  classification?: { state?: string } | null;
+  components: string[];
+  cwe_id?: null | string;
+  embargoed: boolean;
+  impact?: null | string;
+  reported_dt?: null | string;
+  unembargo_dt?: null | string;
+};
+
+function refineFlawForm(zodFlaw: FlawFormChecks, zodContext: z.RefinementCtx) {
   const raiseIssue = (message: string, path: string[]) => {
     zodContext.addIssue({
       code: z.ZodIssueCode.custom,
@@ -294,14 +306,6 @@ export const ZodFlawSchema = z.object({
     raiseIssue('Reported date cannot be in the future.', ['reported_dt']);
   }
 
-  const affect = duplicatedAffects(zodFlaw.affects);
-  if (affect) {
-    raiseIssue(
-      'Affected component cannot be registered on the affected component/PURL twice',
-      ['affects', `${affect.index}`, 'ps_component'],
-    );
-  }
-
   if (zodFlaw.cwe_id) {
     const cweData = loadCweData();
     const cweMatches = zodFlaw.cwe_id?.match(/CWE-\d+/gi);
@@ -323,6 +327,29 @@ export const ZodFlawSchema = z.object({
 
           raiseIssue(msg, ['cwe_id']);
         });
+    });
+  }
+}
+
+// Fields the flaw form renders. Live validation uses this schema so keystrokes do not walk affects.
+export const ZodFlawFormSchema = ZodFlawObjectSchema.omit({
+  affects: true,
+  alerts: true,
+  comments: true,
+  cvss_scores: true,
+  history: true,
+  labels: true,
+  trackers: true,
+}).superRefine(refineFlawForm);
+
+export const ZodFlawSchema = ZodFlawObjectSchema.superRefine((zodFlaw, zodContext) => {
+  refineFlawForm(zodFlaw, zodContext);
+  const affect = duplicatedAffects(zodFlaw.affects);
+  if (affect) {
+    zodContext.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Affected component cannot be registered on the affected component/PURL twice',
+      path: ['affects', affect.index, 'ps_component'],
     });
   }
 });
