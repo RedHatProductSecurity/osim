@@ -32,10 +32,11 @@ export function useFetchFlaw() {
 
   const didFetchFail = ref<boolean>(false);
 
-  async function fetchFlawAffects(flawCveOrId: string) {
+  async function fetchFlawAffects(flawCveOrId: string, isCurrentFetch: () => boolean) {
     try {
       isFetchingAffects.value = true;
       return await getAffects(flawCveOrId, (fetchedCount, totalCount) => {
+        if (!isCurrentFetch()) return;
         totalAffectCount.value = totalCount;
         currentlyFetchedAffectCount.value = fetchedCount;
       });
@@ -61,7 +62,7 @@ export function useFetchFlaw() {
       didFetchFail.value = false;
       historyFetchError.value = false;
       const fetchedFlaw = getFlaw(normalizedId);
-      const fetchedAffects = fetchFlawAffects(normalizedId);
+      const fetchedAffects = fetchFlawAffects(normalizedId, isCurrentFetch);
 
       const flawResult = await fetchedFlaw;
       if (!isCurrentFetch()) return;

@@ -101,12 +101,16 @@ function mockFetchesPerFlaw(
   flawB: { promise: Promise<ZodFlawType> },
   affectsA: { promise: Promise<AffectsResponse> },
   affectsB: { promise: Promise<AffectsResponse> },
+  capturedProgressCallbacks?: Array<(fetchedCount: number, totalCount: number) => void>,
 ) {
   vi.mocked(getFlaw).mockImplementation(
     id => (id === FLAW_A_CVE ? flawA.promise : flawB.promise),
   );
   vi.mocked(getAffects).mockImplementation(
-    id => (id === FLAW_A_CVE ? affectsA.promise : affectsB.promise),
+    (id, onFetched) => {
+      if (capturedProgressCallbacks && onFetched) capturedProgressCallbacks.push(onFetched);
+      return id === FLAW_A_CVE ? affectsA.promise : affectsB.promise;
+    },
   );
 }
 
@@ -402,6 +406,65 @@ describe('useFetchFlaw', () => {
     expect(isFetchingAffects.value).toBe(false);
     expect(flaw.value.affects).toEqual(affectsB);
     expect(initialFlaw.value.affects).toEqual(affectsB);
+  });
+
+  it('ignores a stale affects progress callback after a newer fetchFlaw call', async () => {
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    const progressCallbacks: Array<(fetchedCount: number, totalCount: number) => void> = [];
+    mockFetchesPerFlaw(
+      flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred, progressCallbacks,
+    );
+
+    const {
+      currentlyFetchedAffectCount,
+      fetchFlaw,
+      isFetchingAffects,
+      totalAffectCount,
+    } = useFetchFlaw();
+    // The affect counters are module-level and not reset between tests: snapshot the baseline.
+    const baselineTotal = totalAffectCount.value;
+    const baselineFetched = currentlyFetchedAffectCount.value;
+
+    const fetchingA = fetchFlaw(FLAW_A_CVE);
+    await flushPromises();
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+    expect(isFetchingAffects.value).toBe(true);
+    expect(progressCallbacks).toHaveLength(2);
+
+    // Stale fetch A reports pagination progress while B's affects are still loading.
+    progressCallbacks[0](5, 50);
+    expect(totalAffectCount.value).toBe(baselineTotal);
+    expect(currentlyFetchedAffectCount.value).toBe(baselineFetched);
+
+    // The current fetch's progress callback keeps updating both counters.
+    progressCallbacks[1](10, 20);
+    expect(totalAffectCount.value).toBe(20);
+    expect(currentlyFetchedAffectCount.value).toBe(10);
+
+    // B's affects settle and the shared spinner clears for the current fetch.
+    affectsBDeferred.resolve({ data: { results: [] }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(isFetchingAffects.value).toBe(false);
+
+    // A's pagination reports again and A's requests settle after B finished: nothing may land.
+    progressCallbacks[0](30, 60);
+    flawADeferred.resolve(serverFlaw());
+    affectsADeferred.resolve({ data: { results: [] }, response: {} as Response });
+    await fetchingA;
+    await flushPromises();
+
+    expect(totalAffectCount.value).toBe(20);
+    expect(currentlyFetchedAffectCount.value).toBe(10);
+    expect(isFetchingAffects.value).toBe(false);
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
   });
 
   it('does not fail or reset the current flaw when a stale flaw fetch rejects', async () => {
