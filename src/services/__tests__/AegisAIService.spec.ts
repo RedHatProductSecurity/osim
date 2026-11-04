@@ -4,6 +4,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { useAuthStore } from '@/stores/AuthStore';
 import { server } from '@/__tests__/setup';
+import { encodeJWT } from '@/__tests__/helpers';
 import type {
   AegisAIComponentFeatureNameType,
   AegisAICVEAnalysisParamsType,
@@ -293,6 +294,13 @@ describe('aegisAIService', () => {
   });
 
   describe('getKpiMetrics', () => {
+    let accessToken: string;
+
+    beforeEach(() => {
+      accessToken = encodeJWT({ exp: Math.floor(Date.now() / 1000) + 3600, user_id: 1337 });
+      useAuthStore().accessToken = accessToken;
+    });
+
     const mockKpiMetrics: Omit<AegisKpiMetrics, 'all'> = {
       'suggest-cwe': {
         acceptance_percentage: 75.5,
@@ -364,12 +372,11 @@ describe('aegisAIService', () => {
         http.get(`${mockBaseUrl}/analysis/kpi/cve`, ({ request }) => {
           const url = new URL(request.url);
           expect(url.searchParams.get('feature')).toBe('all');
-          expect(request.headers.get('Authorization')).toBe('Bearer test-user-token');
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${accessToken}`);
           return HttpResponse.json(mockKpiMetrics);
         }),
       );
 
-      useAuthStore().accessToken = 'test-user-token';
       const result = await service.getKpiMetrics('all');
       expect(result).toEqual(mockKpiMetrics);
     });
@@ -469,6 +476,236 @@ describe('aegisAIService', () => {
       await fetchPromise;
 
       expect(service.isFetching.value).toBe(false);
+    });
+  });
+
+  describe('kpi authentication', () => {
+    const initialTime = new Date('2026-10-01T12:00:00Z');
+    const botMetrics = { entries: [], features: {}, total_flaws_processed: 0 };
+    const cveMetrics = { 'suggest-cwe': { acceptance_percentage: 0, entries: [] } };
+    let requests: Request[];
+    let refreshRequests: Request[];
+
+    function token(expiresInSeconds: number) {
+      return encodeJWT({
+        token_type: 'access',
+        user_id: 1337,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + expiresInSeconds,
+      });
+    }
+
+    beforeEach(() => {
+      // Leave network timers real while advancing the JWT clock between page loads.
+      vi.useFakeTimers({ toFake: ['Date'], now: initialTime });
+      requests = [];
+      refreshRequests = [];
+      server.use(
+        http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+          requests.push(request);
+          return HttpResponse.json(botMetrics);
+        }),
+        http.get(`${mockBaseUrl}/analysis/kpi/cve`, ({ request }) => {
+          requests.push(request);
+          return HttpResponse.json(cveMetrics);
+        }),
+        http.get(`${osimRuntime.value.backends.osidb}/auth/token/refresh`, ({ request }) => {
+          refreshRequests.push(request);
+          return HttpResponse.json({ access: token(3600) });
+        }),
+      );
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it.each(['cve', 'osidb-bot'])('reuses a valid JWT for repeated %s requests', async (endpoint) => {
+      const accessToken = token(300);
+      useAuthStore().accessToken = accessToken;
+
+      for (let index = 0; index < 2; index++) {
+        if (endpoint === 'cve') {
+          expect(await service.getKpiMetrics('suggest-cwe')).toEqual(cveMetrics);
+        } else {
+          expect(await service.getBotKpiMetrics()).toEqual(botMetrics);
+        }
+      }
+
+      expect(requests).toHaveLength(2);
+      expect(refreshRequests).toHaveLength(0);
+      for (const request of requests) {
+        expect(request.headers.get('Authorization')).toBe(`Bearer ${accessToken}`);
+        expect(request.credentials).toBe('include');
+      }
+    });
+
+    it.each([false, true])(
+      'refreshes once before parallel filtered requests after expiry (separate services: %s)',
+      async (separateServices) => {
+        const authStore = useAuthStore();
+        const initialToken = token(300);
+        authStore.accessToken = initialToken;
+        const botService = separateServices ? new AegisAIService() : service;
+
+        await Promise.all([service.getKpiMetrics(), botService.getBotKpiMetrics()]);
+        expect(refreshRequests).toHaveLength(0);
+        expect(requests.map(request => request.headers.get('Authorization')))
+          .toEqual([`Bearer ${initialToken}`, `Bearer ${initialToken}`]);
+        requests.length = 0;
+
+        vi.setSystemTime(new Date(initialTime.getTime() + 301_000));
+        const refreshedToken = token(3600);
+        let releaseRefresh!: () => void;
+        const refreshGate = new Promise<void>((resolve) => { releaseRefresh = resolve; });
+        server.use(http.get(`${osimRuntime.value.backends.osidb}/auth/token/refresh`, async ({ request }) => {
+          refreshRequests.push(request);
+          await refreshGate;
+          return HttpResponse.json({ access: refreshedToken });
+        }));
+        const query = {
+          component: 'kernel & core',
+          aegis_version: ['0.9.2+build1', ''],
+          recorded_after: '2026-09-01T00:00:00Z',
+          recorded_before: '2026-09-30T23:59:59.999Z',
+        };
+
+        const pending = Promise.all([
+          service.getKpiMetrics('suggest-cwe', { ...query, detail: true }),
+          botService.getBotKpiMetrics(query),
+        ]);
+        try {
+          await vi.waitFor(() => expect(refreshRequests).toHaveLength(1));
+          expect(requests).toHaveLength(0);
+          expect(service.isFetching.value).toBe(true);
+          expect(botService.isFetching.value).toBe(true);
+        } finally {
+          releaseRefresh();
+        }
+        expect(await pending).toEqual([cveMetrics, botMetrics]);
+
+        expect(refreshRequests).toHaveLength(1);
+        expect(refreshRequests[0].credentials).toBe('include');
+        expect(authStore.accessToken).toBe(refreshedToken);
+        expect(requests).toHaveLength(2);
+        for (const request of requests) {
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${refreshedToken}`);
+          expect(request.credentials).toBe('include');
+          const url = new URL(request.url);
+          expect(url.searchParams.get('component')).toBe(query.component);
+          expect(url.searchParams.getAll('aegis_version')).toEqual(query.aegis_version);
+          expect(url.searchParams.get('recorded_after')).toBe(query.recorded_after);
+          expect(url.searchParams.get('recorded_before')).toBe(query.recorded_before);
+          expect(url.searchParams.get('detail')).toBe('true');
+          if (url.pathname.endsWith('/cve')) {
+            expect(url.searchParams.get('feature')).toBe('suggest-cwe');
+          }
+        }
+        expect(service.isFetching.value).toBe(false);
+        expect(botService.isFetching.value).toBe(false);
+      },
+    );
+
+    it.each(['cve', 'osidb-bot'])('acquires a JWT for %s when no access token is cached', async (endpoint) => {
+      expect(useAuthStore().accessToken).toBeFalsy();
+
+      if (endpoint === 'cve') {
+        await service.getKpiMetrics();
+      } else {
+        await service.getBotKpiMetrics();
+      }
+
+      expect(refreshRequests).toHaveLength(1);
+      expect(requests).toHaveLength(1);
+      expect(requests[0].headers.get('Authorization')).toBe(`Bearer ${useAuthStore().accessToken}`);
+      expect(requests[0].credentials).toBe('include');
+    });
+
+    it('refreshes a JWT inside the existing sixty-second safety window', async () => {
+      const nearExpiryToken = token(30);
+      useAuthStore().accessToken = nearExpiryToken;
+
+      await Promise.all([service.getKpiMetrics(), service.getBotKpiMetrics()]);
+
+      expect(refreshRequests).toHaveLength(1);
+      expect(requests).toHaveLength(2);
+      for (const request of requests) {
+        expect(request.headers.get('Authorization')).toBe(`Bearer ${useAuthStore().accessToken}`);
+        expect(request.headers.get('Authorization')).not.toBe(`Bearer ${nearExpiryToken}`);
+      }
+    });
+
+    it('blocks both KPI calls on rejected refresh, clears loading, and can refresh on a later attempt', async () => {
+      const authStore = useAuthStore();
+      authStore.accessToken = token(-300);
+      const botService = new AegisAIService();
+      // Retain logout's state reset without navigating the test application.
+      const logoutSpy = vi.spyOn(authStore, 'logout').mockImplementation(async () => { authStore.$reset(); });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      let releaseRefresh!: () => void;
+      const refreshGate = new Promise<void>((resolve) => { releaseRefresh = resolve; });
+      server.use(http.get(`${osimRuntime.value.backends.osidb}/auth/token/refresh`, async ({ request }) => {
+        refreshRequests.push(request);
+        await refreshGate;
+        return HttpResponse.json({ detail: 'Session expired' }, { status: 401 });
+      }));
+
+      try {
+        const pending = Promise.allSettled([service.getKpiMetrics(), botService.getBotKpiMetrics()]);
+        try {
+          await vi.waitFor(() => expect(refreshRequests).toHaveLength(1));
+          expect(service.isFetching.value).toBe(true);
+          expect(botService.isFetching.value).toBe(true);
+          expect(requests).toHaveLength(0);
+        } finally {
+          releaseRefresh();
+        }
+        const results = await pending;
+        for (const result of results) {
+          expect(result).toMatchObject({
+            status: 'rejected', reason: { message: 'Unable to refresh access token' },
+          });
+        }
+        expect(refreshRequests).toHaveLength(1);
+        expect(requests).toHaveLength(0);
+        expect(service.isFetching.value).toBe(false);
+        expect(botService.isFetching.value).toBe(false);
+
+        const recoveredToken = token(3600);
+        server.use(http.get(`${osimRuntime.value.backends.osidb}/auth/token/refresh`, ({ request }) => {
+          refreshRequests.push(request);
+          return HttpResponse.json({ access: recoveredToken });
+        }));
+        expect(await Promise.all([service.getKpiMetrics(), botService.getBotKpiMetrics()]))
+          .toEqual([cveMetrics, botMetrics]);
+        expect(refreshRequests).toHaveLength(2);
+        expect(requests).toHaveLength(2);
+        for (const request of requests) {
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${recoveredToken}`);
+        }
+        expect(service.isFetching.value).toBe(false);
+        expect(botService.isFetching.value).toBe(false);
+      } finally {
+        logoutSpy.mockRestore();
+        consoleSpy.mockRestore();
+      }
+    });
+
+    it('leaves non-KPI analysis requests independent of expired OSIDB auth', async () => {
+      useAuthStore().accessToken = token(-300);
+      const analysis = { impact: 'IMPORTANT' };
+      let analysisRequest: Request | undefined;
+      server.use(http.get(`${mockBaseUrl}/analysis/cve`, ({ request }) => {
+        analysisRequest = request;
+        return HttpResponse.json(analysis);
+      }));
+
+      expect(await service.analyzeCVE({ feature: 'suggest-impact', cve_id: 'CVE-2026-1234' }))
+        .toEqual(analysis);
+      expect(analysisRequest?.headers.has('Authorization')).toBe(false);
+      expect(analysisRequest?.credentials).toBe('include');
+      expect(refreshRequests).toHaveLength(0);
+      expect(requests).toHaveLength(0);
     });
   });
 });

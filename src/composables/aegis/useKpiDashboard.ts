@@ -9,6 +9,32 @@ import {
   feedbackObservations, KpiFeatureLabels, kpiWeek,
 } from '@/utils/kpi';
 
+function kpiErrorMessage(source: string, reason: unknown): string {
+  const error = reason && typeof reason === 'object' ? reason : {};
+  const response = 'response' in error && error.response && typeof error.response === 'object'
+    ? error.response
+    : {};
+  const status = 'status' in response && typeof response.status === 'number' ? response.status : undefined;
+  const message = 'message' in error && typeof error.message === 'string'
+    ? error.message
+    : 'errorMsg' in error && typeof error.errorMsg === 'string' ? error.errorMsg : '';
+  let guidance = 'Select Refresh to try again.';
+  if (status === 401 || message === 'Unable to refresh access token') {
+    guidance = 'Authentication failed or your session expired. Sign in again, then refresh the metrics.';
+  } else if (status === 403) {
+    guidance = 'You do not have permission to load these metrics. Contact support if access is expected.';
+  } else if ('isNetworkError' in error && error.isNetworkError) {
+    guidance = 'Check your network connection, then select Refresh to try again.';
+  } else if (status === 429) {
+    guidance = 'Too many requests. Wait a moment, then select Refresh to try again.';
+  } else if (message.includes('does not support detailed bot KPI reports')) {
+    guidance = 'The Aegis server must be upgraded to support detailed bot KPI reports.';
+  }
+  const statusDetail = status && !message.includes(`HTTP ${status}`) ? `HTTP ${status}` : '';
+  const detail = [statusDetail, message].filter(Boolean).join(': ');
+  return `${source} metrics could not be loaded.${detail ? ` ${detail}` : ''} ${guidance}`;
+}
+
 export function useKpiDashboard() {
   const feature = ref('all');
   const component = ref('');
@@ -19,6 +45,7 @@ export function useKpiDashboard() {
   const bot = ref<AegisBotKpiMetrics | null>(null);
   const loading = ref(false);
   const errors = ref<string[]>([]);
+  const loadedSources = ref<string[]>([]);
   const availableVersions = ref<string[]>([]);
   const availableComponents = ref<string[]>(['kernel']);
   const availableFeatures = ref(Object.keys(KpiFeatureLabels));
@@ -69,6 +96,7 @@ export function useKpiDashboard() {
     feedback.value = {};
     bot.value = null;
     errors.value = [];
+    loadedSources.value = [];
     loading.value = !invalidRange.value;
     if (invalidRange.value) return;
     const results = await Promise.allSettled([
@@ -76,12 +104,14 @@ export function useKpiDashboard() {
       service.getBotKpiMetrics(query.value),
     ]);
     if (id !== requestId) return;
-    if (results[0].status === 'fulfilled') feedback.value = results[0].value;
-    else errors.value.push('Feedback metrics could not be loaded.');
-    if (results[1].status === 'fulfilled') bot.value = results[1].value;
-    else errors.value.push(
-      'osidb-bot metrics could not be loaded. The Aegis server must support detailed KPI reports.',
-    );
+    if (results[0].status === 'fulfilled') {
+      feedback.value = results[0].value;
+      loadedSources.value.push('Feedback');
+    } else errors.value.push(kpiErrorMessage('Feedback', results[0].reason));
+    if (results[1].status === 'fulfilled') {
+      bot.value = results[1].value;
+      loadedSources.value.push('osidb-bot');
+    } else errors.value.push(kpiErrorMessage('osidb-bot', results[1].reason));
     collectOptions();
     loading.value = false;
   }
@@ -116,6 +146,7 @@ export function useKpiDashboard() {
     bot,
     loading,
     errors,
+    loadedSources,
     invalidRange,
     availableVersions,
     availableComponents,
