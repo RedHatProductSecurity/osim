@@ -126,6 +126,34 @@ describe('useAISuggestionsWatcher', () => {
       expect(partialEntries[0].value).toBe('AI description (user edited)');
     });
 
+    it('tracks the user edit following a resync that left the applied value unchanged', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // A post-save sync replaces the model with a new object echoing the saved
+      // suggestion: the resync counter bumps but the field value is unchanged.
+      const resyncCount = flawResyncCount.value;
+      setFlaw({ ...flaw.value, cve_description: 'AI description' });
+      await nextTick();
+
+      expect(flawResyncCount.value).toBe(resyncCount + 1);
+      expect(flaw.value.cve_description).toBe('AI description');
+      expect(watcher.hasPartialModification.value).toBe(false);
+
+      // The user then edits the value: an ordinary change, no resync involved.
+      flaw.value.cve_description = 'AI description (user edited)';
+      await nextTick();
+
+      expect(watcher.hasPartialModification.value).toBe(true);
+      const entries = metadataEntries();
+      expect(entries).toHaveLength(2);
+      expect(entries.filter(entry => entry.type === 'AI')).toHaveLength(1);
+      const partialEntries = entries.filter(entry => entry.type === 'Partial AI');
+      expect(partialEntries).toHaveLength(1);
+      expect(partialEntries[0].value).toBe('AI description (user edited)');
+    });
+
     it('does not restore a suggestion the user reverted before the resync', async () => {
       const watcher = mountWatcher();
       watcher.applyAISuggestion('AI description');

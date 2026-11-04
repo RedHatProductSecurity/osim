@@ -80,6 +80,36 @@ function serverFlaw(): ZodFlawType {
   };
 }
 
+function serverFlawB(): ZodFlawType {
+  return {
+    ...blankFlaw(),
+    uuid: 'flaw-uuid-2',
+    cve_id: 'CVE-2024-5678',
+    title: 'Second flaw title',
+    cve_description: 'Second flaw description',
+  };
+}
+
+type AffectsResponse = { data: { results: ZodAffectType[] }; response: Response };
+
+const FLAW_A_CVE = 'CVE-2024-1234';
+const FLAW_B_CVE = 'CVE-2024-5678';
+
+/** Routes flaw/affects mocks to per-flaw deferreds so each fetchFlaw call's requests settle independently. */
+function mockFetchesPerFlaw(
+  flawA: { promise: Promise<ZodFlawType> },
+  flawB: { promise: Promise<ZodFlawType> },
+  affectsA: { promise: Promise<AffectsResponse> },
+  affectsB: { promise: Promise<AffectsResponse> },
+) {
+  vi.mocked(getFlaw).mockImplementation(
+    id => (id === FLAW_A_CVE ? flawA.promise : flawB.promise),
+  );
+  vi.mocked(getAffects).mockImplementation(
+    id => (id === FLAW_A_CVE ? affectsA.promise : affectsB.promise),
+  );
+}
+
 function suggestionContext(): AegisSuggestionContextRefs {
   return {
     cveId: ref('CVE-2024-1234'),
@@ -206,5 +236,267 @@ describe('useFetchFlaw', () => {
     expect(flaw.value.history).toEqual([]);
     expect(flaw.value.cve_description).toBe('AI suggested description');
     expect(isFlawUpdated.value).toBe(true);
+  });
+
+  it('ignores a stale flaw response after a newer fetchFlaw call has replaced the model', async () => {
+    const replaceStateSpy = vi.spyOn(history, 'replaceState').mockImplementation(() => {});
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+    const flawA = {
+      ...serverFlaw(),
+      aegis_meta: {
+        cve_description: [{ type: 'AI-Bot', timestamp: '2024-01-01T00:00:00.000Z', value: 'A description' }],
+      },
+    };
+
+    const fetchingA = useFetchFlaw().fetchFlaw(FLAW_A_CVE);
+    await flushPromises();
+
+    // A fresh composable instance fetches flaw B; the generation guard must coordinate across instances.
+    const { fetchFlaw: fetchFlawB, isFetchingAffects } = useFetchFlaw();
+    const fetchingB = fetchFlawB(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+    expect(replaceStateSpy).toHaveBeenCalledTimes(1);
+    expect(replaceStateSpy).toHaveBeenCalledWith(null, '', '/flaws/CVE-2024-5678');
+
+    // A's flaw response arrives late: it must not replace B's model, URL, or aegis metadata.
+    flawADeferred.resolve(flawA);
+    await flushPromises();
+    await fetchingA;
+
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+    expect(flaw.value.cve_description).toBe('Second flaw description');
+    expect(replaceStateSpy).toHaveBeenCalledTimes(1);
+    expect(replaceStateSpy).not.toHaveBeenCalledWith(null, '', '/flaws/CVE-2024-1234');
+    expect(tracking.getAegisMetadata()).toEqual({});
+
+    // The current fetch keeps working: B's affects still land in model and baseline.
+    const affectsB = [{ uuid: 'affect-uuid-b-1' }] as ZodAffectType[];
+    affectsBDeferred.resolve({ data: { results: affectsB }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(isFetchingAffects.value).toBe(false);
+    expect(flaw.value.affects).toEqual(affectsB);
+    expect(initialFlaw.value.affects).toEqual(affectsB);
+    replaceStateSpy.mockRestore();
+  });
+
+  it('ignores a stale audit history success after a newer fetchFlaw call', async () => {
+    runtime.value.flags = { flawHistory: true };
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    const historyADeferred = deferred<ZodFlawHistoryItemType[]>();
+    const historyBDeferred = deferred<ZodFlawHistoryItemType[]>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+    vi.mocked(getFlawAuditHistory).mockImplementation(
+      uuid => (uuid === 'flaw-uuid-1' ? historyADeferred.promise : historyBDeferred.promise),
+    );
+
+    const { fetchFlaw, historyFetchError } = useFetchFlaw();
+    fetchFlaw(FLAW_A_CVE);
+    flawADeferred.resolve(serverFlaw());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-1');
+    expect(vi.mocked(getFlawAuditHistory)).toHaveBeenCalledWith('flaw-uuid-1');
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+
+    // A's audit history arrives late: it must not land in B's model or baseline.
+    historyADeferred.resolve([{ pgh_label: 'stale update' }] as ZodFlawHistoryItemType[]);
+    await flushPromises();
+    expect(flaw.value.history).toBeUndefined();
+    expect(initialFlaw.value.history).toBeUndefined();
+    expect(historyFetchError.value).toBe(false);
+
+    // B's own audit history still lands in model and baseline.
+    const bHistory = [{ pgh_label: 'second flaw update' }] as ZodFlawHistoryItemType[];
+    historyBDeferred.resolve(bHistory);
+    affectsBDeferred.resolve({ data: { results: [] }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(flaw.value.history).toEqual(bHistory);
+    expect(initialFlaw.value.history).toEqual(bHistory);
+  });
+
+  it('ignores a stale audit history failure after a newer fetchFlaw call', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    runtime.value.flags = { flawHistory: true };
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    const historyADeferred = deferred<ZodFlawHistoryItemType[]>();
+    const historyBDeferred = deferred<ZodFlawHistoryItemType[]>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+    vi.mocked(getFlawAuditHistory).mockImplementation(
+      uuid => (uuid === 'flaw-uuid-1' ? historyADeferred.promise : historyBDeferred.promise),
+    );
+
+    const { fetchFlaw, historyFetchError } = useFetchFlaw();
+    fetchFlaw(FLAW_A_CVE);
+    flawADeferred.resolve(serverFlaw());
+    await flushPromises();
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+
+    // A's audit history request fails late: no error flag, no empty-history write into B.
+    historyADeferred.reject(new Error('stale history failure'));
+    await flushPromises();
+    expect(historyFetchError.value).toBe(false);
+    expect(flaw.value.history).toBeUndefined();
+
+    // B's own audit history failure is still handled.
+    historyBDeferred.reject(new Error('second flaw history failure'));
+    affectsBDeferred.resolve({ data: { results: [] }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(historyFetchError.value).toBe(true);
+    expect(flaw.value.history).toEqual([]);
+    consoleError.mockRestore();
+  });
+
+  it('ignores stale affects resolved while the newer fetch is still loading affects', async () => {
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+
+    const { fetchFlaw, isFetchingAffects } = useFetchFlaw();
+    const fetchingA = fetchFlaw(FLAW_A_CVE);
+    flawADeferred.resolve(serverFlaw());
+    await flushPromises();
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+
+    // A's affects resolve after B's flaw landed but while B's affects are still loading.
+    const affectsA = [{ uuid: 'affect-uuid-a-1' }, { uuid: 'affect-uuid-a-2' }] as ZodAffectType[];
+    affectsADeferred.resolve({ data: { results: affectsA }, response: {} as Response });
+    await fetchingA;
+    await flushPromises();
+
+    expect(isFetchingAffects.value).toBe(true);
+    expect(flaw.value.affects).toEqual([]);
+    expect(initialFlaw.value.affects).toEqual([]);
+
+    const affectsB = [{ uuid: 'affect-uuid-b-1' }] as ZodAffectType[];
+    affectsBDeferred.resolve({ data: { results: affectsB }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(isFetchingAffects.value).toBe(false);
+    expect(flaw.value.affects).toEqual(affectsB);
+    expect(initialFlaw.value.affects).toEqual(affectsB);
+  });
+
+  it('does not fail or reset the current flaw when a stale flaw fetch rejects', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+
+    const { didFetchFail, fetchFlaw } = useFetchFlaw();
+    const fetchingA = fetchFlaw(FLAW_A_CVE);
+    await flushPromises();
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    affectsBDeferred.resolve({ data: { results: [] }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+    expect(didFetchFail.value).toBe(false);
+
+    flawADeferred.reject(new Error('stale flaw fetch failed'));
+    await fetchingA;
+    await flushPromises();
+
+    expect(didFetchFail.value).toBe(false);
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+    expect(flaw.value.cve_description).toBe('Second flaw description');
+    expect(initialFlaw.value.uuid).toBe('flaw-uuid-2');
+    expect(mockAddToast).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
+  it('does not fail or reset the current flaw when a stale affects fetch rejects', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+
+    const { didFetchFail, fetchFlaw } = useFetchFlaw();
+    const fetchingA = fetchFlaw(FLAW_A_CVE);
+    flawADeferred.resolve(serverFlaw());
+    await flushPromises();
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.resolve(serverFlawB());
+    affectsBDeferred.resolve({ data: { results: [] }, response: {} as Response });
+    await fetchingB;
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+
+    affectsADeferred.reject(new Error('stale affects fetch failed'));
+    await fetchingA;
+    await flushPromises();
+
+    expect(didFetchFail.value).toBe(false);
+    expect(flaw.value.uuid).toBe('flaw-uuid-2');
+    expect(flaw.value.cve_description).toBe('Second flaw description');
+    expect(mockAddToast).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
+  it('still fails and resets when the current fetch rejects while an older one is pending', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const flawADeferred = deferred<ZodFlawType>();
+    const flawBDeferred = deferred<ZodFlawType>();
+    const affectsADeferred = deferred<AffectsResponse>();
+    const affectsBDeferred = deferred<AffectsResponse>();
+    mockFetchesPerFlaw(flawADeferred, flawBDeferred, affectsADeferred, affectsBDeferred);
+
+    const { didFetchFail, fetchFlaw } = useFetchFlaw();
+    fetchFlaw(FLAW_A_CVE);
+    await flushPromises();
+
+    const fetchingB = fetchFlaw(FLAW_B_CVE);
+    flawBDeferred.reject(new Error('current flaw fetch failed'));
+    await fetchingB;
+    await flushPromises();
+
+    expect(didFetchFail.value).toBe(true);
+    expect(flaw.value.uuid).toBe('');
+    expect(mockAddToast).toHaveBeenCalledTimes(1);
+    expect(mockAddToast).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Error loading Flaw' }),
+    );
+
+    // The older fetch resolving afterwards must not resurrect its data or clear the failure.
+    flawADeferred.resolve(serverFlaw());
+    await flushPromises();
+    expect(flaw.value.uuid).toBe('');
+    expect(didFetchFail.value).toBe(true);
+    expect(mockAddToast).toHaveBeenCalledTimes(1);
+    consoleError.mockRestore();
   });
 });

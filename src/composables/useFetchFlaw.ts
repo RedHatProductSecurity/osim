@@ -16,6 +16,9 @@ const isFetchingAffects = ref(false);
 const totalAffectCount = ref(0);
 const currentlyFetchedAffectCount = ref(0);
 const historyFetchError = ref(false);
+// Shared across composable instances: a fetch started for one flaw must not
+// write into the model after a newer fetchFlaw call has replaced it.
+let fetchGeneration = 0;
 
 export function useFetchFlaw() {
   const { flaw, resetFlaw, setFlaw, setLateFlawField } = useFlaw();
@@ -51,6 +54,8 @@ export function useFetchFlaw() {
     }
 
     const normalizedId = isCveValid(flawCveOrId) ? normalizeCveId(flawCveOrId) : flawCveOrId;
+    const generation = ++fetchGeneration;
+    const isCurrentFetch = () => generation === fetchGeneration;
 
     try {
       didFetchFail.value = false;
@@ -59,6 +64,7 @@ export function useFetchFlaw() {
       const fetchedAffects = fetchFlawAffects(normalizedId);
 
       const flawResult = await fetchedFlaw;
+      if (!isCurrentFetch()) return;
       setFlaw(Object.assign({ affects: [], history: undefined }, flawResult));
       history.replaceState(null, '', `/flaws/${(flawResult.cve_id || flawResult.uuid)}`);
 
@@ -69,10 +75,12 @@ export function useFetchFlaw() {
       if (osimRuntime.value.flags?.flawHistory) {
         getFlawAuditHistory(flawResult.uuid)
           .then((auditHistory) => {
+            if (!isCurrentFetch()) return;
             historyFetchError.value = false;
             setLateFlawField('history', auditHistory);
           })
           .catch((historyError) => {
+            if (!isCurrentFetch()) return;
             console.error('useFetchFlaw::fetchFlaw() Error loading audit history:', historyError);
             // Don't fail the entire flaw fetch if history fails, but set error flag
             historyFetchError.value = true;
@@ -81,9 +89,12 @@ export function useFetchFlaw() {
       }
 
       const affectResults = (await fetchedAffects).data.results;
+      if (!isCurrentFetch()) return;
       isFetchingAffects.value = false;
       setLateFlawField('affects', affectResults);
     } catch (error) {
+      // A superseded fetch failing must not reset or flag the flaw now on screen.
+      if (!isCurrentFetch()) return;
       console.error('useFetchFlaw::fetchFlaw()', error);
       didFetchFail.value = true;
       resetFlaw();

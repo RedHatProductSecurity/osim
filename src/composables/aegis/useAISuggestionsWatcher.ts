@@ -26,10 +26,12 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
   let disposed = false;
   onScopeDispose(() => { disposed = true; });
 
-  // Value changes caused by a flaw model resync are not user modifications;
-  // remember the resync count seen by the last partial-modification check.
+  // Value changes caused by a flaw model resync are not user modifications.
+  // Watch the resync count as well: a resync that leaves the value unchanged
+  // (e.g. the post-save sync echoing a saved suggestion) must still consume
+  // the counter, or the next real user edit would be misattributed to it.
   let resyncCountAtLastChange = flawResyncCount.value;
-  watch(valueRef, (newValue, oldValue) => {
+  watch([valueRef, flawResyncCount], ([newValue], [oldValue]) => {
     const resynced = flawResyncCount.value !== resyncCountAtLastChange;
     resyncCountAtLastChange = flawResyncCount.value;
     if (resynced) return;
