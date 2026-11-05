@@ -9,7 +9,10 @@ import type {
   AegisFeatureResponseMap,
   AegisKpiMetrics,
   AegisKpiQuery,
+  AegisBotKpiEntry,
   AegisBotKpiMetrics,
+  AegisBotKpiPage,
+  AegisBotKpiProgressCallback,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
   AegisMultiAnalysisParams,
@@ -175,6 +178,9 @@ function queryStringFromParams(params: Record<string, any>) {
 
 export class AegisAIService {
   isFetching: Ref<boolean>;
+  // Optional hook invoked after each page of the paginated bot KPI fetch
+  // (see getBotKpiMetrics) with the flaws refreshed so far and selected total.
+  onBotKpiProgress?: AegisBotKpiProgressCallback;
   requestDuration: Ref<number>;
 
   constructor() {
@@ -299,20 +305,53 @@ export class AegisAIService {
     }
   }
 
+  /**
+   * Get the osidb-bot KPI metrics, following the paginated Aegis endpoint.
+   *
+   * Each page carries the detail entries for its own slice of flaws plus a
+   * progress block; entries are accumulated across pages and the final page's
+   * aggregate is returned. An older Aegis server that answers with a single
+   * non-paginated response is supported unchanged. Per-page progress updates
+   * are reported through the optional `onBotKpiProgress` instance hook.
+   * @param query KPI filter parameters
+   * @returns The accumulated bot KPI metrics
+   */
   async getBotKpiMetrics(query: AegisKpiQuery = {}): Promise<AegisBotKpiMetrics> {
-    const result = await this.fetch({
-      method: 'GET',
-      url: '/analysis/kpi/osidb-bot',
-      params: { ...query, detail: true },
-    }, {
-      beforeFetch: async (options) => {
-        options.headers = await aegisAuthHeaders();
-      },
-    });
-    if (!Array.isArray(result.data?.entries)) {
-      throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
+    const pageSize = 400;
+    const maxPages = 200;
+    let nextCursor: null | string = null;
+    let entries: AegisBotKpiEntry[] = [];
+    let finalPage: AegisBotKpiPage | undefined;
+    for (let page = 0; page < maxPages && !finalPage; page++) {
+      const result = await this.fetch({
+        method: 'GET',
+        url: '/analysis/kpi/osidb-bot',
+        params: { ...query, detail: true, cursor: nextCursor ?? undefined, limit: pageSize },
+      }, {
+        beforeFetch: async (options) => {
+          options.headers = await aegisAuthHeaders();
+        },
+      });
+      const data = result.data as AegisBotKpiPage;
+      if (!Array.isArray(data?.entries)) {
+        throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
+      }
+      entries = entries.concat(data.entries);
+      if (this.onBotKpiProgress && data.progress) {
+        this.onBotKpiProgress(data.progress.refreshed_flaws, data.progress.selected_flaws);
+      }
+      if (data.next_cursor) nextCursor = data.next_cursor;
+      else finalPage = data;
     }
-    return result.data;
+    if (!finalPage) {
+      throw new Error(`osidb-bot KPI pagination did not complete after ${maxPages} pages.`);
+    }
+    return {
+      available_components: finalPage.available_components ?? undefined,
+      entries,
+      features: finalPage.features,
+      total_flaws_processed: finalPage.total_flaws_processed,
+    };
   }
 
   /**
