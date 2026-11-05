@@ -179,6 +179,8 @@ function onFocusOut(event: FocusEvent) {
 .osim-pill-list-input {
   display: inline-block;
   height: 1.5rem;
+  color: inherit;
+  background-color: transparent;
   border: none;
   outline: none;
   box-shadow: none;

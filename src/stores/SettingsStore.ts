@@ -20,6 +20,7 @@ export const ApiKeysSchema = z.object({
 });
 
 export const PersistentSettingsSchema = z.object({
+  darkMode: z.boolean().default(false),
   showNotifications: z.boolean(),
   affectsPerPage: z.number(),
   affectsColumnOrder: z.array(z.string()),
@@ -48,6 +49,7 @@ const defaultApiKeys: ApiKeysType = {
 };
 
 export const defaultPersistentSettings: PersistentSettingsType = {
+  darkMode: false,
   showNotifications: false,
   affectsPerPage: 10,
   trackersPerPage: 10,

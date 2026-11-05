@@ -136,6 +136,8 @@ const remove = (index: number) => {
 
 .osim-contributor-input {
   display: inline-block;
+  color: inherit;
+  background-color: transparent;
   border: none;
   outline: none;
   box-shadow: none;

@@ -25,7 +25,7 @@ const { settings } = storeToRefs(useSettingsStore());
 </script>
 
 <template>
-  <div class="d-flex mb-4 sticky-top p-3 ps-0 border-bottom align-items-center" style="background-color: white;">
+  <div class="d-flex mb-4 sticky-top p-3 ps-0 border-bottom align-items-center bg-body">
     <div class="d-flex gap-2">
       <button
         type="button"
