@@ -8,8 +8,7 @@ import { watchedRef } from '@/utils/helpers';
 
 import FlawLabelsContributor from './FlawLabelsContributor.vue';
 
-const { buLabels, contextLabels, initalLabel } = defineProps<{
-  buLabels?: string[];
+const { contextLabels, initalLabel } = defineProps<{
   contextLabels?: string[];
   initalLabel?: NonNullable<ZodFlawType['labels']>[number];
 }>();
@@ -34,6 +33,8 @@ const isProductFamilyType = computed(() => labelType.value === FlawLabelTypeEnum
 const isNonEditableType = computed(() =>
   isWorkflowType.value || isProductFamilyType.value || isAliasType.value,
 );
+// BU state is derived from affects. The owner (contributor) stays editable.
+const isStateEditable = computed(() => !isNonEditableType.value && !isBuType.value);
 
 const emitSave = () => {
   // if nothing changed, do not emit save
@@ -64,13 +65,16 @@ const emitSave = () => {
 
 <template>
   <td>
-    <select v-if="!isNonEditableType" v-model="labelState" class="form-select">
+    <select v-if="isStateEditable" v-model="labelState" class="form-select">
       <option
         v-for="state in StateEnum"
         :key="state"
         :value="state"
       >{{ state }}</option>
     </select>
+    <template v-else-if="isBuType">
+      {{ initalLabel?.state }}
+    </template>
   </td>
   <td>
     <!-- Type is only editable for new labels -->
@@ -81,7 +85,6 @@ const emitSave = () => {
       title="Label type"
     >
       <option :value="FlawLabelTypeEnum.ALIAS">alias</option>
-      <option :value="FlawLabelTypeEnum.BU">bu</option>
       <option :value="FlawLabelTypeEnum.CONTEXT_BASED">context_based</option>
       <option :value="FlawLabelTypeEnum.WORKFLOW">workflow</option>
     </select>
@@ -108,20 +111,6 @@ const emitSave = () => {
         :placeholder="isWorkflowType ? 'Enter workflow label name' : 'Enter alias name'"
         required
       >
-    </template>
-    <!-- New BU labels use dropdown -->
-    <template v-else-if="isBuType">
-      <select
-        v-model="labelName"
-        class="form-select"
-        required
-      >
-        <option
-          v-for="label in buLabels"
-          :key="label"
-          :value="label"
-        >{{ label }}</option>
-      </select>
     </template>
     <!-- New context-based labels use dropdown -->
     <template v-else>
