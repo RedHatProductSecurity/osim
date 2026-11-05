@@ -6,6 +6,7 @@
 
 ## [2026.11.1]
 ### Added
+* Follow the paginated osidb-bot KPI endpoint page by page and show a striped progress bar with live flaw counts while the Aegis server refreshes its KPI cache, instead of failing with a gateway timeout (`AEGIS-550`)
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)

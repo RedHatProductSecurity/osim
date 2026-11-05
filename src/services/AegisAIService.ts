@@ -181,6 +181,9 @@ export class AegisAIService {
   // Optional hook invoked after each page of the paginated bot KPI fetch
   // (see getBotKpiMetrics) with the flaws refreshed so far and selected total.
   onBotKpiProgress?: AegisBotKpiProgressCallback;
+  // Monotonic id of the latest bot KPI fetch: starting a new one supersedes
+  // any pagination still in flight on this service instance.
+  private botKpiFetchId = 0;
   requestDuration: Ref<number>;
 
   constructor() {
@@ -312,17 +315,28 @@ export class AegisAIService {
    * progress block; entries are accumulated across pages and the final page's
    * aggregate is returned. An older Aegis server that answers with a single
    * non-paginated response is supported unchanged. Per-page progress updates
-   * are reported through the optional `onBotKpiProgress` instance hook.
+   * are reported through the optional `onBotKpiProgress` instance hook, and
+   * starting a new fetch on the same service instance supersedes pagination
+   * still in flight, which then rejects instead of fetching further pages.
    * @param query KPI filter parameters
    * @returns The accumulated bot KPI metrics
    */
   async getBotKpiMetrics(query: AegisKpiQuery = {}): Promise<AegisBotKpiMetrics> {
     const pageSize = 400;
     const maxPages = 200;
+    // Snapshot the callback and fetch id so a newer fetch on this service
+    // instance supersedes this pagination: superseded loops stop requesting
+    // further pages instead of piling up obsolete traffic, and their progress
+    // updates keep going to their own (now stale) callback.
+    const fetchId = ++this.botKpiFetchId;
+    const onProgress = this.onBotKpiProgress;
     let nextCursor: null | string = null;
     let entries: AegisBotKpiEntry[] = [];
     let finalPage: AegisBotKpiPage | undefined;
     for (let page = 0; page < maxPages && !finalPage; page++) {
+      if (this.botKpiFetchId !== fetchId) {
+        throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
+      }
       const result = await this.fetch({
         method: 'GET',
         url: '/analysis/kpi/osidb-bot',
@@ -337,8 +351,8 @@ export class AegisAIService {
         throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
       }
       entries = entries.concat(data.entries);
-      if (this.onBotKpiProgress && data.progress) {
-        this.onBotKpiProgress(data.progress.refreshed_flaws, data.progress.selected_flaws);
+      if (onProgress && data.progress) {
+        onProgress(data.progress.refreshed_flaws, data.progress.selected_flaws);
       }
       if (data.next_cursor) nextCursor = data.next_cursor;
       else finalPage = data;
