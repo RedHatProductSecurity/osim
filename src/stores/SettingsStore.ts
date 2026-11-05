@@ -65,6 +65,7 @@ export const defaultPersistentSettings: PersistentSettingsType = {
 };
 
 const SETTINGS_KEY = 'OSIM::USER-SETTINGS';
+const DEV_API_KEYS_KEY = 'OSIM::DEV-API-KEYS';
 
 export const useSettingsStore = defineStore('SettingsStore', () => {
   const { addToast } = useToastStore();
@@ -152,6 +153,20 @@ export const useSettingsStore = defineStore('SettingsStore', () => {
       console.debug('SettingsStore: No API keys found on server or failed to retrieve them:', error);
     } finally {
       isLoadingApiKeys.value = false;
+    }
+
+    // Dev mode fallback: try localStorage if backend returned no keys
+    if (osimRuntime.value.env === 'dev' && !apiKeys.value.bugzillaApiKey && !apiKeys.value.jiraApiKey) {
+      try {
+        const stored = localStorage.getItem(DEV_API_KEYS_KEY);
+        const validated = stored ? ApiKeysSchema.safeParse(JSON.parse(stored)) : null;
+        if (validated?.success && (validated.data.bugzillaApiKey || validated.data.jiraApiKey)) {
+          apiKeys.value = validated.data;
+          console.debug('SettingsStore: Loaded API keys from localStorage (dev mode fallback)');
+        }
+      } catch (e) {
+        console.debug('SettingsStore: Failed to load API keys from localStorage:', e);
+      }
     }
   }
 
