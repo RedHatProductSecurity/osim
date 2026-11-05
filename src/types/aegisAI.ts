@@ -186,12 +186,36 @@ export type AegisBotFeatureKpi = {
   suggested: number;
 };
 
+export type AegisBotKpiProgress = {
+  complete: boolean;
+  refreshed_flaws: number;
+  selected_flaws: number;
+};
+
+// One page of the paginated osidb-bot KPI response: `entries` covers only the
+// page's slice of flaws, `next_cursor` (when non-null) continues pagination,
+// and the aggregate fields are placeholders until the final page. An older
+// Aegis server responds with a single page that has neither progress nor
+// next_cursor.
+export type AegisBotKpiPage = {
+  available_components?: null | string[];
+  entries?: AegisBotKpiEntry[];
+  features: Record<string, AegisBotFeatureKpi>;
+  next_cursor?: null | string;
+  progress?: AegisBotKpiProgress;
+  total_flaws_processed: number;
+};
+
 export type AegisBotKpiMetrics = {
-  available_components: string[];
+  available_components?: null | string[];
   entries: AegisBotKpiEntry[];
   features: Record<string, AegisBotFeatureKpi>;
   total_flaws_processed: number;
 };
+
+// Invoked after each page of the paginated bot KPI fetch with the number of
+// flaws refreshed so far and the total number of selected flaws.
+export type AegisBotKpiProgressCallback = (refreshedFlaws: number, selectedFlaws: number) => void;
 
 export type AegisKpiFeatureParamType =
   'all'

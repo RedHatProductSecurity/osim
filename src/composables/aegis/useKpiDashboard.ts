@@ -43,6 +43,7 @@ export function useKpiDashboard() {
   const toDate = ref('');
   const feedback = ref<AegisKpiMetrics>({});
   const bot = ref<AegisBotKpiMetrics | null>(null);
+  const botProgress = ref<{ refreshed: null | number; selected: null | number }>({ refreshed: null, selected: null });
   const loading = ref(false);
   const errors = ref<string[]>([]);
   const loadedSources = ref<string[]>([]);
@@ -95,10 +96,17 @@ export function useKpiDashboard() {
     const id = ++requestId;
     feedback.value = {};
     bot.value = null;
+    botProgress.value = { refreshed: null, selected: null };
     errors.value = [];
     loadedSources.value = [];
     loading.value = !invalidRange.value;
     if (invalidRange.value) return;
+    service.onBotKpiProgress = (refreshed, selected) => {
+      // Superseded fetches (filter change or unmount) must not update the
+      // progress of the fetch that replaced them.
+      if (id !== requestId) return;
+      botProgress.value = { refreshed, selected };
+    };
     const results = await Promise.allSettled([
       service.getKpiMetrics('all', query.value),
       service.getBotKpiMetrics(query.value),
@@ -144,6 +152,7 @@ export function useKpiDashboard() {
     toDate,
     feedback,
     bot,
+    botProgress,
     loading,
     errors,
     loadedSources,
