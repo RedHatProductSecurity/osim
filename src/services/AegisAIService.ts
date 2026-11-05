@@ -177,13 +177,13 @@ function queryStringFromParams(params: Record<string, any>) {
 }
 
 export class AegisAIService {
+  // Monotonic id of the latest bot KPI fetch: starting a new one supersedes
+  // any pagination still in flight on this service instance.
+  private botKpiFetchId = 0;
   isFetching: Ref<boolean>;
   // Optional hook invoked after each page of the paginated bot KPI fetch
   // (see getBotKpiMetrics) with the flaws refreshed so far and selected total.
   onBotKpiProgress?: AegisBotKpiProgressCallback;
-  // Monotonic id of the latest bot KPI fetch: starting a new one supersedes
-  // any pagination still in flight on this service instance.
-  private botKpiFetchId = 0;
   requestDuration: Ref<number>;
 
   constructor() {
