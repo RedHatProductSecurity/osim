@@ -527,6 +527,50 @@ describe('aegisAIService', () => {
       return requests;
     }
 
+    // Serves a supersession scenario: the first fetch (component "kernel") has
+    // its opening page held until released and must never reach its second
+    // page, while a replacement fetch (component "openssl") paginates freely.
+    // Returns the recorded request URLs and the release control.
+    function serveSupersededBotPages() {
+      const requests: URL[] = [];
+      let releaseSupersededPage!: () => void;
+      const supersededPageGate = new Promise<void>((resolve) => { releaseSupersededPage = resolve; });
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
+        const url = new URL(request.url);
+        requests.push(url);
+        if (url.searchParams.get('component') === 'kernel') {
+          if (url.searchParams.has('cursor')) {
+            return HttpResponse.json({ detail: 'superseded page 2 must not be requested' }, { status: 400 });
+          }
+          await supersededPageGate;
+          return HttpResponse.json({
+            entries: [botEntry('CVE-2026-0001')],
+            features: {},
+            next_cursor: 'CVE-2026-0002',
+            progress: { complete: false, refreshed_flaws: 1, selected_flaws: 4 },
+            total_flaws_processed: 0,
+          });
+        }
+        if (url.searchParams.get('cursor') === 'CVE-2026-0102') {
+          return HttpResponse.json({
+            available_components: ['openssl'],
+            entries: [botEntry('CVE-2026-0103')],
+            features: finalFeatures,
+            progress: { complete: true, refreshed_flaws: 4, selected_flaws: 4 },
+            total_flaws_processed: 4,
+          });
+        }
+        return HttpResponse.json({
+          entries: [botEntry('CVE-2026-0101'), botEntry('CVE-2026-0102')],
+          features: {},
+          next_cursor: 'CVE-2026-0102',
+          progress: { complete: false, refreshed_flaws: 2, selected_flaws: 4 },
+          total_flaws_processed: 0,
+        });
+      }));
+      return { releaseSupersededPage, requests };
+    }
+
     it('requests 400-flaw pages by cursor, accumulating every entry into the final aggregate', async () => {
       const requests = serveBotPages({
         '': {
@@ -688,6 +732,81 @@ describe('aegisAIService', () => {
         response: { status: 500 },
       });
       expect(service.isFetching.value).toBe(false);
+    });
+
+    it('supersedes in-flight pagination when a newer fetch starts on the same service', async () => {
+      const { releaseSupersededPage, requests } = serveSupersededBotPages();
+
+      const superseded = service.getBotKpiMetrics({ component: 'kernel' });
+      await vi.waitFor(() => expect(requests).toHaveLength(1));
+      const replacement = service.getBotKpiMetrics({ component: 'openssl' });
+
+      await expect(replacement).resolves.toEqual({
+        available_components: ['openssl'],
+        entries: [botEntry('CVE-2026-0101'), botEntry('CVE-2026-0102'), botEntry('CVE-2026-0103')],
+        features: finalFeatures,
+        total_flaws_processed: 4,
+      });
+      expect(requests.filter(url => url.searchParams.get('component') === 'openssl')).toHaveLength(2);
+
+      releaseSupersededPage();
+      await expect(superseded).rejects.toThrow(
+        'osidb-bot KPI fetch was superseded by a newer request.',
+      );
+      expect(requests.filter(url => url.searchParams.get('component') === 'kernel')).toHaveLength(1);
+      expect(service.isFetching.value).toBe(false);
+    });
+
+    it('keeps a superseded fetch reporting progress to the callback captured when it started', async () => {
+      const { releaseSupersededPage, requests } = serveSupersededBotPages();
+      const firstHook = vi.fn();
+      const secondHook = vi.fn();
+      service.onBotKpiProgress = firstHook;
+
+      const superseded = service.getBotKpiMetrics({ component: 'kernel' });
+      await vi.waitFor(() => expect(requests).toHaveLength(1));
+      service.onBotKpiProgress = secondHook;
+      const replacement = service.getBotKpiMetrics({ component: 'openssl' });
+
+      await expect(replacement).resolves.toMatchObject({ total_flaws_processed: 4 });
+      releaseSupersededPage();
+      await expect(superseded).rejects.toThrow('superseded by a newer request');
+
+      expect(firstHook.mock.calls).toEqual([[1, 4]]);
+      expect(secondHook.mock.calls).toEqual([[2, 4], [4, 4]]);
+    });
+
+    it('completes a later paginated fetch normally after an earlier one finished', async () => {
+      const requests = serveBotPages({
+        '': {
+          entries: [botEntry('CVE-2026-0001')],
+          features: {},
+          next_cursor: 'CVE-2026-0002',
+          progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+          total_flaws_processed: 0,
+        },
+        'CVE-2026-0002': {
+          available_components: ['kernel'],
+          entries: [botEntry('CVE-2026-0002')],
+          features: finalFeatures,
+          total_flaws_processed: 2,
+        },
+      });
+      const onBotKpiProgress = vi.fn();
+      service.onBotKpiProgress = onBotKpiProgress;
+
+      const first = await service.getBotKpiMetrics();
+      const second = await service.getBotKpiMetrics();
+
+      expect(first).toEqual(second);
+      expect(second).toEqual({
+        available_components: ['kernel'],
+        entries: [botEntry('CVE-2026-0001'), botEntry('CVE-2026-0002')],
+        features: finalFeatures,
+        total_flaws_processed: 2,
+      });
+      expect(requests).toHaveLength(4);
+      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2], [1, 2]]);
     });
   });
 
