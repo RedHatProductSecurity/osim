@@ -9,10 +9,23 @@ import type {
   AegisAIComponentFeatureNameType,
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
+  AegisBotKpiEntry,
+  AegisBotKpiPage,
   AegisKpiMetrics,
 } from '@/types/aegisAI';
 
 import { AegisAIService } from '../AegisAIService';
+
+const botEntry = (cveId: string): AegisBotKpiEntry => ({
+  aegis_version: '0.9.2',
+  confidence: 0.9,
+  cve_id: cveId,
+  data_quality: 0.8,
+  datetime: '2026-09-01T00:00:00Z',
+  deviation: 0,
+  feature: 'impact',
+  type: 'AI-Bot',
+});
 
 // Mock the stores
 const mockAddToast = vi.fn();
@@ -475,6 +488,205 @@ describe('aegisAIService', () => {
       resolveRequest!(null);
       await fetchPromise;
 
+      expect(service.isFetching.value).toBe(false);
+    });
+  });
+
+  describe('getBotKpiMetrics', () => {
+    let accessToken: string;
+
+    beforeEach(() => {
+      accessToken = encodeJWT({ exp: Math.floor(Date.now() / 1000) + 3600, user_id: 1337 });
+      useAuthStore().accessToken = accessToken;
+    });
+
+    const finalFeatures: AegisBotKpiPage['features'] = {
+      impact: {
+        acceptance_rate: 100,
+        avg_confidence: 0.9,
+        avg_data_quality: 0.8,
+        avg_suggestion_deviation: 0,
+        kept: 2,
+        modified: 0,
+        skipped: 1,
+        suggested: 3,
+      },
+    };
+
+    // Serves pages keyed by the cursor that requests them ('' for the first
+    // page) and records every request URL for parameter assertions.
+    function serveBotPages(pagesByCursor: Record<string, AegisBotKpiPage>) {
+      const requests: URL[] = [];
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        const url = new URL(request.url);
+        requests.push(url);
+        const page = pagesByCursor[url.searchParams.get('cursor') ?? ''];
+        if (!page) return HttpResponse.json({ detail: 'unexpected cursor' }, { status: 400 });
+        return HttpResponse.json(page);
+      }));
+      return requests;
+    }
+
+    it('requests 400-flaw pages by cursor, accumulating every entry into the final aggregate', async () => {
+      const requests = serveBotPages({
+        '': {
+          entries: [botEntry('CVE-2026-0001'), botEntry('CVE-2026-0002')],
+          features: {},
+          next_cursor: 'CVE-2026-0003',
+          progress: { complete: false, refreshed_flaws: 2, selected_flaws: 5 },
+          total_flaws_processed: 0,
+        },
+        'CVE-2026-0003': {
+          entries: [botEntry('CVE-2026-0003'), botEntry('CVE-2026-0004')],
+          features: {},
+          next_cursor: 'CVE-2026-0005',
+          progress: { complete: false, refreshed_flaws: 4, selected_flaws: 5 },
+          total_flaws_processed: 0,
+        },
+        'CVE-2026-0005': {
+          available_components: ['kernel', 'openssl'],
+          entries: [botEntry('CVE-2026-0005')],
+          features: finalFeatures,
+          progress: { complete: true, refreshed_flaws: 5, selected_flaws: 5 },
+          total_flaws_processed: 5,
+        },
+      });
+      const onBotKpiProgress = vi.fn();
+      service.onBotKpiProgress = onBotKpiProgress;
+
+      const result = await service.getBotKpiMetrics({
+        aegis_version: ['0.9.2'],
+        component: 'kernel',
+        recorded_after: '2026-09-01T00:00:00Z',
+        recorded_before: '2026-09-30T23:59:59.999Z',
+      });
+
+      expect(requests).toHaveLength(3);
+      expect(requests[0].searchParams.has('cursor')).toBe(false);
+      for (const url of requests) {
+        expect(url.searchParams.get('detail')).toBe('true');
+        expect(url.searchParams.get('limit')).toBe('400');
+        expect(url.searchParams.get('component')).toBe('kernel');
+        expect(url.searchParams.getAll('aegis_version')).toEqual(['0.9.2']);
+        expect(url.searchParams.get('recorded_after')).toBe('2026-09-01T00:00:00Z');
+        expect(url.searchParams.get('recorded_before')).toBe('2026-09-30T23:59:59.999Z');
+      }
+      expect(requests[1].searchParams.get('cursor')).toBe('CVE-2026-0003');
+      expect(requests[2].searchParams.get('cursor')).toBe('CVE-2026-0005');
+      expect(result.entries.map(entry => entry.cve_id)).toEqual([
+        'CVE-2026-0001', 'CVE-2026-0002', 'CVE-2026-0003', 'CVE-2026-0004', 'CVE-2026-0005',
+      ]);
+      expect(result.features).toEqual(finalFeatures);
+      expect(result.total_flaws_processed).toBe(5);
+      expect(result.available_components).toEqual(['kernel', 'openssl']);
+      expect(onBotKpiProgress.mock.calls).toEqual([[2, 5], [4, 5], [5, 5]]);
+    });
+
+    it('does not invoke the progress hook for pages without a progress block', async () => {
+      serveBotPages({
+        '': {
+          entries: [botEntry('CVE-2026-0001')],
+          features: {},
+          next_cursor: 'CVE-2026-0002',
+          progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+          total_flaws_processed: 0,
+        },
+        'CVE-2026-0002': {
+          entries: [botEntry('CVE-2026-0002')],
+          features: finalFeatures,
+          total_flaws_processed: 2,
+        },
+      });
+      const onBotKpiProgress = vi.fn();
+      service.onBotKpiProgress = onBotKpiProgress;
+
+      await service.getBotKpiMetrics();
+
+      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2]]);
+    });
+
+    it('returns a legacy single-page response unchanged without progress reporting', async () => {
+      const legacy = {
+        available_components: ['kernel'],
+        entries: [botEntry('CVE-2026-0001')],
+        features: finalFeatures,
+        total_flaws_processed: 1,
+      };
+      const requests = serveBotPages({ '': legacy });
+      const onBotKpiProgress = vi.fn();
+      service.onBotKpiProgress = onBotKpiProgress;
+
+      await expect(service.getBotKpiMetrics()).resolves.toEqual(legacy);
+      expect(requests).toHaveLength(1);
+      expect(requests[0].searchParams.has('cursor')).toBe(false);
+      expect(onBotKpiProgress).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      { available_components: null, name: 'null' },
+      { available_components: undefined, name: 'absent' },
+    ])('maps a final page whose available_components is $name to undefined', async ({ available_components }) => {
+      const finalPage: AegisBotKpiPage = {
+        entries: [botEntry('CVE-2026-0002')],
+        features: finalFeatures,
+        next_cursor: null,
+        total_flaws_processed: 2,
+      };
+      if (available_components !== undefined) finalPage.available_components = available_components;
+      serveBotPages({
+        '': {
+          entries: [botEntry('CVE-2026-0001')],
+          features: {},
+          next_cursor: 'CVE-2026-0002',
+          total_flaws_processed: 0,
+        },
+        'CVE-2026-0002': finalPage,
+      });
+
+      const result = await service.getBotKpiMetrics();
+
+      expect(result.available_components).toBeUndefined();
+      expect(result).toEqual({
+        entries: [botEntry('CVE-2026-0001'), botEntry('CVE-2026-0002')],
+        features: finalFeatures,
+        total_flaws_processed: 2,
+      });
+    });
+
+    it('stops following a server that never finishes paginating', async () => {
+      const requests: Request[] = [];
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        requests.push(request);
+        return HttpResponse.json({
+          entries: [botEntry('CVE-2026-0001')],
+          features: {},
+          next_cursor: 'CVE-2026-0002',
+          total_flaws_processed: 0,
+        });
+      }));
+
+      await expect(service.getBotKpiMetrics()).rejects.toThrow(
+        'osidb-bot KPI pagination did not complete after 200 pages.',
+      );
+      expect(requests).toHaveLength(200);
+    });
+
+    it('propagates a failure on a later page instead of returning partial results', async () => {
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) =>
+        new URL(request.url).searchParams.has('cursor')
+          ? HttpResponse.json({ detail: 'Cold cache refresh failed' }, { status: 500 })
+          : HttpResponse.json({
+            entries: [botEntry('CVE-2026-0001')],
+            features: {},
+            next_cursor: 'CVE-2026-0002',
+            progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+            total_flaws_processed: 0,
+          })));
+
+      await expect(service.getBotKpiMetrics()).rejects.toMatchObject({
+        message: expect.stringContaining('Cold cache refresh failed'),
+        response: { status: 500 },
+      });
       expect(service.isFetching.value).toBe(false);
     });
   });
