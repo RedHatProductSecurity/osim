@@ -10,7 +10,7 @@ const JiraUserBaseSchema = z.object({
 export type ZodJiraUserAssignableType = z.infer<typeof JiraUserAssignableSchema>;
 export const JiraUserAssignableSchema = JiraUserBaseSchema.extend({
   avatarUrl: z.string().url().nullish(),
-  avatarUrls: z.record(z.string()).nullish(), // Jira Cloud returns avatarUrls object
+  avatarUrls: z.record(z.string(), z.string()).nullish(), // Jira Cloud returns avatarUrls object
 });
 
 export type ZodJiraContributorType = z.infer<typeof JiraContributorSchema>;
@@ -25,5 +25,5 @@ export const JiraIssueSchema = z.object({
   self: z.string().url(),
   key: z.string(),
   // fields uses passthrough so any custom field ID can be accessed at runtime
-  fields: z.record(z.unknown()),
+  fields: z.record(z.string(), z.unknown()),
 });

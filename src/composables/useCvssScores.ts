@@ -78,7 +78,7 @@ export function validateCvssVector(cvssVector: null | string | undefined, versio
     ]);
     const parseResult = cvss3VectorSchema.safeParse(cvssVector);
     if (parseResult.success === false) {
-      return parseResult.error.errors[0].message;
+      return parseResult.error.issues[0].message;
     }
   }
 

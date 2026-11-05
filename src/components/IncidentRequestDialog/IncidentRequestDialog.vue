@@ -68,7 +68,7 @@ async function submitRequest() {
   });
 
   if (!validation.success) {
-    validationError.value = validation.error.errors[0].message;
+    validationError.value = validation.error.issues[0].message;
     return;
   }
 

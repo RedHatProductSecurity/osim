@@ -150,8 +150,8 @@ export const ZodHistoryItemSchema = z.object({
     url: z.string().optional(),
     user: z.union([z.number(), z.string()]).optional(),
   }).nullable().nullish(),
-  pgh_diff: z.record(z.array(z.any())).nullable(),
-  pgh_data: z.record(z.any()).nullish(),
+  pgh_diff: z.record(z.string(), z.array(z.any())).nullable(),
+  pgh_data: z.record(z.string(), z.any()).nullish(),
 });
 
 export enum FlawLabelTypeEnum {
@@ -188,7 +188,7 @@ const ZodFlawObjectSchema = z.object({
   ),
   impact: z.nativeEnum(ImpactEnumWithBlank).nullable(),
   components: z.array(z.string().min(1).max(100)),
-  title: z.string().min(4),
+  title: z.string().min(4, { error: 'String must contain at least 4 character(s)' }),
   owner: ZodFlawOwnerSchema,
   history: z.array(z.any()).nullish(),
   team_id: z.string().nullish(),
