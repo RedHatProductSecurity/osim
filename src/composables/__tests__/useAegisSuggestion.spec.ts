@@ -27,6 +27,7 @@ vi.mock('@/stores/UserStore', () => ({
 vi.mock('@/composables/useFlaw', () => ({
   useFlaw: vi.fn(() => ({
     flaw: ref({ cve_id: 'CVE-2024-1234' }),
+    flawResyncCount: ref(0),
   })),
 }));
 
@@ -214,6 +215,31 @@ describe('useAegisSuggestion', () => {
     composable.revert();
     expect(valueRef.value).toBe(originalVector); // Should restore original, not null/empty
     expect(composable.hasAppliedSuggestion.value).toBe(false);
+  });
+
+  it('discards a late response after the owning form was replaced', async () => {
+    const tracking = useAegisMetadataTracking();
+    tracking.setAegisMetadata({});
+    const valueRef = ref<null | string>('CWE-79');
+    const context = createContext({ cveId: ref('CVE-2024-1234'), title: ref('Some Title') });
+
+    let resolveAnalysis!: (value: unknown) => void;
+    analyzeMock.mockReturnValueOnce(new Promise((resolve) => { resolveAnalysis = resolve; }));
+
+    const [composable, app] = withSetup(
+      () => useAegisSuggestion(context as AegisSuggestionContextRefs, valueRef, 'cwe_id'), [],
+    );
+
+    const suggesting = composable.suggestCwe();
+    // The flaw page was left while the request was in flight.
+    app.unmount();
+    resolveAnalysis({ cwe: ['CWE-89'], confidence: 0.9 });
+    await suggesting;
+
+    expect(valueRef.value).toBe('CWE-79');
+    expect(composable.hasAppliedSuggestion.value).toBe(false);
+    expect(tracking.getAegisMetadata().cwe_id).toBeUndefined();
+    expect(mockAddToast).not.toHaveBeenCalled();
   });
 
   it('handles no-suggestion response', async () => {

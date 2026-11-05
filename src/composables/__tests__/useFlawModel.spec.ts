@@ -362,6 +362,34 @@ describe('useFlawModel', () => {
 
       expect(putFlaw).toHaveBeenCalled();
     });
+
+    it('puts the flaw when an edit races the late affects load', async () => {
+      const { flaw, isFlawUpdated, setFlaw, setLateFlawField } = useFlaw();
+      // getFlaw excludes affects: the model loads without them and the
+      // paginated affects fetch fills them in later.
+      const flawData = { ...deepCopyFromRaw(sampleFlawFull as ZodFlawType), affects: [] };
+      setFlaw(flawData);
+
+      const { updateFlaw } = mountFlawModel();
+
+      // An AI suggestion (or any edit) applied while affects were still loading.
+      flaw.value.cve_description = 'AI suggested description';
+      // The affects fetch lands afterwards, syncing only its own baseline.
+      setLateFlawField('affects', [{ uuid: 'late-affect-uuid' }] as ZodAffectType[]);
+      await flushPromises();
+      expect(isFlawUpdated.value).toBe(true);
+
+      await updateFlaw();
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenCalledTimes(1);
+      expect(putFlaw).toHaveBeenCalledWith(
+        flawData.uuid,
+        expect.objectContaining({ cve_description: 'AI suggested description' }),
+        false,
+        { suppressConflictToast: true },
+      );
+    });
   });
 
   describe('affect validation', () => {

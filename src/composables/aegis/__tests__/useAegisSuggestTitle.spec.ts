@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { useAegisSuggestTitle } from '@/composables/aegis/useAegisSuggestTitle';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -86,6 +87,38 @@ describe('useAegisSuggestTitle', () => {
       title: 'AI Suggestion Applied',
       css: 'info',
     }));
+  });
+
+  it('discards a late response after the owning form was replaced', async () => {
+    useAegisMetadataTracking().setAegisMetadata({});
+    const titleRef = ref<null | string | undefined>('Original Title');
+    const context = createContext({ cveId: ref('CVE-2024-1234') });
+
+    let resolveAnalysis!: (value: unknown) => void;
+    analyzeMock.mockReturnValueOnce(new Promise((resolve) => { resolveAnalysis = resolve; }));
+
+    const [composable, app] = withSetup(
+      () => useAegisSuggestTitle({
+        context: context as AegisSuggestionContextRefs,
+        titleRef,
+      }), [],
+    );
+
+    const suggesting = composable.suggestTitle();
+    // The flaw page was left while the request was in flight.
+    app.unmount();
+    resolveAnalysis({
+      suggested_title: 'Late Suggested Title',
+      suggested_description: 'Late description',
+      confidence: 0.9,
+    });
+    await suggesting;
+
+    expect(titleRef.value).toBe('Original Title');
+    expect(composable.hasAppliedTitleSuggestion.value).toBe(false);
+    expect(composable.details.value).toBeNull();
+    expect(useAegisMetadataTracking().getAegisMetadata().title).toBeUndefined();
+    expect(mockAddToast).not.toHaveBeenCalled();
   });
 
   it('shows toast when no title suggestion received', async () => {

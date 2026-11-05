@@ -115,7 +115,9 @@ export function useAegisSuggestion(
 
   /** Applies a suggestion through the shared AI change tracker. */
   async function applySuggestion(suggestion: string | string[]) {
-    aegisSuggestionWatcher.applyAISuggestion(suggestion);
+    // A false return means the owning form was replaced while the request was
+    // in flight; the response belongs to a flaw that is no longer displayed.
+    if (!aegisSuggestionWatcher.applyAISuggestion(suggestion)) return;
     userFeedbackSent.value = false; // Reset feedback state for new suggestion
     successToast();
   }
