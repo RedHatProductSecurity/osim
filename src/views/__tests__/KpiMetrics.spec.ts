@@ -64,6 +64,11 @@ describe('kPI dashboard', () => {
   let wrapper: VueWrapper;
   const getFeedback = vi.fn();
   const getBot = vi.fn();
+  let serviceInstance: {
+    getBotKpiMetrics: typeof getBot;
+    getKpiMetrics: typeof getFeedback;
+    onBotKpiProgress?: (refreshedFlaws: number, selectedFlaws: number) => void;
+  };
   const mount = async () => {
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
@@ -75,9 +80,8 @@ describe('kPI dashboard', () => {
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
     vi.mocked(AegisAIService).mockImplementation(function () {
-      return {
-        getKpiMetrics: getFeedback, getBotKpiMetrics: getBot,
-      } as unknown as AegisAIService;
+      serviceInstance = { getBotKpiMetrics: getBot, getKpiMetrics: getFeedback };
+      return serviceInstance as unknown as AegisAIService;
     });
   });
   afterEach(() => wrapper?.unmount());
@@ -545,5 +549,88 @@ describe('kPI dashboard', () => {
     resolveOld({});
     await flushPromises();
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
+  });
+
+  it('shows an accessible live progress bar while osidb-bot metrics refresh', async () => {
+    let resolveBot!: (value: AegisBotKpiMetrics) => void;
+    getBot.mockReset().mockReturnValue(new Promise((resolve) => { resolveBot = resolve; }));
+    wrapper = mountWithConfig(KpiMetrics);
+    expect(wrapper.get('[role="status"]').text()).toContain('Loading KPI metrics');
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+
+    serviceInstance.onBotKpiProgress!(100, 400);
+    await flushPromises();
+    const bar = wrapper.get('[role="progressbar"]');
+    expect(bar.attributes('aria-label')).toBe('osidb-bot KPI refresh progress');
+    expect(bar.attributes('aria-valuemin')).toBe('0');
+    expect(bar.attributes('aria-valuemax')).toBe('100');
+    expect(bar.attributes('aria-valuenow')).toBe('25');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics… 100 / 400 flaws');
+    const fill = bar.get('.progress-bar');
+    expect(fill.attributes('style')).toContain('width: 25%');
+    expect(fill.text()).toBe('25%');
+
+    serviceInstance.onBotKpiProgress!(400, 400);
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('100');
+
+    resolveBot(bot);
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+  });
+
+  it('does not show a progress bar while loading without progress information', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    expect(wrapper.get('[role="status"]').text()).toContain('Loading KPI metrics');
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+  });
+
+  it('hides the progress bar for a zero-flaw selection', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    serviceInstance.onBotKpiProgress!(5, 0);
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+  });
+
+  it('caps the progress bar at 100 percent when the refreshed count exceeds the selection', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    serviceInstance.onBotKpiProgress!(500, 400);
+    await flushPromises();
+    const bar = wrapper.get('[role="progressbar"]');
+    expect(bar.attributes('aria-valuenow')).toBe('100');
+    expect(bar.get('.progress-bar').attributes('style')).toContain('width: 100%');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics… 500 / 400 flaws');
+  });
+
+  it('ignores osidb-bot progress from a fetch superseded by a filter change', async () => {
+    let resolveSuperseded!: (value: AegisBotKpiMetrics) => void;
+    getBot.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSuperseded = resolve; }))
+      .mockReturnValueOnce(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    const supersededHook = serviceInstance.onBotKpiProgress!;
+    supersededHook(100, 400);
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
+
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+
+    supersededHook(200, 400);
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+
+    serviceInstance.onBotKpiProgress!(150, 600);
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics… 150 / 600 flaws');
+
+    resolveSuperseded(bot);
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
   });
 });
