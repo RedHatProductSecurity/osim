@@ -33,7 +33,6 @@ export const zodOsimDateTime = () =>
         zodContext.addIssue({
           message: `Invalid date format for ${dateString}`,
           code: z.ZodIssueCode.custom,
-          path: zodContext.path,
         });
       }
     }));
@@ -59,8 +58,6 @@ export const ZodAlertSchema = z.object({
   parent_model: z.string(),
 });
 
-export const fieldsFor = (schema: SchemaTypeWithEffect) => schema._def.typeName === 'ZodEffects'
-  ? Object.keys(schema._def.schema.shape)
-  : Object.keys((schema as SchemaType).shape);
+export const fieldsFor = (schema: SchemaTypeWithEffect) => Object.keys(schema.shape);
 
 export const extractEnum = (zodEnum: any): string[] => Object.values(zodEnum.unwrap().unwrap().enum);
