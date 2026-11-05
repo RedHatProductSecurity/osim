@@ -11,12 +11,18 @@ import {
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
-  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, clearFilters,
-  component, errors, feature, fromDate,
+  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, botProgress,
+  clearFilters, component, errors, feature, fromDate,
   invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
 const allSourcesFailed = computed(() => errors.value.length > 0 && !loadedSources.value.length);
+const botProgressPercent = computed(() => {
+  const { refreshed, selected } = botProgress.value;
+  return selected && selected > 0 && refreshed !== null
+    ? Math.min(100, Math.round((refreshed / selected) * 100))
+    : null;
+});
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
 const perFeature = computed(() => [...new Set(observations.value.map(entry => entry.feature))].map(name => ({
@@ -190,6 +196,24 @@ function changeRange(event: Event, edge: 'end' | 'start') {
     </fieldset>
     <p v-if="invalidRange" role="alert">The start date must be on or before the end date.</p>
     <p v-if="loading" role="status">Loading KPI metrics…</p>
+    <div v-if="loading && botProgress.selected" class="mb-3">
+      <span role="status">
+        Loading osidb-bot metrics… {{ botProgress.refreshed }} / {{ botProgress.selected }} flaws
+      </span>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="osidb-bot KPI refresh progress"
+        :aria-valuenow="botProgressPercent ?? undefined"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          :style="{ width: `${botProgressPercent ?? 0}%` }"
+        >{{ botProgressPercent }}%</div>
+      </div>
+    </div>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
       <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
       <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>
