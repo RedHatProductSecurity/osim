@@ -168,13 +168,17 @@ describe('flawLabelsTable', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it('should handle add BU label', async () => {
+  it('should not offer creating a BU label', async () => {
     const wrapper = mountFlawLabelsTable();
-    const { areLabelsUpdated } = useFlawLabels();
+    const { newLabels } = useFlawLabels();
     await flushPromises();
 
     await wrapper.find('.table-new-row td').trigger('click');
     const editRow = wrapper.findComponent(FlawLabelTableEditingRow);
+    const typeValues = editRow.find('select[title="Label type"]').findAll('option')
+      .map(option => option.attributes('value'));
+    expect(typeValues).not.toContain(FlawLabelTypeEnum.BU);
+
     editRow.vm.$emit('save', {
       type: FlawLabelTypeEnum.BU,
       name: 'core_bu',
@@ -183,7 +187,7 @@ describe('flawLabelsTable', () => {
     });
     await flushPromises();
 
-    expect(areLabelsUpdated.value).toBe(true);
+    expect(newLabels.value.has('core_bu')).toBe(false);
   });
 
   it('should handle undo delete label', async () => {
@@ -233,10 +237,13 @@ describe('flawLabelsTable', () => {
     expect(editButton.attributes('disabled')).toBeUndefined();
   });
 
-  it('should not show delete button for product_family labels', async () => {
+  it.each([
+    FlawLabelTypeEnum.PRODUCT_FAMILY,
+    FlawLabelTypeEnum.BU,
+  ])('should not show delete button for %s labels', async (type) => {
     const wrapper = mountFlawLabelsTable({
       modelValue: [
-        { type: FlawLabelTypeEnum.PRODUCT_FAMILY, name: 'test-pf', contributor: '', state: StateEnum.New },
+        { type, name: 'test-label', contributor: '', state: StateEnum.New },
       ],
     });
     await flushPromises();

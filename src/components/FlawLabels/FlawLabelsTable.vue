@@ -18,7 +18,6 @@ const {
   isNewLabel,
   isUpdatedLabel,
   labels,
-  loadBuLabels,
   loadContextLabels,
   newLabels,
   updatedLabels,
@@ -27,15 +26,9 @@ const {
 const isCreatingLabel = ref(false);
 const isUpdatingLabel = ref<string>();
 const contextLabels = computedAsync(loadContextLabels, []);
-const buLabels = computedAsync(loadBuLabels, []);
 const availableLabels = computed(() =>
   contextLabels.value.filter(contextLabel =>
     !Object.values(labels.value).some(({ name }) => name === contextLabel),
-  ),
-);
-const availableBuLabels = computed(() =>
-  buLabels.value.filter(buLabel =>
-    !Object.values(labels.value).some(({ name }) => name === buLabel),
   ),
 );
 
@@ -46,7 +39,16 @@ function isFieldEditable(label: ZodFlawLabelType) {
   return label.type === FlawLabelTypeEnum.CONTEXT_BASED || label.type === FlawLabelTypeEnum.BU;
 }
 
+function isDeletable(label: ZodFlawLabelType) {
+  return label.type !== FlawLabelTypeEnum.PRODUCT_FAMILY && label.type !== FlawLabelTypeEnum.BU;
+}
+
 function handleNewLabel(label: ZodFlawLabelType) {
+  // BU labels are created from flaw affects, so a manual create is rejected by the API
+  if (label.type === FlawLabelTypeEnum.BU) {
+    return;
+  }
+
   newLabels.value.add(label.name);
   labels.value[label.name] = label;
   isCreatingLabel.value = false;
@@ -104,7 +106,6 @@ function handleUndoDelete(label: ZodFlawLabelType) {
         >
           <FlawLabelTableEditingRow
             v-if="isFieldEditable(label) && isUpdatingLabel === label.name"
-            :buLabels="buLabels"
             :contextLabels="contextLabels"
             :initalLabel="label"
             @save="handleUpdateLabel"
@@ -130,7 +131,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
                 <template v-if="!isDeletedLabel(label)">
                   <span
                     v-if="!isFieldEditable(label)"
-                    title="Only context_based and bu labels are field-editable"
+                    title="Only context_based labels and the BU label owner can be edited"
                   >
                     <button
                       type="button"
@@ -160,7 +161,7 @@ function handleUndoDelete(label: ZodFlawLabelType) {
                   <i class="bi bi-arrow-counterclockwise" />
                 </button>
                 <button
-                  v-if="label.type !== FlawLabelTypeEnum.PRODUCT_FAMILY && !isDeletedLabel(label)"
+                  v-if="isDeletable(label) && !isDeletedLabel(label)"
                   type="button"
                   title="Delete label"
                   class="btn btn-sm btn-dark"
@@ -174,7 +175,6 @@ function handleUndoDelete(label: ZodFlawLabelType) {
         </tr>
         <tr v-if="isCreatingLabel">
           <FlawLabelTableEditingRow
-            :buLabels="availableBuLabels"
             :contextLabels="availableLabels"
             @save="handleNewLabel"
             @cancel="isCreatingLabel = false"

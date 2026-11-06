@@ -65,19 +65,49 @@ describe('flawLabelsTableEditingRow', () => {
     expect(wrapper.findComponent(FlawLabelsContributor).exists()).toBe(false);
   });
 
-  it.each([
-    FlawLabelTypeEnum.CONTEXT_BASED,
-    FlawLabelTypeEnum.BU,
-  ])('should show state select and contributor input for %s labels', (type) => {
+  it('should show state select and contributor input for context_based labels', () => {
     const wrapper = mountWithConfig(FlawLabelTableEditingRow, {
       props: {
-        initalLabel: { type, name: 'test-label', contributor: '', state: StateEnum.New, relevant: true },
+        initalLabel: {
+          type: FlawLabelTypeEnum.CONTEXT_BASED,
+          name: 'test-label',
+          contributor: '',
+          state: StateEnum.New,
+          relevant: true,
+        },
       },
     });
 
     const stateSelect = wrapper.find('select');
     expect(stateSelect.exists()).toBe(true);
     expect(wrapper.findComponent(FlawLabelsContributor).exists()).toBe(true);
+  });
+
+  it('should show the BU state as text and keep the owner editable', () => {
+    const wrapper = mountWithConfig(FlawLabelTableEditingRow, {
+      props: {
+        initalLabel: {
+          type: FlawLabelTypeEnum.BU,
+          name: 'core_bu',
+          contributor: '',
+          state: StateEnum.Req,
+          relevant: false,
+        },
+      },
+    });
+
+    expect(wrapper.find('select').exists()).toBe(false);
+    expect(wrapper.findAll('td')[0].text()).toBe(StateEnum.Req);
+    expect(wrapper.findComponent(FlawLabelsContributor).exists()).toBe(true);
+  });
+
+  it('should not offer bu when creating a label', () => {
+    const wrapper = mountWithConfig(FlawLabelTableEditingRow);
+
+    const typeValues = wrapper.find('select[title="Label type"]').findAll('option')
+      .map(option => option.attributes('value'));
+
+    expect(typeValues).not.toContain(FlawLabelTypeEnum.BU);
   });
 
   it('should show state select when creating new context_based label', () => {
@@ -182,4 +212,30 @@ describe('flawLabelsTableEditingRow', () => {
       expect(wrapper.emitted('save')).toEqual([[expect.objectContaining({ contributor: 'agent-smith' })]]);
     },
   );
+
+  it('should keep BU state and relevant unchanged when the owner changes', async () => {
+    const wrapper = mountWithConfig(FlawLabelTableEditingRow, {
+      props: {
+        initalLabel: {
+          type: FlawLabelTypeEnum.BU,
+          name: 'core_bu',
+          contributor: 'skynet',
+          state: StateEnum.Req,
+          relevant: false,
+        },
+      },
+    });
+
+    await wrapper.find('input').setValue('agent-smith');
+    await wrapper.find('input').trigger('blur');
+    await wrapper.find('button[title="Save"]').trigger('click');
+
+    expect(wrapper.emitted('save')).toEqual([[expect.objectContaining({
+      type: FlawLabelTypeEnum.BU,
+      name: 'core_bu',
+      contributor: 'agent-smith',
+      state: StateEnum.Req,
+      relevant: false,
+    })]]);
+  });
 });
