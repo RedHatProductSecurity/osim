@@ -60,8 +60,12 @@ describe('useCollisionConflict', () => {
     await expect(resolveFlawSave(base, mine, save, async () => server, onUnresolved)).rejects.toBe(conflict);
 
     expect(save).toHaveBeenCalledTimes(1);
-    expect(conflicts.value).toEqual(['title']);
-    expect(onUnresolved).toHaveBeenCalledWith(conflict);
+    expect(conflicts.value).toEqual([{
+      field: 'title',
+      mine: 'analyst title',
+      server: 'bot title',
+    }]);
+    expect(onUnresolved).not.toHaveBeenCalled();
   });
 
   it('keeps the current warning when the reload fails', async () => {

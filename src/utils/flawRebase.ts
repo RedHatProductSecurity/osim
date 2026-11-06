@@ -57,11 +57,34 @@ export function flawRebaseFieldLabel(field: FlawRebaseField): string {
   return FLAW_REBASE_FIELD_LABELS[field];
 }
 
+export function formatCollisionValue(value: unknown): string {
+  if (value == null || value === '') return 'Empty';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (Array.isArray(value)) {
+    if (value.length === 0) return 'Empty';
+    return value.map(item => (
+      typeof item === 'string' || typeof item === 'number' ? String(item) : JSON.stringify(item)
+    )).join('\n');
+  }
+  return JSON.stringify(value, null, 2);
+}
+
+export type CollisionChoice = 'mine' | 'server';
+
+export type FlawFieldConflict = {
+  field: FlawRebaseField;
+  mine: unknown;
+  server: unknown;
+};
+
 export type FlawRebaseResult = {
   /** Server fields the form did not edit, copied onto the retry body. */
   adopted: FlawRebaseField[];
   /** Form fields the server also changed to a different value. */
-  conflicts: FlawRebaseField[];
+  conflicts: FlawFieldConflict[];
+  /** Fields the form changed since page load. */
+  formEdits: FlawRebaseField[];
   /** Present when conflicts is empty. Safe to PUT. */
   merged: null | ZodFlawType;
 };
@@ -88,7 +111,7 @@ export function rebaseDisjointFlaw(
   server: ZodFlawType,
 ): FlawRebaseResult {
   const adopted: FlawRebaseField[] = [];
-  const conflicts: FlawRebaseField[] = [];
+  const conflicts: FlawFieldConflict[] = [];
   const formEdits: FlawRebaseField[] = [];
 
   for (const field of FLAW_REBASE_FIELDS) {
@@ -102,7 +125,7 @@ export function rebaseDisjointFlaw(
       formEdits.push(field);
     }
     if (formChanged && serverChanged && !valuesEqual(formValue, serverValue)) {
-      conflicts.push(field);
+      conflicts.push({ field, mine: formValue, server: serverValue });
     }
     if (!formChanged && serverChanged) {
       adopted.push(field);
@@ -110,12 +133,20 @@ export function rebaseDisjointFlaw(
   }
 
   if (conflicts.length > 0) {
-    return { adopted, conflicts, merged: null };
+    return { adopted, conflicts, formEdits, merged: null };
   }
 
-  const merged: ZodFlawType = {
+  // Child collections have their own tokens and are saved on other requests.
+  const merged = withLocalCollections(server, mine);
+
+  Object.assign(merged, Object.fromEntries(formEdits.map(field => [field, mine[field]])));
+
+  return { adopted, conflicts, formEdits, merged };
+}
+
+function withLocalCollections(server: ZodFlawType, mine: ZodFlawType): ZodFlawType {
+  return {
     ...server,
-    // Child collections have their own tokens and are saved on other requests.
     acknowledgments: mine.acknowledgments,
     affects: mine.affects,
     comments: mine.comments,
@@ -124,8 +155,22 @@ export function rebaseDisjointFlaw(
     references: mine.references,
     updated_dt: server.updated_dt,
   };
+}
 
-  Object.assign(merged, Object.fromEntries(formEdits.map(field => [field, mine[field]])));
+/** Retry body after the user picks a side for each overlapping flaw field. */
+export function flawBodyFromChoices(
+  mine: ZodFlawType,
+  server: ZodFlawType,
+  formEdits: readonly FlawRebaseField[],
+  choices: Readonly<Record<string, CollisionChoice>>,
+): ZodFlawType {
+  const merged = withLocalCollections(server, mine);
 
-  return { adopted, conflicts, merged };
+  Object.assign(merged, Object.fromEntries(
+    formEdits
+      .filter(field => choices[field] !== 'server')
+      .map(field => [field, mine[field]]),
+  ));
+
+  return merged;
 }
