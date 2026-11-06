@@ -58,6 +58,35 @@ describe('labelsService', () => {
     await expect(createLabel(flawUUID, label)).resolves.not.toBeUndefined();
   });
 
+  it('updates a BU label with only the name and contributor', async () => {
+    const flawUUID = '123';
+    const label: ZodFlawLabelType = {
+      uuid: 'test-uuid',
+      name: 'core_bu',
+      state: StateEnum.New,
+      type: FlawLabelTypeEnum.BU,
+      relevant: false,
+      contributor: '',
+      reason: 'stale',
+    };
+
+    let body: unknown;
+    server.use(
+      http.put(
+        `${osimRuntime.value.backends.osidb}/osidb/api/v2/flaws/${flawUUID}/labels/${label.uuid}`,
+        async ({ request }) => {
+          body = await request.json();
+          return HttpResponse.json(label);
+        },
+        { once: true },
+      ),
+    );
+
+    await updateLabel(flawUUID, label);
+
+    expect(body).toEqual({ name: 'core_bu', contributor: '' });
+  });
+
   it('can update a label', async () => {
     const flawUUID = '123';
     const label: ZodFlawLabelType = {
