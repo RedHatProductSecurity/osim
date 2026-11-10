@@ -2,10 +2,14 @@
 
 ## [Unreleased]
 ### Added
+* Follow the paginated osidb-bot KPI endpoint page by page and show a striped progress bar with live flaw counts while the Aegis server refreshes its KPI cache, instead of failing with a gateway timeout (`AEGIS-550`)
+* Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Show black-outlined, yellow-filled warning icons with recorded reasons, discarded suggestions, and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled, with copy and close controls in the detail popups (`OSIDB-5469`)
 
 ### Fixed
+* Refresh forwarded OSIDB access tokens before KPI requests so date-range and filter changes continue working after token expiry, and identify failed sources with actionable errors and explicit incomplete-result states (`AEGIS-547`)
+* Keep the flaw page from scrolling to the bottom when an Aegis suggestion tooltip opens (`OSIDB-5844`)
 * Keep flaw text fields responsive on flaws with many affects by checking only form fields while typing (`OSIDB-5839`)
 * Show Aegis Multi Suggest loading indicators only for selected fields and clear them when generation completes (`AEGIS-542`)
 * Keep AI-suggested flaw field values that race with background loads or model refreshes: late-arriving affects/history no longer mark applied suggestions as already saved, wiped suggestions are restored after the flaw model is resynchronized, responses from a left flaw page are no longer applied to another flaw, and background loads started for a previous flaw no longer overwrite the flaw currently on screen (`AEGIS-502`)

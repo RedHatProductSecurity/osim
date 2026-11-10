@@ -65,7 +65,7 @@ watch(showSuggestionTooltip, async (show) => {
   if (!show) return;
   await nextTick();
   if (!suggestionTooltipTrigger.value || !suggestionTooltip.value) return;
-  suggestionTooltip.value.querySelector<HTMLButtonElement>('button')?.focus();
+  suggestionTooltip.value.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true });
   suggestionTooltipPopper = createPopper(suggestionTooltipTrigger.value, suggestionTooltip.value, {
     placement: 'right',
     strategy: 'fixed',

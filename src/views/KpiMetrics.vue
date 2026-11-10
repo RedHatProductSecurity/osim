@@ -11,11 +11,18 @@ import {
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
-  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, clearFilters,
-  component, errors, feature, fromDate,
-  invalidRange, loading, observations, refresh, toDate, toggleVersion, versions,
+  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, botProgress,
+  clearFilters, component, errors, feature, fromDate,
+  invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
+const allSourcesFailed = computed(() => errors.value.length > 0 && !loadedSources.value.length);
+const botProgressPercent = computed(() => {
+  const { refreshed, selected } = botProgress.value;
+  return selected && selected > 0 && refreshed !== null
+    ? Math.min(100, Math.round((refreshed / selected) * 100))
+    : null;
+});
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
 const perFeature = computed(() => [...new Set(observations.value.map(entry => entry.feature))].map(name => ({
@@ -132,6 +139,7 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         type="button"
         class="btn btn-primary"
         :disabled="loading || invalidRange || !!errors.length || (!observations.length && !botFeatures.length)"
+        :title="errors.length ? 'Download unavailable until all KPI sources load successfully.' : undefined"
         @click="downloadReport"
       >Download CSV</button>
       <button type="button" class="btn btn-outline-secondary" @click="clearFilters">Clear All Filters</button>
@@ -188,12 +196,46 @@ function changeRange(event: Event, edge: 'end' | 'start') {
     </fieldset>
     <p v-if="invalidRange" role="alert">The start date must be on or before the end date.</p>
     <p v-if="loading" role="status">Loading KPI metrics…</p>
-    <div v-if="errors.length" role="alert" class="alert alert-warning">
-      <p v-for="error in errors" :key="error">{{ error }}</p>
-      <p>Results below include only the sources that loaded successfully.</p>
+    <div v-if="loading && botProgress.selected" class="mb-3">
+      <span role="status">
+        Loading osidb-bot metrics… {{ botProgress.refreshed }} / {{ botProgress.selected }} flaws
+      </span>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="osidb-bot KPI refresh progress"
+        :aria-valuenow="botProgressPercent ?? undefined"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          :style="{ width: `${botProgressPercent ?? 0}%` }"
+        >{{ botProgressPercent }}%</div>
+      </div>
     </div>
-    <div v-if="!loading && !invalidRange" class="kpi-chart-container">
-      <p v-if="!observations.length">No KPI records match these filters.</p>
+    <div v-if="errors.length" role="alert" class="alert alert-warning">
+      <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
+      <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>
+      <p v-else>
+        Loaded sources: {{ loadedSources.join(', ') }}. Charts and totals include only these sources and are incomplete.
+      </p>
+      <p v-for="error in errors" :key="error">{{ error }}</p>
+      <p>CSV download is unavailable until all KPI sources load successfully.</p>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        :disabled="loading"
+        @click="refresh"
+      >
+        Retry loading metrics
+      </button>
+    </div>
+    <div v-if="!loading && !invalidRange && !allSourcesFailed" class="kpi-chart-container">
+      <p v-if="!observations.length && errors.length">
+        No KPI records match these filters in the loaded source. Records from the failed source may be missing.
+      </p>
+      <p v-else-if="!observations.length">No KPI records match these filters.</p>
       <template v-else>
         <h2 class="h4">{{ errors.length ? 'Available-source' : 'Combined' }} Acceptance Rate</h2>
         <p data-testid="overall-rate">
