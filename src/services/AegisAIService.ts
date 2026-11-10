@@ -176,6 +176,19 @@ function queryStringFromParams(params: Record<string, any>) {
   return queryString ? `?${queryString}` : '';
 }
 
+// The Aegis server answers 503 with this exact body when its own connection to
+// OSIDB fails (a blip while the KPI cache refresh runs). Such page failures
+// are transient and worth retrying.
+const OSIDB_UNAVAILABLE_DETAIL = 'Unable to connect to OSIDB.';
+
+function isOsidbUnavailableError(error: unknown): boolean {
+  if (!error || typeof error !== 'object' || !('response' in error)) return false;
+  const response = (error as { response?: unknown }).response;
+  if (!response || typeof response !== 'object') return false;
+  const { data, status } = response as { data?: { detail?: unknown }; status?: unknown };
+  return status === 503 && data?.detail === OSIDB_UNAVAILABLE_DETAIL;
+}
+
 export class AegisAIService {
   // Monotonic id of the latest bot KPI fetch: starting a new one supersedes
   // any pagination still in flight on this service instance.
@@ -189,6 +202,53 @@ export class AegisAIService {
   constructor() {
     this.isFetching = ref(false);
     this.requestDuration = ref(0);
+  }
+
+  /**
+   * Fetch one page of the osidb-bot KPI report, retrying transient OSIDB
+   * outages. A 503 "Unable to connect to OSIDB." means the Aegis server lost
+   * its OSIDB connection mid-pagination; the same cursor is re-requested up
+   * to `osidbOutageRetries` times before the failure propagates, and a
+   * superseded fetch stops retrying promptly.
+   */
+  private async fetchBotKpiPage(
+    query: AegisKpiQuery,
+    cursor: null | string,
+    fetchId: number,
+  ) {
+    // Wall-clock budget for the server's OSIDB work on this request (the
+    // flaw-index query plus the cache refresh of one page of flaws). The
+    // server default (AEGIS_BOT_KPI_MAX_REFRESH_SECS, 20s) is too small for
+    // a slow OSIDB: the index query alone can consume it, leaving the refresh
+    // batches 1s timeouts that fail as 503s. 30s refreshes roughly 50% more
+    // flaws per request while keeping the request well under the gateway's
+    // 60s timeout.
+    const maxRefreshSecs = 30;
+    const osidbOutageRetries = 3;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.fetch({
+          method: 'GET',
+          url: '/analysis/kpi/osidb-bot',
+          params: {
+            ...query,
+            cursor: cursor ?? undefined,
+            detail: true,
+            limit: 400,
+            max_refresh_secs: maxRefreshSecs,
+          },
+        }, {
+          beforeFetch: async (options) => {
+            options.headers = await aegisAuthHeaders();
+          },
+        });
+      } catch (error) {
+        if (attempt >= osidbOutageRetries || !isOsidbUnavailableError(error)) throw error;
+        if (this.botKpiFetchId !== fetchId) {
+          throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
+        }
+      }
+    }
   }
 
   /**
@@ -318,11 +378,12 @@ export class AegisAIService {
    * are reported through the optional `onBotKpiProgress` instance hook, and
    * starting a new fetch on the same service instance supersedes pagination
    * still in flight, which then rejects instead of fetching further pages.
+   * Pages that fail with a transient OSIDB outage (503 "Unable to connect to
+   * OSIDB.") are retried a bounded number of times (see fetchBotKpiPage).
    * @param query KPI filter parameters
    * @returns The accumulated bot KPI metrics
    */
   async getBotKpiMetrics(query: AegisKpiQuery = {}): Promise<AegisBotKpiMetrics> {
-    const pageSize = 400;
     const maxPages = 200;
     // Snapshot the callback and fetch id so a newer fetch on this service
     // instance supersedes this pagination: superseded loops stop requesting
@@ -337,15 +398,7 @@ export class AegisAIService {
       if (this.botKpiFetchId !== fetchId) {
         throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
       }
-      const result = await this.fetch({
-        method: 'GET',
-        url: '/analysis/kpi/osidb-bot',
-        params: { ...query, detail: true, cursor: nextCursor ?? undefined, limit: pageSize },
-      }, {
-        beforeFetch: async (options) => {
-          options.headers = await aegisAuthHeaders();
-        },
-      });
+      const result = await this.fetchBotKpiPage(query, nextCursor, fetchId);
       const data = result.data as AegisBotKpiPage;
       if (!Array.isArray(data?.entries)) {
         throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');

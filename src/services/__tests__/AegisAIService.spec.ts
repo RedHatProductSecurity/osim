@@ -610,6 +610,7 @@ describe('aegisAIService', () => {
       for (const url of requests) {
         expect(url.searchParams.get('detail')).toBe('true');
         expect(url.searchParams.get('limit')).toBe('400');
+        expect(url.searchParams.get('max_refresh_secs')).toBe('30');
         expect(url.searchParams.get('component')).toBe('kernel');
         expect(url.searchParams.getAll('aegis_version')).toEqual(['0.9.2']);
         expect(url.searchParams.get('recorded_after')).toBe('2026-09-01T00:00:00Z');
@@ -732,6 +733,110 @@ describe('aegisAIService', () => {
         response: { status: 500 },
       });
       expect(service.isFetching.value).toBe(false);
+    });
+
+    it('retries a transient OSIDB outage on the same cursor and completes', async () => {
+      const requests: URL[] = [];
+      let osidbOutages = 2;
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        const url = new URL(request.url);
+        requests.push(url);
+        if (url.searchParams.has('cursor') && osidbOutages-- > 0) {
+          return HttpResponse.json({ detail: 'Unable to connect to OSIDB.' }, { status: 503 });
+        }
+        return url.searchParams.has('cursor')
+          ? HttpResponse.json({
+            available_components: ['kernel'],
+            entries: [botEntry('CVE-2026-0002')],
+            features: finalFeatures,
+            progress: { complete: true, refreshed_flaws: 2, selected_flaws: 2 },
+            total_flaws_processed: 2,
+          })
+          : HttpResponse.json({
+            entries: [botEntry('CVE-2026-0001')],
+            features: {},
+            next_cursor: 'CVE-2026-0002',
+            progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+            total_flaws_processed: 0,
+          });
+      }));
+      const onBotKpiProgress = vi.fn();
+      service.onBotKpiProgress = onBotKpiProgress;
+
+      const result = await service.getBotKpiMetrics();
+
+      // The failing page was re-requested at the same cursor, not skipped, and
+      // its entries appear exactly once in the accumulated result.
+      expect(requests.map(url => url.searchParams.get('cursor'))).toEqual([
+        null, 'CVE-2026-0002', 'CVE-2026-0002', 'CVE-2026-0002',
+      ]);
+      expect(result.entries.map(entry => entry.cve_id)).toEqual(['CVE-2026-0001', 'CVE-2026-0002']);
+      expect(result.total_flaws_processed).toBe(2);
+      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2], [2, 2]]);
+      expect(service.isFetching.value).toBe(false);
+    });
+
+    it('gives up after three OSIDB outage retries and propagates the 503', async () => {
+      const requests: URL[] = [];
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        requests.push(new URL(request.url));
+        return HttpResponse.json({ detail: 'Unable to connect to OSIDB.' }, { status: 503 });
+      }));
+
+      await expect(service.getBotKpiMetrics()).rejects.toMatchObject({
+        message: expect.stringContaining('Unable to connect to OSIDB.'),
+        response: { status: 503 },
+      });
+      expect(requests).toHaveLength(4);
+      expect(service.isFetching.value).toBe(false);
+    });
+
+    it('does not retry a 503 that is not an OSIDB outage', async () => {
+      const requests: URL[] = [];
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        requests.push(new URL(request.url));
+        return HttpResponse.json({ detail: 'Service mesh unavailable' }, { status: 503 });
+      }));
+
+      await expect(service.getBotKpiMetrics()).rejects.toMatchObject({
+        message: expect.stringContaining('Service mesh unavailable'),
+        response: { status: 503 },
+      });
+      expect(requests).toHaveLength(1);
+    });
+
+    it('stops retrying an OSIDB outage once superseded by a newer fetch', async () => {
+      const requests: URL[] = [];
+      let releaseOutage!: () => void;
+      const outageGate = new Promise<void>((resolve) => { releaseOutage = resolve; });
+      server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
+        const url = new URL(request.url);
+        requests.push(url);
+        if (url.searchParams.get('component') === 'kernel') {
+          // Hold the failing response until the replacement fetch is in
+          // flight, so the supersession is already decided when it lands.
+          await outageGate;
+          return HttpResponse.json({ detail: 'Unable to connect to OSIDB.' }, { status: 503 });
+        }
+        return HttpResponse.json({
+          entries: [botEntry('CVE-2026-0001')],
+          features: finalFeatures,
+          total_flaws_processed: 1,
+        });
+      }));
+
+      const superseded = service.getBotKpiMetrics({ component: 'kernel' });
+      await vi.waitFor(() => expect(requests).toHaveLength(1));
+      const replacement = service.getBotKpiMetrics({ component: 'openssl' });
+      await expect(replacement).resolves.toMatchObject({ total_flaws_processed: 1 });
+      releaseOutage();
+
+      await expect(superseded).rejects.toThrow(
+        'osidb-bot KPI fetch was superseded by a newer request.',
+      );
+      // Only the initial attempt ran for the superseded fetch: the 503 would
+      // have been retried had the fetch not been superseded first.
+      expect(requests.filter(url => url.searchParams.get('component') === 'kernel')).toHaveLength(1);
     });
 
     it('supersedes in-flight pagination when a newer fetch starts on the same service', async () => {
