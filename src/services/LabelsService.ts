@@ -1,7 +1,7 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 import type { PaginatedFlawLabelList } from '@/generated-client';
-import type { ZodFlawLabelType } from '@/types/zodFlaw';
+import { FlawLabelTypeEnum, type ZodFlawLabelType } from '@/types/zodFlaw';
 
 import { osidbFetch } from './OsidbAuthService';
 
@@ -43,6 +43,19 @@ export async function deleteLabel(flawUUID: string, label: ZodFlawLabelType) {
     .catch(createCatchHandler(`Error deleting label ${label.name}`));
 }
 
+function labelUpdatePayload(label: ZodFlawLabelType) {
+  // Affects can change a BU label's state after the page loads. OSIDB rejects
+  // the update when any field other than the contributor differs from the current row.
+  if (label.type === FlawLabelTypeEnum.BU) {
+    return {
+      name: label.name,
+      contributor: label.contributor ?? '',
+    };
+  }
+
+  return label;
+}
+
 export async function updateLabel(flawUUID: string, label: ZodFlawLabelType) {
   if (!label.uuid) {
     return Promise.reject(new Error(`Label ${label.name} is missing a UUID`))
@@ -52,7 +65,7 @@ export async function updateLabel(flawUUID: string, label: ZodFlawLabelType) {
   return osidbFetch({
     method: 'put',
     url: `/osidb/api/v2/flaws/${flawUUID}/labels/${label.uuid}`,
-    data: label,
+    data: labelUpdatePayload(label),
   })
     .then(createSuccessHandler({ title: 'Success!', body: `Label ${label.name} updated.` }))
     .catch(createCatchHandler(`Error updating label ${label.name}`));

@@ -6,6 +6,9 @@
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Show black-outlined, yellow-filled warning icons with recorded reasons, discarded suggestions, and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled, with copy and close controls in the detail popups (`OSIDB-5469`)
 
+### Changed
+* BU labels can no longer be added or removed. You can still change the contributor (`OSIDB-5841`)
+
 ### Fixed
 * Refresh forwarded OSIDB access tokens before KPI requests so date-range and filter changes continue working after token expiry, and identify failed sources with actionable errors and explicit incomplete-result states (`AEGIS-547`)
 * Keep the flaw page from scrolling to the bottom when an Aegis suggestion tooltip opens (`OSIDB-5844`)
