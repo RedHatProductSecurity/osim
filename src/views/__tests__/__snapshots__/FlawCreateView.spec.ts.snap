@@ -413,6 +413,12 @@ exports[`flawCreateView > should render 1`] = `
     </div>
     </div>
     <div data-v-76e7a15d="" class="osim-action-buttons sticky-bottom d-flex justify-content-end"><button data-v-76e7a15d="" type="submit" class="btn btn-primary ms-3"> Create New Flaw </button></div>
+    <transition-stub data-v-296c460d="" name="modal" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
+    <transition-stub data-v-296c460d="" name="modal-bg" appear="false" persisted="false" css="true">
+      <!--v-if-->
+    </transition-stub>
   </form>
 </main>"
 `;
