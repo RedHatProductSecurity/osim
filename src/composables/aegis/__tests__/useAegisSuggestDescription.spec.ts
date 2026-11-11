@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { useAegisSuggestDescription } from '@/composables/aegis/useAegisSuggestDescription';
+import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import {
   serializeAegisContext,
   type AegisSuggestionContextRefs,
@@ -85,6 +86,37 @@ describe('useAegisSuggestDescription', () => {
       title: 'AI Suggestion Applied',
       css: 'info',
     }));
+  });
+
+  it('discards a late response after the owning form was replaced', async () => {
+    useAegisMetadataTracking().setAegisMetadata({});
+    const descriptionRef = ref<null | string | undefined>('Original Description');
+    const context = createContext({ cveId: ref('CVE-2024-1234') });
+
+    let resolveAnalysis!: (value: unknown) => void;
+    analyzeMock.mockReturnValueOnce(new Promise((resolve) => { resolveAnalysis = resolve; }));
+
+    const [composable, app] = withSetup(
+      () => useAegisSuggestDescription({
+        context: context as AegisSuggestionContextRefs,
+        descriptionRef,
+      }), [],
+    );
+
+    const suggesting = composable.suggestDescription();
+    // The flaw page was left while the request was in flight.
+    app.unmount();
+    resolveAnalysis({
+      suggested_description: 'Late Suggested Description',
+      confidence: 0.9,
+    });
+    await suggesting;
+
+    expect(descriptionRef.value).toBe('Original Description');
+    expect(composable.hasAppliedDescriptionSuggestion.value).toBe(false);
+    expect(composable.details.value).toBeNull();
+    expect(useAegisMetadataTracking().getAegisMetadata().cve_description).toBeUndefined();
+    expect(mockAddToast).not.toHaveBeenCalled();
   });
 
   it('shows toast when no description suggestion received', async () => {
