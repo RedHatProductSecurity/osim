@@ -297,6 +297,6 @@ describe('useAffectsModel', () => {
     expect(AffectService.postAffects).not.toHaveBeenCalled();
     expect(AffectService.putAffects).toHaveBeenCalledWith([
       expect.objectContaining({ uuid: 'saved-uuid' }),
-    ]);
+    ], { suppressConflictToast: true });
   });
 });

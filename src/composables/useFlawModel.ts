@@ -22,6 +22,7 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
+import { groupAffectConflicts } from '@/utils/affectRebase';
 import {
   flawBodyFromChoices,
   flawRebaseFieldLabel,
@@ -54,7 +55,7 @@ const FieldToFeatureName: Record<string, string> = {
 };
 
 export function useFlawModel() {
-  const { acceptServerFlaw, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
+  const { acceptServerFlaw, acceptServerTimestamp, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const { adopted, pendingFlawConflict, resolveFlawSave } = useCollisionConflict();
@@ -133,8 +134,15 @@ export function useFlawModel() {
   } = useCvssScores();
 
   const {
-    actions: { initializeAffects, removeAffects, resetSavedAffects, saveAffects },
-    state: { currentAffects, removedAffects, wereAffectsEditedOrAdded },
+    actions: {
+      applyAffectResolution,
+      initializeAffects,
+      removeAffects,
+      resetSavedAffects,
+      saveAffects,
+      stageAffectConflicts,
+    },
+    state: { currentAffects, pendingAffectConflict, removedAffects, wereAffectsEditedOrAdded },
   } = useAffectsModel();
 
   const { areLabelsUpdated, updateLabels } = useFlawLabels();
@@ -267,12 +275,18 @@ export function useFlawModel() {
     });
   }
 
-  const collisionConflicts = computed(() => (pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
-    id: conflict.field,
-    label: flawRebaseFieldLabel(conflict.field),
-    mine: formatCollisionValue(conflict.mine),
-    server: formatCollisionValue(conflict.server),
-  })));
+  const showCollisionDialog = computed(() => pendingFlawConflict.value !== null
+    || (pendingAffectConflict.value?.conflicts.length ?? 0) > 0);
+
+  const collisionConflicts = computed(() => [
+    ...(pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
+      id: conflict.field,
+      label: flawRebaseFieldLabel(conflict.field),
+      mine: formatCollisionValue(conflict.mine),
+      server: formatCollisionValue(conflict.server),
+    })),
+    ...groupAffectConflicts(pendingAffectConflict.value?.conflicts ?? []),
+  ]);
 
   function cancelCollisionDialog() {
     pendingFlawConflict.value = null;
@@ -281,23 +295,52 @@ export function useFlawModel() {
   async function confirmCollisionDialog(choices: Record<string, CollisionChoice>) {
     if (isSaving.value) return;
     const pending = pendingFlawConflict.value;
-    if (!pending) return;
+    const affectPending = pendingAffectConflict.value;
+    const hasAffectConflict = (affectPending?.conflicts.length ?? 0) > 0;
+    if (!pending && !hasAffectConflict) return;
 
     isSaving.value = true;
     try {
-      const saved = await putFlaw(
-        flaw.value.uuid,
-        flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
-        shouldCreateJiraTask.value,
-      );
-      acceptServerFlaw(
-        saved,
-        Object.keys(choices).filter(field => choices[field] === 'server'),
-      );
-      pendingFlawConflict.value = null;
-      toastAdoptedFields(pending.adopted);
+      if (pending) {
+        const saved = await putFlaw(
+          flaw.value.uuid,
+          flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
+          shouldCreateJiraTask.value,
+        );
+        acceptServerFlaw(
+          saved,
+          pending.formEdits.filter(field => choices[field] === 'server'),
+        );
+        pendingFlawConflict.value = null;
+        toastAdoptedFields(pending.adopted);
+      }
+      if (affectPending) {
+        applyAffectResolution(choices);
+        pendingAffectConflict.value = null;
+      }
+      if (affectPending || wereAffectsEditedOrAdded.value) {
+        await saveAffects();
+        try {
+          const fresh = await getFlaw(flaw.value.uuid, true);
+          acceptServerTimestamp(fresh.updated_dt);
+        } catch (reloadError) {
+          console.error('useFlawModel::confirmCollisionDialog() failed to refresh flaw', reloadError);
+        }
+      }
+      // Affects are saved before the flaw when the affect conflict stopped the queue first.
+      if (!pending && (isFlawUpdated.value || shouldCreateJiraTask.value)) {
+        const validatedFlaw = validate();
+        if (validatedFlaw.success) {
+          const saved = await putFlawResolvingDisjointConflict({
+            ...validatedFlaw.data,
+            ...getAegisMetadataIfChanged(),
+            updated_dt: flaw.value.updated_dt,
+          });
+          acceptServerFlaw(saved);
+        }
+      }
     } catch {
-      // putFlaw already shows the error. Leave the dialog open.
+      // The save already shows the error. Leave the dialog open when a conflict remains.
     } finally {
       isSaving.value = false;
     }
@@ -345,7 +388,13 @@ export function useFlawModel() {
           ...validatedFlaw.data,
           ...getAegisMetadataIfChanged(),
         };
-        const response = await putFlawResolvingDisjointConflict(payload);
+        let response: ZodFlawType;
+        try {
+          response = await putFlawResolvingDisjointConflict(payload);
+        } catch (error) {
+          if (pendingFlawConflict.value) await stageAffectConflicts();
+          throw error;
+        }
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
         afterSuccessQueue.push(() => setFlaw({
@@ -484,7 +533,7 @@ export function useFlawModel() {
     collisionConflicts,
     confirmCollisionDialog,
     createFlaw,
-    showCollisionDialog: computed(() => pendingFlawConflict.value !== null),
+    showCollisionDialog,
     updateFlaw,
     afterSaveSuccess,
     updateVector,

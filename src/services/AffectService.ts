@@ -10,8 +10,11 @@ export async function getAffect(uuid: string): Promise<ZodAffectType> {
 }
 
 type AffectFetchCallback = (fetchedCount: number, totalCount: number) => void;
-export async function getAffects(cveOrUuid: string, onFetchedCallback?: AffectFetchCallback):
-Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
+export async function getAffects(
+  cveOrUuid: string,
+  onFetchedCallback?: AffectFetchCallback,
+  fresh = false,
+): Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
   const pageSize = 100;
 
@@ -19,6 +22,7 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const firstResponse = await osidbFetch({
     method: 'get',
     url: '/osidb/api/v2/affects',
+    cache: fresh ? 'no-cache' : 'default',
     params: {
       [field]: cveOrUuid,
       limit: pageSize,
@@ -41,6 +45,7 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
     const response = await osidbFetch({
       method: 'get',
       url: relativePath,
+      cache: fresh ? 'no-cache' : 'default',
     });
 
     allAffects.push(...response.data.results);
@@ -80,13 +85,23 @@ export async function putAffectWithHandlers(uuid: string, affectObject: any) {
     .catch(createCatchHandler('Error updating Affect:'));
 }
 
-export async function putAffects(affectObjects: any[]) {
-  return osidbFetch({
-    method: 'put',
-    url: '/osidb/api/v2/affects/bulk',
-    data: affectObjects,
-  })
-    .catch(createCatchHandler('Error updating Affects:'));
+export async function putAffects(
+  affectObjects: any[],
+  options: { suppressConflictToast?: boolean } = {},
+) {
+  try {
+    return await osidbFetch({
+      method: 'put',
+      url: '/osidb/api/v2/affects/bulk',
+      data: affectObjects,
+    });
+  } catch (error) {
+    const isConflict = (error as { response?: { status?: number } })?.response?.status === 409;
+    if (!(isConflict && options.suppressConflictToast)) {
+      createCatchHandler('Error updating Affects:', false)(error);
+    }
+    throw error;
+  }
 }
 
 type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;

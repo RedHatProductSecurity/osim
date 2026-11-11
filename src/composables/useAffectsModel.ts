@@ -13,15 +13,40 @@ import {
   deleteAffectCvssScore,
   deleteAffects,
   getAffect,
+  getAffects,
   postAffectCvssScore,
   postAffects,
   putAffectCvssScore,
   putAffects,
 } from '@/services/AffectService';
-import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 import { fileTrackingFor, findExistingTracker, parseTrackerId, updateExistingTracker } from '@/services/TrackerService';
+import {
+  affectFromChoices,
+  rebaseAffects,
+  type AffectRebaseResult,
+} from '@/utils/affectRebase';
+import { isFlawConflict, type CollisionChoice } from '@/utils/flawRebase';
+import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 
 import { useFlaw } from './useFlaw';
+
+function loadServerAffects() {
+  const flaw = useFlaw().flaw.value;
+  const flawId = flaw.uuid || flaw.cve_id;
+  if (!flawId) return Promise.resolve([]);
+  return getAffects(flawId, undefined, true).then(response => response.data.results);
+}
+
+function recordBulkFailures(
+  errorTitle: string,
+  failures: { errors?: Record<string, string | string[]> }[],
+) {
+  if (!failures.length) return false;
+  createCatchHandler(errorTitle, false)(
+    failures.flatMap(failure => Object.values(failure.errors ?? {}).flat()).join('\n'),
+  );
+  return true;
+}
 
 function useAffects() {
   // Metadata
@@ -33,6 +58,7 @@ function useAffects() {
   const initialAffects = shallowRef<ZodAffectType[]>([]);
   const currentAffects = shallowRef<ZodAffectType[]>([]);
   const wereAffectsEditedOrAdded = computed(() => modifiedAffects.size || newAffects.size);
+  const pendingAffectConflict = shallowRef<AffectRebaseResult | null>(null);
   const hasChanges = computed(() => wereAffectsEditedOrAdded.value || removedAffects.size);
 
   // Calculate a Map of UUID:index when affect array is updated (shallowRef)
@@ -267,52 +293,126 @@ function useAffects() {
     return createResults.hasErrors || updateResults.hasErrors || deleteResults.hasErrors;
   }
 
+  function editedAffects() {
+    return currentAffects.value.filter(affect => affect.uuid && modifiedAffects.has(affect.uuid));
+  }
+
+  async function stageAffectConflicts() {
+    const edited = editedAffects();
+    if (!edited.length) {
+      pendingAffectConflict.value = null;
+      return;
+    }
+    try {
+      pendingAffectConflict.value = rebaseAffects(initialAffects.value, edited, await loadServerAffects());
+    } catch (error) {
+      console.error('useAffectsModel::stageAffectConflicts() failed to reload affects', error);
+    }
+  }
+
+  function applyAffectResolution(choices: Readonly<Record<string, CollisionChoice>>) {
+    const pending = pendingAffectConflict.value;
+    if (!pending) return;
+
+    const drop = new Set<string>();
+    const recreate = new Map<string, ZodAffectType>();
+    for (const affect of pending.removed) {
+      const uuid = affect.uuid;
+      if (!uuid) continue;
+      if (choices[`${uuid}:removed`] === 'mine') {
+        const localId = crypto.randomUUID();
+        recreate.set(uuid, { ...affect, _uuid: localId, uuid: null });
+        modifiedAffects.delete(uuid);
+        markNew(localId);
+      } else {
+        drop.add(uuid);
+        modifiedAffects.delete(uuid);
+      }
+    }
+
+    const resolved = new Map(pending.updates.map(affect => [affect.uuid, affect]));
+    for (const row of pending.conflicted) {
+      const chosen = affectFromChoices(row, choices);
+      if (chosen.uuid) resolved.set(chosen.uuid, chosen);
+    }
+
+    currentAffects.value = currentAffects.value.flatMap((affect) => {
+      const uuid = affect.uuid;
+      if (uuid && drop.has(uuid)) return [];
+      if (uuid && recreate.has(uuid)) return [recreate.get(uuid)!];
+      const next = uuid ? resolved.get(uuid) : undefined;
+      return [next ? { ...affect, ...next, cvss_scores: affect.cvss_scores, tracker: affect.tracker } : affect];
+    });
+    refreshData();
+  }
+
+  async function saveAffectUpdates(toUpdate: ZodAffectType[]) {
+    if (!toUpdate.length) return [] as ZodAffectType[];
+
+    try {
+      const response = await putAffects(toUpdate, { suppressConflictToast: true });
+      recordBulkFailures('Error updating Affects:', response?.data?.failed ?? []);
+      return response?.data?.results ?? [];
+    } catch (error) {
+      if (!isFlawConflict(error)) throw error;
+
+      let serverAffects: ZodAffectType[];
+      try {
+        serverAffects = await loadServerAffects();
+      } catch (reloadError) {
+        console.error('useAffectsModel::saveAffects() failed to reload affects', reloadError);
+        createCatchHandler('Error updating Affects:', false)(error);
+        throw error;
+      }
+
+      const result = rebaseAffects(initialAffects.value, toUpdate, serverAffects);
+      if (result.conflicts.length > 0) {
+        pendingAffectConflict.value = result;
+        throw error;
+      }
+
+      const retry = await putAffects(result.updates);
+      recordBulkFailures('Error updating Affects:', retry?.data?.failed ?? []);
+      return retry?.data?.results ?? [];
+    }
+  }
+
   async function saveAffects() {
     const { toCreate, toUpdate } = buildAffectOperations();
-
-    // OSIDB bulk endpoints return 200 with per-item failures in `failed`
-    const bulkOps = [
-      ...(toCreate.length
-        ? [{ errorTitle: 'Error creating Affects:', operation: 'created', request: postAffects(toCreate) }]
-        : []),
-      ...(toUpdate.length
-        ? [{ errorTitle: 'Error updating Affects:', operation: 'updated', request: putAffects(toUpdate) }]
-        : []),
-    ];
-
-    // Keep index alignment with bulkOps (unlike executeOperationsInParallel's compacted successful[])
-    const settled = await Promise.allSettled(bulkOps.map(({ request }) => request));
-
     const savedAffects: ZodAffectType[] = [];
     let hasErrors = false;
-    let hasBulkFailures = false;
 
-    for (const [index, { errorTitle, operation }] of bulkOps.entries()) {
-      const settledResult = settled[index];
-      if (settledResult.status === 'rejected' || !settledResult.value?.data) {
+    if (toCreate.length) {
+      try {
+        const response = await postAffects(toCreate);
+        const created = response?.data?.results ?? [];
+        savedAffects.push(...created);
+        showSuccessToast(created.length, 'affect', 'created');
+        if (recordBulkFailures('Error creating Affects:', response?.data?.failed ?? [])) {
+          hasErrors = true;
+        }
+      } catch {
         hasErrors = true;
-        continue;
       }
+    }
 
-      const { data } = settledResult.value;
-      const successfulAffects = data.results ?? [];
-      savedAffects.push(...successfulAffects);
-      showSuccessToast(successfulAffects.length, 'affect', operation);
-
-      const failures = data.failed ?? [];
-      if (failures.length) {
-        hasBulkFailures = true;
-        createCatchHandler(errorTitle, false)(
-          failures.flatMap((f: { errors?: Record<string, string | string[]> }) =>
-            Object.values(f.errors ?? {}).flat(),
-          ).join('\n'),
-        );
+    try {
+      const updated = await saveAffectUpdates(toUpdate);
+      if (updated.length) {
+        savedAffects.push(...updated);
+        showSuccessToast(updated.length, 'affect', 'updated');
       }
+    } catch (error) {
+      if (pendingAffectConflict.value?.conflicts.length) {
+        resetSavedAffects(savedAffects);
+        throw error;
+      }
+      hasErrors = true;
     }
 
     const cvssHasErrors = await saveCvssScores(savedAffects);
 
-    return { savedAffects, hasErrors: hasErrors || hasBulkFailures || cvssHasErrors };
+    return { savedAffects, hasErrors: hasErrors || cvssHasErrors };
   }
 
   type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
@@ -486,6 +586,7 @@ function useAffects() {
       // Data
       currentAffects,
       initialAffects: readonly(initialAffects),
+      pendingAffectConflict,
 
       // Metadata
       affectUUIDMap,
@@ -507,9 +608,11 @@ function useAffects() {
       revertAffect,
 
       // External
+      applyAffectResolution,
       fileTracker,
       linkExistingTracker,
       saveAffects,
+      stageAffectConflicts,
       removeAffects,
     },
 

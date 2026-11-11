@@ -79,6 +79,12 @@ function cloneField<T>(value: T): T {
   return value === undefined ? value : structuredClone(value);
 }
 
+function acceptServerTimestamp(updatedDt: null | string | undefined) {
+  if (!updatedDt) return;
+  flaw.value.updated_dt = updatedDt;
+  initialFlaw.value.updated_dt = updatedDt;
+}
+
 // Copy the saved flaw onto both snapshots, leaving child collections dirty when they still differ.
 // serverChosenFields are the fields the user kept the server value for in the
 // collision resolution that produced this save.
@@ -110,6 +116,7 @@ export function useFlaw() {
     initialFlaw: readonly(initialFlaw),
     isFlawUpdated,
     acceptServerFlaw,
+    acceptServerTimestamp,
     resetFlaw,
     setFlaw,
     setLateFlawField,

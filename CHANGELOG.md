@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Choose which affect values to keep when the same affect field changed on both sides, with one summary row when many affects differ (`OSIDB-5794`)
+
 ## [2026.11.1]
 ### Added
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
