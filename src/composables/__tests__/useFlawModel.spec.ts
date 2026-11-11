@@ -13,6 +13,7 @@ import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json
 import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType, ZodAffectType } from '@/types';
 import { FlawLabelTypeEnum } from '@/types/zodFlaw';
+import { deleteAffects, getAffects, postAffects, putAffects } from '@/services/AffectService';
 import { getFlaw, postFlaw, putFlaw } from '@/services/FlawService';
 import { createLabel } from '@/services/LabelsService';
 import { deepCopyFromRaw } from '@/utils/helpers';
@@ -20,6 +21,31 @@ import { deepCopyFromRaw } from '@/utils/helpers';
 import { useFlaw } from '../useFlaw';
 import { useAffectsModel } from '../useAffectsModel';
 import { useFlawLabels } from '../useFlawLabels';
+
+function affectRow(uuid: string, impact: string): ZodAffectType {
+  return {
+    uuid,
+    flaw: 'flaw-uuid',
+    ps_module: 'my-module',
+    ps_component: uuid,
+    ps_update_stream: 'my-stream',
+    embargoed: false,
+    alerts: [],
+    labels: [],
+    cvss_scores: [],
+    tracker: null,
+    impact,
+    updated_dt: '2026-01-01T00:00:00Z',
+  } as unknown as ZodAffectType;
+}
+
+vi.mock('@/services/AffectService', async importOriginal => ({
+  ...await importOriginal<typeof import('@/services/AffectService')>(),
+  deleteAffects: vi.fn(),
+  getAffects: vi.fn().mockResolvedValue({ data: { results: [] } }),
+  postAffects: vi.fn(),
+  putAffects: vi.fn(),
+}));
 
 vi.mock('@/composables/useFlawCommentsModel', () => ({
   useFlawCommentsModel: vi.fn(),
@@ -88,6 +114,11 @@ describe('useFlawModel', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(deleteAffects).mockReset();
+    vi.mocked(postAffects).mockReset();
+    vi.mocked(putAffects).mockReset();
+    vi.mocked(getAffects).mockReset();
+    vi.mocked(getAffects).mockResolvedValue({ data: { results: [] } } as any);
     globalResetFlaw();
     useAegisMetadataTracking().setAegisMetadata({});
     initializeAffects([]); // Reset affects to empty array
@@ -707,6 +738,199 @@ describe('useFlawModel', () => {
         false,
         { suppressConflictToast: true },
       );
+    });
+  });
+
+  describe('affect conflict confirm', () => {
+    afterEach(() => {
+      vi.mocked(getFlaw).mockReset();
+      vi.mocked(getFlaw).mockResolvedValue({} as ZodFlawType);
+    });
+
+    it('keeps the flaw token and pending labels when an affect conflict is resolved', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const affect = affectRow('affect-uuid', 'LOW');
+      const flawData = {
+        ...deepCopyFromRaw(sampleFlawRequired as ZodFlawType),
+        affects: [affect],
+        updated_dt: '2026-01-01T00:00:00Z',
+      };
+      setFlaw(flawData);
+      initializeAffects([affect]);
+      const { markRemoved, removeAffects } = useAffectsModel().actions;
+      markRemoved(affect.uuid!);
+      vi.mocked(getAffects).mockResolvedValue({
+        data: { results: [{ ...affect, impact: 'IMPORTANT', updated_dt: '2026-03-01T00:00:00Z' }] },
+      } as any);
+      await expect(removeAffects()).rejects.toThrow('Affect was edited on the server');
+
+      const { labels, newLabels } = useFlawLabels();
+      labels.value.needs_review = { name: 'needs_review', type: FlawLabelTypeEnum.WORKFLOW };
+      newLabels.value.add('needs_review');
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'someone else',
+        updated_dt: '2026-04-01T00:00:00Z',
+      });
+
+      const { confirmCollisionDialog, showCollisionDialog } = mountFlawModel();
+      await confirmCollisionDialog({ [`${affect.uuid}:deleted`]: 'server' });
+
+      expect(showCollisionDialog.value).toBe(false);
+      expect(flaw.value.updated_dt).toBe('2026-01-01T00:00:00Z');
+      expect(flaw.value.title).toBe(flawData.title);
+      expect(newLabels.value.has('needs_review')).toBe(true);
+      expect(getFlaw).not.toHaveBeenCalled();
+      expect(deleteAffects).not.toHaveBeenCalled();
+      expect(useAffectsModel().state.currentAffects.value[0]).toMatchObject({
+        impact: 'IMPORTANT',
+        uuid: affect.uuid,
+      });
+    });
+
+    it('removes a recreated affect from the new list after confirm saves it', async () => {
+      const { flaw, setFlaw } = useFlaw();
+      const affect = affectRow('affect-uuid', 'LOW');
+      setFlaw({
+        ...deepCopyFromRaw(sampleFlawRequired as ZodFlawType),
+        affects: [affect],
+        updated_dt: '2026-01-01T00:00:00Z',
+      });
+      initializeAffects([affect]);
+      const { markModified, saveAffects } = useAffectsModel().actions;
+      useAffectsModel().state.currentAffects.value[0].impact = 'CRITICAL';
+      markModified(affect.uuid!);
+      vi.mocked(getAffects).mockResolvedValue({ data: { results: [] } } as any);
+      vi.mocked(putAffects).mockRejectedValue({ response: { status: 404 } });
+      await expect(saveAffects()).rejects.toMatchObject({ response: { status: 404 } });
+
+      const created = { ...affect, impact: 'CRITICAL', uuid: 'recreated-uuid', updated_dt: '2026-02-01T00:00:00Z' };
+      vi.mocked(postAffects).mockResolvedValue({
+        data: { failed: [], results: [created] },
+      } as any);
+
+      const { confirmCollisionDialog } = mountFlawModel();
+      await confirmCollisionDialog({ [`${affect.uuid}:removed`]: 'mine' });
+
+      expect(postAffects).toHaveBeenCalled();
+      expect(useAffectsModel().state.newAffects.size).toBe(0);
+      expect(flaw.value.affects.map(row => row.uuid)).toEqual(['recreated-uuid']);
+      expect(flaw.value.updated_dt).toBe('2026-01-01T00:00:00Z');
+    });
+
+    it('checks a delete that the flaw dialog did not show', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      const affect = flawData.affects[0];
+      affect.impact = 'LOW';
+      flawData.title = 'original title';
+      flawData.updated_dt = '2026-01-01T00:00:00Z';
+      setFlaw(flawData);
+      initializeAffects(flawData.affects);
+      useAffectsModel().actions.markRemoved(affect.uuid!);
+      vi.mocked(getAffects).mockResolvedValue({
+        data: { results: [{ ...affect, impact: 'IMPORTANT' }] },
+      } as any);
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce({ response: { status: 409 } })
+        .mockResolvedValueOnce({ ...flawData, title: 'bot title', updated_dt: serverUpdatedDt, affects: [] });
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'bot title',
+        updated_dt: '2026-05-01T00:00:00Z',
+        affects: [],
+      });
+
+      const { confirmCollisionDialog, showCollisionDialog, updateFlaw } = mountFlawModel();
+      flaw.value.title = 'analyst title';
+      await updateFlaw();
+      expect(showCollisionDialog.value).toBe(true);
+      const flawFetches = vi.mocked(getFlaw).mock.calls.length;
+      await confirmCollisionDialog({ title: 'server' });
+
+      expect(deleteAffects).not.toHaveBeenCalled();
+      expect(showCollisionDialog.value).toBe(true);
+      expect(flaw.value.title).toBe('bot title');
+      expect(flaw.value.updated_dt).toBe(serverUpdatedDt);
+      expect(vi.mocked(getFlaw).mock.calls.length).toBe(flawFetches);
+    });
+
+    it('keeps the failed edit when a recreated affect is saved in the same confirm', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const gone = affectRow('gone-uuid', 'LOW');
+      const edited = affectRow('edit-uuid', 'LOW');
+      setFlaw({
+        ...deepCopyFromRaw(sampleFlawRequired as ZodFlawType),
+        affects: [gone, edited],
+        updated_dt: '2026-01-01T00:00:00Z',
+      });
+      initializeAffects([gone, edited]);
+      const { currentAffects, modifiedAffects } = useAffectsModel().state;
+      currentAffects.value[0].impact = 'CRITICAL';
+      currentAffects.value[1].impact = 'CRITICAL';
+      const { markModified, saveAffects } = useAffectsModel().actions;
+      markModified(gone.uuid!);
+      markModified(edited.uuid!);
+      vi.mocked(getAffects).mockResolvedValue({ data: { results: [edited] } } as any);
+      vi.mocked(putAffects)
+        .mockRejectedValueOnce({ response: { status: 404 } })
+        .mockResolvedValueOnce({
+          data: { failed: [{ errors: { impact: ['invalid'] }, index: 0 }], results: [] },
+        } as any);
+      await expect(saveAffects()).rejects.toMatchObject({ response: { status: 404 } });
+
+      const created = {
+        ...gone,
+        impact: 'CRITICAL',
+        uuid: 'recreated-uuid',
+        updated_dt: '2026-02-01T00:00:00Z',
+      };
+      vi.mocked(postAffects).mockResolvedValue({
+        data: { failed: [], results: [created] },
+      } as any);
+
+      const { confirmCollisionDialog } = mountFlawModel();
+      await confirmCollisionDialog({ [`${gone.uuid}:removed`]: 'mine' });
+
+      expect(flaw.value.affects.map(row => row.uuid).sort()).toEqual(['edit-uuid', 'recreated-uuid']);
+      expect(currentAffects.value.find(row => row.uuid === edited.uuid)).toMatchObject({ impact: 'CRITICAL' });
+      expect(modifiedAffects.has(edited.uuid!)).toBe(true);
+    });
+
+    it('keeps a failed affect edit when an earlier delete succeeds', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      setFlaw(flawData);
+      initializeAffects(flawData.affects);
+      const deleting = flawData.affects[0];
+      const editing = flawData.affects[1];
+      const { currentAffects, modifiedAffects } = useAffectsModel().state;
+      const edit = currentAffects.value.find(row => row.uuid === editing.uuid)!;
+      edit.impact = 'CRITICAL';
+      useAffectsModel().actions.markModified(editing.uuid!);
+      useAffectsModel().actions.markRemoved(deleting.uuid!);
+      vi.mocked(getAffects).mockResolvedValue({
+        data: { results: flawData.affects },
+      } as any);
+      vi.mocked(putAffects).mockResolvedValue({
+        data: { failed: [{ errors: { impact: ['invalid'] }, index: 0 }], results: [] },
+      } as any);
+
+      const { updateFlaw } = mountFlawModel();
+      await updateFlaw();
+
+      const flawUuids = flaw.value.affects.map(row => row.uuid);
+      const currentUuids = currentAffects.value.map(row => row.uuid);
+      expect(flawUuids).not.toContain(deleting.uuid);
+      expect(currentUuids).not.toContain(deleting.uuid);
+      expect(currentUuids).toContain(editing.uuid);
+      expect(currentAffects.value.find(row => row.uuid === editing.uuid)?.impact).toBe('CRITICAL');
+      expect(modifiedAffects.has(editing.uuid!)).toBe(true);
+      expect(deleteAffects).toHaveBeenCalled();
     });
   });
 

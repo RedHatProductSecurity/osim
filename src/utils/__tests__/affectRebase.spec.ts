@@ -1,6 +1,12 @@
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import type { ZodAffectType, ZodFlawType } from '@/types';
-import { affectFromChoices, groupAffectConflicts, rebaseAffects } from '@/utils/affectRebase';
+import {
+  affectFromChoices,
+  createdAffectConflicts,
+  deletionConflicts,
+  groupAffectConflicts,
+  rebaseAffects,
+} from '@/utils/affectRebase';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
 function loadedAffects() {
@@ -98,5 +104,35 @@ describe('affect rebase', () => {
       server: 'Removed',
     })]);
     expect(result.removed).toHaveLength(1);
+  });
+
+  it('treats a matching new affect as the same and lists fields that differ', () => {
+    const server = loadedAffects()[0];
+    const local = { ...server, ps_module: '', updated_dt: undefined, uuid: undefined };
+
+    expect(createdAffectConflicts(local, server)).toEqual([]);
+    expect(createdAffectConflicts(
+      { ...local, not_affected_justification: '' },
+      { ...server, not_affected_justification: null },
+    )).toEqual([]);
+    expect(createdAffectConflicts({ ...local, impact: 'CRITICAL' }, server).map(conflict => conflict.field))
+      .toEqual(['impact']);
+  });
+
+  it('asks before deleting an affect the server edited', () => {
+    const loaded = loadedAffects()[0];
+    const same = deletionConflicts([loaded], [loaded], [loaded]);
+    expect(same.conflicts).toEqual([]);
+
+    const server = withImpact(loaded, 'IMPORTANT', '2024-06-01T00:00:00Z');
+    const result = deletionConflicts([loaded], [loaded], [server]);
+
+    expect(result.blocked).toEqual([server]);
+    expect(result.conflicts).toEqual([expect.objectContaining({
+      field: 'deleted',
+      id: `${loaded.uuid}:deleted`,
+      mine: 'Deleted',
+      server: 'Impact: IMPORTANT',
+    })]);
   });
 });

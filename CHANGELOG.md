@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Added
-* Choose which affect values to keep when the same affect field changed on both sides, with one summary row when many affects differ (`OSIDB-5794`)
+* Provide conflict handling solutions for flaw affects operations (`OSIDB-5794`)
 
 ## [2026.11.1]
 ### Added

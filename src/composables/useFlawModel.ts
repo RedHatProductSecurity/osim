@@ -30,7 +30,7 @@ import {
   type CollisionChoice,
   type FlawRebaseField,
 } from '@/utils/flawRebase';
-import { mergeBy } from '@/utils/helpers';
+import { deepCopyFromRaw, mergeBy } from '@/utils/helpers';
 import {
   flawSources,
   flawImpacts,
@@ -55,7 +55,15 @@ const FieldToFeatureName: Record<string, string> = {
 };
 
 export function useFlawModel() {
-  const { acceptServerFlaw, acceptServerTimestamp, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
+  const {
+    acceptSavedAffects,
+    acceptServerFlaw,
+    flaw,
+    initialFlaw,
+    isFlawUpdated,
+    setFlaw,
+    setLateFlawField,
+  } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const { adopted, pendingFlawConflict, resolveFlawSave } = useCollisionConflict();
@@ -137,6 +145,7 @@ export function useFlawModel() {
     actions: {
       applyAffectResolution,
       initializeAffects,
+      integrateServerAffects,
       removeAffects,
       resetSavedAffects,
       saveAffects,
@@ -290,6 +299,18 @@ export function useFlawModel() {
 
   function cancelCollisionDialog() {
     pendingFlawConflict.value = null;
+    pendingAffectConflict.value = null;
+  }
+
+  function finishConfirmedAffects(deleteFailed: boolean, savedAffects: ZodAffectType[], saveFailed: boolean) {
+    if (deleteFailed || saveFailed) {
+      acceptSavedAffects(savedAffects);
+      if (savedAffects.length) resetSavedAffects(savedAffects);
+      return;
+    }
+    // Copy the affect list only. setFlaw would mark unsaved flaw fields and labels clean.
+    setLateFlawField('affects', deepCopyFromRaw(currentAffects.value));
+    initializeAffects(flaw.value.affects);
   }
 
   async function confirmCollisionDialog(choices: Record<string, CollisionChoice>) {
@@ -298,6 +319,10 @@ export function useFlawModel() {
     const affectPending = pendingAffectConflict.value;
     const hasAffectConflict = (affectPending?.conflicts.length ?? 0) > 0;
     if (!pending && !hasAffectConflict) return;
+
+    const approvedDeletes = (affectPending?.blockedDeletes ?? []).flatMap(affect =>
+      affect.uuid && choices[`${affect.uuid}:deleted`] === 'mine' ? [affect.uuid] : []);
+    const affectsNeedSave = Boolean(affectPending) || wereAffectsEditedOrAdded.value;
 
     isSaving.value = true;
     try {
@@ -318,16 +343,26 @@ export function useFlawModel() {
         applyAffectResolution(choices);
         pendingAffectConflict.value = null;
       }
-      if (affectPending || wereAffectsEditedOrAdded.value) {
-        await saveAffects();
-        try {
-          const fresh = await getFlaw(flaw.value.uuid, true);
-          acceptServerTimestamp(fresh.updated_dt);
-        } catch (reloadError) {
-          console.error('useFlawModel::confirmCollisionDialog() failed to refresh flaw', reloadError);
-        }
+      const deleting = removedAffects.size > 0;
+      let deletedUuids: string[] = [];
+      let deleteFailed = false;
+      if (deleting) {
+        const removed = await removeAffects({ skipCheckFor: approvedDeletes });
+        deletedUuids = removed.deletedUuids;
+        deleteFailed = removed.hasErrors;
+      }
+      let savedAffects: ZodAffectType[] = [];
+      let saveFailed = false;
+      if (affectsNeedSave || wereAffectsEditedOrAdded.value) {
+        const saved = await saveAffects();
+        savedAffects = saved.savedAffects;
+        saveFailed = saved.hasErrors;
+      }
+      if (affectPending || affectsNeedSave || deleting || deletedUuids.length) {
+        finishConfirmedAffects(deleteFailed, savedAffects, saveFailed);
       }
       // Affects are saved before the flaw when the affect conflict stopped the queue first.
+      // Leave the flaw updated_dt alone: copying a newer token here would hide a field collision.
       if (!pending && (isFlawUpdated.value || shouldCreateJiraTask.value)) {
         const validatedFlaw = validate();
         if (validatedFlaw.success) {
@@ -358,6 +393,7 @@ export function useFlawModel() {
       isSaving.value = false;
       return;
     }
+    queue.push(() => integrateServerAffects());
     // If the flaw is in triage and has no affects, we need to save the affects first
     if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
@@ -368,12 +404,11 @@ export function useFlawModel() {
           // Always merge saved affects into flaw state (even on partial success)
           afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
 
-          // If no errors, do full reset; if partial success, only reset saved items
-          if (hasErrors && resetSavedAffects) {
-            afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
-          } else {
-            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
-          }
+          // Failed deletes may still be queued when this runs. A full reset would drop them.
+          afterSuccessQueue.push(() => {
+            if (hasErrors || removedAffects.size) resetSavedAffects(savedAffects);
+            else initializeAffects(flaw.value.affects);
+          });
         } else {
           afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
           afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
@@ -425,9 +460,12 @@ export function useFlawModel() {
             );
           }
 
-          // Only do full reset if all deletions succeeded
+          // A later affect save owns the reset. Initializing here would drop edits
+          // that save reports as failed, including a conflict still on screen.
           if (!hasErrors) {
-            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
+            afterSuccessQueue.push(() => {
+              if (!wereAffectsEditedOrAdded.value) initializeAffects(flaw.value.affects);
+            });
           }
           // If hasErrors, failed deletions stay in removedAffects Set for retry
         }
@@ -443,12 +481,11 @@ export function useFlawModel() {
           // Always merge saved affects into flaw state (even on partial success)
           afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
 
-          // If no errors, do full reset; if partial success, only reset saved items
-          if (hasErrors && resetSavedAffects) {
-            afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
-          } else {
-            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
-          }
+          // Failed deletes may still be queued when this runs. A full reset would drop them.
+          afterSuccessQueue.push(() => {
+            if (hasErrors || removedAffects.size) resetSavedAffects(savedAffects);
+            else initializeAffects(flaw.value.affects);
+          });
         } else {
           afterSuccessQueue.push(() => setFlaw(response, 'affects', false));
           afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));

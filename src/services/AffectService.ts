@@ -96,8 +96,10 @@ export async function putAffects(
       data: affectObjects,
     });
   } catch (error) {
-    const isConflict = (error as { response?: { status?: number } })?.response?.status === 409;
-    if (!(isConflict && options.suppressConflictToast)) {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    // 409 is a stale updated_dt. 404 is an affect the server no longer has.
+    const reconcile = options.suppressConflictToast && (status === 409 || status === 404);
+    if (!reconcile) {
       createCatchHandler('Error updating Affects:', false)(error);
     }
     throw error;
@@ -105,25 +107,43 @@ export async function putAffects(
 }
 
 type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;
-export async function postAffects(affectObjects: AffectPost[]) {
-  return osidbFetch({
-    method: 'post',
-    url: '/osidb/api/v2/affects/bulk',
-    data: affectObjects,
-  })
-    .catch(createCatchHandler('Error creating Affects:'));
+export async function postAffects(
+  affectObjects: AffectPost[],
+  options: { suppressErrorToast?: boolean } = {},
+) {
+  try {
+    return await osidbFetch({
+      method: 'post',
+      url: '/osidb/api/v2/affects/bulk',
+      data: affectObjects,
+    });
+  } catch (error) {
+    if (!options.suppressErrorToast) {
+      createCatchHandler('Error creating Affects:', false)(error);
+    }
+    throw error;
+  }
 }
 
-export async function deleteAffects(affectUuids: string[]) {
+export async function deleteAffects(
+  affectUuids: string[],
+  options: { suppressErrorToast?: boolean } = {},
+) {
   if (affectUuids.length === 0) {
     return;
   }
-  return osidbFetch({
-    method: 'delete',
-    url: '/osidb/api/v2/affects/bulk',
-    data: affectUuids,
-  })
-    .catch(createCatchHandler('Error deleting Affect:'));
+  try {
+    return await osidbFetch({
+      method: 'delete',
+      url: '/osidb/api/v2/affects/bulk',
+      data: affectUuids,
+    });
+  } catch (error) {
+    if (!options.suppressErrorToast) {
+      createCatchHandler('Error deleting Affect:', false)(error);
+    }
+    throw error;
+  }
 }
 
 // {
