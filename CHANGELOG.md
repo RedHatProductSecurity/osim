@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+* Show whether each affect was created by a user or by automation, with a provenance badge in the Label column and a sortable, filterable Provenance column (`OSIDB-5421`)
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)

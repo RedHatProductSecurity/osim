@@ -1,13 +1,12 @@
 import type { ZodAffectType } from '@/types';
-
 import { AUTOMATION_CREATED_BY } from '@/constants';
 
-export type AffectProvenance = 'automation' | 'hybrid' | 'human' | 'legacy';
+export type AffectProvenance = 'automation' | 'human' | 'hybrid' | 'legacy';
 
 export interface AffectProvenancePresentation {
-  label: string;
-  icon: string;
   badgeClasses: string;
+  icon: string;
+  label: string;
   tooltip: string;
 }
 
