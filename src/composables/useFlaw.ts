@@ -27,6 +27,17 @@ function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace:
   initialFlaw.value = deepCopyFromRaw(flaw.value);
 }
 
+/**
+ * Applies a background-loaded field (affects, audit history) to the flaw model
+ * and the save baseline. Unlike setFlaw(), the baseline of unrelated fields is
+ * preserved so edits made while the field was still loading (e.g. AI suggestions)
+ * keep the flaw marked as updated and are not silently skipped on save.
+ */
+function setLateFlawField<K extends 'affects' | 'history'>(key: K, value: NonNullable<ZodFlawType[K]>) {
+  flaw.value[key] = value;
+  initialFlaw.value[key] = deepCopyFromRaw(value);
+}
+
 // Update only server-owned affect fields; setFlaw would reset the baseline for unrelated dirty flaw edits.
 function syncLinkedAffect(
   loadedFlaw: ZodFlawType, affectUuid: string, tracker: ZodAffectType['tracker'], updatedDt?: null | string,
@@ -80,6 +91,7 @@ export function useFlaw() {
     acceptServerFlaw,
     resetFlaw,
     setFlaw,
+    setLateFlawField,
     syncLinkedAffect,
   };
 }
