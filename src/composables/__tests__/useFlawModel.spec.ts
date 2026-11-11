@@ -1,4 +1,4 @@
-import type { App } from 'vue';
+import { computed, type App } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
@@ -6,6 +6,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import { useAegisSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
+import { useAISuggestionsWatcher } from '@/composables/aegis/useAISuggestionsWatcher';
 
 import sampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
 import sampleFlawRequired from '@/__tests__/__fixtures__/sampleFlawRequired.json';
@@ -56,6 +57,7 @@ vi.mock('@/services/LabelsService', () => ({
 
 describe('useFlawModel', () => {
   let app: App;
+  let watcherApp: App | undefined;
   const { resetFlaw: globalResetFlaw } = useFlaw();
   const { initializeAffects } = useAffectsModel().actions;
 
@@ -70,6 +72,20 @@ describe('useFlawModel', () => {
     return composable;
   };
 
+  /** Mounts a suggestion watcher bound to flaw.cve_description the way FlawForm wires it. */
+  function mountDescriptionWatcher() {
+    const descriptionRef = computed({
+      get: () => useFlaw().flaw.value.cve_description,
+      set: (value) => { useFlaw().flaw.value.cve_description = value; },
+    });
+    const [watcher, mountedApp] = withSetup(
+      () => useAISuggestionsWatcher('cve_description', descriptionRef),
+      [],
+    );
+    watcherApp = mountedApp;
+    return watcher;
+  }
+
   beforeEach(() => {
     vi.clearAllMocks();
     globalResetFlaw();
@@ -80,6 +96,8 @@ describe('useFlawModel', () => {
 
   afterEach(() => {
     app?.unmount();
+    watcherApp?.unmount();
+    watcherApp = undefined;
   });
 
   it('initializes with correct default values', () => {
@@ -287,6 +305,219 @@ describe('useFlawModel', () => {
       expect(flaw.value.title).toBe('bot title');
       expect(flaw.value.updated_dt).toBe(serverUpdatedDt);
       expect(flaw.value.affects).toEqual(localAffects);
+    });
+
+    it('does not track a server-adopted suggestion field as a Partial AI user edit', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, flawResyncCount, isFlawUpdated, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      flawData.cve_description = 'Original description';
+      setFlaw(flawData);
+
+      const watcher = mountDescriptionWatcher();
+      watcher.applyAISuggestion('AI description');
+      await flushPromises();
+
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce({ response: { status: 409 } })
+        .mockResolvedValueOnce({
+          ...flawData,
+          cve_description: 'Server description',
+          updated_dt: serverUpdatedDt,
+          affects: [],
+        });
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        cve_description: 'Server description',
+        updated_dt: serverUpdatedDt,
+        affects: [],
+      });
+
+      const { confirmCollisionDialog, updateFlaw } = mountFlawModel();
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      // The conflict dialog offered the description; the user chose the server side.
+      const resyncCount = flawResyncCount.value;
+      await confirmCollisionDialog({ cve_description: 'server' });
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenNthCalledWith(
+        2,
+        flawData.uuid,
+        expect.objectContaining({ cve_description: 'Server description' }),
+        false,
+      );
+      // Adopting the saved flaw is a resync, not a user edit: no 'Partial AI'
+      // is recorded and the suggestion is not restored over the server value.
+      expect(flaw.value.cve_description).toBe('Server description');
+      expect(watcher.hasPartialModification.value).toBe(false);
+      // The overruled suggestion is retired: the field is not claimed as
+      // AI-populated on the next save.
+      expect(watcher.hasAppliedSuggestion.value).toBe(false);
+      expect(useAegisMetadataTracking().getAegisMetadata().cve_description).toBeUndefined();
+      expect(flawResyncCount.value).toBe(resyncCount + 1);
+      // No restore re-dirtied the form against the adopted server state.
+      expect(isFlawUpdated.value).toBe(false);
+    });
+
+    it('keeps an applied suggestion the collision save echoed back', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      flawData.cve_description = 'Original description';
+      setFlaw(flawData);
+
+      const watcher = mountDescriptionWatcher();
+      watcher.applyAISuggestion('AI description');
+      await flushPromises();
+
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce({ response: { status: 409 } })
+        .mockResolvedValueOnce({
+          ...flawData,
+          cve_description: 'AI description',
+          updated_dt: serverUpdatedDt,
+          affects: [],
+        });
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        cve_description: 'Server description',
+        updated_dt: serverUpdatedDt,
+        affects: [],
+      });
+
+      const { confirmCollisionDialog, updateFlaw } = mountFlawModel();
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      // The user kept their side for the description: the saved flaw echoes
+      // the applied suggestion and the adoption must not disturb it.
+      await confirmCollisionDialog({ cve_description: 'mine' });
+      await flushPromises();
+
+      expect(flaw.value.cve_description).toBe('AI description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+      expect(watcher.hasPartialModification.value).toBe(false);
+
+      // The adoption consumed the resync: a later genuine edit is the user's.
+      flaw.value.cve_description = 'AI description (user edited)';
+      await flushPromises();
+
+      expect(watcher.hasPartialModification.value).toBe(true);
+      const entries = useAegisMetadataTracking().getAegisMetadata().cve_description ?? [];
+      expect(entries.filter(entry => entry.type === 'AI')).toHaveLength(1);
+      const partialEntries = entries.filter(entry => entry.type === 'Partial AI');
+      expect(partialEntries).toHaveLength(1);
+      expect(partialEntries[0].value).toBe('AI description (user edited)');
+    });
+
+    it('does not restore a suggestion over a server choice matching the pre-suggestion edit', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, isFlawUpdated, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      flawData.cve_description = 'Original description';
+      setFlaw(flawData);
+
+      const watcher = mountDescriptionWatcher();
+      // The user edited the description, then applied a suggestion on top of the edit.
+      flaw.value.cve_description = 'User edited description';
+      watcher.applyAISuggestion('AI description');
+      await flushPromises();
+
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce({ response: { status: 409 } })
+        .mockResolvedValueOnce({
+          ...flawData,
+          cve_description: 'User edited description',
+          updated_dt: serverUpdatedDt,
+          affects: [],
+        });
+      // The server changed the description to the very value the user typed
+      // before the suggestion was applied.
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        cve_description: 'User edited description',
+        updated_dt: serverUpdatedDt,
+        affects: [],
+      });
+
+      const { confirmCollisionDialog, updateFlaw } = mountFlawModel();
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      await confirmCollisionDialog({ cve_description: 'server' });
+      await flushPromises();
+
+      // The adopted value equals the pre-suggestion edit: without retiring
+      // the suggestion, the restore watcher would bring it back.
+      expect(flaw.value.cve_description).toBe('User edited description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(false);
+      expect(watcher.hasPartialModification.value).toBe(false);
+      expect(useAegisMetadataTracking().getAegisMetadata().cve_description).toBeUndefined();
+      // No restore re-dirtied the form against the adopted server value.
+      expect(isFlawUpdated.value).toBe(false);
+    });
+
+    it('keeps a suggestion when the collision took the server side for another field', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      flawData.cve_description = 'Original description';
+      setFlaw(flawData);
+
+      const watcher = mountDescriptionWatcher();
+      watcher.applyAISuggestion('AI description');
+      flaw.value.title = 'Analyst title';
+      await flushPromises();
+
+      const serverUpdatedDt = '2024-06-01T00:00:00Z';
+      vi.mocked(putFlaw)
+        .mockRejectedValueOnce({ response: { status: 409 } })
+        .mockResolvedValueOnce({
+          ...flawData,
+          title: 'Bot title',
+          cve_description: 'AI description',
+          updated_dt: serverUpdatedDt,
+          affects: [],
+        });
+      vi.mocked(getFlaw).mockResolvedValue({
+        ...flawData,
+        title: 'Bot title',
+        cve_description: 'Server description',
+        updated_dt: serverUpdatedDt,
+        affects: [],
+      });
+
+      const { confirmCollisionDialog, updateFlaw } = mountFlawModel();
+      await flushPromises();
+      await updateFlaw();
+      await flushPromises();
+
+      // The user took the server title but kept their description.
+      await confirmCollisionDialog({ title: 'server', cve_description: 'mine' });
+      await flushPromises();
+
+      expect(putFlaw).toHaveBeenNthCalledWith(
+        2,
+        flawData.uuid,
+        expect.objectContaining({ title: 'Bot title', cve_description: 'AI description' }),
+        false,
+      );
+      expect(flaw.value.title).toBe('Bot title');
+      // Only the field resolved with 'server' retires its suggestion.
+      expect(flaw.value.cve_description).toBe('AI description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+      expect(watcher.hasPartialModification.value).toBe(false);
+      const entries = useAegisMetadataTracking().getAegisMetadata().cve_description ?? [];
+      expect(entries).toHaveLength(1);
+      expect(entries[0]).toMatchObject({ type: 'AI', value: 'AI description' });
     });
 
     it('ignores a second confirm while the chosen save is in flight', async () => {

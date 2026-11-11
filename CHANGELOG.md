@@ -15,6 +15,7 @@
 * Keep the flaw page from scrolling to the bottom when an Aegis suggestion tooltip opens (`OSIDB-5844`)
 * Keep flaw text fields responsive on flaws with many affects by checking only form fields while typing (`OSIDB-5839`)
 * Show Aegis Multi Suggest loading indicators only for selected fields and clear them when generation completes (`AEGIS-542`)
+* Preserve AI-suggested flaw values during background loads, refreshes, and mid-air collision resolutions, and prevent stale responses from changing another flaw (`AEGIS-502`)
 
 ## [2026.10.1]
 ### Added

@@ -9,10 +9,15 @@ const initialFlaw = ref<ZodFlawType>(blankFlaw());
 // Counts same-flaw model replacements (post-save syncs, refetches) so field
 // state wiped by a resync can be restored. Navigation is not a resync.
 const flawResyncCount = ref(0);
+// Fields the user resolved a mid-air collision by taking the server value
+// for. AI suggestion tracking retires suggestions for them instead of
+// restoring, and only for the resync that adopted them.
+const serverChosenFlawFields = ref<ReadonlySet<string>>(new Set());
 
 function resetFlaw() {
   flaw.value = blankFlaw();
   initialFlaw.value = blankFlaw();
+  serverChosenFlawFields.value = new Set();
 }
 
 type FlawDataType = RelatedDataType | ZodFlawType;
@@ -24,6 +29,7 @@ function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace:
   if (!key) {
     flaw.value = flawData as ZodFlawType;
     if (flawData !== previousFlaw && previousFlaw.uuid && (flawData as ZodFlawType).uuid === previousFlaw.uuid) {
+      serverChosenFlawFields.value = new Set();
       flawResyncCount.value += 1;
     }
   } else if (!replace && Array.isArray(flawData)) {
@@ -74,12 +80,18 @@ function cloneField<T>(value: T): T {
 }
 
 // Copy the saved flaw onto both snapshots, leaving child collections dirty when they still differ.
-function acceptServerFlaw(saved: ZodFlawType) {
+// serverChosenFields are the fields the user kept the server value for in the
+// collision resolution that produced this save.
+function acceptServerFlaw(saved: ZodFlawType, serverChosenFields: Iterable<string> = []) {
   for (const key of Object.keys(saved) as (keyof ZodFlawType)[]) {
     if (CHILD_COLLECTIONS.has(key)) continue;
     flaw.value[key] = cloneField(saved[key]) as never;
     initialFlaw.value[key] = cloneField(saved[key]) as never;
   }
+  serverChosenFlawFields.value = new Set(serverChosenFields);
+  // Server-adopted values are a model resync, not user edits: AI suggestion
+  // tracking must not record them as partial modifications of a suggestion.
+  flawResyncCount.value += 1;
 }
 
 const isFlawUpdated = computed(
@@ -94,6 +106,7 @@ export function useFlaw() {
   return {
     flaw,
     flawResyncCount: readonly(flawResyncCount),
+    serverChosenFlawFields: readonly(serverChosenFlawFields),
     initialFlaw: readonly(initialFlaw),
     isFlawUpdated,
     acceptServerFlaw,

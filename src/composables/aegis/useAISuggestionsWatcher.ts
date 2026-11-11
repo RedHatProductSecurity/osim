@@ -13,7 +13,7 @@ const isValueEqual = (a: unknown, b: unknown): boolean => {
 
 export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | string | string[] | undefined>) {
   const { trackAIChange, untrackAIChange } = useAegisMetadataTracking();
-  const { flawResyncCount } = useFlaw();
+  const { flawResyncCount, serverChosenFlawFields } = useFlaw();
 
   const hasAppliedSuggestion = ref(false);
   const originalSuggestion = ref<null | string | string[]>(null);
@@ -55,6 +55,18 @@ export function useAISuggestionsWatcher(fieldName: string, valueRef: Ref<null | 
   // suggestion metadata is not re-tracked.
   watch(flawResyncCount, () => {
     if (!hasAppliedSuggestion.value) return;
+    if (serverChosenFlawFields.value.has(fieldName)) {
+      // The user resolved a mid-air collision by keeping the server value for
+      // this field: the suggestion is overruled, not wiped. Retire it so it is
+      // neither restored over the chosen value nor tracked as modified.
+      hasAppliedSuggestion.value = false;
+      originalSuggestion.value = null;
+      originalFieldValue.value = null;
+      hasPartialModification.value = false;
+      hasTrackedPartialChange.value = false;
+      untrackAIChange(fieldName);
+      return;
+    }
     if (hasPartialModification.value) return;
     if (!isValueEqual(valueRef.value, originalFieldValue.value)) return;
     valueRef.value = Array.isArray(originalSuggestion.value)

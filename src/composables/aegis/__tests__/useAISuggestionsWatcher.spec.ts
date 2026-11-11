@@ -7,6 +7,7 @@ import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 
 import { withSetup } from '@/__tests__/helpers';
+import { deepCopyFromRaw } from '@/utils/helpers';
 
 import { useAISuggestionsWatcher } from '../useAISuggestionsWatcher';
 
@@ -14,7 +15,7 @@ type Watcher = ReturnType<typeof useAISuggestionsWatcher>;
 
 describe('useAISuggestionsWatcher', () => {
   let app: App | undefined;
-  const { flaw, flawResyncCount, isFlawUpdated, resetFlaw, setFlaw } = useFlaw();
+  const { acceptServerFlaw, flaw, flawResyncCount, isFlawUpdated, resetFlaw, setFlaw } = useFlaw();
   const tracking = useAegisMetadataTracking();
 
   beforeEach(() => {
@@ -221,6 +222,148 @@ describe('useAISuggestionsWatcher', () => {
       setFlaw({ ...flaw.value, cve_description: 'Original description' });
       await nextTick();
       expect(flaw.value.cve_description).toBe('AI description');
+    });
+  });
+
+  // confirmCollisionDialog applies the saved flaw with acceptServerFlaw instead
+  // of setFlaw: adopting server values is a model resync all the same, and the
+  // fields the user resolved with the server value retire their suggestions.
+  describe('server flaw adoption (acceptServerFlaw)', () => {
+    it('retires the suggestion when the user kept the server value for its field', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // The collision dialog offered the description and the user chose the
+      // server side, so the saved flaw carries a value the server changed.
+      const resyncCount = flawResyncCount.value;
+      acceptServerFlaw(
+        { ...deepCopyFromRaw(flaw.value), cve_description: 'Server description' },
+        ['cve_description'],
+      );
+      await nextTick();
+
+      expect(flawResyncCount.value).toBe(resyncCount + 1);
+      expect(flaw.value.cve_description).toBe('Server description');
+      // The adoption is a resync, not a user edit: no 'Partial AI' is recorded
+      // and the overruled suggestion is retired with its metadata removed.
+      expect(watcher.hasAppliedSuggestion.value).toBe(false);
+      expect(watcher.hasPartialModification.value).toBe(false);
+      expect(metadataEntries()).toHaveLength(0);
+    });
+
+    it('does not restore a suggestion over a server choice matching the pre-suggestion edit', async () => {
+      const watcher = mountWatcher();
+      // The user edited the description, then applied a suggestion on top.
+      flaw.value.cve_description = 'User edited description';
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // The server changed the description to the very value the user typed
+      // before the suggestion was applied, and the user kept the server side.
+      acceptServerFlaw(
+        { ...deepCopyFromRaw(flaw.value), cve_description: 'User edited description' },
+        ['cve_description'],
+      );
+      await nextTick();
+
+      expect(flaw.value.cve_description).toBe('User edited description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(false);
+      expect(metadataEntries()).toHaveLength(0);
+      // No restore re-dirtied the form against the adopted server value.
+      expect(isFlawUpdated.value).toBe(false);
+    });
+
+    it('keeps the suggestion when the adoption echoes it back', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // The user chose 'mine' for the description and 'server' for another
+      // field: the saved flaw still carries the suggestion.
+      const resyncCount = flawResyncCount.value;
+      acceptServerFlaw(
+        { ...deepCopyFromRaw(flaw.value), cve_description: 'AI description' },
+        ['title'],
+      );
+      await nextTick();
+
+      expect(flawResyncCount.value).toBe(resyncCount + 1);
+      expect(flaw.value.cve_description).toBe('AI description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+      expect(watcher.hasPartialModification.value).toBe(false);
+      expect(metadataEntries()).toHaveLength(1);
+      expect(metadataEntries()[0]).toMatchObject({ type: 'AI', value: 'AI description' });
+    });
+
+    it('tracks a user edit made after an adoption that left the value unchanged', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // The adoption echoed the suggestion: the resync must still consume the
+      // counter, or the next user edit would be misattributed to it.
+      acceptServerFlaw({ ...deepCopyFromRaw(flaw.value), cve_description: 'AI description' });
+      await nextTick();
+      expect(watcher.hasPartialModification.value).toBe(false);
+
+      flaw.value.cve_description = 'AI description (user edited)';
+      await nextTick();
+
+      expect(watcher.hasPartialModification.value).toBe(true);
+      const partialEntries = metadataEntries().filter(entry => entry.type === 'Partial AI');
+      expect(partialEntries).toHaveLength(1);
+      expect(partialEntries[0].value).toBe('AI description (user edited)');
+    });
+
+    it('still restores a suggestion wiped by a later resync after an adoption', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      acceptServerFlaw({ ...deepCopyFromRaw(flaw.value), cve_description: 'AI description' });
+      await nextTick();
+      expect(flaw.value.cve_description).toBe('AI description');
+
+      // A later post-save sync or refetch replaces the model with the
+      // pre-suggestion value: the original restore behavior still applies.
+      setFlaw({ ...flaw.value, cve_description: 'Original description' });
+      await nextTick();
+
+      expect(flaw.value.cve_description).toBe('AI description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+      expect(isFlawUpdated.value).toBe(true);
+      expect(metadataEntries()).toHaveLength(1);
+    });
+
+    it('restores a new suggestion after a later resync clears the server-chosen fields', async () => {
+      const watcher = mountWatcher();
+      watcher.applyAISuggestion('AI description');
+      await nextTick();
+
+      // The user resolved a collision by keeping the server description.
+      acceptServerFlaw(
+        { ...deepCopyFromRaw(flaw.value), cve_description: 'Server description' },
+        ['cve_description'],
+      );
+      await nextTick();
+      expect(watcher.hasAppliedSuggestion.value).toBe(false);
+
+      // A new suggestion applied on top of the adopted value...
+      watcher.applyAISuggestion('Second AI description');
+      await nextTick();
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+
+      // ...must still be restored when a later resync wipes it back to the
+      // adopted value: the server-chosen state lives for one resync only.
+      setFlaw({ ...flaw.value, cve_description: 'Server description' });
+      await nextTick();
+
+      expect(flaw.value.cve_description).toBe('Second AI description');
+      expect(watcher.hasAppliedSuggestion.value).toBe(true);
+      expect(isFlawUpdated.value).toBe(true);
+      expect(metadataEntries()).toHaveLength(1);
+      expect(metadataEntries()[0]).toMatchObject({ type: 'AI', value: 'Second AI description' });
     });
   });
 
