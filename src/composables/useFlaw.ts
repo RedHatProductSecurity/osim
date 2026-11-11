@@ -85,6 +85,32 @@ function acceptServerTimestamp(updatedDt: null | string | undefined) {
   initialFlaw.value.updated_dt = updatedDt;
 }
 
+function acceptAddedAffects(affects: ZodAffectType[]) {
+  const known = new Set(flaw.value.affects.flatMap(affect => affect.uuid ? [affect.uuid] : []));
+  const added = affects.filter(affect => affect.uuid && !known.has(affect.uuid));
+  if (!added.length) return;
+  flaw.value.affects = [...flaw.value.affects, ...added];
+  initialFlaw.value.affects = [...initialFlaw.value.affects, ...added.map(affect => cloneField(affect))];
+}
+
+function acceptSavedAffects(saved: ZodAffectType[]) {
+  if (!saved.length) return;
+  flaw.value.affects = mergeBy(flaw.value.affects, saved, 'uuid');
+  initialFlaw.value.affects = mergeBy(
+    initialFlaw.value.affects,
+    saved.map(affect => cloneField(affect)),
+    'uuid',
+  );
+}
+
+function dropAffects(uuids: string[]) {
+  if (!uuids.length) return;
+  const gone = new Set(uuids);
+  const keep = (affects: ZodAffectType[]) => affects.filter(affect => !affect.uuid || !gone.has(affect.uuid));
+  flaw.value.affects = keep(flaw.value.affects);
+  initialFlaw.value.affects = keep(initialFlaw.value.affects);
+}
+
 // Copy the saved flaw onto both snapshots, leaving child collections dirty when they still differ.
 // serverChosenFields are the fields the user kept the server value for in the
 // collision resolution that produced this save.
@@ -117,6 +143,9 @@ export function useFlaw() {
     isFlawUpdated,
     acceptServerFlaw,
     acceptServerTimestamp,
+    acceptAddedAffects,
+    acceptSavedAffects,
+    dropAffects,
     resetFlaw,
     setFlaw,
     setLateFlawField,

@@ -32,8 +32,9 @@ export const AFFECT_REBASE_FIELDS = [
 
 export type AffectRebaseField = typeof AFFECT_REBASE_FIELDS[number];
 
-const AFFECT_REBASE_FIELD_LABELS: Record<'removed' | AffectRebaseField, string> = {
+const AFFECT_REBASE_FIELD_LABELS: Record<'deleted' | 'removed' | AffectRebaseField, string> = {
   affectedness: 'Affectedness',
+  deleted: 'Deleted',
   impact: 'Impact',
   labels: 'Labels',
   not_affected_justification: 'Justification',
@@ -49,7 +50,7 @@ export type AffectFieldConflict = {
   affectLabel: string;
   affectUuid: string;
   detail: string;
-  field: 'removed' | AffectRebaseField;
+  field: 'deleted' | 'removed' | AffectRebaseField;
   id: string;
   mine: unknown;
   server: unknown;
@@ -62,6 +63,8 @@ export type AffectConflictedRow = {
 };
 
 export type AffectRebaseResult = {
+  /** Server copies of affects the user is deleting after the server edited them. */
+  blockedDeletes: ZodAffectType[];
   conflicted: AffectConflictedRow[];
   conflicts: AffectFieldConflict[];
   /** Edited affects still on the server, with the server token and server-only field changes. */
@@ -90,6 +93,69 @@ export function affectConflictLabel(
 
 export function affectConflictDetail(affect: Pick<ZodAffectType, 'purl'>): string {
   return affect.purl ? `Analyzed component: ${affect.purl}` : '';
+}
+
+function isBlank(value: unknown): boolean {
+  return value == null || value === '';
+}
+
+function createdFieldEqual(left: unknown, right: unknown): boolean {
+  if (Array.isArray(left) || Array.isArray(right)) return valuesEqual(left ?? [], right ?? []);
+  if (isBlank(left) && isBlank(right)) return true;
+  return valuesEqual(left, right);
+}
+
+/** Fields where a new local affect differs from the server row that already has its stream and component. */
+export function createdAffectConflicts(local: ZodAffectType, server: ZodAffectType): AffectFieldConflict[] {
+  const affectUuid = server.uuid;
+  if (!affectUuid) return [];
+  const affectLabel = affectConflictLabel(server);
+  const detail = affectConflictDetail(server);
+  return AFFECT_REBASE_FIELDS.flatMap((field) => {
+    const mine = readField(local, field);
+    const theirs = readField(server, field);
+    if (createdFieldEqual(mine, theirs)) return [];
+    return [{ affectLabel, affectUuid, detail, field, id: `${affectUuid}:${field}`, mine, server: theirs }];
+  });
+}
+
+/** Affects the user is deleting whose server fields changed since page load. */
+export function deletionConflicts(
+  base: readonly ZodAffectType[],
+  deleting: readonly ZodAffectType[],
+  server: readonly ZodAffectType[],
+): { blocked: ZodAffectType[]; conflicts: AffectFieldConflict[] } {
+  const baseByUuid = new Map(base.flatMap(affect => affect.uuid ? [[affect.uuid, affect] as const] : []));
+  const serverByUuid = new Map(server.flatMap(affect => affect.uuid ? [[affect.uuid, affect] as const] : []));
+  const blocked: ZodAffectType[] = [];
+  const conflicts: AffectFieldConflict[] = [];
+
+  for (const local of deleting) {
+    const uuid = local.uuid;
+    const current = uuid ? serverByUuid.get(uuid) : undefined;
+    if (!uuid || !current) continue;
+
+    const loaded = baseByUuid.get(uuid) ?? local;
+    const changes = AFFECT_REBASE_FIELDS.flatMap((field) => {
+      const serverValue = readField(current, field);
+      if (createdFieldEqual(readField(loaded, field), serverValue)) return [];
+      return [`${AFFECT_REBASE_FIELD_LABELS[field]}: ${formatCollisionValue(serverValue)}`];
+    });
+    if (!changes.length) continue;
+
+    blocked.push(current);
+    conflicts.push({
+      affectLabel: affectConflictLabel(current),
+      affectUuid: uuid,
+      detail: affectConflictDetail(current),
+      field: 'deleted',
+      id: `${uuid}:deleted`,
+      mine: 'Deleted',
+      server: changes.join('\n'),
+    });
+  }
+
+  return { blocked, conflicts };
 }
 
 function editedSummary(base: undefined | ZodAffectType, mine: ZodAffectType): string {
@@ -184,7 +250,7 @@ export function rebaseAffects(
     }
   }
 
-  return { conflicted, conflicts, removed, updates };
+  return { blockedDeletes: [], conflicted, conflicts, removed, updates };
 }
 
 export function affectFromChoices(
