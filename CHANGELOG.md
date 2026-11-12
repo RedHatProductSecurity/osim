@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Reconcile flaw references and acknowledgments with newer server values, keeping unsaved edits across flaw saves and choosing which items to keep when both sides changed (`OSIDB-5793`)
+
 ## [2026.11.1]
 ### Added
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
