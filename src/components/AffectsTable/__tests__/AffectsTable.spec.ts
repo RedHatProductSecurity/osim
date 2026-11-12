@@ -62,15 +62,6 @@ function provenanceAffects(): ZodAffectType[] {
   ];
 }
 
-// XFAIL (strict=false) guard for the column-order reconciliation defect —
-// see the `column order reconciliation` describe below. While the defect
-// reproduces, non-actions columns render after the trailing sticky `actions`
-// column.
-const actionsColumnIsLast = (headerTexts: string[]) => {
-  const actionsHeader = headerTexts.findIndex(text => text.includes('Actions'));
-  return actionsHeader === headerTexts.length - 1;
-};
-
 describe('affectsTable', () => {
   beforeEach(() => {
     const { flaw, resetFlaw } = useFlaw();
@@ -1358,21 +1349,6 @@ describe('affectsTable', () => {
       'actions',
     ];
 
-    // XFAIL (strict=false) — PRODUCTION DEFECT in the OSIDB-5421 fix (commit
-    // 941bf01f), deliberately not repaired in this test-only session:
-    //
-    //   src/composables/useAffectsTable.ts:217-219
-    //
-    // `reconciledColumnOrder` derives `columnIds` from the raw column
-    // *definitions*, where only 'Select', 'cve', 'provenance', 'tracker' and
-    // 'actions' carry an explicit `id`; every other accessor column gets its
-    // id only when tanstack-table builds its Column objects. Any non-empty
-    // persisted order therefore collapses to those five ids and the other
-    // sixteen columns render AFTER the trailing sticky `actions` column (see
-    // the companion composable spec for details). The guarded assertions
-    // below skip while that signature (non-actions headers after `actions`)
-    // reproduces and run for real once the reconciliation is fixed.
-
     afterEach(() => {
       useSettingsStore().settings.affectsColumnOrder = [];
     });
@@ -1388,8 +1364,6 @@ describe('affectsTable', () => {
       expect(headers).toHaveLength(PRE_PROVENANCE_ORDER.length + 1);
 
       const headerTexts = headers.map(th => th.text());
-      if (!actionsColumnIsLast(headerTexts)) return; // xfail: defect reproduced
-
       const provenanceHeader = headerTexts.findIndex(text => text.includes('Provenance'));
       const actionsHeader = headerTexts.findIndex(text => text.includes('Actions'));
       expect(provenanceHeader).toBe(actionsHeader - 1);
@@ -1438,11 +1412,8 @@ describe('affectsTable', () => {
       expect(new Set(persistedOrder)).toEqual(new Set([...PRE_PROVENANCE_ORDER, 'provenance']));
       expect(persistedOrder.indexOf('provenance')).toBeLessThan(persistedOrder.indexOf('actions'));
 
-      // xfail-guarded (see defect note above): the rendered headers follow the
-      // reconciled order, with the dragged swap applied
+      // the rendered headers follow the reconciled order, with the dragged swap applied
       const headerTexts = wrapper.findAll('thead th').map(th => th.text());
-      if (!actionsColumnIsLast(headerTexts)) return; // xfail: defect reproduced
-
       expect(headerTexts.findIndex(text => text.includes('Label')))
         .toBeLessThan(headerTexts.findIndex(text => text.includes('Related CVEs')));
     });

@@ -39,20 +39,9 @@ describe('provenanceBadge', () => {
     expect(badge.attributes('data-bs-toggle')).toBe('tooltip');
   });
 
-  // XFAIL (strict=false) — PRODUCTION DEFECT, deliberately not fixed in this
-  // test-only session: ProvenanceBadge.vue:27-28 wraps the label text in
-  // <template v-if="!iconOnly"> {{ label }} </template>, which makes Vue drop
-  // the whitespace that used to separate the icon from the label. The default
-  // (non-icon-only) badge now renders the icon flush against the text, and
-  // bootstrap-icons adds no spacing of its own. While the defect reproduces,
-  // the guard below keeps this test green; once the template is fixed the
-  // assertion runs for real.
   it('keeps whitespace between the icon and the label text by default', () => {
     const wrapper = mountBadge(affect({ created_by: 'analyst@redhat.com' }));
 
-    const textContent = wrapper.find('.badge').element.textContent ?? '';
-    if (textContent === 'Human') return; // defect reproduced: separator lost
-
-    expect(textContent).toBe(' Human');
+    expect(wrapper.find('.badge').element.textContent).toBe(' Human');
   });
 });
