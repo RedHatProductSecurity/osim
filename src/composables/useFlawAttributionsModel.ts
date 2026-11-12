@@ -26,6 +26,20 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   const flawReferences: Ref<ZodFlawReferenceType[]> = toRef(flaw.value, 'references');
   const flawAcknowledgments: Ref<ZodFlawAcknowledgmentType[]> = toRef(flaw.value, 'acknowledgments');
 
+  // Nested saves share one isSaving window: per-item operations must not end
+  // the surrounding list save early, so only the outermost save clears the flag.
+  let savingDepth = 0;
+
+  function startSaving() {
+    savingDepth += 1;
+    isSaving.value = true;
+  }
+
+  function finishSaving() {
+    savingDepth = Math.max(0, savingDepth - 1);
+    if (savingDepth === 0) isSaving.value = false;
+  }
+
   watch(() => flaw.value.references, () => {
     flawReferences.value = flaw.value.references;
   });
@@ -54,7 +68,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     reference: { uuid: string } & ZodFlawReferenceType,
     options?: { suppressConflictToast?: boolean },
   ) {
-    isSaving.value = true;
+    startSaving();
     try {
       if (options) {
         await putReference(reference, options);
@@ -64,27 +78,30 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
       syncReferenceResponse(reference, response);
     } finally {
-      isSaving.value = false;
+      finishSaving();
     }
   }
 
   async function createReference(reference: ZodFlawReferenceType) {
-    isSaving.value = true;
-    const response = await postFlawReference(flaw.value.uuid, reference)
-      .finally(() => isSaving.value = false);
+    startSaving();
+    try {
+      const response = await postFlawReference(flaw.value.uuid, reference);
 
-    // Update the local reference with the UUID from the server response.
-    // The list holds reactive proxies, so match the raw objects underneath.
-    if (response?.data?.uuid) {
-      const index = flawReferences.value.findIndex(ref => toRaw(ref) === toRaw(reference));
-      if (index !== -1) {
-        flawReferences.value[index] = { ...reference, ...response.data };
+      // Update the local reference with the UUID from the server response.
+      // The list holds reactive proxies, so match the raw objects underneath.
+      if (response?.data?.uuid) {
+        const index = flawReferences.value.findIndex(ref => toRaw(ref) === toRaw(reference));
+        if (index !== -1) {
+          flawReferences.value[index] = { ...reference, ...response.data };
+        }
       }
+    } finally {
+      finishSaving();
     }
   }
 
   async function deleteReference(referenceId: string) {
-    isSaving.value = true;
+    startSaving();
     try {
       await deleteFlawReference(flaw.value.uuid, referenceId, { suppressErrorToast: true });
     } catch (error) {
@@ -95,7 +112,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       }
       flaw.value.references = flaw.value.references.filter(ref => ref.uuid !== referenceId);
     } finally {
-      isSaving.value = false;
+      finishSaving();
     }
     afterSaveSuccess();
   }
@@ -117,22 +134,25 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   }
 
   async function createAcknowledgment(acknowledgment: ZodFlawAcknowledgmentType) {
-    isSaving.value = true;
-    const response = await postFlawAcknowledgment(flaw.value.uuid, acknowledgment)
-      .finally(() => isSaving.value = false);
+    startSaving();
+    try {
+      const response = await postFlawAcknowledgment(flaw.value.uuid, acknowledgment);
 
-    // Update the local acknowledgment with the UUID from the server response.
-    // The list holds reactive proxies, so match the raw objects underneath.
-    if (response?.data?.uuid) {
-      const index = flawAcknowledgments.value.findIndex(ack => toRaw(ack) === toRaw(acknowledgment));
-      if (index !== -1) {
-        flawAcknowledgments.value[index] = { ...acknowledgment, ...response.data };
+      // Update the local acknowledgment with the UUID from the server response.
+      // The list holds reactive proxies, so match the raw objects underneath.
+      if (response?.data?.uuid) {
+        const index = flawAcknowledgments.value.findIndex(ack => toRaw(ack) === toRaw(acknowledgment));
+        if (index !== -1) {
+          flawAcknowledgments.value[index] = { ...acknowledgment, ...response.data };
+        }
       }
+    } finally {
+      finishSaving();
     }
   }
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
-    isSaving.value = true;
+    startSaving();
     try {
       await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId, { suppressErrorToast: true });
     } catch (error) {
@@ -143,7 +163,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       }
       flaw.value.acknowledgments = flaw.value.acknowledgments.filter(ack => ack.uuid !== acknowledgmentId);
     } finally {
-      isSaving.value = false;
+      finishSaving();
     }
     afterSaveSuccess();
   }
@@ -176,7 +196,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     acknowledgment: ZodFlawAcknowledgmentType,
     options?: { suppressConflictToast?: boolean },
   ) {
-    isSaving.value = true;
+    startSaving();
     try {
       if (options) {
         await putAcknowledgment(acknowledgment, options);
@@ -186,7 +206,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       const response = await putFlawAcknowledgment(flaw.value.uuid, acknowledgment.uuid, acknowledgment as any);
       syncAcknowledgmentResponse(acknowledgment, response);
     } finally {
-      isSaving.value = false;
+      finishSaving();
     }
   }
 
@@ -202,7 +222,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   });
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
-    isSaving.value = true;
+    startSaving();
     const unsaved = [...references];
     try {
       while (unsaved.length > 0) {
@@ -226,13 +246,13 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       // both-side overlap it finds for the collision dialog.
       await integrateServerAttributions();
     } finally {
-      isSaving.value = false;
+      finishSaving();
     }
     afterSaveSuccess();
   }
 
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
-    isSaving.value = true;
+    startSaving();
     const unsaved = [...acknowledgments];
     try {
       while (unsaved.length > 0) {
@@ -256,7 +276,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       // both-side overlap it finds for the collision dialog.
       await integrateServerAttributions();
     } finally {
-      isSaving.value = false;
+      finishSaving();
     }
     afterSaveSuccess();
   }

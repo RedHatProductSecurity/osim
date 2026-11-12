@@ -263,6 +263,11 @@ export function useAttributionCollision(state: AttributionCollisionState) {
     const uuid = flaw.value.uuid;
     if (!uuid) throw new Error('useAttributionCollision::readServerAttributions() flaw has no uuid');
     const serverFlaw = await getFlaw(uuid, true);
+    // The user may have navigated to another flaw while the fetch was in
+    // flight; the fetched collections would not belong to the current flaw.
+    if (flaw.value.uuid !== uuid) {
+      throw new Error('useAttributionCollision::readServerAttributions() flaw changed during reload');
+    }
     return { acknowledgments: serverFlaw.acknowledgments, references: serverFlaw.references };
   }
 

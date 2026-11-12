@@ -342,6 +342,10 @@ export function useFlawModel() {
     const { execute } = useNetworkQueue();
     const queue: (() => Promise<any>)[] = [];
     const afterSuccessQueue: (() => void)[] = [];
+    // The freshest server flaw this save saw. Every deferred setFlaw rebuilds
+    // the whole baseline from the working model, so the attribution baseline
+    // is restored from this after they all run.
+    let serverAttributionSource: null | ZodFlawType = null;
 
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -385,6 +389,7 @@ export function useFlawModel() {
         // any both-side overlap for the collision dialog) before the deferred
         // setFlaw replaces the model wholesale.
         const mergedAttributions = mergeServerAttributions(response);
+        serverAttributionSource = response;
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
         afterSuccessQueue.push(() => {
@@ -394,9 +399,6 @@ export function useFlawModel() {
             acknowledgments: mergedAttributions.acknowledgments,
             references: mergedAttributions.references,
           });
-          // setFlaw baselines the merged collections; re-baseline them to the
-          // server truth so only the local edits stay dirty.
-          acceptServerCollections(response);
         });
       },
       );
@@ -459,9 +461,15 @@ export function useFlawModel() {
         // Re-fetch the full flaw so side-effects on the backend (e.g. classification.state
         // changing to DONE when approved/rejected label is added) are reflected immediately.
         const updatedFlaw = await getFlaw(flaw.value.uuid, true);
+        // Fold the server's collection changes into the local edits before the
+        // deferred setFlaw replaces the model wholesale.
+        const mergedAttributions = mergeServerAttributions(updatedFlaw);
+        serverAttributionSource = updatedFlaw;
         afterSuccessQueue.push(() => setFlaw({
           ...updatedFlaw,
           affects: flaw.value.affects,
+          acknowledgments: mergedAttributions.acknowledgments,
+          references: mergedAttributions.references,
           // On partial failure, keep the local labels so unsaved/failed edits stay queued for retry
           ...(hasErrors ? { labels: flaw.value.labels } : {}),
         }));
@@ -478,6 +486,13 @@ export function useFlawModel() {
       isSaving.value = false;
       return;
     } finally {
+      // Deferred setFlaw calls (affects, CVSS, labels) rebuild the whole
+      // baseline from the working model; restore the server attribution
+      // baseline after them all so unsaved reference edits stay dirty.
+      const attributionSource = serverAttributionSource;
+      if (attributionSource) {
+        afterSuccessQueue.push(() => acceptServerCollections(attributionSource));
+      }
       afterSaveSuccess(afterSuccessQueue);
     }
   }
