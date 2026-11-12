@@ -54,7 +54,7 @@ function acknowledgment(overrides: Partial<ZodFlawAcknowledgmentType> = {}): Zod
   };
 }
 
-function serverFlaw(collections: Pick<ZodFlawType, 'references' | 'acknowledgments'>): ZodFlawType {
+function serverFlaw(collections: Pick<ZodFlawType, 'acknowledgments' | 'references'>): ZodFlawType {
   return {
     ...blankFlaw(),
     uuid: 'flaw-1',
@@ -107,7 +107,7 @@ describe('useAttributionCollision', () => {
 
     vi.mocked(putFlawReference).mockResolvedValue({
       data: { ...edited, updated_dt: '2024-06-02T00:00:00Z' },
-    });
+    } as any);
     vi.mocked(getFlaw).mockResolvedValue(serverFlaw({
       references: [reference({ url: 'https://example.com/a-edited', updated_dt: '2024-06-02T00:00:00Z' })],
       acknowledgments: [],
@@ -139,10 +139,10 @@ describe('useAttributionCollision', () => {
 
     vi.mocked(putFlawReference)
       .mockRejectedValueOnce({ response: { status: 409 } })
-      .mockResolvedValue({ data: { ...edited, updated_dt: '2024-06-02T00:00:00Z' } });
+      .mockResolvedValue({ data: { ...edited, updated_dt: '2024-06-02T00:00:00Z' } } as any);
     vi.mocked(postFlawReference).mockResolvedValue({
       data: { ...added, uuid: 'ref-b', updated_dt: '2024-06-02T00:00:00Z' },
-    });
+    } as any);
     // The reload shows the server only bumped the concurrency token; the
     // second fetch reflects the state after the retried save.
     vi.mocked(getFlaw)
@@ -178,7 +178,7 @@ describe('useAttributionCollision', () => {
   });
 
   it('stages a both-side conflict for the collision dialog and keeps the list dirty', async () => {
-    const { model, edited, added } = await stageReferenceConflict();
+    const { added, edited, model } = await stageReferenceConflict();
 
     expect(postFlawReference).not.toHaveBeenCalled();
     expect(model.pendingAttributionConflict.value?.references?.conflicts).toEqual([
@@ -191,12 +191,12 @@ describe('useAttributionCollision', () => {
   });
 
   it('saves the kept local item with the server concurrency token', async () => {
-    const { model, edited, serverCopy } = await stageReferenceConflict();
+    const { edited, model, serverCopy } = await stageReferenceConflict();
 
     vi.mocked(putFlawReference).mockClear();
     vi.mocked(putFlawReference).mockResolvedValue({
       data: { ...edited, updated_dt: '2024-06-02T00:00:00Z' },
-    });
+    } as any);
     vi.mocked(getFlaw).mockResolvedValue(serverFlaw({
       references: [reference({ url: 'https://example.com/a-edited', updated_dt: '2024-06-02T00:00:00Z' })],
       acknowledgments: [],
@@ -251,7 +251,7 @@ describe('useAttributionCollision', () => {
 
     vi.mocked(postFlawReference).mockResolvedValue({
       data: { ...edited, uuid: 'ref-new', updated_dt: '2024-06-02T00:00:00Z' },
-    });
+    } as any);
     vi.mocked(getFlaw).mockResolvedValue(serverFlaw({
       references: [reference({ uuid: 'ref-new', url: 'https://example.com/a-edited', updated_dt: '2024-06-02T00:00:00Z' })],
       acknowledgments: [],
@@ -314,7 +314,7 @@ describe('useAttributionCollision', () => {
     expect(mockAddToast).toHaveBeenCalledWith({
       title: 'Flaw saved with newer changes',
       body: 'Kept your edits and took server updates for '
-        + 'https://example.com/a-server, https://example.com/c, server name.',
+      + 'https://example.com/a-server, https://example.com/c, server name.',
       css: 'info',
     });
   });

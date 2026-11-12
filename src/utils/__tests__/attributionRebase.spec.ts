@@ -144,11 +144,18 @@ describe('rebaseAttributionCollection', () => {
     // differs only in them must count as unchanged.
     const base = [reference()];
     const mine = [reference()];
+    const serverAlerts = [{
+      uuid: 'alert-1',
+      name: 'alert',
+      description: '',
+      alert_type: 'ERROR',
+      resolution_steps: '',
+    } as never];
     const server = [
       reference({
         updated_dt: '2024-06-01T00:00:00Z',
         embargoed: true,
-        alerts: [{ uuid: 'alert-1', name: 'alert', description: '', alert_type: 'ERROR', resolution_steps: '' } as never],
+        alerts: serverAlerts,
       }),
     ];
 
@@ -199,7 +206,7 @@ describe('summarizeAttributionItem', () => {
   });
 
   it('lists every field against a null base', () => {
-    const summary = summarizeAttributionItem(null, reference({ from_upstream: undefined as never }), REFERENCE_CONFIG);
+    const summary = summarizeAttributionItem(null, reference(), REFERENCE_CONFIG);
 
     expect(summary).toBe(['Link URL: https://example.com/loaded', 'Description: loaded description', 'Reference type: EXTERNAL'].join('\n'));
   });

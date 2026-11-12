@@ -102,8 +102,8 @@ describe('useFlawAttributionsModel', () => {
         updated_dt: null,
         alerts: [] },
     ];
-    vi.mocked(postFlawReference).mockResolvedValue();
-    vi.mocked(putFlawReference).mockResolvedValue();
+    vi.mocked(postFlawReference).mockResolvedValue(undefined as never);
+    vi.mocked(putFlawReference).mockResolvedValue(undefined as never);
 
     const { saveReferences } = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
 
@@ -111,20 +111,27 @@ describe('useFlawAttributionsModel', () => {
     await flushPromises();
 
     expect(postFlawReference).toHaveBeenCalledWith('uuid-123', references[1]);
-    expect(putFlawReference).toHaveBeenCalledWith('uuid-123', 'ref-123', references[0]);
+    // List saves reconcile conflicts themselves, so updates suppress the toast.
+    expect(putFlawReference).toHaveBeenCalledWith(
+      'uuid-123',
+      'ref-123',
+      references[0],
+      { suppressConflictToast: true },
+    );
     expect(isSaving.value).toBe(false);
   });
 
   it('should save acknowledgments successfully', async () => {
     const acknowledgment = {
       uuid: 'ack-123',
-      description: 'desc',
-      type: 'ARTICLE',
-      url: 'http://example.com',
+      name: 'name',
+      affiliation: 'affiliation',
+      from_upstream: false,
+      flaw: '',
       embargoed: false,
       updated_dt: null,
       alerts: [] };
-    vi.mocked(postFlawAcknowledgment).mockResolvedValue();
+    vi.mocked(postFlawAcknowledgment).mockResolvedValue(undefined as never);
 
     const { createAcknowledgment } = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
 
