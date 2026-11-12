@@ -251,13 +251,21 @@ export async function putFlawReference(
 export async function deleteFlawReference(
   flawId: string,
   referenceId: string,
+  options: { suppressErrorToast?: boolean } = {},
 ) {
-  return osidbFetch({
-    method: 'delete',
-    url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Reference deleted.' }))
-    .catch(createCatchHandler('Error deleting Reference:'));
+  try {
+    const response = await osidbFetch({
+      method: 'delete',
+      url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'Reference deleted.' })(response);
+    return response;
+  } catch (error) {
+    if (!options.suppressErrorToast) {
+      createCatchHandler('Error deleting Reference:', false)(error);
+    }
+    throw error;
+  }
 }
 
 export type FlawAcknowledgmentPost = {
@@ -309,13 +317,21 @@ export async function putFlawAcknowledgment(
 export async function deleteFlawAcknowledgment(
   flawId: string,
   acknowledgmentId: string,
+  options: { suppressErrorToast?: boolean } = {},
 ) {
-  return osidbFetch({
-    method: 'delete',
-    url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment deleted.' }))
-    .catch(createCatchHandler('Error deleting Acknowledgment:'));
+  try {
+    const response = await osidbFetch({
+      method: 'delete',
+      url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'Acknowledgment deleted.' })(response);
+    return response;
+  } catch (error) {
+    if (!options.suppressErrorToast) {
+      createCatchHandler('Error deleting Acknowledgment:', false)(error);
+    }
+    throw error;
+  }
 }
 
 export type IncidentRequestPost = {

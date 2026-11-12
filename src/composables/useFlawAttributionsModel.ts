@@ -1,6 +1,12 @@
 import { toRef, watch, type Ref } from 'vue';
 
-import { isAttributionConflict, useAttributionCollision } from '@/composables/useAttributionCollision';
+import { createCatchHandler } from '@/composables/service-helpers';
+import {
+  isAlreadyDeleted,
+  isAttributionConflict,
+  isMissingAttribution,
+  useAttributionCollision,
+} from '@/composables/useAttributionCollision';
 
 import type {
   ZodFlawReferenceType,
@@ -63,8 +69,18 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function deleteReference(referenceId: string) {
     isSaving.value = true;
-    await deleteFlawReference(flaw.value.uuid, referenceId)
-      .finally(() => isSaving.value = false);
+    try {
+      await deleteFlawReference(flaw.value.uuid, referenceId, { suppressErrorToast: true });
+    } catch (error) {
+      // A 404 or a 'does not exist' body means the server already dropped it.
+      if (!isAlreadyDeleted(error) && !isMissingAttribution(error)) {
+        createCatchHandler('Error deleting Reference:', false)(error);
+        throw error;
+      }
+      flaw.value.references = flaw.value.references.filter(ref => ref.uuid !== referenceId);
+    } finally {
+      isSaving.value = false;
+    }
     afterSaveSuccess();
   }
 
@@ -100,8 +116,18 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function deleteAcknowledgment(acknowledgmentId: string) {
     isSaving.value = true;
-    await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId)
-      .finally(() => isSaving.value = false);
+    try {
+      await deleteFlawAcknowledgment(flaw.value.uuid, acknowledgmentId, { suppressErrorToast: true });
+    } catch (error) {
+      // A 404 or a 'does not exist' body means the server already dropped it.
+      if (!isAlreadyDeleted(error) && !isMissingAttribution(error)) {
+        createCatchHandler('Error deleting Acknowledgment:', false)(error);
+        throw error;
+      }
+      flaw.value.acknowledgments = flaw.value.acknowledgments.filter(ack => ack.uuid !== acknowledgmentId);
+    } finally {
+      isSaving.value = false;
+    }
     afterSaveSuccess();
   }
 
@@ -131,6 +157,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   const {
     applyAttributionResolution,
+    integrateServerAttributions,
     pendingAttributionConflict,
     stageAttributionConflicts,
   } = useAttributionCollision({
@@ -159,6 +186,9 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
           break;
         }
       }
+      // Fold in server-side changes the save did not touch, staging any
+      // both-side overlap it finds for the collision dialog.
+      await integrateServerAttributions();
     } finally {
       isSaving.value = false;
     }
@@ -186,6 +216,9 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
           break;
         }
       }
+      // Fold in server-side changes the save did not touch, staging any
+      // both-side overlap it finds for the collision dialog.
+      await integrateServerAttributions();
     } finally {
       isSaving.value = false;
     }
@@ -226,6 +259,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     updateAcknowledgment,
     deleteAcknowledgment,
     applyAttributionResolution,
+    integrateServerAttributions,
     pendingAttributionConflict,
     stageAttributionConflicts,
   };

@@ -5,6 +5,7 @@ import { useFlaw } from '@/composables/useFlaw';
 
 import type { ZodFlawAcknowledgmentType, ZodFlawReferenceType, ZodFlawType } from '@/types';
 import { getFlaw } from '@/services/FlawService';
+import { useToastStore } from '@/stores/ToastStore';
 import {
   ACKNOWLEDGMENT_CONFIG,
   REFERENCE_CONFIG,
@@ -55,6 +56,13 @@ export function isMissingAttribution(error: unknown): boolean {
 /** 409 is a stale updated_dt and 404 a server-side removal; both reconcile through the dialog. */
 export function isAttributionConflict(error: unknown): boolean {
   return isFlawConflict(error) || isMissingAttribution(error);
+}
+
+/** The server reports the item is already gone; a local delete can treat it as done. */
+export function isAlreadyDeleted(error: unknown): boolean {
+  const data = (error as { response?: { data?: unknown } })?.response?.data;
+  const text = typeof data === 'string' ? data : JSON.stringify(data ?? '');
+  return /does not exist/i.test(text);
 }
 
 type ResolvedAttributionCollection<TItem> = {
@@ -137,6 +145,34 @@ async function resaveResolvedChoices<TItem extends AttributionItem>(
   for (const item of recreate) {
     await savers.create(item);
   }
+}
+
+/** Toast labels like 'Reference https://…' for the adopted server changes of one kind. */
+function adoptedItemLabels<TItem extends AttributionItem>(
+  labelItem: (item: TItem) => string,
+  result: AttributionRebaseResult<TItem>,
+  current: readonly TItem[],
+): string[] {
+  const removed = result.adoptedRemovals.flatMap((uuid) => {
+    const item = current.find(currentItem => currentItem.uuid === uuid);
+    return item ? [labelItem(item)] : [];
+  });
+  return [
+    ...result.adoptedUpdates.map(labelItem),
+    ...result.adoptedAdditions.map(labelItem),
+    ...removed,
+  ];
+}
+
+/** Mirrors useFlawModel's toastAdoptedFields for adopted reference and acknowledgment items. */
+function toastAdoptedAttributions(labels: readonly string[]) {
+  if (labels.length === 0) return;
+  const { addToast } = useToastStore();
+  addToast({
+    title: 'Flaw saved with newer changes',
+    body: `Kept your edits and took server updates for ${labels.join(', ')}.`,
+    css: 'info',
+  });
 }
 
 /**
@@ -268,10 +304,78 @@ export function useAttributionCollision(state: AttributionCollisionState) {
         state.acknowledgments,
       );
     }
+
+    await integrateServerAttributions();
+  }
+
+  /**
+   * Fold server-side additions, updates, and removals of both kinds into the
+   * local model and baseline. Runs after a save finishes: just-saved items
+   * compare equal against their synced responses, so only unseen server
+   * changes adopt. Both-side overlaps found this way stage the collision dialog.
+   */
+  async function integrateServerAttributions(): Promise<void> {
+    let server: ServerAttributions;
+    try {
+      server = await readServerAttributions();
+    } catch (error) {
+      console.error('useAttributionCollision::integrateServerAttributions() failed to reload flaw', error);
+      return;
+    }
+
+    const adoptedLabels: string[] = [];
+
+    const referenceResult = rebaseAttributionCollection(
+      // The rebase only reads the baseline; initialFlaw exposes it read-only.
+      initialFlaw.value.references as ZodFlawReferenceType[],
+      flaw.value.references,
+      server.references,
+      REFERENCE_CONFIG,
+    );
+    if (referenceResult.conflicts.length > 0) {
+      pendingAttributionConflict.value = {
+        acknowledgments: pendingAttributionConflict.value?.acknowledgments ?? null,
+        references: referenceResult,
+        server,
+      };
+    } else {
+      adoptedLabels.push(...adoptedItemLabels(REFERENCE_CONFIG.itemLabel, referenceResult, flaw.value.references));
+      flaw.value.references = resolveAttributionCollection(flaw.value.references, referenceResult, null).collection;
+    }
+
+    const acknowledgmentResult = rebaseAttributionCollection(
+      // The rebase only reads the baseline; initialFlaw exposes it read-only.
+      initialFlaw.value.acknowledgments as ZodFlawAcknowledgmentType[],
+      flaw.value.acknowledgments,
+      server.acknowledgments,
+      ACKNOWLEDGMENT_CONFIG,
+    );
+    if (acknowledgmentResult.conflicts.length > 0) {
+      pendingAttributionConflict.value = {
+        acknowledgments: acknowledgmentResult,
+        references: pendingAttributionConflict.value?.references ?? null,
+        server,
+      };
+    } else {
+      adoptedLabels.push(...adoptedItemLabels(
+        ACKNOWLEDGMENT_CONFIG.itemLabel,
+        acknowledgmentResult,
+        flaw.value.acknowledgments,
+      ));
+      flaw.value.acknowledgments = resolveAttributionCollection(
+        flaw.value.acknowledgments,
+        acknowledgmentResult,
+        null,
+      ).collection;
+    }
+
+    acceptServerCollections(server);
+    toastAdoptedAttributions(adoptedLabels);
   }
 
   return {
     applyAttributionResolution,
+    integrateServerAttributions,
     pendingAttributionConflict,
     readServerAttributions,
     stageAttributionConflicts,
