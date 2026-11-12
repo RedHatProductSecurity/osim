@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Added
-* Follow the paginated osidb-bot KPI endpoint page by page and show a striped progress bar with live flaw counts while the Aegis server refreshes its KPI cache, instead of failing with a gateway timeout; retry pages that fail with a transient OSIDB outage (503 `Unable to connect to OSIDB.`) up to three times and raise the per-request refresh budget (`max_refresh_secs=30`) so slow OSIDB responses no longer starve the refresh into 503s (`AEGIS-550`)
+* Load osidb-bot KPI metrics page by page with immediate delivery progress, incremental selection discovery, paced HTTP 200 budget deferrals, stable-run cumulative snapshots, and usable partial results after failures; publish feedback independently, cancel obsolete requests, and retry KPI HTTP 503 responses up to three times unless Aegis has exhausted its upstream retry budget (`AEGIS-550`)
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Show black-outlined, yellow-filled warning icons with recorded reasons, discarded suggestions, and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled, with copy and close controls in the detail popups (`OSIDB-5469`)
