@@ -94,6 +94,13 @@ function acceptServerFlaw(saved: ZodFlawType, serverChosenFields: Iterable<strin
   flawResyncCount.value += 1;
 }
 
+// Baseline the reference and acknowledgment collections on server truth,
+// keeping unsaved local edits visible as dirty against it.
+function acceptServerCollections(server: Pick<ZodFlawType, 'acknowledgments' | 'references'>) {
+  initialFlaw.value.references = cloneField(server.references);
+  initialFlaw.value.acknowledgments = cloneField(server.acknowledgments);
+}
+
 const isFlawUpdated = computed(
   () => {
     const keysToExclude: Array<keyof ZodFlawType> = ['affects', 'trackers', 'cvss_scores'];
@@ -110,6 +117,7 @@ export function useFlaw() {
     initialFlaw: readonly(initialFlaw),
     isFlawUpdated,
     acceptServerFlaw,
+    acceptServerCollections,
     resetFlaw,
     setFlaw,
     setLateFlawField,

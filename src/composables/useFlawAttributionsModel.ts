@@ -1,5 +1,7 @@
 import { toRef, watch, type Ref } from 'vue';
 
+import { isAttributionConflict, useAttributionCollision } from '@/composables/useAttributionCollision';
+
 import type {
   ZodFlawReferenceType,
   ZodFlawType,
@@ -26,10 +28,13 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     flawAcknowledgments.value = flaw.value.acknowledgments;
   });
 
-  async function updateReference(reference: { uuid: string } & ZodFlawReferenceType) {
+  async function updateReference(
+    reference: { uuid: string } & ZodFlawReferenceType,
+    options?: { suppressConflictToast?: boolean },
+  ) {
     isSaving.value = true;
     try {
-      const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
+      const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any, options);
       // Sync concurrency token from response for subsequent edits
       if (response?.data) {
         const index = flawReferences.value.findIndex(ref => ref.uuid === reference.uuid);
@@ -67,19 +72,6 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     flawReferences.value.splice(flawReferences.value.indexOf(reference), 1);
   }
 
-  async function saveReferences(references: ZodFlawReferenceType[]) {
-    isSaving.value = true;
-    for (const reference of references) {
-      if (reference.uuid) {
-        await updateReference(reference);
-      } else {
-        await createReference(reference);
-      }
-    }
-    isSaving.value = false;
-    afterSaveSuccess();
-  }
-
   function addBlankReference(isEmbargoed: boolean) {
     flawReferences.value.push({
       description: '',
@@ -92,16 +84,16 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     });
   }
 
-  async function createAcknowledgment(acknowlegdment: any) {
+  async function createAcknowledgment(acknowledgment: ZodFlawAcknowledgmentType) {
     isSaving.value = true;
-    const response = await postFlawAcknowledgment(flaw.value.uuid, acknowlegdment)
+    const response = await postFlawAcknowledgment(flaw.value.uuid, acknowledgment)
       .finally(() => isSaving.value = false);
 
     // Update the local acknowledgment with the UUID from the server response
     if (response?.data?.uuid) {
-      const index = flawAcknowledgments.value.findIndex(ack => ack === acknowlegdment);
+      const index = flawAcknowledgments.value.findIndex(ack => ack === acknowledgment);
       if (index !== -1) {
-        flawAcknowledgments.value[index] = { ...acknowlegdment, ...response.data };
+        flawAcknowledgments.value[index] = { ...acknowledgment, ...response.data };
       }
     }
   }
@@ -113,13 +105,21 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     afterSaveSuccess();
   }
 
-  async function updateAcknowledgment(acknowlegdment: any) {
+  async function updateAcknowledgment(
+    acknowledgment: ZodFlawAcknowledgmentType,
+    options?: { suppressConflictToast?: boolean },
+  ) {
     isSaving.value = true;
     try {
-      const response = await putFlawAcknowledgment(flaw.value.uuid, acknowlegdment.uuid, acknowlegdment as any);
+      const response = await putFlawAcknowledgment(
+        flaw.value.uuid,
+        acknowledgment.uuid,
+        acknowledgment as any,
+        options,
+      );
       // Sync concurrency token from response for subsequent edits
       if (response?.data) {
-        const index = flawAcknowledgments.value.findIndex(ack => ack.uuid === acknowlegdment.uuid);
+        const index = flawAcknowledgments.value.findIndex(ack => ack.uuid === acknowledgment.uuid);
         if (index !== -1) {
           flawAcknowledgments.value[index] = { ...flawAcknowledgments.value[index], ...response.data };
         }
@@ -129,16 +129,66 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     }
   }
 
+  const {
+    applyAttributionResolution,
+    pendingAttributionConflict,
+    stageAttributionConflicts,
+  } = useAttributionCollision({
+    acknowledgments: { create: createAcknowledgment, update: updateAcknowledgment },
+    references: { create: createReference, update: updateReference },
+  });
+
+  async function saveReferences(references: ZodFlawReferenceType[]) {
+    isSaving.value = true;
+    const unsaved = [...references];
+    try {
+      while (unsaved.length > 0) {
+        const reference = unsaved[0];
+        try {
+          if (reference.uuid) {
+            await updateReference(reference, { suppressConflictToast: true });
+          } else {
+            await createReference(reference);
+          }
+          unsaved.shift();
+        } catch (error) {
+          if (!isAttributionConflict(error)) throw error;
+          // Staging either opens the collision dialog (it rethrows so the list
+          // stays dirty) or adopts the server state and finishes the save.
+          await stageAttributionConflicts('references', error, unsaved);
+          break;
+        }
+      }
+    } finally {
+      isSaving.value = false;
+    }
+    afterSaveSuccess();
+  }
+
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
     isSaving.value = true;
-    for (const acknowledgment of acknowledgments) {
-      if (acknowledgment.uuid) {
-        await updateAcknowledgment(acknowledgment);
-      } else {
-        await createAcknowledgment(acknowledgment);
+    const unsaved = [...acknowledgments];
+    try {
+      while (unsaved.length > 0) {
+        const acknowledgment = unsaved[0];
+        try {
+          if (acknowledgment.uuid) {
+            await updateAcknowledgment(acknowledgment, { suppressConflictToast: true });
+          } else {
+            await createAcknowledgment(acknowledgment);
+          }
+          unsaved.shift();
+        } catch (error) {
+          if (!isAttributionConflict(error)) throw error;
+          // Staging either opens the collision dialog (it rethrows so the list
+          // stays dirty) or adopts the server state and finishes the save.
+          await stageAttributionConflicts('acknowledgments', error, unsaved);
+          break;
+        }
       }
+    } finally {
+      isSaving.value = false;
     }
-    isSaving.value = false;
     afterSaveSuccess();
   }
 
@@ -175,5 +225,8 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     createAcknowledgment,
     updateAcknowledgment,
     deleteAcknowledgment,
+    applyAttributionResolution,
+    pendingAttributionConflict,
+    stageAttributionConflicts,
   };
 }

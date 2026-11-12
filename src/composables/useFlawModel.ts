@@ -29,6 +29,7 @@ import {
   type CollisionChoice,
   type FlawRebaseField,
 } from '@/utils/flawRebase';
+import { attributionDialogRows } from '@/utils/attributionRebase';
 import { mergeBy } from '@/utils/helpers';
 import {
   flawSources,
@@ -123,6 +124,10 @@ export function useFlawModel() {
   }
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
+  const {
+    applyAttributionResolution,
+    pendingAttributionConflict,
+  } = flawAttributionsModel;
 
   const {
     cvssVector,
@@ -267,37 +272,51 @@ export function useFlawModel() {
     });
   }
 
-  const collisionConflicts = computed(() => (pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
-    id: conflict.field,
-    label: flawRebaseFieldLabel(conflict.field),
-    mine: formatCollisionValue(conflict.mine),
-    server: formatCollisionValue(conflict.server),
-  })));
+  const collisionConflicts = computed(() => [
+    ...(pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
+      id: conflict.field,
+      label: flawRebaseFieldLabel(conflict.field),
+      mine: formatCollisionValue(conflict.mine),
+      server: formatCollisionValue(conflict.server),
+    })),
+    ...attributionDialogRows([
+      ...(pendingAttributionConflict.value?.references?.conflicts ?? []),
+      ...(pendingAttributionConflict.value?.acknowledgments?.conflicts ?? []),
+    ]),
+  ]);
 
   function cancelCollisionDialog() {
     pendingFlawConflict.value = null;
+    pendingAttributionConflict.value = null;
   }
 
   async function confirmCollisionDialog(choices: Record<string, CollisionChoice>) {
     if (isSaving.value) return;
     const pending = pendingFlawConflict.value;
-    if (!pending) return;
+    const attributionPending = pendingAttributionConflict.value;
+    if (!pending && !attributionPending) return;
 
     isSaving.value = true;
     try {
-      const saved = await putFlaw(
-        flaw.value.uuid,
-        flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
-        shouldCreateJiraTask.value,
-      );
-      acceptServerFlaw(
-        saved,
-        Object.keys(choices).filter(field => choices[field] === 'server'),
-      );
-      pendingFlawConflict.value = null;
-      toastAdoptedFields(pending.adopted);
+      if (pending) {
+        const saved = await putFlaw(
+          flaw.value.uuid,
+          flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
+          shouldCreateJiraTask.value,
+        );
+        acceptServerFlaw(
+          saved,
+          Object.keys(choices).filter(field => choices[field] === 'server'),
+        );
+        pendingFlawConflict.value = null;
+        toastAdoptedFields(pending.adopted);
+      }
+      if (attributionPending) {
+        await applyAttributionResolution(choices);
+      }
     } catch {
-      // putFlaw already shows the error. Leave the dialog open.
+      // putFlaw and the attribution saves already show their errors. The flaw
+      // pending stays open for a retry; attribution choices apply before saving.
     } finally {
       isSaving.value = false;
     }
@@ -484,12 +503,13 @@ export function useFlawModel() {
     collisionConflicts,
     confirmCollisionDialog,
     createFlaw,
-    showCollisionDialog: computed(() => pendingFlawConflict.value !== null),
+    showCollisionDialog: computed(() => pendingFlawConflict.value !== null
+    || pendingAttributionConflict.value !== null),
     updateFlaw,
     afterSaveSuccess,
     updateVector,
     ...useFlawCommentsModel(flaw, isSaving, afterSaveSuccess),
-    ...useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess),
+    ...flawAttributionsModel,
   };
 }
 

@@ -223,18 +223,29 @@ type FlawReferencePut = {
   updated_dt: string;
 } & FlawReferencePost;
 
-export function putFlawReference(
+export async function putFlawReference(
   flawId: string,
   referenceId: string,
   requestBody: FlawReferencePut,
+  options: { suppressConflictToast?: boolean } = {},
 ) {
-  return osidbFetch({
-    method: 'put',
-    url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
-    data: requestBody,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Reference updated.' }))
-    .catch(createCatchHandler('Error updating Reference:'));
+  try {
+    const response = await osidbFetch({
+      method: 'put',
+      url: `/osidb/api/v1/flaws/${flawId}/references/${referenceId}`,
+      data: requestBody,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'Reference updated.' })(response);
+    return response;
+  } catch (error) {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    // 409 is a stale updated_dt. 404 is a reference the server no longer has.
+    const reconcile = options.suppressConflictToast && (status === 409 || status === 404);
+    if (!reconcile) {
+      createCatchHandler('Error updating Reference:', false)(error);
+    }
+    throw error;
+  }
 }
 
 export async function deleteFlawReference(
@@ -274,14 +285,25 @@ export async function putFlawAcknowledgment(
   flawId: string,
   acknowledgmentId: string,
   requestBody: FlawAcknowledgmentPut,
+  options: { suppressConflictToast?: boolean } = {},
 ) {
-  return osidbFetch({
-    method: 'put',
-    url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
-    data: requestBody,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Acknowledgment updated.' }))
-    .catch(createCatchHandler('Error updating Acknowledgment:'));
+  try {
+    const response = await osidbFetch({
+      method: 'put',
+      url: `/osidb/api/v1/flaws/${flawId}/acknowledgments/${acknowledgmentId}`,
+      data: requestBody,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'Acknowledgment updated.' })(response);
+    return response;
+  } catch (error) {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    // 409 is a stale updated_dt. 404 is an acknowledgment the server no longer has.
+    const reconcile = options.suppressConflictToast && (status === 409 || status === 404);
+    if (!reconcile) {
+      createCatchHandler('Error updating Acknowledgment:', false)(error);
+    }
+    throw error;
+  }
 }
 
 export async function deleteFlawAcknowledgment(
