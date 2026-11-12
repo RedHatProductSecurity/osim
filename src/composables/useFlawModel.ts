@@ -290,7 +290,10 @@ export function useFlawModel() {
         flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
         shouldCreateJiraTask.value,
       );
-      acceptServerFlaw(saved);
+      acceptServerFlaw(
+        saved,
+        Object.keys(choices).filter(field => choices[field] === 'server'),
+      );
       pendingFlawConflict.value = null;
       toastAdoptedFields(pending.adopted);
     } catch {

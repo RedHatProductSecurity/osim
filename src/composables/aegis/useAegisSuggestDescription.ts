@@ -91,6 +91,9 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
     if (!aegisDescriptionSuggestionWatcher.hasAppliedSuggestion.value && previousDescriptionValue.value == null) {
       previousDescriptionValue.value = options.descriptionRef.value;
     }
+    // A false return means the owning form was replaced while the request was
+    // in flight; the response belongs to a flaw that is no longer displayed.
+    if (!aegisDescriptionSuggestionWatcher.applyAISuggestion(description)) return;
     requestDuration.value = duration;
     details.value = {
       suggested_description: description,
@@ -99,7 +102,6 @@ export function useAegisSuggestDescription(options: UseAegisSuggestDescriptionOp
       explanation: data.explanation,
       tools_used: data.tools_used,
     };
-    aegisDescriptionSuggestionWatcher.applyAISuggestion(description);
     if (!isBulkBusy.value) {
       toastStore.addToast({
         title: 'AI Suggestion Applied',
