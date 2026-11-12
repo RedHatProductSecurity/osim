@@ -12,6 +12,7 @@
 * BU labels can no longer be added or removed. You can still change the contributor (`OSIDB-5841`)
 
 ### Fixed
+* Show the Provenance column for users who saved their affects-table settings before it existed, instead of hiding it beyond the actions column, and render the badge inside the Label column as an icon-only marker (`OSIDB-5421`)
 * Refresh forwarded OSIDB access tokens before KPI requests so date-range and filter changes continue working after token expiry, and identify failed sources with actionable errors and explicit incomplete-result states (`AEGIS-547`)
 * Keep the flaw page from scrolling to the bottom when an Aegis suggestion tooltip opens (`OSIDB-5844`)
 * Keep flaw text fields responsive on flaws with many affects by checking only form fields while typing (`OSIDB-5839`)

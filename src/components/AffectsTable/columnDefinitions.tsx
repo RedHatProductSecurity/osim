@@ -153,7 +153,7 @@ export default function AffectColumnDefinitions(
     columnHelper.accessor('labels', {
       cell: ({ getValue, row }) => (
         <div class="d-flex gap-1 flex-wrap">
-          <ProvenanceBadge affect={row.original} />
+          <ProvenanceBadge affect={row.original} iconOnly />
           {getValue()?.map(name => (
             <span
               class="badge rounded-pill border text-black"
@@ -169,6 +169,7 @@ export default function AffectColumnDefinitions(
       size: 110,
     }),
     columnHelper.accessor(row => classifyAffectProvenance(row), {
+      id: 'provenance',
       cell: ({ row }) => <ProvenanceBadge affect={row.original} />,
       filterFn: 'arrIncludesWithBlanks',
       header: 'Provenance',
