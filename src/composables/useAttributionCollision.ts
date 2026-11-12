@@ -41,7 +41,10 @@ type AttributionItemSavers<TItem> = {
 
 export type AttributionCollisionState = {
   acknowledgments: AttributionItemSavers<ZodFlawAcknowledgmentType>;
+  /** Own the shared isSaving flag across a multi-write collision resolution. */
+  finishSaving: () => void;
   references: AttributionItemSavers<ZodFlawReferenceType>;
+  startSaving: () => void;
 };
 
 const CONFLICT_TOAST_TITLES: Record<AttributionCollection, string> = {
@@ -144,13 +147,23 @@ async function resaveResolvedChoices<TItem extends AttributionItem>(
   outcome: AttributionChoiceResult<TItem>,
   recreate: readonly TItem[],
   savers: AttributionItemSavers<TItem>,
+  onSaved: (uuid: string) => void,
 ): Promise<void> {
   for (const item of outcome.keepMine) {
     await savers.update(item);
+    onSaved(item.uuid);
   }
   for (const item of recreate) {
     await savers.create(item);
   }
+}
+
+/** Drop a saved row from the pending conflict so a retry cannot replay it. */
+function forgetResolvedRow<TItem extends AttributionItem>(
+  result: AttributionRebaseResult<TItem>,
+  uuid: string,
+) {
+  result.conflictedRows = result.conflictedRows.filter(row => row.uuid !== uuid);
 }
 
 /**
@@ -362,36 +375,52 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       } | null;
     } = { acknowledgments: null, references: null };
 
-    if (pending.references) {
-      const outcome = applyAttributionChoices(pending.references.conflictedRows, choices);
-      const resolved = resolveAttributionCollection(flaw.value.references, pending.references, outcome);
+    const referencePending = pending.references;
+    if (referencePending) {
+      const outcome = applyAttributionChoices(referencePending.conflictedRows, choices);
+      const resolved = resolveAttributionCollection(flaw.value.references, referencePending, outcome);
       flaw.value.references = resolved.collection;
       resolutions.references = { outcome, recreate: resolved.recreate };
     }
-    if (pending.acknowledgments) {
-      const outcome = applyAttributionChoices(pending.acknowledgments.conflictedRows, choices);
-      const resolved = resolveAttributionCollection(flaw.value.acknowledgments, pending.acknowledgments, outcome);
+    const acknowledgmentPending = pending.acknowledgments;
+    if (acknowledgmentPending) {
+      const outcome = applyAttributionChoices(acknowledgmentPending.conflictedRows, choices);
+      const resolved = resolveAttributionCollection(flaw.value.acknowledgments, acknowledgmentPending, outcome);
       flaw.value.acknowledgments = resolved.collection;
       resolutions.acknowledgments = { outcome, recreate: resolved.recreate };
     }
 
-    if (resolutions.references) {
-      await resaveResolvedChoices(resolutions.references.outcome, resolutions.references.recreate, state.references);
-    }
-    if (resolutions.acknowledgments) {
-      await resaveResolvedChoices(
-        resolutions.acknowledgments.outcome,
-        resolutions.acknowledgments.recreate,
-        state.acknowledgments,
-      );
-    }
+    // Own the shared isSaving flag for the whole resolution: the per-item
+    // saves must not clear it while writes or conflicts are still pending,
+    // or the dialog could accept a duplicate confirmation mid-resolution.
+    state.startSaving();
+    try {
+      if (resolutions.references && referencePending) {
+        await resaveResolvedChoices(
+          resolutions.references.outcome,
+          resolutions.references.recreate,
+          state.references,
+          uuid => forgetResolvedRow(referencePending, uuid),
+        );
+      }
+      if (resolutions.acknowledgments && acknowledgmentPending) {
+        await resaveResolvedChoices(
+          resolutions.acknowledgments.outcome,
+          resolutions.acknowledgments.recreate,
+          state.acknowledgments,
+          uuid => forgetResolvedRow(acknowledgmentPending, uuid),
+        );
+      }
 
-    // Keep the conflict retryable until the selected saves complete: a failed
-    // save leaves the dialog open with the chosen resolution still applicable.
-    acceptServerCollections(pending.server);
-    pendingAttributionConflict.value = null;
+      // Keep the conflict retryable until the selected saves complete: a failed
+      // save leaves the dialog open with the chosen resolution still applicable.
+      acceptServerCollections(pending.server);
+      pendingAttributionConflict.value = null;
 
-    await integrateServerAttributions();
+      await integrateServerAttributions();
+    } finally {
+      state.finishSaving();
+    }
   }
 
   /**

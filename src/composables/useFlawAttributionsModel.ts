@@ -232,7 +232,9 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     stageAttributionConflicts,
   } = useAttributionCollision({
     acknowledgments: { create: createAcknowledgment, update: putAcknowledgment },
+    finishSaving,
     references: { create: createReference, update: putReference },
+    startSaving,
   });
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
