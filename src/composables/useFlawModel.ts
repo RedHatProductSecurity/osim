@@ -55,7 +55,7 @@ const FieldToFeatureName: Record<string, string> = {
 };
 
 export function useFlawModel() {
-  const { acceptServerFlaw, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
+  const { acceptServerCollections, acceptServerFlaw, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const { adopted, pendingFlawConflict, resolveFlawSave } = useCollisionConflict();
@@ -126,6 +126,7 @@ export function useFlawModel() {
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
   const {
     applyAttributionResolution,
+    mergeServerAttributions,
     pendingAttributionConflict,
   } = flawAttributionsModel;
 
@@ -308,6 +309,10 @@ export function useFlawModel() {
           saved,
           Object.keys(choices).filter(field => choices[field] === 'server'),
         );
+        // acceptServerFlaw leaves the collections dirty; fold the server's
+        // collection changes in so they surface. Conflicts with local unsaved
+        // edits re-open the dialog as attribution rows.
+        mergeServerAttributions(saved);
         pendingFlawConflict.value = null;
         toastAdoptedFields(pending.adopted);
       }
@@ -365,12 +370,23 @@ export function useFlawModel() {
           ...getAegisMetadataIfChanged(),
         };
         const response = await putFlawResolvingDisjointConflict(payload);
+        // Fold the server's collection changes into the local edits (staging
+        // any both-side overlap for the collision dialog) before the deferred
+        // setFlaw replaces the model wholesale.
+        const mergedAttributions = mergeServerAttributions(response);
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
-        afterSuccessQueue.push(() => setFlaw({
-          ...response,
-          affects: flaw.value.affects,
-        }));
+        afterSuccessQueue.push(() => {
+          setFlaw({
+            ...response,
+            affects: flaw.value.affects,
+            acknowledgments: mergedAttributions.acknowledgments,
+            references: mergedAttributions.references,
+          });
+          // setFlaw baselines the merged collections; re-baseline them to the
+          // server truth so only the local edits stay dirty.
+          acceptServerCollections(response);
+        });
       },
       );
     }

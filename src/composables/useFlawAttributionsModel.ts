@@ -158,6 +158,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
   const {
     applyAttributionResolution,
     integrateServerAttributions,
+    mergeServerAttributions,
     pendingAttributionConflict,
     stageAttributionConflicts,
   } = useAttributionCollision({
@@ -260,6 +261,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     deleteAcknowledgment,
     applyAttributionResolution,
     integrateServerAttributions,
+    mergeServerAttributions,
     pendingAttributionConflict,
     stageAttributionConflicts,
   };

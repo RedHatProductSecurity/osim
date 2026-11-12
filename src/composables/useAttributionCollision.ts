@@ -309,10 +309,9 @@ export function useAttributionCollision(state: AttributionCollisionState) {
   }
 
   /**
-   * Fold server-side additions, updates, and removals of both kinds into the
-   * local model and baseline. Runs after a save finishes: just-saved items
-   * compare equal against their synced responses, so only unseen server
-   * changes adopt. Both-side overlaps found this way stage the collision dialog.
+   * Fetch the server collections and fold them in. Runs after a save finishes:
+   * just-saved items compare equal against their synced responses, so only
+   * unseen server changes adopt.
    */
   async function integrateServerAttributions(): Promise<void> {
     let server: ServerAttributions;
@@ -322,7 +321,16 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       console.error('useAttributionCollision::integrateServerAttributions() failed to reload flaw', error);
       return;
     }
+    mergeServerAttributions(server);
+  }
 
+  /**
+   * Fold server-side additions, updates, and removals of both kinds into the
+   * local model and baseline, staging any both-side overlap for the collision
+   * dialog. Returns the working arrays — merged, or still local when a kind
+   * staged conflicts — for callers that apply them through a deferred setFlaw.
+   */
+  function mergeServerAttributions(server: ServerAttributions): ServerAttributions {
     const adoptedLabels: string[] = [];
 
     const referenceResult = rebaseAttributionCollection(
@@ -332,6 +340,7 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       server.references,
       REFERENCE_CONFIG,
     );
+    let references = flaw.value.references;
     if (referenceResult.conflicts.length > 0) {
       pendingAttributionConflict.value = {
         acknowledgments: pendingAttributionConflict.value?.acknowledgments ?? null,
@@ -340,7 +349,8 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       };
     } else {
       adoptedLabels.push(...adoptedItemLabels(REFERENCE_CONFIG.itemLabel, referenceResult, flaw.value.references));
-      flaw.value.references = resolveAttributionCollection(flaw.value.references, referenceResult, null).collection;
+      references = resolveAttributionCollection(flaw.value.references, referenceResult, null).collection;
+      flaw.value.references = references;
     }
 
     const acknowledgmentResult = rebaseAttributionCollection(
@@ -350,6 +360,7 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       server.acknowledgments,
       ACKNOWLEDGMENT_CONFIG,
     );
+    let acknowledgments = flaw.value.acknowledgments;
     if (acknowledgmentResult.conflicts.length > 0) {
       pendingAttributionConflict.value = {
         acknowledgments: acknowledgmentResult,
@@ -362,20 +373,23 @@ export function useAttributionCollision(state: AttributionCollisionState) {
         acknowledgmentResult,
         flaw.value.acknowledgments,
       ));
-      flaw.value.acknowledgments = resolveAttributionCollection(
+      acknowledgments = resolveAttributionCollection(
         flaw.value.acknowledgments,
         acknowledgmentResult,
         null,
       ).collection;
+      flaw.value.acknowledgments = acknowledgments;
     }
 
     acceptServerCollections(server);
     toastAdoptedAttributions(adoptedLabels);
+    return { acknowledgments, references };
   }
 
   return {
     applyAttributionResolution,
     integrateServerAttributions,
+    mergeServerAttributions,
     pendingAttributionConflict,
     readServerAttributions,
     stageAttributionConflicts,
