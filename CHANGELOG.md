@@ -1,11 +1,10 @@
 # OSIM Changelog
 
-## [Unreleased]
+## [2026.11.1]
 ### Added
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)
-* Show black-outlined, yellow-filled warning icons with recorded reasons, discarded suggestions, and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled, with copy and close controls in the detail popups (`OSIDB-5469`)
 
 ### Changed
 * BU labels can no longer be added or removed. You can still change the contributor (`OSIDB-5841`)
@@ -13,6 +12,12 @@
 ### Fixed
 * Refresh forwarded OSIDB access tokens before KPI requests so date-range and filter changes continue working after token expiry, and identify failed sources with actionable errors and explicit incomplete-result states (`AEGIS-547`)
 * Keep the flaw page from scrolling to the bottom when an Aegis suggestion tooltip opens (`OSIDB-5844`)
+
+## [2026.11.0]
+### Added
+* Show black-outlined, yellow-filled warning icons with recorded reasons, discarded suggestions, and available metadata when AI-Bot skips field suggestions, including when AI generation is disabled, with copy and close controls in the detail popups (`OSIDB-5469`)
+
+### Fixed
 * Keep flaw text fields responsive on flaws with many affects by checking only form fields while typing (`OSIDB-5839`)
 * Show Aegis Multi Suggest loading indicators only for selected fields and clear them when generation completes (`AEGIS-542`)
 * Preserve AI-suggested flaw values during background loads, refreshes, and mid-air collision resolutions, and prevent stale responses from changing another flaw (`AEGIS-502`)
@@ -779,7 +784,9 @@ The first release for user testing, briefly reaching feature parity with OSIDB
 ### Added
 * Early repo layout & Flaw template
 
-[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.1...HEAD
+[Unreleased]: https://github.com/RedHatProductSecurity/osim/compare/v2026.11.1...HEAD
+[2026.11.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.11.0...v2026.11.1
+[2026.11.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.1...v2026.11.0
 [2026.10.1]: https://github.com/RedHatProductSecurity/osim/compare/v2026.10.0...v2026.10.1
 [2026.10.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.9.0...v2026.10.0
 [2026.9.0]: https://github.com/RedHatProductSecurity/osim/compare/v2026.8.2...v2026.9.0
