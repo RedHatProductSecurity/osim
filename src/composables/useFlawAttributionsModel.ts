@@ -1,5 +1,6 @@
 import { toRef, watch, toRaw, type Ref } from 'vue';
 
+import { useFlaw } from '@/composables/useFlaw';
 import { createCatchHandler } from '@/composables/service-helpers';
 import {
   isAlreadyDeleted,
@@ -23,6 +24,7 @@ import {
 } from '@/services/FlawService';
 
 export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<boolean>, afterSaveSuccess: () => void) {
+  const { acceptServerCollections, initialFlaw } = useFlaw();
   const flawReferences: Ref<ZodFlawReferenceType[]> = toRef(flaw.value, 'references');
   const flawAcknowledgments: Ref<ZodFlawAcknowledgmentType[]> = toRef(flaw.value, 'acknowledgments');
 
@@ -111,6 +113,11 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
         throw error;
       }
       flaw.value.references = flaw.value.references.filter(ref => ref.uuid !== referenceId);
+      // Baseline the server-confirmed removal so the form stays clean for it.
+      // initialFlaw exposes the baseline read-only; the clone detaches it.
+      acceptServerCollections({
+        references: initialFlaw.value.references.filter(ref => ref.uuid !== referenceId) as ZodFlawReferenceType[],
+      });
     } finally {
       finishSaving();
     }
@@ -162,6 +169,13 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
         throw error;
       }
       flaw.value.acknowledgments = flaw.value.acknowledgments.filter(ack => ack.uuid !== acknowledgmentId);
+      // Baseline the server-confirmed removal so the form stays clean for it.
+      // initialFlaw exposes the baseline read-only; the clone detaches it.
+      acceptServerCollections({
+        acknowledgments: initialFlaw.value.acknowledgments.filter(
+          ack => ack.uuid !== acknowledgmentId,
+        ) as ZodFlawAcknowledgmentType[],
+      });
     } finally {
       finishSaving();
     }

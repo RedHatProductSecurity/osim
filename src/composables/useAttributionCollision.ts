@@ -62,7 +62,11 @@ export function isAttributionConflict(error: unknown): boolean {
 
 /** The server reports the item is already gone; a local delete can treat it as done. */
 export function isAlreadyDeleted(error: unknown): boolean {
-  const data = (error as { response?: { data?: unknown } })?.response?.data;
+  const response = (error as { response?: { data?: unknown; status?: number } })?.response;
+  // Only a missing-item status counts: a 500 whose text happens to match is a
+  // server error, not a completed deletion.
+  if (response?.status !== 400 && response?.status !== 404) return false;
+  const data = response?.data;
   const text = typeof data === 'string' ? data : JSON.stringify(data ?? '');
   return /does not exist/i.test(text);
 }
@@ -371,9 +375,6 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       resolutions.acknowledgments = { outcome, recreate: resolved.recreate };
     }
 
-    acceptServerCollections(pending.server);
-    pendingAttributionConflict.value = null;
-
     if (resolutions.references) {
       await resaveResolvedChoices(resolutions.references.outcome, resolutions.references.recreate, state.references);
     }
@@ -384,6 +385,11 @@ export function useAttributionCollision(state: AttributionCollisionState) {
         state.acknowledgments,
       );
     }
+
+    // Keep the conflict retryable until the selected saves complete: a failed
+    // save leaves the dialog open with the chosen resolution still applicable.
+    acceptServerCollections(pending.server);
+    pendingAttributionConflict.value = null;
 
     await integrateServerAttributions();
   }

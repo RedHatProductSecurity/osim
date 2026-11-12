@@ -332,7 +332,8 @@ export function useFlawModel() {
       }
     } catch {
       // putFlaw and the attribution saves already show their errors. The flaw
-      // pending stays open for a retry; attribution choices apply before saving.
+      // pending stays open for a retry; a failed attribution save keeps its
+      // conflict pending for another confirm.
     } finally {
       isSaving.value = false;
     }

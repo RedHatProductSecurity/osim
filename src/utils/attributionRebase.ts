@@ -168,6 +168,25 @@ function attributionChoiceKey(kind: AttributionKind, uuid: string): string {
   return `${kind}:${uuid}`;
 }
 
+/** Editable fields per kind; the remaining schema fields are server-managed. */
+const EDITABLE_FIELDS_BY_KIND: Record<AttributionKind, readonly string[]> = {
+  acknowledgment: ACKNOWLEDGMENT_FIELDS,
+  reference: REFERENCE_FIELDS,
+};
+
+/** The server item with the local values of the user-editable fields overlaid. */
+function overlayEditableFields<TItem extends AttributionItem>(
+  mine: TItem,
+  server: TItem,
+  kind: AttributionKind,
+): TItem {
+  const merged = { ...server } as Record<string, unknown>;
+  for (const field of EDITABLE_FIELDS_BY_KIND[kind]) {
+    merged[field] = (mine as Record<string, unknown>)[field];
+  }
+  return merged as TItem;
+}
+
 /**
  * Multi-line `Field: value` summary of the fields where `item` differs from `base`.
  * A null base lists every field.
@@ -299,8 +318,9 @@ export function applyAttributionChoices<TItem extends AttributionItem>(
       recreate.push({ ...row.mine, updated_dt: null, uuid: '' });
       continue;
     }
-    // Keep the local edits but retry with the server token.
-    keepMine.push({ ...row.mine, updated_dt: row.server.updated_dt });
+    // Keep the local edits on the server's copy: server-managed fields such as
+    // embargoed keep the server's current value instead of a stale local one.
+    keepMine.push(overlayEditableFields(row.mine, row.server, row.kind));
   }
 
   return { adoptServer, drop, keepMine, recreate };
