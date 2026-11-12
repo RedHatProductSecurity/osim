@@ -14,6 +14,9 @@ const props = withDefaults(defineProps<{
 });
 
 const presentation = computed(() => provenancePresentation[classifyAffectProvenance(props.affect)]);
+// leading space kept in the string so the icon/label gap survives Vue's
+// whitespace condensing (template-level whitespace would be dropped)
+const labelText = computed(() => props.iconOnly ? '' : ` ${presentation.value.label}`);
 </script>
 <template>
   <span
@@ -24,7 +27,6 @@ const presentation = computed(() => provenancePresentation[classifyAffectProvena
     :aria-label="presentation.label"
     data-bs-toggle="tooltip"
   >
-    <i :class="['bi', presentation.icon]"></i>
-    <template v-if="!iconOnly"> {{ presentation.label }}</template>
+    <i :class="['bi', presentation.icon]"></i>{{ labelText }}
   </span>
 </template>

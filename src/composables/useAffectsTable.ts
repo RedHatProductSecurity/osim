@@ -210,13 +210,16 @@ export function useAffectsTable(
    * invisible. Reconcile instead: keep the persisted order for known ids,
    * drop ids that no longer exist, and insert new columns just before
    * `actions`.
+   *
+   * Column ids are only fully resolved once the table instantiates its
+   * columns (raw definitions leave function-accessor ids undefined), so the
+   * id list is captured from the table after creation below.
    */
+  const resolvedColumnIds = ref<string[]>([]);
   const reconciledColumnOrder = computed<string[]>(() => {
     const persisted = settings.value.affectsColumnOrder;
     if (!persisted.length) return [];
-    const columnIds = columns.value
-      .map(column => column.id)
-      .filter((id): id is string => id !== undefined);
+    const columnIds = resolvedColumnIds.value;
     const knownIds = new Set(columnIds);
     const ordered = persisted.filter(id => knownIds.has(id));
     const missing = columnIds.filter(id => !persisted.includes(id));
@@ -436,6 +439,11 @@ export function useAffectsTable(
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getExpandedRowModel: getExpandedRowModel(),
   });
+
+  // Capture the table's fully-resolved column ids for reconciledColumnOrder.
+  // The column set is static and header models build lazily, so a one-time
+  // capture right after table creation is sufficient.
+  resolvedColumnIds.value = table.getAllLeafColumns().map(column => column.id);
 
   function toggleColumnVisibility(column: Column<any, any>) {
     settings.value.affectsVisibility = {

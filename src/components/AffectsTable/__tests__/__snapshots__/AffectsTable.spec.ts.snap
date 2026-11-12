@@ -260,9 +260,9 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class="">
-          <div data-v-17587d65="" class="d-flex gap-1 flex-wrap"><span class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i> Legacy</span><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></div>
+          <div data-v-17587d65="" class="d-flex gap-1 flex-wrap"><span class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" aria-label="Legacy" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i><!--v-if--></span><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span></div>
         </td>
-        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i> Legacy</span></td>
+        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" aria-label="Legacy" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i>Legacy</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">xxxx-0-001</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-1</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-1-1</span></td>
@@ -299,9 +299,9 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class="">
-          <div data-v-17587d65="" class="d-flex gap-1 flex-wrap"><span class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i> Legacy</span><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span><span class="badge rounded-pill border text-black" style="background-color: rgb(216, 255, 137);">special-handling</span></div>
+          <div data-v-17587d65="" class="d-flex gap-1 flex-wrap"><span class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" aria-label="Legacy" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i><!--v-if--></span><span class="badge rounded-pill border text-black" style="background-color: rgb(161, 203, 245);">cloud</span><span class="badge rounded-pill border text-black" style="background-color: rgb(216, 255, 137);">special-handling</span></div>
         </td>
-        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i> Legacy</span></td>
+        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" aria-label="Legacy" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i>Legacy</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">xxxx-0-002</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-2</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-2-1</span></td>
@@ -338,9 +338,9 @@ exports[`affectsTable > should render 1`] = `
           <!---->
         </td>
         <td data-v-17587d65="" class="">
-          <div data-v-17587d65="" class="d-flex gap-1 flex-wrap"><span class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i> Legacy</span></div>
+          <div data-v-17587d65="" class="d-flex gap-1 flex-wrap"><span class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" aria-label="Legacy" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i><!--v-if--></span></div>
         </td>
-        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i> Legacy</span></td>
+        <td data-v-17587d65="" class=""><span data-v-17587d65="" class="badge bg-light text-dark border" style="cursor: default;" title="Created before provenance was tracked" aria-label="Legacy" data-bs-toggle="tooltip"><i class="bi bi-clock-history"></i>Legacy</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">xxxx-0-005</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-3</span></td>
         <td data-v-17587d65="" class=""><span data-v-244409b3="" data-v-17587d65="" tabindex="0" title="" class="">openshift-3-1</span></td>
