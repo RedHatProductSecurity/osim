@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { type ZodIssue } from 'zod';
@@ -124,11 +124,22 @@ export function useFlawModel() {
   }
 
   const flawAttributionsModel = useFlawAttributionsModel(flaw, isSaving, afterSaveSuccess);
+  // Fall back to an inert collision API when no attribution model exists, so a
+  // stubbed useFlawAttributionsModel cannot break the flaw model setup: the
+  // fallback never reports a conflict and keeps the local collections.
+  const attributionCollisionFallback = {
+    applyAttributionResolution: async () => {},
+    mergeServerAttributions: () => ({
+      acknowledgments: flaw.value.acknowledgments,
+      references: flaw.value.references,
+    }),
+    pendingAttributionConflict: shallowRef(null),
+  };
   const {
     applyAttributionResolution,
     mergeServerAttributions,
     pendingAttributionConflict,
-  } = flawAttributionsModel;
+  } = flawAttributionsModel ?? attributionCollisionFallback;
 
   const {
     cvssVector,

@@ -10,8 +10,10 @@ import {
   ACKNOWLEDGMENT_CONFIG,
   REFERENCE_CONFIG,
   applyAttributionChoices,
+  itemsEqual,
   rebaseAttributionCollection,
   type AttributionChoiceResult,
+  type AttributionConfig,
   type AttributionItem,
   type AttributionRebaseResult,
 } from '@/utils/attributionRebase';
@@ -147,21 +149,33 @@ async function resaveResolvedChoices<TItem extends AttributionItem>(
   }
 }
 
-/** Toast labels like 'Reference https://…' for the adopted server changes of one kind. */
-function adoptedItemLabels<TItem extends AttributionItem>(
-  labelItem: (item: TItem) => string,
+/**
+ * Adopted server updates the local copy cannot see yet. Converged updates —
+ * the form already holds the server values, e.g. items it just saved — are
+ * not changes worth reporting or adopting.
+ */
+function unseenServerUpdates<TItem extends AttributionItem, TField extends keyof TItem & string>(
+  config: AttributionConfig<TItem, TField>,
   result: AttributionRebaseResult<TItem>,
+  mine: readonly TItem[],
+): TItem[] {
+  const mineByUuid = new Map(mine.flatMap(item => item.uuid ? [[item.uuid, item] as const] : []));
+  return result.adoptedUpdates.filter((serverItem) => {
+    const local = mineByUuid.get(serverItem.uuid);
+    return local === undefined || !itemsEqual(local, serverItem, config.fields);
+  });
+}
+
+/** Labels for the items the server removed while the form left them alone. */
+function removalLabels<TItem extends AttributionItem>(
+  labelItem: (item: TItem) => string,
+  removals: readonly string[],
   current: readonly TItem[],
 ): string[] {
-  const removed = result.adoptedRemovals.flatMap((uuid) => {
+  return removals.flatMap((uuid) => {
     const item = current.find(currentItem => currentItem.uuid === uuid);
     return item ? [labelItem(item)] : [];
   });
-  return [
-    ...result.adoptedUpdates.map(labelItem),
-    ...result.adoptedAdditions.map(labelItem),
-    ...removed,
-  ];
 }
 
 /** Mirrors useFlawModel's toastAdoptedFields for adopted reference and acknowledgment items. */
@@ -173,6 +187,67 @@ function toastAdoptedAttributions(labels: readonly string[]) {
     body: `Kept your edits and took server updates for ${labels.join(', ')}.`,
     css: 'info',
   });
+}
+
+/** Companion to the adoption toast for items the server removed. */
+function toastRemovedAttributions(labels: readonly string[]) {
+  if (labels.length === 0) return;
+  const { addToast } = useToastStore();
+  addToast({
+    title: 'Flaw saved with newer changes',
+    body: `Kept your edits and took server removals for ${labels.join(', ')}.`,
+    css: 'info',
+  });
+}
+
+type AttributionKindMerge<TItem> = {
+  /** Whether the merge staged conflicts or applied server changes for this kind. */
+  acted: boolean;
+  /** Toast labels for the adopted changes the local copy cannot see. */
+  adoptedLabels: string[];
+  /** The working array: merged, or the local array when nothing applied. */
+  collection: TItem[];
+  /** Toast labels for the items the server removed. */
+  removedLabels: string[];
+};
+
+/**
+ * Merge one collection against the server. Conflicts stage the collision
+ * dialog and leave the local array untouched; otherwise server-only changes
+ * the local copy cannot see adopt. Updates the form already holds — converged
+ * with the server, e.g. items it just saved — adopt nothing, toast nothing,
+ * and re-baseline nothing.
+ */
+function mergeAttributionKind<TItem extends AttributionItem, TField extends keyof TItem & string>(
+  config: AttributionConfig<TItem, TField>,
+  base: readonly TItem[],
+  mine: TItem[],
+  serverItems: readonly TItem[],
+  stage: (result: AttributionRebaseResult<TItem>) => void,
+): AttributionKindMerge<TItem> {
+  const result = rebaseAttributionCollection(base, mine, serverItems, config);
+  if (result.conflicts.length > 0) {
+    stage(result);
+    return { acted: true, adoptedLabels: [], collection: mine, removedLabels: [] };
+  }
+
+  const unseenUpdates = unseenServerUpdates(config, result, mine);
+  const acted = unseenUpdates.length > 0
+    || result.adoptedAdditions.length > 0
+    || result.adoptedRemovals.length > 0;
+  if (!acted) {
+    return { acted: false, adoptedLabels: [], collection: mine, removedLabels: [] };
+  }
+
+  return {
+    acted: true,
+    adoptedLabels: [
+      ...unseenUpdates.map(config.itemLabel),
+      ...result.adoptedAdditions.map(config.itemLabel),
+    ],
+    collection: resolveAttributionCollection(mine, result, null).collection,
+    removedLabels: removalLabels(config.itemLabel, result.adoptedRemovals, mine),
+  };
 }
 
 /**
@@ -311,9 +386,10 @@ export function useAttributionCollision(state: AttributionCollisionState) {
   /**
    * Fetch the server collections and fold them in. Runs after a save finishes:
    * just-saved items compare equal against their synced responses, so only
-   * unseen server changes adopt.
+   * unseen server changes adopt. A flaw without a uuid has nothing to fetch.
    */
   async function integrateServerAttributions(): Promise<void> {
+    if (!flaw.value.uuid) return;
     let server: ServerAttributions;
     try {
       server = await readServerAttributions();
@@ -326,64 +402,55 @@ export function useAttributionCollision(state: AttributionCollisionState) {
 
   /**
    * Fold server-side additions, updates, and removals of both kinds into the
-   * local model and baseline, staging any both-side overlap for the collision
-   * dialog. Returns the working arrays — merged, or still local when a kind
-   * staged conflicts — for callers that apply them through a deferred setFlaw.
+   * local model, staging any both-side overlap for the collision dialog.
+   * Returns the working arrays — merged, or still local when a kind staged
+   * conflicts or had nothing to adopt — for callers that apply them through a
+   * deferred setFlaw. Only kinds the merge acted on re-baseline.
    */
   function mergeServerAttributions(server: ServerAttributions): ServerAttributions {
-    const adoptedLabels: string[] = [];
-
-    const referenceResult = rebaseAttributionCollection(
+    const referencesMerge = mergeAttributionKind(
+      REFERENCE_CONFIG,
       // The rebase only reads the baseline; initialFlaw exposes it read-only.
       initialFlaw.value.references as ZodFlawReferenceType[],
       flaw.value.references,
       server.references,
-      REFERENCE_CONFIG,
+      (result) => {
+        pendingAttributionConflict.value = {
+          acknowledgments: pendingAttributionConflict.value?.acknowledgments ?? null,
+          references: result,
+          server,
+        };
+      },
     );
-    let references = flaw.value.references;
-    if (referenceResult.conflicts.length > 0) {
-      pendingAttributionConflict.value = {
-        acknowledgments: pendingAttributionConflict.value?.acknowledgments ?? null,
-        references: referenceResult,
-        server,
-      };
-    } else {
-      adoptedLabels.push(...adoptedItemLabels(REFERENCE_CONFIG.itemLabel, referenceResult, flaw.value.references));
-      references = resolveAttributionCollection(flaw.value.references, referenceResult, null).collection;
-      flaw.value.references = references;
+    if (referencesMerge.acted) {
+      flaw.value.references = referencesMerge.collection;
     }
 
-    const acknowledgmentResult = rebaseAttributionCollection(
+    const acknowledgmentsMerge = mergeAttributionKind(
+      ACKNOWLEDGMENT_CONFIG,
       // The rebase only reads the baseline; initialFlaw exposes it read-only.
       initialFlaw.value.acknowledgments as ZodFlawAcknowledgmentType[],
       flaw.value.acknowledgments,
       server.acknowledgments,
-      ACKNOWLEDGMENT_CONFIG,
+      (result) => {
+        pendingAttributionConflict.value = {
+          acknowledgments: result,
+          references: pendingAttributionConflict.value?.references ?? null,
+          server,
+        };
+      },
     );
-    let acknowledgments = flaw.value.acknowledgments;
-    if (acknowledgmentResult.conflicts.length > 0) {
-      pendingAttributionConflict.value = {
-        acknowledgments: acknowledgmentResult,
-        references: pendingAttributionConflict.value?.references ?? null,
-        server,
-      };
-    } else {
-      adoptedLabels.push(...adoptedItemLabels(
-        ACKNOWLEDGMENT_CONFIG.itemLabel,
-        acknowledgmentResult,
-        flaw.value.acknowledgments,
-      ));
-      acknowledgments = resolveAttributionCollection(
-        flaw.value.acknowledgments,
-        acknowledgmentResult,
-        null,
-      ).collection;
-      flaw.value.acknowledgments = acknowledgments;
+    if (acknowledgmentsMerge.acted) {
+      flaw.value.acknowledgments = acknowledgmentsMerge.collection;
     }
 
-    acceptServerCollections(server);
-    toastAdoptedAttributions(adoptedLabels);
-    return { acknowledgments, references };
+    acceptServerCollections({
+      ...(acknowledgmentsMerge.acted && { acknowledgments: server.acknowledgments }),
+      ...(referencesMerge.acted && { references: server.references }),
+    });
+    toastAdoptedAttributions([...referencesMerge.adoptedLabels, ...acknowledgmentsMerge.adoptedLabels]);
+    toastRemovedAttributions([...referencesMerge.removedLabels, ...acknowledgmentsMerge.removedLabels]);
+    return { acknowledgments: acknowledgmentsMerge.collection, references: referencesMerge.collection };
   }
 
   return {

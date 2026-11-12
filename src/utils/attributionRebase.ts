@@ -145,7 +145,8 @@ function valuesEqual(left: unknown, right: unknown): boolean {
   return jsonEquals(left ?? null, right ?? null);
 }
 
-function itemsEqual<TItem, TField extends keyof TItem & string>(
+/** Compare two items on the config's fields, ignoring server-managed fields. */
+export function itemsEqual<TItem, TField extends keyof TItem & string>(
   left: TItem,
   right: TItem,
   fields: readonly TField[],

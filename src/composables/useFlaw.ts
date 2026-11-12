@@ -95,10 +95,15 @@ function acceptServerFlaw(saved: ZodFlawType, serverChosenFields: Iterable<strin
 }
 
 // Baseline the reference and acknowledgment collections on server truth,
-// keeping unsaved local edits visible as dirty against it.
-function acceptServerCollections(server: Pick<ZodFlawType, 'acknowledgments' | 'references'>) {
-  initialFlaw.value.references = cloneField(server.references);
-  initialFlaw.value.acknowledgments = cloneField(server.acknowledgments);
+// keeping unsaved local edits visible as dirty against it. Omitted kinds keep
+// their current baseline, so callers can re-baseline one kind at a time.
+function acceptServerCollections(server: Partial<Pick<ZodFlawType, 'acknowledgments' | 'references'>>) {
+  if (server.references !== undefined) {
+    initialFlaw.value.references = cloneField(server.references);
+  }
+  if (server.acknowledgments !== undefined) {
+    initialFlaw.value.acknowledgments = cloneField(server.acknowledgments);
+  }
 }
 
 const isFlawUpdated = computed(

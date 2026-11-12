@@ -1,4 +1,4 @@
-import { toRef, watch, type Ref } from 'vue';
+import { toRef, watch, toRaw, type Ref } from 'vue';
 
 import { createCatchHandler } from '@/composables/service-helpers';
 import {
@@ -34,20 +34,35 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     flawAcknowledgments.value = flaw.value.acknowledgments;
   });
 
+  /** Sync the concurrency token from a PUT response back into the list. */
+  function syncReferenceResponse(reference: { uuid: string }, response?: { data?: any }) {
+    if (response?.data) {
+      const index = flawReferences.value.findIndex(ref => ref.uuid === reference.uuid);
+      if (index !== -1) {
+        flawReferences.value[index] = { ...flawReferences.value[index], ...response.data };
+      }
+    }
+  }
+
+  /** PUT a reference, always forwarding the options argument positionally. */
+  async function putReference(reference: ZodFlawReferenceType, options?: { suppressConflictToast?: boolean }) {
+    const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any, options);
+    syncReferenceResponse(reference, response);
+  }
+
   async function updateReference(
     reference: { uuid: string } & ZodFlawReferenceType,
     options?: { suppressConflictToast?: boolean },
   ) {
     isSaving.value = true;
     try {
-      const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any, options);
-      // Sync concurrency token from response for subsequent edits
-      if (response?.data) {
-        const index = flawReferences.value.findIndex(ref => ref.uuid === reference.uuid);
-        if (index !== -1) {
-          flawReferences.value[index] = { ...flawReferences.value[index], ...response.data };
-        }
+      if (options) {
+        await putReference(reference, options);
+        return;
       }
+      // Option-less callers keep the plain three-argument service call.
+      const response = await putFlawReference(flaw.value.uuid, reference.uuid, reference as any);
+      syncReferenceResponse(reference, response);
     } finally {
       isSaving.value = false;
     }
@@ -58,9 +73,10 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     const response = await postFlawReference(flaw.value.uuid, reference)
       .finally(() => isSaving.value = false);
 
-    // Update the local reference with the UUID from the server response
+    // Update the local reference with the UUID from the server response.
+    // The list holds reactive proxies, so match the raw objects underneath.
     if (response?.data?.uuid) {
-      const index = flawReferences.value.findIndex(ref => ref === reference);
+      const index = flawReferences.value.findIndex(ref => toRaw(ref) === toRaw(reference));
       if (index !== -1) {
         flawReferences.value[index] = { ...reference, ...response.data };
       }
@@ -105,9 +121,10 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     const response = await postFlawAcknowledgment(flaw.value.uuid, acknowledgment)
       .finally(() => isSaving.value = false);
 
-    // Update the local acknowledgment with the UUID from the server response
+    // Update the local acknowledgment with the UUID from the server response.
+    // The list holds reactive proxies, so match the raw objects underneath.
     if (response?.data?.uuid) {
-      const index = flawAcknowledgments.value.findIndex(ack => ack === acknowledgment);
+      const index = flawAcknowledgments.value.findIndex(ack => toRaw(ack) === toRaw(acknowledgment));
       if (index !== -1) {
         flawAcknowledgments.value[index] = { ...acknowledgment, ...response.data };
       }
@@ -131,25 +148,43 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     afterSaveSuccess();
   }
 
+  /** Sync the concurrency token from a PUT response back into the list. */
+  function syncAcknowledgmentResponse(acknowledgment: { uuid: string }, response?: { data?: any }) {
+    if (response?.data) {
+      const index = flawAcknowledgments.value.findIndex(ack => ack.uuid === acknowledgment.uuid);
+      if (index !== -1) {
+        flawAcknowledgments.value[index] = { ...flawAcknowledgments.value[index], ...response.data };
+      }
+    }
+  }
+
+  /** PUT an acknowledgment, always forwarding the options argument positionally. */
+  async function putAcknowledgment(
+    acknowledgment: ZodFlawAcknowledgmentType,
+    options?: { suppressConflictToast?: boolean },
+  ) {
+    const response = await putFlawAcknowledgment(
+      flaw.value.uuid,
+      acknowledgment.uuid,
+      acknowledgment as any,
+      options,
+    );
+    syncAcknowledgmentResponse(acknowledgment, response);
+  }
+
   async function updateAcknowledgment(
     acknowledgment: ZodFlawAcknowledgmentType,
     options?: { suppressConflictToast?: boolean },
   ) {
     isSaving.value = true;
     try {
-      const response = await putFlawAcknowledgment(
-        flaw.value.uuid,
-        acknowledgment.uuid,
-        acknowledgment as any,
-        options,
-      );
-      // Sync concurrency token from response for subsequent edits
-      if (response?.data) {
-        const index = flawAcknowledgments.value.findIndex(ack => ack.uuid === acknowledgment.uuid);
-        if (index !== -1) {
-          flawAcknowledgments.value[index] = { ...flawAcknowledgments.value[index], ...response.data };
-        }
+      if (options) {
+        await putAcknowledgment(acknowledgment, options);
+        return;
       }
+      // Option-less callers keep the plain three-argument service call.
+      const response = await putFlawAcknowledgment(flaw.value.uuid, acknowledgment.uuid, acknowledgment as any);
+      syncAcknowledgmentResponse(acknowledgment, response);
     } finally {
       isSaving.value = false;
     }
@@ -162,8 +197,8 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     pendingAttributionConflict,
     stageAttributionConflicts,
   } = useAttributionCollision({
-    acknowledgments: { create: createAcknowledgment, update: updateAcknowledgment },
-    references: { create: createReference, update: updateReference },
+    acknowledgments: { create: createAcknowledgment, update: putAcknowledgment },
+    references: { create: createReference, update: putReference },
   });
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
