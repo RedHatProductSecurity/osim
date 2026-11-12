@@ -137,6 +137,8 @@ export const ZodAffectSchema = z.object({
   embargoed: z.boolean(), // read-only
   created_dt: zodOsimDateTime().nullish(), // $date-time,
   updated_dt: zodOsimDateTime().nullish(), // $date-time,
+  created_by: z.string().nullish(),
+  assist_meta: z.record(z.any()).nullish(),
   alerts: z.array(ZodAlertSchema).default([]),
 
   // V2 Types

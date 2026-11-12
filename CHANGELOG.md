@@ -2,6 +2,7 @@
 
 ## [2026.11.1]
 ### Added
+* Show whether each affect was created by a user or by automation, with a provenance badge in the Label column and a sortable, filterable Provenance column (`OSIDB-5421`)
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)
@@ -10,6 +11,7 @@
 * BU labels can no longer be added or removed. You can still change the contributor (`OSIDB-5841`)
 
 ### Fixed
+* Show the Provenance column for users who saved their affects-table settings before it existed, instead of hiding it beyond the actions column, and render the badge inside the Label column as an icon-only marker (`OSIDB-5421`)
 * Refresh forwarded OSIDB access tokens before KPI requests so date-range and filter changes continue working after token expiry, and identify failed sources with actionable errors and explicit incomplete-result states (`AEGIS-547`)
 * Keep the flaw page from scrolling to the bottom when an Aegis suggestion tooltip opens (`OSIDB-5844`)
 

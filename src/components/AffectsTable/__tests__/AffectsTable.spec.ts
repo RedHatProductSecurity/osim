@@ -8,7 +8,7 @@ import { useAffectsModel } from '@/composables/useAffectsModel';
 import { clearCloseTrackerSession } from '@/composables/useAffectsTable';
 
 import SampleFlawFull from '@/__tests__/__fixtures__/sampleFlawFull.json';
-import type { ZodFlawType } from '@/types';
+import type { ZodAffectType, ZodFlawType } from '@/types';
 import { useSettingsStore } from '@/stores/SettingsStore';
 import * as TrackerService from '@/services/TrackerService';
 import * as JiraService from '@/services/JiraService';
@@ -43,6 +43,24 @@ const select = async (wrapper: Awaited<ReturnType<typeof mountAffectsTable>>, ..
   for (const i of indices) await wrapper.findAll('tbody tr input[type="checkbox"]')[i].setValue(true);
   await flushPromises();
 };
+
+function provenanceAffects(): ZodAffectType[] {
+  const { affects } = structuredClone(SampleFlawFull as unknown as ZodFlawType);
+  const [human, legacy, automation] = affects;
+  return [
+    { ...human, created_by: 'analyst@redhat.com' },
+    legacy,
+    { ...automation, created_by: 'AffectCreationEngine' },
+    {
+      ...automation,
+      assist_meta: { source: 'aegis' },
+      created_by: 'analyst2@redhat.com',
+      ps_component: 'openshift-3-2',
+      ps_update_stream: 'xxxx-0-006',
+      uuid: '0f8e64a3-0bb0-4c92-a26e-2e8d64df83a7',
+    },
+  ];
+}
 
 describe('affectsTable', () => {
   beforeEach(() => {
@@ -1148,6 +1166,256 @@ describe('affectsTable', () => {
         expect(flaw.value.affects[0].ps_component).toBe(originalAffect.ps_component);
         expect(flaw.value.affects[0].affectedness).toBe(originalAffect.affectedness);
       });
+    });
+  });
+
+  describe('affect provenance', () => {
+    type TableWrapper = Awaited<ReturnType<typeof mountAffectsTable>>;
+
+    const PROVENANCE_STREAMS = ['xxxx-0-001', 'xxxx-0-002', 'xxxx-0-005', 'xxxx-0-006'];
+
+    const header = (wrapper: TableWrapper, text: string) =>
+      wrapper.findAll('thead th').find(th => th.text().includes(text))!;
+
+    const headerIndex = (wrapper: TableWrapper, text: string) =>
+      wrapper.findAll('thead th').findIndex(th => th.text().includes(text));
+
+    const rows = (wrapper: TableWrapper) => wrapper.findAll('tbody tr');
+
+    const rowByStream = (wrapper: TableWrapper, stream: string) =>
+      rows(wrapper).find(row => row.text().includes(stream))!;
+
+    const rowStreams = (wrapper: TableWrapper) =>
+      rows(wrapper).map(row => PROVENANCE_STREAMS.find(stream => row.text().includes(stream)));
+
+    beforeEach(async () => {
+      const { settings } = useSettingsStore();
+      const affects = provenanceAffects();
+      useFlaw().flaw.value.affects = affects;
+      settings.affectsPerPage = affects.length;
+      await flushPromises();
+    });
+
+    it('renders the icon-only provenance badge before the label pills', async () => {
+      const wrapper = await mountAffectsTable();
+      const labelCell = rowByStream(wrapper, 'xxxx-0-001').findAll('td')[headerIndex(wrapper, 'Label')];
+
+      const badges = labelCell.findAll('.badge');
+      expect(badges).toHaveLength(2);
+      expect(badges[0].text()).toBe('');
+      expect(badges[0].attributes('aria-label')).toBe('Human');
+      expect(badges[0].find('i').classes()).toContain('bi-person-fill');
+      expect(badges[0].classes()).toContain('bg-success');
+      expect(badges[1].text()).toBe('cloud');
+      expect(badges[1].classes()).toContain('rounded-pill');
+    });
+
+    it('renders the icon-only provenance badge when the affect has no labels', async () => {
+      const wrapper = await mountAffectsTable();
+      const labelCell = rowByStream(wrapper, 'xxxx-0-005').findAll('td')[headerIndex(wrapper, 'Label')];
+
+      const badges = labelCell.findAll('.badge');
+      expect(badges).toHaveLength(1);
+      expect(badges[0].text()).toBe('');
+      expect(badges[0].attributes('aria-label')).toBe('ACE automation');
+      expect(badges[0].find('i').classes()).toContain('bi-robot');
+    });
+
+    it('renders a distinct badge per provenance category', async () => {
+      const wrapper = await mountAffectsTable();
+      const provenanceColumn = headerIndex(wrapper, 'Provenance');
+
+      const expectations = [
+        {
+          badgeClasses: 'bg-secondary',
+          icon: 'bi-robot',
+          label: 'ACE automation',
+          stream: 'xxxx-0-005',
+          tooltip: 'Created automatically by the Affect Creation Engine (ACE)',
+        },
+        {
+          badgeClasses: 'bg-info',
+          icon: 'bi-person-workspace',
+          label: 'Hybrid (AI-assist)',
+          stream: 'xxxx-0-006',
+          tooltip: 'Created by a user with AI assistance',
+        },
+        {
+          badgeClasses: 'bg-success',
+          icon: 'bi-person-fill',
+          label: 'Human',
+          stream: 'xxxx-0-001',
+          tooltip: 'Created by a user',
+        },
+        {
+          badgeClasses: 'bg-light',
+          icon: 'bi-clock-history',
+          label: 'Legacy',
+          stream: 'xxxx-0-002',
+          tooltip: 'Created before provenance was tracked',
+        },
+      ];
+
+      for (const expected of expectations) {
+        const badge = rowByStream(wrapper, expected.stream).findAll('td')[provenanceColumn].find('.badge')!;
+        expect(badge.text()).toBe(expected.label);
+        expect(badge.classes()).toContain(expected.badgeClasses);
+        expect(badge.find('i').classes()).toContain(expected.icon);
+        expect(badge.attributes('title')).toBe(expected.tooltip);
+      }
+    });
+
+    it('sorts rows by provenance category', async () => {
+      const wrapper = await mountAffectsTable();
+      const provenanceHeader = header(wrapper, 'Provenance');
+      expect(provenanceHeader.classes()).toContain('sortable');
+
+      await provenanceHeader.trigger('click');
+      await flushPromises();
+
+      expect(rowStreams(wrapper)).toEqual(['xxxx-0-005', 'xxxx-0-001', 'xxxx-0-006', 'xxxx-0-002']);
+    });
+
+    it('filters rows to the selected provenance categories', async () => {
+      const wrapper = await mountAffectsTable();
+      await header(wrapper, 'Provenance').find('.dropdown-trigger').trigger('click');
+      await flushPromises();
+
+      const categoryCheckbox = (category: string) =>
+        header(wrapper, 'Provenance')
+          .findAll<HTMLInputElement>('.dropdown-menu input[type="checkbox"]')
+          .find(input => input.element.parentElement?.textContent?.trim() === category)!;
+
+      await categoryCheckbox('human').setValue(true);
+      await flushPromises();
+      expect(rows(wrapper)).toHaveLength(1);
+      expect(rows(wrapper)[0].text()).toContain('xxxx-0-001');
+
+      await categoryCheckbox('automation').setValue(true);
+      await flushPromises();
+      expect(rows(wrapper)).toHaveLength(2);
+    });
+
+    it('lists the Provenance column in the column options', async () => {
+      const wrapper = await mountAffectsTable();
+
+      await wrapper.find('button[data-bs-toggle="dropdown"]').trigger('click');
+      await flushPromises();
+
+      const provenanceCheckbox = wrapper.findAll('.dropdown-menu .draggable input[type="checkbox"]')
+        .find(checkbox => checkbox.element.parentElement?.textContent?.includes('Provenance'));
+
+      expect(provenanceCheckbox).toBeDefined();
+      expect((provenanceCheckbox!.element as HTMLInputElement).checked).toBe(true);
+    });
+
+    it('shows newly added affects as human-created', async () => {
+      const wrapper = await mountAffectsTable();
+
+      await wrapper.find('button:has(.bi-plus-lg)').trigger('click');
+      await flushPromises();
+
+      const newRow = rows(wrapper).find(row => row.classes('new'))!;
+      const badge = newRow.findAll('td')[headerIndex(wrapper, 'Provenance')].find('.badge')!;
+      expect(badge.text()).toBe('Human');
+      expect(badge.classes()).toContain('bg-success');
+    });
+  });
+
+  describe('column order reconciliation', () => {
+    // Column order as persisted by a user who saved the affects-table settings
+    // before the Provenance column existed (OSIDB-5421): no `provenance` id
+    // and the trailing sticky `actions` column last.
+    const PRE_PROVENANCE_ORDER = [
+      'Select',
+      'cve',
+      'labels',
+      'ps_update_stream',
+      'ps_module',
+      'ps_component',
+      'purl',
+      'subpackage_purls',
+      'affectedness',
+      'not_affected_justification',
+      'resolution',
+      'impact',
+      'cvss_scores',
+      'tracker',
+      'Tracker Status',
+      'created_dt',
+      'updated_dt',
+      'Tracker Creation date',
+      'Tracker Update date',
+      'actions',
+    ];
+
+    afterEach(() => {
+      useSettingsStore().settings.affectsColumnOrder = [];
+    });
+
+    it('renders a column missing from the persisted order before the actions column', async () => {
+      const { settings } = useSettingsStore();
+      settings.affectsColumnOrder = [...PRE_PROVENANCE_ORDER];
+
+      const wrapper = await mountAffectsTable();
+      const headers = wrapper.findAll('thead th');
+
+      // the previously missing column adds exactly one header
+      expect(headers).toHaveLength(PRE_PROVENANCE_ORDER.length + 1);
+
+      const headerTexts = headers.map(th => th.text());
+      const provenanceHeader = headerTexts.findIndex(text => text.includes('Provenance'));
+      const actionsHeader = headerTexts.findIndex(text => text.includes('Actions'));
+      expect(provenanceHeader).toBe(actionsHeader - 1);
+      expect(actionsHeader).toBe(headerTexts.length - 1);
+
+      // the persisted order is otherwise respected
+      const expectedSequence = [
+        'Related CVEs',
+        'Label',
+        'Product Stream',
+        'Affectedness',
+        'CVSS',
+        'Tracker Status',
+        'Affect Update date',
+      ];
+      const indices = expectedSequence.map(label =>
+        headerTexts.findIndex(text => text.includes(label)));
+      expect(indices.every(index => index !== -1)).toBe(true);
+      expect(indices).toEqual([...indices].sort((a, b) => a - b));
+    });
+
+    it('writes the reconciled order, including previously missing columns, back to settings on reorder', async () => {
+      const { settings } = useSettingsStore();
+      settings.affectsColumnOrder = [...PRE_PROVENANCE_ORDER];
+
+      const wrapper = await mountAffectsTable();
+
+      const columnOptionsBtn = wrapper.find('button[data-bs-toggle="dropdown"]');
+      await columnOptionsBtn.trigger('click');
+      await flushPromises();
+
+      // Drag the first draggable column onto the second
+      const draggableItems = wrapper.findAll('li[draggable="true"]');
+      expect(draggableItems.length).toBeGreaterThanOrEqual(2);
+      await draggableItems[0].trigger('dragstart', { dataTransfer: { setData: vi.fn() } });
+      await draggableItems[1].trigger('dragover');
+      await draggableItems[1].trigger('drop');
+      await draggableItems[0].trigger('dragend');
+      await flushPromises();
+
+      const persistedOrder = settings.affectsColumnOrder;
+      // the drag was applied
+      expect(persistedOrder).not.toEqual(PRE_PROVENANCE_ORDER);
+      // self-healing: every current column id, including the previously missing one, is persisted
+      expect(persistedOrder).toContain('provenance');
+      expect(new Set(persistedOrder)).toEqual(new Set([...PRE_PROVENANCE_ORDER, 'provenance']));
+      expect(persistedOrder.indexOf('provenance')).toBeLessThan(persistedOrder.indexOf('actions'));
+
+      // the rendered headers follow the reconciled order, with the dragged swap applied
+      const headerTexts = wrapper.findAll('thead th').map(th => th.text());
+      expect(headerTexts.findIndex(text => text.includes('Label')))
+        .toBeLessThan(headerTexts.findIndex(text => text.includes('Related CVEs')));
     });
   });
 });

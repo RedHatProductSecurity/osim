@@ -41,7 +41,7 @@ export interface Affect {
      * @type {string}
      * @memberof Affect
      */
-    psModule?: string;
+    readonly psModule: string;
     /**
      * 
      * @type {string}
@@ -92,16 +92,22 @@ export interface Affect {
     purl?: string | null;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof Affect
+     */
+    subpackagePurls?: Array<string>;
+    /**
+     * 
      * @type {AffectNotAffectedJustification}
      * @memberof Affect
      */
     notAffectedJustification?: AffectNotAffectedJustification;
     /**
      * 
-     * @type {string}
+     * @type {AffectDelegatedNotAffectedJustification}
      * @memberof Affect
      */
-    readonly delegatedNotAffectedJustification: string;
+    delegatedNotAffectedJustification: AffectDelegatedNotAffectedJustification;
     /**
      * 
      * @type {string}
@@ -115,11 +121,35 @@ export interface Affect {
      */
     readonly labels: Array<string>;
     /**
+     * 
+     * @type {string}
+     * @memberof Affect
+     */
+    readonly createdBy: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Affect
+     */
+    readonly updatedBy: string;
+    /**
+     * 
+     * @type {any}
+     * @memberof Affect
+     */
+    assistMeta?: any | null;
+    /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
      * @memberof Affect
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof Affect
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -157,6 +187,12 @@ export interface AffectBulkPostPutResponse {
      * @memberof AffectBulkPostPutResponse
      */
     results: Array<Affect>;
+    /**
+     * 
+     * @type {Array<{ [key: string]: any; }>}
+     * @memberof AffectBulkPostPutResponse
+     */
+    failed?: Array<{ [key: string]: any; }>;
 }
 /**
  * Affect serializer
@@ -199,12 +235,6 @@ export interface AffectBulkPutRequest {
      * @type {string}
      * @memberof AffectBulkPutRequest
      */
-    psModule?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AffectBulkPutRequest
-     */
     psComponent?: string | null;
     /**
      * 
@@ -220,10 +250,22 @@ export interface AffectBulkPutRequest {
     purl?: string | null;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof AffectBulkPutRequest
+     */
+    subpackagePurls?: Array<string>;
+    /**
+     * 
      * @type {AffectNotAffectedJustification}
      * @memberof AffectBulkPutRequest
      */
     notAffectedJustification?: AffectNotAffectedJustification;
+    /**
+     * 
+     * @type {any}
+     * @memberof AffectBulkPutRequest
+     */
+    assistMeta?: any | null;
     /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
@@ -291,6 +333,12 @@ export interface AffectCVSS {
      * @memberof AffectCVSS
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof AffectCVSS
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -414,6 +462,12 @@ export interface AffectCVSSV2 {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof AffectCVSSV2
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof AffectCVSSV2
@@ -501,6 +555,12 @@ export interface AffectCVSSV2PutRequest {
     updatedDt: string;
 }
 /**
+ * @type AffectDelegatedNotAffectedJustification
+ * 
+ * @export
+ */
+export type AffectDelegatedNotAffectedJustification = BlankEnum | DelegatedNotAffectedJustificationEnum;
+/**
  * @type AffectImpact
  * 
  * @export
@@ -547,12 +607,6 @@ export interface AffectPostRequest {
      * @type {string}
      * @memberof AffectPostRequest
      */
-    psModule?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AffectPostRequest
-     */
     psComponent?: string | null;
     /**
      * 
@@ -568,10 +622,22 @@ export interface AffectPostRequest {
     purl?: string | null;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof AffectPostRequest
+     */
+    subpackagePurls?: Array<string>;
+    /**
+     * 
      * @type {AffectNotAffectedJustification}
      * @memberof AffectPostRequest
      */
     notAffectedJustification?: AffectNotAffectedJustification;
+    /**
+     * 
+     * @type {any}
+     * @memberof AffectPostRequest
+     */
+    assistMeta?: any | null;
     /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
@@ -651,12 +717,6 @@ export interface AffectRequest {
      * @type {string}
      * @memberof AffectRequest
      */
-    psModule?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AffectRequest
-     */
     psComponent?: string | null;
     /**
      * 
@@ -672,10 +732,22 @@ export interface AffectRequest {
     purl?: string | null;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof AffectRequest
+     */
+    subpackagePurls?: Array<string>;
+    /**
+     * 
      * @type {AffectNotAffectedJustification}
      * @memberof AffectRequest
      */
     notAffectedJustification?: AffectNotAffectedJustification;
+    /**
+     * 
+     * @type {any}
+     * @memberof AffectRequest
+     */
+    assistMeta?: any | null;
     /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
@@ -803,6 +875,12 @@ export interface AffectV1 {
      * @memberof AffectV1
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof AffectV1
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -1278,6 +1356,12 @@ export interface CollectorsApiV1StatusRetrieve200ResponseCollectorsInner {
      * @memberof CollectorsApiV1StatusRetrieve200ResponseCollectorsInner
      */
     updatedUntil?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CollectorsApiV1StatusRetrieve200ResponseCollectorsInner
+     */
+    enabled?: boolean;
 }
 
 
@@ -1442,6 +1526,20 @@ export const CvssVersionEnum = {
     V4: 'V4'
 } as const;
 export type CvssVersionEnum = typeof CvssVersionEnum[keyof typeof CvssVersionEnum];
+
+
+/**
+ * 
+ * @export
+ */
+export const DelegatedNotAffectedJustificationEnum = {
+    ComponentNotPresent: 'Component not Present',
+    InlineMitigationsAlreadyExist: 'Inline Mitigations already Exist',
+    VulnerableCodeCannotBeControlledByAdversary: 'Vulnerable Code cannot be Controlled by Adversary',
+    VulnerableCodeNotInExecutePath: 'Vulnerable Code not in Execute Path',
+    VulnerableCodeNotPresent: 'Vulnerable Code not Present'
+} as const;
+export type DelegatedNotAffectedJustificationEnum = typeof DelegatedNotAffectedJustificationEnum[keyof typeof DelegatedNotAffectedJustificationEnum];
 
 /**
  * 
@@ -2161,10 +2259,17 @@ export interface Flaw {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
+     * @type {string}
      * @memberof Flaw
      */
-    requiresCveDescription?: FlawRequiresCveDescription;
+    readonly selectedCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Flaw
+     * @deprecated
+     */
+    readonly requiresCveDescription: string;
     /**
      * 
      * @type {string}
@@ -2221,6 +2326,12 @@ export interface Flaw {
     nistCvssValidation?: FlawNistCvssValidation;
     /**
      * 
+     * @type {Array<UpstreamData>}
+     * @memberof Flaw
+     */
+    readonly upstreamData: Array<UpstreamData>;
+    /**
+     * 
      * @type {Array<Affect>}
      * @memberof Flaw
      */
@@ -2274,6 +2385,12 @@ export interface Flaw {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof Flaw
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {string}
      * @memberof Flaw
@@ -2295,8 +2412,9 @@ export interface Flaw {
      * 
      * @type {string}
      * @memberof Flaw
+     * @deprecated
      */
-    groupKey?: string;
+    readonly groupKey: string;
     /**
      * 
      * @type {string}
@@ -2313,8 +2431,9 @@ export interface Flaw {
      * 
      * @type {string}
      * @memberof Flaw
+     * @deprecated
      */
-    teamId?: string;
+    readonly teamId: string;
     /**
      * 
      * @type {Array<Alert>}
@@ -2364,6 +2483,12 @@ export interface FlawAcknowledgment {
      * @memberof FlawAcknowledgment
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawAcknowledgment
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -2548,6 +2673,12 @@ export interface FlawCVSS {
      * @memberof FlawCVSS
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawCVSS
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -2750,6 +2881,12 @@ export interface FlawCVSSV2 {
      * @memberof FlawCVSSV2
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawCVSSV2
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -2954,7 +3091,7 @@ export interface FlawCollaboratorPostRequest {
 export const FlawCollaboratorPostTypeEnum = {
     Alias: 'alias',
     ContextBased: 'context_based',
-    Workflow: 'workflow'
+    Bu: 'bu'
 } as const;
 export type FlawCollaboratorPostTypeEnum = typeof FlawCollaboratorPostTypeEnum[keyof typeof FlawCollaboratorPostTypeEnum];
 
@@ -3067,6 +3204,12 @@ export interface FlawComment {
      * @memberof FlawComment
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawComment
+     */
+    readonly visibility: VisibilityEnum;
 }
 /**
  * FlawComment serializer for use by flaw_comments endpoint
@@ -3125,10 +3268,9 @@ export interface FlawLabel {
  */
 export const FlawLabelType = {
     Alias: 'alias',
-    Bu: 'bu',
     ContextBased: 'context_based',
     ProductFamily: 'product_family',
-    Workflow: 'workflow'
+    Bu: 'bu'
 } as const;
 export type FlawLabelType = typeof FlawLabelType[keyof typeof FlawLabelType];
 
@@ -3180,6 +3322,12 @@ export interface FlawPackageVersion {
      * @memberof FlawPackageVersion
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawPackageVersion
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {string}
@@ -3293,12 +3441,6 @@ export interface FlawPostRequest {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
-     * @memberof FlawPostRequest
-     */
-    requiresCveDescription?: FlawRequiresCveDescription;
-    /**
-     * 
      * @type {string}
      * @memberof FlawPostRequest
      */
@@ -3335,10 +3477,11 @@ export interface FlawPostRequest {
     mitigation?: string;
     /**
      * 
-     * @type {FlawMajorIncidentState}
+     * @type {FlawPostRequestMajorIncidentState}
      * @memberof FlawPostRequest
+     * @deprecated
      */
-    majorIncidentState?: FlawMajorIncidentState;
+    majorIncidentState?: FlawPostRequestMajorIncidentState;
     /**
      * 
      * @type {string}
@@ -3368,19 +3511,252 @@ export interface FlawPostRequest {
      * @type {string}
      * @memberof FlawPostRequest
      */
-    groupKey?: string;
+    owner?: string;
+}
+/**
+ * @type FlawPostRequestMajorIncidentState
+ * 
+ * @export
+ */
+export type FlawPostRequestMajorIncidentState = BlankEnum | MajorIncidentStateEnum;
+/**
+ * serialize flaw model
+ * @export
+ * @interface FlawPut
+ */
+export interface FlawPut {
     /**
      * 
      * @type {string}
-     * @memberof FlawPostRequest
+     * @memberof FlawPut
+     */
+    readonly uuid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    cveId?: string | null;
+    /**
+     * 
+     * @type {AffectImpact}
+     * @memberof FlawPut
+     */
+    impact?: AffectImpact;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof FlawPut
+     */
+    components?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    title: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof FlawPut
+     */
+    readonly trackers: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    commentZero: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    cveDescription?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    readonly selectedCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     * @deprecated
+     */
+    readonly requiresCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    statement?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    cweId?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    unembargoDt?: string | null;
+    /**
+     * 
+     * @type {FlawSource}
+     * @memberof FlawPut
+     */
+    source?: FlawSource;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    reportedDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    mitigation?: string;
+    /**
+     * 
+     * @type {FlawPostRequestMajorIncidentState}
+     * @memberof FlawPut
+     * @deprecated
+     */
+    majorIncidentState?: FlawPostRequestMajorIncidentState;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    majorIncidentStartDt?: string | null;
+    /**
+     * 
+     * @type {FlawNistCvssValidation}
+     * @memberof FlawPut
+     */
+    nistCvssValidation?: FlawNistCvssValidation;
+    /**
+     * 
+     * @type {Array<UpstreamData>}
+     * @memberof FlawPut
+     */
+    readonly upstreamData: Array<UpstreamData>;
+    /**
+     * 
+     * @type {Array<Affect>}
+     * @memberof FlawPut
+     */
+    readonly affects: Array<Affect>;
+    /**
+     * 
+     * @type {Array<Comment>}
+     * @memberof FlawPut
+     */
+    readonly comments: Array<Comment>;
+    /**
+     * 
+     * @type {any}
+     * @memberof FlawPut
+     */
+    aegisMeta?: any | null;
+    /**
+     * 
+     * @type {Array<Package>}
+     * @memberof FlawPut
+     */
+    readonly packageVersions: Array<Package>;
+    /**
+     * 
+     * @type {Array<FlawAcknowledgment>}
+     * @memberof FlawPut
+     */
+    readonly acknowledgments: Array<FlawAcknowledgment>;
+    /**
+     * 
+     * @type {Array<FlawReference>}
+     * @memberof FlawPut
+     */
+    readonly references: Array<FlawReference>;
+    /**
+     * 
+     * @type {Array<FlawCVSS>}
+     * @memberof FlawPut
+     */
+    readonly cvssScores: Array<FlawCVSS>;
+    /**
+     * 
+     * @type {Array<FlawCollaborator>}
+     * @memberof FlawPut
+     */
+    readonly labels: Array<FlawCollaborator>;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof FlawPut
+     */
+    embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawPut
+     */
+    readonly visibility: VisibilityEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     */
+    readonly createdDt: string;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof FlawPut
+     */
+    updatedDt: string;
+    /**
+     * 
+     * @type {FlawClassification}
+     * @memberof FlawPut
+     */
+    classification: FlawClassification;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     * @deprecated
+     */
+    readonly groupKey: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
      */
     owner?: string;
     /**
      * 
      * @type {string}
-     * @memberof FlawPostRequest
+     * @memberof FlawPut
      */
-    teamId?: string;
+    readonly taskKey: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawPut
+     * @deprecated
+     */
+    readonly teamId: string;
+    /**
+     * 
+     * @type {Array<Alert>}
+     * @memberof FlawPut
+     */
+    readonly alerts: Array<Alert>;
 }
 /**
  * FlawReference serializer
@@ -3424,6 +3800,12 @@ export interface FlawReference {
      * @memberof FlawReference
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawReference
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -3630,12 +4012,6 @@ export interface FlawRequest {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
-     * @memberof FlawRequest
-     */
-    requiresCveDescription?: FlawRequiresCveDescription;
-    /**
-     * 
      * @type {string}
      * @memberof FlawRequest
      */
@@ -3711,26 +4087,8 @@ export interface FlawRequest {
      * @type {string}
      * @memberof FlawRequest
      */
-    groupKey?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FlawRequest
-     */
     owner?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FlawRequest
-     */
-    teamId?: string;
 }
-/**
- * @type FlawRequiresCveDescription
- * 
- * @export
- */
-export type FlawRequiresCveDescription = BlankEnum | RequiresCveDescriptionEnum;
 /**
  * @type FlawSource
  * 
@@ -3904,10 +4262,17 @@ export interface FlawV1 {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
+     * @type {string}
      * @memberof FlawV1
      */
-    requiresCveDescription?: FlawRequiresCveDescription;
+    readonly selectedCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FlawV1
+     * @deprecated
+     */
+    readonly requiresCveDescription: string;
     /**
      * 
      * @type {string}
@@ -3964,6 +4329,12 @@ export interface FlawV1 {
     nistCvssValidation?: FlawNistCvssValidation;
     /**
      * 
+     * @type {Array<UpstreamData>}
+     * @memberof FlawV1
+     */
+    readonly upstreamData: Array<UpstreamData>;
+    /**
+     * 
      * @type {Array<AffectV1>}
      * @memberof FlawV1
      */
@@ -4017,6 +4388,12 @@ export interface FlawV1 {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof FlawV1
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {string}
      * @memberof FlawV1
@@ -4038,8 +4415,9 @@ export interface FlawV1 {
      * 
      * @type {string}
      * @memberof FlawV1
+     * @deprecated
      */
-    groupKey?: string;
+    readonly groupKey: string;
     /**
      * 
      * @type {string}
@@ -4056,8 +4434,9 @@ export interface FlawV1 {
      * 
      * @type {string}
      * @memberof FlawV1
+     * @deprecated
      */
-    teamId?: string;
+    readonly teamId: string;
     /**
      * 
      * @type {Array<Alert>}
@@ -4128,12 +4507,6 @@ export interface FlawV1Request {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
-     * @memberof FlawV1Request
-     */
-    requiresCveDescription?: FlawRequiresCveDescription;
-    /**
-     * 
      * @type {string}
      * @memberof FlawV1Request
      */
@@ -4209,19 +4582,7 @@ export interface FlawV1Request {
      * @type {string}
      * @memberof FlawV1Request
      */
-    groupKey?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FlawV1Request
-     */
     owner?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FlawV1Request
-     */
-    teamId?: string;
 }
 /**
  * PackageVer serializer used by FlawPackageVersionSerializer.
@@ -4265,6 +4626,25 @@ export type ImpactEnum = typeof ImpactEnum[keyof typeof ImpactEnum];
 /**
  * 
  * @export
+ * @interface IncidentRequestRequest
+ */
+export interface IncidentRequestRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof IncidentRequestRequest
+     */
+    comment: string;
+    /**
+     * 
+     * @type {KindEnum}
+     * @memberof IncidentRequestRequest
+     */
+    kind: KindEnum;
+}
+/**
+ * 
+ * @export
  * @interface IntegrationTokenGet
  */
 export interface IntegrationTokenGet {
@@ -4294,6 +4674,18 @@ export const IssuerEnum = {
     Cisa: 'CISA'
 } as const;
 export type IssuerEnum = typeof IssuerEnum[keyof typeof IssuerEnum];
+
+
+/**
+ * 
+ * @export
+ */
+export const KindEnum = {
+    MajorIncidentRequested: 'MAJOR_INCIDENT_REQUESTED',
+    ExploitsKevRequested: 'EXPLOITS_KEV_REQUESTED',
+    MinorIncidentRequested: 'MINOR_INCIDENT_REQUESTED'
+} as const;
+export type KindEnum = typeof KindEnum[keyof typeof KindEnum];
 
 
 /**
@@ -4498,6 +4890,12 @@ export interface OsidbApiV1AffectsCvssScoresRetrieve200Response {
      * @memberof OsidbApiV1AffectsCvssScoresRetrieve200Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1AffectsCvssScoresRetrieve200Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -4704,6 +5102,12 @@ export interface OsidbApiV1AffectsRetrieve200Response {
      * @memberof OsidbApiV1AffectsRetrieve200Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1AffectsRetrieve200Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -5052,6 +5456,12 @@ export interface OsidbApiV1FlawsAcknowledgmentsCreate201Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsAcknowledgmentsCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof OsidbApiV1FlawsAcknowledgmentsCreate201Response
@@ -5216,6 +5626,12 @@ export interface OsidbApiV1FlawsCommentsCreate201Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsCommentsCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsCommentsCreate201Response
@@ -5351,10 +5767,17 @@ export interface OsidbApiV1FlawsCreate201Response {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
+     * @type {string}
      * @memberof OsidbApiV1FlawsCreate201Response
      */
-    requiresCveDescription?: FlawRequiresCveDescription;
+    readonly selectedCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsCreate201Response
+     * @deprecated
+     */
+    readonly requiresCveDescription: string;
     /**
      * 
      * @type {string}
@@ -5411,6 +5834,12 @@ export interface OsidbApiV1FlawsCreate201Response {
     nistCvssValidation?: FlawNistCvssValidation;
     /**
      * 
+     * @type {Array<UpstreamData>}
+     * @memberof OsidbApiV1FlawsCreate201Response
+     */
+    readonly upstreamData: Array<UpstreamData>;
+    /**
+     * 
      * @type {Array<AffectV1>}
      * @memberof OsidbApiV1FlawsCreate201Response
      */
@@ -5464,6 +5893,12 @@ export interface OsidbApiV1FlawsCreate201Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsCreate201Response
@@ -5485,8 +5920,9 @@ export interface OsidbApiV1FlawsCreate201Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsCreate201Response
+     * @deprecated
      */
-    groupKey?: string;
+    readonly groupKey: string;
     /**
      * 
      * @type {string}
@@ -5503,8 +5939,9 @@ export interface OsidbApiV1FlawsCreate201Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsCreate201Response
+     * @deprecated
      */
-    teamId?: string;
+    readonly teamId: string;
     /**
      * 
      * @type {Array<Alert>}
@@ -5590,6 +6027,12 @@ export interface OsidbApiV1FlawsCvssScoresCreate201Response {
      * @memberof OsidbApiV1FlawsCvssScoresCreate201Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsCvssScoresCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -5685,6 +6128,43 @@ export interface OsidbApiV1FlawsCvssScoresList200Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsCvssScoresList200Response
+     */
+    version?: string;
+}
+/**
+ * 
+ * @export
+ * @interface OsidbApiV1FlawsIndexRetrieve200Response
+ */
+export interface OsidbApiV1FlawsIndexRetrieve200Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsIndexRetrieve200Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsIndexRetrieve200Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {Array<Array<string>>}
+     * @memberof OsidbApiV1FlawsIndexRetrieve200Response
+     */
+    results: Array<Array<string>>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsIndexRetrieve200Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsIndexRetrieve200Response
      */
     version?: string;
 }
@@ -5902,6 +6382,12 @@ export interface OsidbApiV1FlawsPackageVersionsCreate201Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsPackageVersionsCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsPackageVersionsCreate201Response
@@ -6035,6 +6521,12 @@ export interface OsidbApiV1FlawsReferencesCreate201Response {
      * @memberof OsidbApiV1FlawsReferencesCreate201Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsReferencesCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -6189,10 +6681,17 @@ export interface OsidbApiV1FlawsRetrieve200Response {
     cveDescription?: string;
     /**
      * 
-     * @type {FlawRequiresCveDescription}
+     * @type {string}
      * @memberof OsidbApiV1FlawsRetrieve200Response
      */
-    requiresCveDescription?: FlawRequiresCveDescription;
+    readonly selectedCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsRetrieve200Response
+     * @deprecated
+     */
+    readonly requiresCveDescription: string;
     /**
      * 
      * @type {string}
@@ -6249,6 +6748,12 @@ export interface OsidbApiV1FlawsRetrieve200Response {
     nistCvssValidation?: FlawNistCvssValidation;
     /**
      * 
+     * @type {Array<UpstreamData>}
+     * @memberof OsidbApiV1FlawsRetrieve200Response
+     */
+    readonly upstreamData: Array<UpstreamData>;
+    /**
+     * 
      * @type {Array<Affect>}
      * @memberof OsidbApiV1FlawsRetrieve200Response
      */
@@ -6302,6 +6807,12 @@ export interface OsidbApiV1FlawsRetrieve200Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsRetrieve200Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsRetrieve200Response
@@ -6323,8 +6834,9 @@ export interface OsidbApiV1FlawsRetrieve200Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsRetrieve200Response
+     * @deprecated
      */
-    groupKey?: string;
+    readonly groupKey: string;
     /**
      * 
      * @type {string}
@@ -6341,8 +6853,9 @@ export interface OsidbApiV1FlawsRetrieve200Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsRetrieve200Response
+     * @deprecated
      */
-    teamId?: string;
+    readonly teamId: string;
     /**
      * 
      * @type {Array<Alert>}
@@ -6371,6 +6884,269 @@ export interface OsidbApiV1FlawsRetrieve200Response {
      * 
      * @type {string}
      * @memberof OsidbApiV1FlawsRetrieve200Response
+     */
+    version?: string;
+}
+/**
+ * 
+ * @export
+ * @interface OsidbApiV1FlawsUpdate200Response
+ */
+export interface OsidbApiV1FlawsUpdate200Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly uuid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    cveId?: string | null;
+    /**
+     * 
+     * @type {AffectImpact}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    impact?: AffectImpact;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    components?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    title: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly trackers: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    commentZero: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    cveDescription?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly selectedCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     * @deprecated
+     */
+    readonly requiresCveDescription: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    statement?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    cweId?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    unembargoDt?: string | null;
+    /**
+     * 
+     * @type {FlawSource}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    source?: FlawSource;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    reportedDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    mitigation?: string;
+    /**
+     * 
+     * @type {FlawPostRequestMajorIncidentState}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     * @deprecated
+     */
+    majorIncidentState?: FlawPostRequestMajorIncidentState;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    majorIncidentStartDt?: string | null;
+    /**
+     * 
+     * @type {FlawNistCvssValidation}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    nistCvssValidation?: FlawNistCvssValidation;
+    /**
+     * 
+     * @type {Array<UpstreamData>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly upstreamData: Array<UpstreamData>;
+    /**
+     * 
+     * @type {Array<Affect>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly affects: Array<Affect>;
+    /**
+     * 
+     * @type {Array<Comment>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly comments: Array<Comment>;
+    /**
+     * 
+     * @type {any}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    aegisMeta?: any | null;
+    /**
+     * 
+     * @type {Array<Package>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly packageVersions: Array<Package>;
+    /**
+     * 
+     * @type {Array<FlawAcknowledgment>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly acknowledgments: Array<FlawAcknowledgment>;
+    /**
+     * 
+     * @type {Array<FlawReference>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly references: Array<FlawReference>;
+    /**
+     * 
+     * @type {Array<FlawCVSS>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly cvssScores: Array<FlawCVSS>;
+    /**
+     * 
+     * @type {Array<FlawCollaborator>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly labels: Array<FlawCollaborator>;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly createdDt: string;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    updatedDt: string;
+    /**
+     * 
+     * @type {FlawClassification}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    classification: FlawClassification;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     * @deprecated
+     */
+    readonly groupKey: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    owner?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly taskKey: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     * @deprecated
+     */
+    readonly teamId: string;
+    /**
+     * 
+     * @type {Array<Alert>}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    readonly alerts: Array<Alert>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1FlawsUpdate200Response
      */
     version?: string;
 }
@@ -6563,6 +7339,158 @@ export interface OsidbApiV1StatusRetrieve200ResponseOsidbData {
 /**
  * 
  * @export
+ * @interface OsidbApiV1SyncManagersList200Response
+ */
+export interface OsidbApiV1SyncManagersList200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    count: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    next?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    previous?: string | null;
+    /**
+     * 
+     * @type {Array<SyncManager>}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    results: Array<SyncManager>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersList200Response
+     */
+    version?: string;
+}
+/**
+ * 
+ * @export
+ * @interface OsidbApiV1SyncManagersRetrieve200Response
+ */
+export interface OsidbApiV1SyncManagersRetrieve200Response {
+    /**
+     * 
+     * @type {number}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    readonly id: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    syncId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastScheduledDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastStartedDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastFinishedDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastFailedDt?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastConsecutiveFailures?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    permanentlyFailed?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastRescheduledDt?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    lastConsecutiveReschedules?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV1SyncManagersRetrieve200Response
+     */
+    version?: string;
+}
+/**
+ * 
+ * @export
  * @interface OsidbApiV1TrackersList200Response
  */
 export interface OsidbApiV1TrackersList200Response {
@@ -6700,6 +7628,12 @@ export interface OsidbApiV1TrackersRetrieve200Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV1TrackersRetrieve200Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof OsidbApiV1TrackersRetrieve200Response
@@ -6754,6 +7688,12 @@ export interface OsidbApiV2AffectsBulkUpdate200Response {
      * @memberof OsidbApiV2AffectsBulkUpdate200Response
      */
     results: Array<Affect>;
+    /**
+     * 
+     * @type {Array<{ [key: string]: any; }>}
+     * @memberof OsidbApiV2AffectsBulkUpdate200Response
+     */
+    failed?: Array<{ [key: string]: any; }>;
     /**
      * 
      * @type {string}
@@ -6820,7 +7760,7 @@ export interface OsidbApiV2AffectsCreate201Response {
      * @type {string}
      * @memberof OsidbApiV2AffectsCreate201Response
      */
-    psModule?: string;
+    readonly psModule: string;
     /**
      * 
      * @type {string}
@@ -6871,16 +7811,22 @@ export interface OsidbApiV2AffectsCreate201Response {
     purl?: string | null;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof OsidbApiV2AffectsCreate201Response
+     */
+    subpackagePurls?: Array<string>;
+    /**
+     * 
      * @type {AffectNotAffectedJustification}
      * @memberof OsidbApiV2AffectsCreate201Response
      */
     notAffectedJustification?: AffectNotAffectedJustification;
     /**
      * 
-     * @type {string}
+     * @type {AffectDelegatedNotAffectedJustification}
      * @memberof OsidbApiV2AffectsCreate201Response
      */
-    readonly delegatedNotAffectedJustification: string;
+    delegatedNotAffectedJustification: AffectDelegatedNotAffectedJustification;
     /**
      * 
      * @type {string}
@@ -6894,11 +7840,35 @@ export interface OsidbApiV2AffectsCreate201Response {
      */
     readonly labels: Array<string>;
     /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2AffectsCreate201Response
+     */
+    readonly createdBy: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbApiV2AffectsCreate201Response
+     */
+    readonly updatedBy: string;
+    /**
+     * 
+     * @type {any}
+     * @memberof OsidbApiV2AffectsCreate201Response
+     */
+    assistMeta?: any | null;
+    /**
      * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
      * @type {boolean}
      * @memberof OsidbApiV2AffectsCreate201Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV2AffectsCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -6996,6 +7966,12 @@ export interface OsidbApiV2AffectsCvssScoresCreate201Response {
      * @memberof OsidbApiV2AffectsCvssScoresCreate201Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV2AffectsCvssScoresCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -7203,6 +8179,12 @@ export interface OsidbApiV2FlawsCvssScoresCreate201Response {
      * @memberof OsidbApiV2FlawsCvssScoresCreate201Response
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV2FlawsCvssScoresCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -7435,6 +8417,12 @@ export interface OsidbApiV2TrackersCreate201Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV2TrackersCreate201Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof OsidbApiV2TrackersCreate201Response
@@ -7617,6 +8605,12 @@ export interface OsidbApiV2TrackersRetrieve200Response {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof OsidbApiV2TrackersRetrieve200Response
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof OsidbApiV2TrackersRetrieve200Response
@@ -7699,6 +8693,43 @@ export interface OsidbIntegrationsRetrieve200Response {
      * 
      * @type {string}
      * @memberof OsidbIntegrationsRetrieve200Response
+     */
+    version?: string;
+}
+/**
+ * Vault integration is disabled
+ * @export
+ * @interface OsidbIntegrationsRetrieve503Response
+ */
+export interface OsidbIntegrationsRetrieve503Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbIntegrationsRetrieve503Response
+     */
+    detail?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbIntegrationsRetrieve503Response
+     */
+    dt?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbIntegrationsRetrieve503Response
+     */
+    env?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbIntegrationsRetrieve503Response
+     */
+    revision?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OsidbIntegrationsRetrieve503Response
      */
     version?: string;
 }
@@ -8483,6 +9514,37 @@ export interface PaginatedSupportedProductsList {
 /**
  * 
  * @export
+ * @interface PaginatedSyncManagerList
+ */
+export interface PaginatedSyncManagerList {
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedSyncManagerList
+     */
+    count: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaginatedSyncManagerList
+     */
+    next?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaginatedSyncManagerList
+     */
+    previous?: string | null;
+    /**
+     * 
+     * @type {Array<SyncManager>}
+     * @memberof PaginatedSyncManagerList
+     */
+    results: Array<SyncManager>;
+}
+/**
+ * 
+ * @export
  * @interface PaginatedTrackerList
  */
 export interface PaginatedTrackerList {
@@ -8635,18 +9697,6 @@ export interface RejectRequest {
  * 
  * @export
  */
-export const RequiresCveDescriptionEnum = {
-    Requested: 'REQUESTED',
-    Approved: 'APPROVED',
-    Rejected: 'REJECTED'
-} as const;
-export type RequiresCveDescriptionEnum = typeof RequiresCveDescriptionEnum[keyof typeof RequiresCveDescriptionEnum];
-
-
-/**
- * 
- * @export
- */
 export const ResolutionEnum = {
     Fix: 'FIX',
     Defer: 'DEFER',
@@ -8735,6 +9785,79 @@ export interface SupportedProducts {
      * @memberof SupportedProducts
      */
     name: string;
+}
+/**
+ * 
+ * @export
+ * @interface SyncManager
+ */
+export interface SyncManager {
+    /**
+     * 
+     * @type {number}
+     * @memberof SyncManager
+     */
+    readonly id: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    syncId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    lastScheduledDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    lastStartedDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    lastFinishedDt?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    lastFailedDt?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof SyncManager
+     */
+    lastConsecutiveFailures?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SyncManager
+     */
+    permanentlyFailed?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof SyncManager
+     */
+    lastRescheduledDt?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof SyncManager
+     */
+    lastConsecutiveReschedules?: number;
 }
 /**
  * 
@@ -8898,6 +10021,12 @@ export interface Tracker {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof Tracker
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof Tracker
@@ -9000,6 +10129,12 @@ export interface TrackerPost {
      * @memberof TrackerPost
      */
     embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof TrackerPost
+     */
+    readonly visibility: VisibilityEnum;
     /**
      * 
      * @type {Array<Alert>}
@@ -9258,6 +10393,12 @@ export interface TrackerV1 {
      */
     embargoed: boolean;
     /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof TrackerV1
+     */
+    readonly visibility: VisibilityEnum;
+    /**
      * 
      * @type {Array<Alert>}
      * @memberof TrackerV1
@@ -9363,6 +10504,103 @@ export interface TrackersApiV2FileCreate200Response {
     version?: string;
 }
 /**
+ * Serializer for OSV/collector upstream metadata attached to a flaw (read-only via API).
+ * @export
+ * @interface UpstreamData
+ */
+export interface UpstreamData {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpstreamData
+     */
+    readonly uuid: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpstreamData
+     */
+    flaw: string;
+    /**
+     * 
+     * @type {any}
+     * @memberof UpstreamData
+     */
+    readonly upstreamPurls: any | null;
+    /**
+     * 
+     * @type {UpstreamDataSourceEnum}
+     * @memberof UpstreamData
+     */
+    readonly source: UpstreamDataSourceEnum;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof UpstreamData
+     */
+    embargoed: boolean;
+    /**
+     * The visibility level of the resource based on ACL read groups.
+     * @type {VisibilityEnum}
+     * @memberof UpstreamData
+     */
+    readonly visibility: VisibilityEnum;
+    /**
+     * 
+     * @type {Array<Alert>}
+     * @memberof UpstreamData
+     */
+    readonly alerts: Array<Alert>;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpstreamData
+     */
+    readonly createdDt: string;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof UpstreamData
+     */
+    updatedDt: string;
+}
+/**
+ * Serializer for OSV/collector upstream metadata attached to a flaw (read-only via API).
+ * @export
+ * @interface UpstreamDataRequest
+ */
+export interface UpstreamDataRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpstreamDataRequest
+     */
+    flaw: string;
+    /**
+     * The embargoed boolean attribute is technically read-only as it just indirectly modifies the ACLs but is mandatory as it controls the access to the resource.
+     * @type {boolean}
+     * @memberof UpstreamDataRequest
+     */
+    embargoed: boolean;
+    /**
+     * The updated_dt timestamp attribute is mandatory on update as it is used to detect mit-air collisions.
+     * @type {string}
+     * @memberof UpstreamDataRequest
+     */
+    updatedDt: string;
+}
+
+/**
+ * 
+ * @export
+ */
+export const UpstreamDataSourceEnum = {
+    Osv: 'OSV',
+    Cveorg: 'CVEORG'
+} as const;
+export type UpstreamDataSourceEnum = typeof UpstreamDataSourceEnum[keyof typeof UpstreamDataSourceEnum];
+
+/**
  * 
  * @export
  * @interface User
@@ -9393,3 +10631,15 @@ export interface User {
      */
     readonly profile: Profile;
 }
+
+/**
+ * 
+ * @export
+ */
+export const VisibilityEnum = {
+    Embargoed: 'EMBARGOED',
+    Internal: 'INTERNAL',
+    Public: 'PUBLIC'
+} as const;
+export type VisibilityEnum = typeof VisibilityEnum[keyof typeof VisibilityEnum];
+
