@@ -610,7 +610,8 @@ describe('aegisAIService', () => {
       for (const url of requests) {
         expect(url.searchParams.get('detail')).toBe('true');
         expect(url.searchParams.get('limit')).toBe('400');
-        expect(url.searchParams.get('max_refresh_secs')).toBe('30');
+        expect(url.searchParams.has('max_refresh_secs')).toBe(false);
+        expect(url.searchParams.get('delivery')).toBe('true');
         expect(url.searchParams.get('component')).toBe('kernel');
         expect(url.searchParams.getAll('aegis_version')).toEqual(['0.9.2']);
         expect(url.searchParams.get('recorded_after')).toBe('2026-09-01T00:00:00Z');
@@ -624,7 +625,7 @@ describe('aegisAIService', () => {
       expect(result.features).toEqual(finalFeatures);
       expect(result.total_flaws_processed).toBe(5);
       expect(result.available_components).toEqual(['kernel', 'openssl']);
-      expect(onBotKpiProgress.mock.calls).toEqual([[2, 5], [4, 5], [5, 5]]);
+      expect(onBotKpiProgress).not.toHaveBeenCalled();
     });
 
     it('does not invoke the progress hook for pages without a progress block', async () => {
@@ -647,7 +648,7 @@ describe('aegisAIService', () => {
 
       await service.getBotKpiMetrics();
 
-      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2]]);
+      expect(onBotKpiProgress).not.toHaveBeenCalled();
     });
 
     it('returns a legacy single-page response unchanged without progress reporting', async () => {
@@ -716,7 +717,7 @@ describe('aegisAIService', () => {
       expect(requests).toHaveLength(200);
     });
 
-    it('propagates a failure on a later page instead of returning partial results', async () => {
+    it('rejects a later page failure while publishing usable legacy partial details', async () => {
       server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) =>
         new URL(request.url).searchParams.has('cursor')
           ? HttpResponse.json({ detail: 'Cold cache refresh failed' }, { status: 500 })
@@ -728,10 +729,14 @@ describe('aegisAIService', () => {
             total_flaws_processed: 0,
           })));
 
-      await expect(service.getBotKpiMetrics()).rejects.toMatchObject({
+      const onSnapshot = vi.fn();
+      await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toMatchObject({
         message: expect.stringContaining('Cold cache refresh failed'),
         response: { status: 500 },
       });
+      expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+        entries: [botEntry('CVE-2026-0001')], aggregates_available: false, features: {},
+      }));
       expect(service.isFetching.value).toBe(false);
     });
 
@@ -772,7 +777,7 @@ describe('aegisAIService', () => {
       ]);
       expect(result.entries.map(entry => entry.cve_id)).toEqual(['CVE-2026-0001', 'CVE-2026-0002']);
       expect(result.total_flaws_processed).toBe(2);
-      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2], [2, 2]]);
+      expect(onBotKpiProgress).not.toHaveBeenCalled();
       expect(service.isFetching.value).toBe(false);
     });
 
@@ -791,7 +796,7 @@ describe('aegisAIService', () => {
       expect(service.isFetching.value).toBe(false);
     });
 
-    it('does not retry a 503 that is not an OSIDB outage', async () => {
+    it('retries an unmarked 503 even when its message is not an OSIDB outage', async () => {
       const requests: URL[] = [];
       server.use(http.get(`${mockBaseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
         requests.push(new URL(request.url));
@@ -802,7 +807,7 @@ describe('aegisAIService', () => {
         message: expect.stringContaining('Service mesh unavailable'),
         response: { status: 503 },
       });
-      expect(requests).toHaveLength(1);
+      expect(requests).toHaveLength(4);
     });
 
     it('stops retrying an OSIDB outage once superseded by a newer fetch', async () => {
@@ -826,6 +831,7 @@ describe('aegisAIService', () => {
       }));
 
       const superseded = service.getBotKpiMetrics({ component: 'kernel' });
+      void superseded.catch(() => {});
       await vi.waitFor(() => expect(requests).toHaveLength(1));
       const replacement = service.getBotKpiMetrics({ component: 'openssl' });
       await expect(replacement).resolves.toMatchObject({ total_flaws_processed: 1 });
@@ -843,6 +849,7 @@ describe('aegisAIService', () => {
       const { releaseSupersededPage, requests } = serveSupersededBotPages();
 
       const superseded = service.getBotKpiMetrics({ component: 'kernel' });
+      void superseded.catch(() => {});
       await vi.waitFor(() => expect(requests).toHaveLength(1));
       const replacement = service.getBotKpiMetrics({ component: 'openssl' });
 
@@ -862,13 +869,14 @@ describe('aegisAIService', () => {
       expect(service.isFetching.value).toBe(false);
     });
 
-    it('keeps a superseded fetch reporting progress to the callback captured when it started', async () => {
+    it('does not report cache freshness to either callback when a legacy fetch is superseded', async () => {
       const { releaseSupersededPage, requests } = serveSupersededBotPages();
       const firstHook = vi.fn();
       const secondHook = vi.fn();
       service.onBotKpiProgress = firstHook;
 
       const superseded = service.getBotKpiMetrics({ component: 'kernel' });
+      void superseded.catch(() => {});
       await vi.waitFor(() => expect(requests).toHaveLength(1));
       service.onBotKpiProgress = secondHook;
       const replacement = service.getBotKpiMetrics({ component: 'openssl' });
@@ -877,8 +885,8 @@ describe('aegisAIService', () => {
       releaseSupersededPage();
       await expect(superseded).rejects.toThrow('superseded by a newer request');
 
-      expect(firstHook.mock.calls).toEqual([[1, 4]]);
-      expect(secondHook.mock.calls).toEqual([[2, 4], [4, 4]]);
+      expect(firstHook).not.toHaveBeenCalled();
+      expect(secondHook).not.toHaveBeenCalled();
     });
 
     it('completes a later paginated fetch normally after an earlier one finished', async () => {
@@ -911,7 +919,7 @@ describe('aegisAIService', () => {
         total_flaws_processed: 2,
       });
       expect(requests).toHaveLength(4);
-      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2], [1, 2]]);
+      expect(onBotKpiProgress).not.toHaveBeenCalled();
     });
   });
 

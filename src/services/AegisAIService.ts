@@ -9,9 +9,9 @@ import type {
   AegisFeatureResponseMap,
   AegisKpiMetrics,
   AegisKpiQuery,
-  AegisBotKpiEntry,
   AegisBotKpiMetrics,
   AegisBotKpiPage,
+  AegisBotKpiOptions,
   AegisBotKpiProgressCallback,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
@@ -21,13 +21,14 @@ import type {
 import { useAuthStore } from '@/stores/AuthStore';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
+import { continuation, createKpiDelivery } from '@/services/aegisKpiDelivery';
 
 export type AegisAIFetchCallbacks = {
   beforeFetch?: (options: AegisAIFetchOptions) => Promise<void> | void;
   // afterFetch?: (response: Response) => Promise<void> | void;
 };
 
-type CacheOptions = 'default' | 'force-cache' | 'no-cache' | 'only-if-cached' | 'reload';
+type CacheOptions = RequestCache;
 
 export type AegisAIGetFetchOptions = {
   cache?: CacheOptions;
@@ -35,6 +36,7 @@ export type AegisAIGetFetchOptions = {
   headers?: Record<string, string>;
   method: 'GET' | 'get';
   params?: Record<string, any>;
+  signal?: AbortSignal;
   url: string;
 };
 
@@ -44,6 +46,7 @@ export type AegisAIPostFetchOptions = {
   headers?: Record<string, string>;
   method: 'POST' | 'post';
   params?: Record<string, any>;
+  signal?: AbortSignal;
   url: string;
 };
 
@@ -77,9 +80,11 @@ export async function aegisAIFetch(config: AegisAIFetchOptions, factoryOptions?:
       mode: 'cors',
       credentials: 'include',
       cache: config?.cache,
+      signal: config.signal,
       body,
     });
   } catch (e) {
+    if (config.signal?.aborted) throw e;
     console.error('❌ AEGIS-AI Fetch failed:', e);
     const isNetworkError = e instanceof TypeError;
     const errorMsg = isNetworkError
@@ -176,26 +181,37 @@ function queryStringFromParams(params: Record<string, any>) {
   return queryString ? `?${queryString}` : '';
 }
 
-// The Aegis server answers 503 with this exact body when its own connection to
-// OSIDB fails (a blip while the KPI cache refresh runs). Such page failures
-// are transient and worth retrying.
-const OSIDB_UNAVAILABLE_DETAIL = 'Unable to connect to OSIDB.';
-
-function isOsidbUnavailableError(error: unknown): boolean {
+function isRetryableKpiError(error: unknown): boolean {
   if (!error || typeof error !== 'object' || !('response' in error)) return false;
   const response = (error as { response?: unknown }).response;
   if (!response || typeof response !== 'object') return false;
-  const { data, status } = response as { data?: { detail?: unknown }; status?: unknown };
-  return status === 503 && data?.detail === OSIDB_UNAVAILABLE_DETAIL;
+  const { data, status } = response as { data?: { retry_exhausted?: unknown }; status?: unknown };
+  return status === 503 && data?.retry_exhausted !== true;
+}
+
+function retryDelay(attempt: number, signal?: AbortSignal): Promise<void> {
+  signal?.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const abort = () => {
+      clearTimeout(timer);
+      reject(signal?.reason);
+    };
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', abort);
+      resolve();
+    }, Math.min(250 * 2 ** attempt, 1000));
+    signal?.addEventListener('abort', abort, { once: true });
+  });
 }
 
 export class AegisAIService {
   // Monotonic id of the latest bot KPI fetch: starting a new one supersedes
   // any pagination still in flight on this service instance.
+  private botKpiController?: AbortController;
   private botKpiFetchId = 0;
   isFetching: Ref<boolean>;
   // Optional hook invoked after each page of the paginated bot KPI fetch
-  // (see getBotKpiMetrics) with the flaws refreshed so far and selected total.
+  // (see getBotKpiMetrics) with the flaws delivered so far and selected total.
   onBotKpiProgress?: AegisBotKpiProgressCallback;
   requestDuration: Ref<number>;
 
@@ -204,49 +220,66 @@ export class AegisAIService {
     this.requestDuration = ref(0);
   }
 
-  /**
-   * Fetch one page of the osidb-bot KPI report, retrying transient OSIDB
-   * outages. A 503 "Unable to connect to OSIDB." means the Aegis server lost
-   * its OSIDB connection mid-pagination; the same cursor is re-requested up
-   * to `osidbOutageRetries` times before the failure propagates, and a
-   * superseded fetch stops retrying promptly.
-   */
   private async fetchBotKpiPage(
-    query: AegisKpiQuery,
-    cursor: null | string,
-    fetchId: number,
+    query: AegisKpiQuery, options: AegisBotKpiOptions, cursor: null | string, runId?: string,
   ) {
-    // Wall-clock budget for the server's OSIDB work on this request (the
-    // flaw-index query plus the cache refresh of one page of flaws). The
-    // server default (AEGIS_BOT_KPI_MAX_REFRESH_SECS, 20s) is too small for
-    // a slow OSIDB: the index query alone can consume it, leaving the refresh
-    // batches 1s timeouts that fail as 503s. 30s refreshes roughly 50% more
-    // flaws per request while keeping the request well under the gateway's
-    // 60s timeout.
-    const maxRefreshSecs = 30;
-    const osidbOutageRetries = 3;
+    return this.fetchKpi({
+      method: 'GET',
+      url: '/analysis/kpi/osidb-bot',
+      signal: options.signal,
+      params: { ...query, cursor: cursor ?? undefined, delivery: true, detail: true, limit: 400, run_id: runId },
+    });
+  }
+
+  private async fetchBotKpiRun(
+    query: AegisKpiQuery, options: AegisBotKpiOptions, fetchId: number,
+    onProgress?: AegisBotKpiProgressCallback,
+  ): Promise<AegisBotKpiMetrics> {
+    const delivery = createKpiDelivery();
+    let nextCursor: null | string = null;
+    let runId: string | undefined;
+    let pages = 0;
+    let idleResponses = 0;
+    for (let request = 0; request < 10000 && pages < 200; request++) {
+      options.signal?.throwIfAborted();
+      const result = await this.fetchBotKpiPage(query, options, nextCursor, runId);
+      options.signal?.throwIfAborted();
+      if (fetchId !== this.botKpiFetchId) throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
+      const data = result.data as AegisBotKpiPage;
+      const snapshot = delivery.accept(data);
+      const token = continuation(data);
+      const waiting = data.delivery?.deferred || data.delivery?.selection_complete === false || !snapshot;
+      idleResponses = waiting && token === nextCursor ? idleResponses + 1 : 0;
+      if (snapshot) {
+        runId = snapshot.delivery?.run_id;
+        if (snapshot.delivery && snapshot.delivery.selection_complete !== false) {
+          onProgress?.(snapshot.delivery.received_flaws, snapshot.delivery.selected_flaws);
+        }
+        options.onSnapshot?.(snapshot);
+        if (!token) return snapshot;
+      }
+      nextCursor = token;
+      if (idleResponses >= 120) throw new Error('KPI delivery remained deferred. Select Refresh to try again.');
+      if (waiting) await retryDelay(2, options.signal);
+      else pages++;
+    }
+    const limit = pages >= 200 ? '200 pages' : '10000 discovery requests';
+    throw new Error(`osidb-bot KPI pagination did not complete after ${limit}.`);
+  }
+
+  private async fetchKpi(config: AegisAIGetFetchOptions) {
     for (let attempt = 0; ; attempt++) {
+      config.signal?.throwIfAborted();
       try {
-        return await this.fetch({
-          method: 'GET',
-          url: '/analysis/kpi/osidb-bot',
-          params: {
-            ...query,
-            cursor: cursor ?? undefined,
-            detail: true,
-            limit: 400,
-            max_refresh_secs: maxRefreshSecs,
-          },
-        }, {
+        return await this.fetch({ ...config, cache: 'no-store' }, {
           beforeFetch: async (options) => {
             options.headers = await aegisAuthHeaders();
+            options.signal?.throwIfAborted();
           },
         });
       } catch (error) {
-        if (attempt >= osidbOutageRetries || !isOsidbUnavailableError(error)) throw error;
-        if (this.botKpiFetchId !== fetchId) {
-          throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
-        }
+        if (attempt >= 3 || !isRetryableKpiError(error)) throw error;
+        await retryDelay(attempt, config.signal);
       }
     }
   }
@@ -368,57 +401,21 @@ export class AegisAIService {
     }
   }
 
-  /**
-   * Get the osidb-bot KPI metrics, following the paginated Aegis endpoint.
-   *
-   * Each page carries the detail entries for its own slice of flaws plus a
-   * progress block; entries are accumulated across pages and the final page's
-   * aggregate is returned. An older Aegis server that answers with a single
-   * non-paginated response is supported unchanged. Per-page progress updates
-   * are reported through the optional `onBotKpiProgress` instance hook, and
-   * starting a new fetch on the same service instance supersedes pagination
-   * still in flight, which then rejects instead of fetching further pages.
-   * Pages that fail with a transient OSIDB outage (503 "Unable to connect to
-   * OSIDB.") are retried a bounded number of times (see fetchBotKpiPage).
-   * @param query KPI filter parameters
-   * @returns The accumulated bot KPI metrics
-   */
-  async getBotKpiMetrics(query: AegisKpiQuery = {}): Promise<AegisBotKpiMetrics> {
-    const maxPages = 200;
-    // Snapshot the callback and fetch id so a newer fetch on this service
-    // instance supersedes this pagination: superseded loops stop requesting
-    // further pages instead of piling up obsolete traffic, and their progress
-    // updates keep going to their own (now stale) callback.
+  /** Publish cumulative snapshots while fetching a stable delivery run. */
+  async getBotKpiMetrics(query: AegisKpiQuery = {}, options: AegisBotKpiOptions = {}): Promise<AegisBotKpiMetrics> {
+    this.botKpiController?.abort(new Error('osidb-bot KPI fetch was superseded by a newer request.'));
+    const controller = new AbortController();
+    this.botKpiController = controller;
+    const abort = () => controller.abort(options.signal?.reason);
+    options.signal?.addEventListener('abort', abort, { once: true });
+    if (options.signal?.aborted) abort();
     const fetchId = ++this.botKpiFetchId;
     const onProgress = this.onBotKpiProgress;
-    let nextCursor: null | string = null;
-    let entries: AegisBotKpiEntry[] = [];
-    let finalPage: AegisBotKpiPage | undefined;
-    for (let page = 0; page < maxPages && !finalPage; page++) {
-      if (this.botKpiFetchId !== fetchId) {
-        throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
-      }
-      const result = await this.fetchBotKpiPage(query, nextCursor, fetchId);
-      const data = result.data as AegisBotKpiPage;
-      if (!Array.isArray(data?.entries)) {
-        throw new TypeError('The Aegis server does not support detailed bot KPI reports yet.');
-      }
-      entries = entries.concat(data.entries);
-      if (onProgress && data.progress) {
-        onProgress(data.progress.refreshed_flaws, data.progress.selected_flaws);
-      }
-      if (data.next_cursor) nextCursor = data.next_cursor;
-      else finalPage = data;
+    try {
+      return await this.fetchBotKpiRun(query, { ...options, signal: controller.signal }, fetchId, onProgress);
+    } finally {
+      options.signal?.removeEventListener('abort', abort);
     }
-    if (!finalPage) {
-      throw new Error(`osidb-bot KPI pagination did not complete after ${maxPages} pages.`);
-    }
-    return {
-      available_components: finalPage.available_components ?? undefined,
-      entries,
-      features: finalPage.features,
-      total_flaws_processed: finalPage.total_flaws_processed,
-    };
   }
 
   /**
@@ -439,17 +436,14 @@ export class AegisAIService {
   }
 
   async getKpiMetrics(
-    feature: AegisKpiFeatureParamType = 'all', query: AegisKpiQuery = {},
+    feature: AegisKpiFeatureParamType = 'all', query: AegisKpiQuery = {}, signal?: AbortSignal,
   ): Promise<AegisKpiMetrics> {
     try {
-      const result = await this.fetch({
+      const result = await this.fetchKpi({
         method: 'GET',
         url: '/analysis/kpi/cve',
         params: { feature, ...query },
-      }, {
-        beforeFetch: async (options) => {
-          options.headers = await aegisAuthHeaders();
-        },
+        signal,
       });
 
       return result.data;

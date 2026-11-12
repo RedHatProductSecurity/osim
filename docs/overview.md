@@ -62,6 +62,31 @@
     * Therefore, Pinia would add complexity in this case without significant
       benefit
 
+## KPI delivery reports
+
+The dashboard requests `/analysis/kpi/osidb-bot`. Each response contains
+current-page detail entries, cumulative delivered-population aggregates, and delivery
+metadata (`run_id`, `page_id`, `received_flaws`, `selected_flaws`, `complete`). Subsequent
+requests retain the run ID and pass `delivery.continue_token` as the `cursor` parameter. Each accepted page is processed once.
+
+The additive `selection_complete: false` means selection discovery is pending: both counts
+are zero, but the total is unknown. Once discovery completes, the selected count becomes
+known and must remain stable for that run. Missing `selection_complete` means a known
+selection, for compatibility with earlier delivery servers. Membership is fixed once
+discovered; fetched flaw values are observed during delivery, not an atomic historical snapshot.
+
+Request-budget exhaustion is a successful HTTP 200 deferral (`deferred: true`), not an
+upstream outage. Deferred pages contain no new entries and can hold the same continuation;
+their page IDs differ from the eventual delivered page. OSIM waits one abortable second
+between discovery, deferred, or replay responses. Safety limits are 120 consecutive held
+continuations without progress, 200 delivered pages, and 10,000 total discovery/delivery
+requests. Discovery and deferred responses do not consume the delivered-page limit.
+
+Actual HTTP 503 failures receive up to three retries, unless `retry_exhausted: true` indicates
+that Aegis already exhausted its upstream retry budget. Failed, expired (410), or invalidated
+(409) runs retain received metrics with an incomplete warning and require a manual Refresh
+to establish a new run. CSV downloads remain disabled while results are incomplete.
+
 ## Deployment
 
 * `OSIM_`-prefixed environment variables store static information about the UI

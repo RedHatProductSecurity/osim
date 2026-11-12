@@ -27,6 +27,8 @@ function kpiErrorMessage(source: string, reason: unknown): string {
     guidance = 'Check your network connection, then select Refresh to try again.';
   } else if (status === 429) {
     guidance = 'Too many requests. Wait a moment, then select Refresh to try again.';
+  } else if (status === 409 || status === 410) {
+    guidance = 'This report run expired or was invalidated. Select Refresh to start a new run.';
   } else if (message.includes('does not support detailed bot KPI reports')) {
     guidance = 'The Aegis server must be upgraded to support detailed bot KPI reports.';
   }
@@ -43,8 +45,12 @@ export function useKpiDashboard() {
   const toDate = ref('');
   const feedback = ref<AegisKpiMetrics>({});
   const bot = ref<AegisBotKpiMetrics | null>(null);
-  const botProgress = ref<{ refreshed: null | number; selected: null | number }>({ refreshed: null, selected: null });
-  const loading = ref(false);
+  const botProgress = ref<{ received: null | number; selected: null | number }>({ received: 0, selected: null });
+  const botLoading = ref(false);
+  const feedbackLoading = ref(false);
+  const botComplete = ref(false);
+  const loading = computed(() => botLoading.value || feedbackLoading.value);
+  const botIncomplete = computed(() => !!bot.value && !botComplete.value);
   const errors = ref<string[]>([]);
   const loadedSources = ref<string[]>([]);
   const availableVersions = ref<string[]>([]);
@@ -53,7 +59,11 @@ export function useKpiDashboard() {
   const availableWeeks = ref<string[]>([]);
   const service = new AegisAIService();
   let requestId = 0;
-  onUnmounted(() => { requestId++; });
+  let controller: AbortController | undefined;
+  onUnmounted(() => {
+    requestId++;
+    controller?.abort();
+  });
 
   const invalidRange = computed(() => !!(fromDate.value && toDate.value && fromDate.value > toDate.value));
   const query = computed<AegisKpiQuery>(() => ({
@@ -92,36 +102,66 @@ export function useKpiDashboard() {
     ].filter((week): week is string => week !== null))]);
   }
 
-  async function refresh() {
-    const id = ++requestId;
+  function resetResults() {
     feedback.value = {};
     bot.value = null;
-    botProgress.value = { refreshed: null, selected: null };
+    botProgress.value = { received: 0, selected: null };
+    botComplete.value = false;
     errors.value = [];
     loadedSources.value = [];
-    loading.value = !invalidRange.value;
-    if (invalidRange.value) return;
-    service.onBotKpiProgress = (refreshed, selected) => {
-      // Superseded fetches (filter change or unmount) must not update the
-      // progress of the fetch that replaced them.
-      if (id !== requestId) return;
-      botProgress.value = { refreshed, selected };
-    };
-    const results = await Promise.allSettled([
-      service.getKpiMetrics('all', query.value),
-      service.getBotKpiMetrics(query.value),
-    ]);
+    botLoading.value = !invalidRange.value;
+    feedbackLoading.value = !invalidRange.value;
+  }
+
+  function publishBot(metrics: AegisBotKpiMetrics, id: number) {
     if (id !== requestId) return;
-    if (results[0].status === 'fulfilled') {
-      feedback.value = results[0].value;
-      loadedSources.value.push('Feedback');
-    } else errors.value.push(kpiErrorMessage('Feedback', results[0].reason));
-    if (results[1].status === 'fulfilled') {
-      bot.value = results[1].value;
-      loadedSources.value.push('osidb-bot');
-    } else errors.value.push(kpiErrorMessage('osidb-bot', results[1].reason));
+    bot.value = metrics;
+    botProgress.value = {
+      received: metrics.delivery?.received_flaws ?? null,
+      selected: metrics.delivery?.selection_complete === false ? null : metrics.delivery?.selected_flaws ?? null,
+    };
+    if (!loadedSources.value.includes('osidb-bot')) loadedSources.value.push('osidb-bot');
     collectOptions();
-    loading.value = false;
+  }
+
+  async function loadSource(source: string, id: number, load: () => Promise<void>) {
+    try {
+      await load();
+    } catch (reason) {
+      if (id === requestId) errors.value.push(kpiErrorMessage(source, reason));
+    } finally {
+      if (id === requestId) {
+        if (source === 'Feedback') feedbackLoading.value = false;
+        else botLoading.value = false;
+      }
+    }
+  }
+
+  async function refresh() {
+    const id = ++requestId;
+    controller?.abort();
+    resetResults();
+    if (invalidRange.value) return;
+    controller = new AbortController();
+    const signal = controller.signal;
+    const currentQuery = query.value;
+    await Promise.all([
+      loadSource('Feedback', id, async () => {
+        const metrics = await service.getKpiMetrics('all', currentQuery, signal);
+        if (id !== requestId) return;
+        feedback.value = metrics;
+        loadedSources.value.push('Feedback');
+        collectOptions();
+      }),
+      loadSource('osidb-bot', id, async () => {
+        const metrics = await service.getBotKpiMetrics(currentQuery, {
+          signal, onSnapshot: value => publishBot(value, id),
+        });
+        if (id !== requestId) return;
+        publishBot(metrics, id);
+        botComplete.value = true;
+      }),
+    ]);
   }
 
   watch(query, refresh, { immediate: true });
@@ -153,6 +193,9 @@ export function useKpiDashboard() {
     feedback,
     bot,
     botProgress,
+    botLoading,
+    feedbackLoading,
+    botIncomplete,
     loading,
     errors,
     loadedSources,

@@ -192,13 +192,31 @@ export type AegisBotKpiProgress = {
   selected_flaws: number;
 };
 
+export type AegisBotKpiDelivery = {
+  complete: boolean;
+  continue_token?: null | string;
+  deferred?: boolean;
+  page_id: string;
+  received_flaws: number;
+  run_id: string;
+  selected_flaws: number;
+  // Absent on older delivery servers, where the selection is already known.
+  selection_complete?: boolean;
+};
+
+export type AegisBotKpiOptions = {
+  onSnapshot?: (metrics: AegisBotKpiMetrics) => void;
+  signal?: AbortSignal;
+};
+
 // One page of the paginated osidb-bot KPI response: `entries` covers only the
-// page's slice of flaws, `next_cursor` (when non-null) continues pagination,
-// and the aggregate fields are placeholders until the final page. An older
-// Aegis server responds with a single page that has neither progress nor
-// next_cursor.
+// page's slice of flaws, `delivery.continue_token` continues pagination,
+// and delivery-mode aggregates describe all received flaws cumulatively.
+// Legacy paginated aggregates are placeholders until the final page; older
+// single-page servers have neither delivery nor next_cursor.
 export type AegisBotKpiPage = {
   available_components?: null | string[];
+  delivery?: AegisBotKpiDelivery;
   entries?: AegisBotKpiEntry[];
   features: Record<string, AegisBotFeatureKpi>;
   next_cursor?: null | string;
@@ -207,15 +225,17 @@ export type AegisBotKpiPage = {
 };
 
 export type AegisBotKpiMetrics = {
+  // Legacy intermediate pages do not contain authoritative aggregates.
+  aggregates_available?: boolean;
   available_components?: null | string[];
+  delivery?: AegisBotKpiDelivery;
   entries: AegisBotKpiEntry[];
   features: Record<string, AegisBotFeatureKpi>;
   total_flaws_processed: number;
 };
 
-// Invoked after each page of the paginated bot KPI fetch with the number of
-// flaws refreshed so far and the total number of selected flaws.
-export type AegisBotKpiProgressCallback = (refreshedFlaws: number, selectedFlaws: number) => void;
+// Invoked only when the server reports actual delivery counts, not cache freshness.
+export type AegisBotKpiProgressCallback = (receivedFlaws: number, selectedFlaws: number) => void;
 
 export type AegisKpiFeatureParamType =
   'all'
