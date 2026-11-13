@@ -2,6 +2,7 @@
 
 ## [2026.11.1]
 ### Added
+* Load osidb-bot KPI metrics page by page with immediate delivery progress, incremental selection discovery, paced HTTP 200 budget deferrals, stable-run cumulative snapshots, and usable partial results after failures; publish feedback independently, cancel obsolete requests, and retry KPI HTTP 503 responses up to three times unless Aegis has exhausted its upstream retry budget (`AEGIS-550`)
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)

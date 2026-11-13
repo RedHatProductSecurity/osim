@@ -186,12 +186,56 @@ export type AegisBotFeatureKpi = {
   suggested: number;
 };
 
+export type AegisBotKpiProgress = {
+  complete: boolean;
+  refreshed_flaws: number;
+  selected_flaws: number;
+};
+
+export type AegisBotKpiDelivery = {
+  complete: boolean;
+  continue_token?: null | string;
+  deferred?: boolean;
+  page_id: string;
+  received_flaws: number;
+  run_id: string;
+  selected_flaws: number;
+  // Absent on older delivery servers, where the selection is already known.
+  selection_complete?: boolean;
+};
+
+export type AegisBotKpiOptions = {
+  onSnapshot?: (metrics: AegisBotKpiMetrics) => void;
+  signal?: AbortSignal;
+};
+
+// One page of the paginated osidb-bot KPI response: `entries` covers only the
+// page's slice of flaws, `delivery.continue_token` continues pagination,
+// and delivery-mode aggregates describe all received flaws cumulatively.
+// Legacy paginated aggregates are placeholders until the final page; older
+// single-page servers have neither delivery nor next_cursor.
+export type AegisBotKpiPage = {
+  available_components?: null | string[];
+  delivery?: AegisBotKpiDelivery;
+  entries?: AegisBotKpiEntry[];
+  features: Record<string, AegisBotFeatureKpi>;
+  next_cursor?: null | string;
+  progress?: AegisBotKpiProgress;
+  total_flaws_processed: number;
+};
+
 export type AegisBotKpiMetrics = {
-  available_components: string[];
+  // Legacy intermediate pages do not contain authoritative aggregates.
+  aggregates_available?: boolean;
+  available_components?: null | string[];
+  delivery?: AegisBotKpiDelivery;
   entries: AegisBotKpiEntry[];
   features: Record<string, AegisBotFeatureKpi>;
   total_flaws_processed: number;
 };
+
+// Invoked only when the server reports actual delivery counts, not cache freshness.
+export type AegisBotKpiProgressCallback = (receivedFlaws: number, selectedFlaws: number) => void;
 
 export type AegisKpiFeatureParamType =
   'all'

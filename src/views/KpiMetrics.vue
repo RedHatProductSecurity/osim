@@ -11,12 +11,19 @@ import {
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
-  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, clearFilters,
-  component, errors, feature, fromDate,
+  availableComponents, availableFeatures, availableVersions, availableWeeks,
+  bot, botIncomplete, botLoading, botProgress,
+  clearFilters, component, errors, feature, feedbackLoading, fromDate,
   invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
-const allSourcesFailed = computed(() => errors.value.length > 0 && !loadedSources.value.length);
+const allSourcesFailed = computed(() => !loading.value && errors.value.length > 0 && !loadedSources.value.length);
+const botProgressPercent = computed(() => {
+  const { received, selected } = botProgress.value;
+  return selected !== null && received !== null
+    ? selected === 0 ? 100 : Math.min(100, Math.round((received / selected) * 100))
+    : null;
+});
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
 const perFeature = computed(() => [...new Set(observations.value.map(entry => entry.feature))].map(name => ({
@@ -189,13 +196,53 @@ function changeRange(event: Event, edge: 'end' | 'start') {
       </div>
     </fieldset>
     <p v-if="invalidRange" role="alert">The start date must be on or before the end date.</p>
-    <p v-if="loading" role="status">Loading KPI metrics…</p>
+    <p v-if="feedbackLoading" role="status">Loading feedback metrics…</p>
+    <div v-if="botLoading" class="mb-3">
+      <span role="status">
+        Loading osidb-bot metrics…
+        <template v-if="botProgress.selected !== null">
+          {{ botProgress.received }} / {{ botProgress.selected }} flaws received
+        </template>
+        <template v-else-if="botProgress.received === 0">0 flaws received; determining selected total…</template>
+        <template v-else>Received flaw count unavailable from this server.</template>
+        <template v-if="bot?.delivery?.deferred">Aegis deferred this page; continuing automatically…</template>
+      </span>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="osidb-bot KPI delivery progress"
+        :aria-valuenow="botProgressPercent ?? undefined"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          :style="{ width: `${botProgressPercent ?? 100}%` }"
+        ><template v-if="botProgressPercent !== null">{{ botProgressPercent }}%</template></div>
+      </div>
+    </div>
+    <p v-if="botIncomplete" role="status" class="alert alert-warning">
+      Incomplete osidb-bot metrics:
+      <template v-if="botProgress.selected !== null">
+        {{ botProgress.received }} / {{ botProgress.selected }} selected flaws received.
+      </template>
+      <template v-else-if="bot?.delivery?.selection_complete === false">
+        Selection discovery is still in progress; 0 flaws received.
+      </template>
+      <template v-else>The server does not report how many selected flaws have been received.</template>
+      Charts and totals cover only received data.
+      <template v-if="bot?.aggregates_available === false">
+        Aggregate bot metrics are unavailable until loading completes.
+      </template>
+      <template v-if="!botLoading">Select Refresh to start a new run.</template>
+    </p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
       <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
       <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>
-      <p v-else>
+      <p v-else-if="loadedSources.length">
         Loaded sources: {{ loadedSources.join(', ') }}. Charts and totals include only these sources and are incomplete.
       </p>
+      <p v-else>Other KPI sources are still loading.</p>
       <p v-for="error in errors" :key="error">{{ error }}</p>
       <p>CSV download is unavailable until all KPI sources load successfully.</p>
       <button
@@ -207,13 +254,16 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         Retry loading metrics
       </button>
     </div>
-    <div v-if="!loading && !invalidRange && !allSourcesFailed" class="kpi-chart-container">
-      <p v-if="!observations.length && errors.length">
+    <div v-if="loadedSources.length && !invalidRange && !allSourcesFailed" class="kpi-chart-container">
+      <p v-if="!observations.length && loading">No KPI records received yet.</p>
+      <p v-else-if="!observations.length && errors.length">
         No KPI records match these filters in the loaded source. Records from the failed source may be missing.
       </p>
       <p v-else-if="!observations.length">No KPI records match these filters.</p>
       <template v-else>
-        <h2 class="h4">{{ errors.length ? 'Available-source' : 'Combined' }} Acceptance Rate</h2>
+        <h2 class="h4">
+          {{ loading || botIncomplete ? 'Partial' : errors.length ? 'Available-source' : 'Combined' }} Acceptance Rate
+        </h2>
         <p data-testid="overall-rate">
           {{ percentage(overall.percentage) }} — {{ overall.accepted }} of {{ overall.total }}
           scored suggestions accepted/kept
@@ -240,11 +290,12 @@ function changeRange(event: Event, edge: 'end' | 'start') {
       </template>
       <section v-if="bot" aria-labelledby="bot-heading">
         <h2 id="bot-heading" class="h4">osidb-bot</h2>
-        <p data-testid="processed-flaws">
-          {{ processedFlaws }} processed flaws in the selected scope (DONE workflow state).
+        <p v-if="bot.aggregates_available !== false" data-testid="processed-flaws">
+          {{ processedFlaws }} processed flaws in the
+          {{ botIncomplete ? 'received portion of the selected scope' : 'selected scope' }} (DONE workflow state).
         </p>
         <p>Bot history compares suggestions with current flaw values, grouped by suggestion date.</p>
-        <div class="table-responsive">
+        <div v-if="bot.aggregates_available !== false" class="table-responsive">
           <table class="table table-sm">
             <thead>
               <tr>

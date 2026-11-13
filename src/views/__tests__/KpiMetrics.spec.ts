@@ -60,6 +60,17 @@ const bot: AegisBotKpiMetrics = {
   ],
 };
 
+const snapshot = (received: number, selected = 400): AegisBotKpiMetrics => ({
+  ...bot,
+  delivery: {
+    run_id: 'run-a',
+    page_id: `page-${received}`,
+    received_flaws: received,
+    selected_flaws: selected,
+    complete: received === selected,
+  },
+});
+
 describe('kPI dashboard', () => {
   let wrapper: VueWrapper;
   const getFeedback = vi.fn();
@@ -75,17 +86,17 @@ describe('kPI dashboard', () => {
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
     vi.mocked(AegisAIService).mockImplementation(function () {
-      return {
-        getKpiMetrics: getFeedback, getBotKpiMetrics: getBot,
-      } as unknown as AegisAIService;
+      return { getBotKpiMetrics: getBot, getKpiMetrics: getFeedback } as unknown as AegisAIService;
     });
   });
   afterEach(() => wrapper?.unmount());
 
   it('combines both endpoints using observation counts and displays bot processing metrics', async () => {
     await mount();
-    expect(getFeedback).toHaveBeenCalledWith('all', expect.objectContaining({ detail: true }));
-    expect(getBot).toHaveBeenCalledWith(expect.objectContaining({ detail: true }));
+    expect(getFeedback).toHaveBeenCalledWith('all', expect.objectContaining({ detail: true }), expect.any(AbortSignal));
+    expect(getBot).toHaveBeenCalledWith(expect.objectContaining({ detail: true }), expect.objectContaining({
+      signal: expect.any(AbortSignal), onSnapshot: expect.any(Function),
+    }));
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
     expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('1 processed flaws');
     expect(wrapper.text()).toContain('Unknown version');
@@ -101,14 +112,18 @@ describe('kPI dashboard', () => {
       .toEqual(['kernel', 'openssl']);
     await wrapper.get('#kpi-component').setValue('  kernel  ');
     await flushPromises();
-    expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({ component: 'kernel' }));
-    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'kernel' }));
+    expect(getFeedback).toHaveBeenLastCalledWith(
+      'all', expect.objectContaining({ component: 'kernel' }), expect.any(AbortSignal),
+    );
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'kernel' }), expect.any(Object));
     await wrapper.get('#kpi-component').setValue('custom-component');
     await flushPromises();
-    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'custom-component' }));
+    expect(getBot).toHaveBeenLastCalledWith(
+      expect.objectContaining({ component: 'custom-component' }), expect.any(Object),
+    );
     await wrapper.get('#kpi-component').setValue('');
     await flushPromises();
-    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: undefined }));
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: undefined }), expect.any(Object));
   });
 
   it('downloads the same scoped counts displayed on the dashboard', async () => {
@@ -151,8 +166,8 @@ describe('kPI dashboard', () => {
       recorded_after: '2026-09-01T00:00:00.000Z',
       recorded_before: '2026-09-02T23:59:59.999Z',
     });
-    expect(getFeedback).toHaveBeenLastCalledWith('all', query);
-    expect(getBot).toHaveBeenLastCalledWith(query);
+    expect(getFeedback).toHaveBeenLastCalledWith('all', query, expect.any(AbortSignal));
+    expect(getBot).toHaveBeenLastCalledWith(query, expect.any(Object));
   });
 
   it('restores the full chart, summaries and export when the last version is deselected (OSIDB-5154)', async () => {
@@ -170,7 +185,7 @@ describe('kPI dashboard', () => {
     await button('0.9.2').trigger('click');
     await flushPromises();
     expect(button('0.9.2').attributes('aria-pressed')).toBe('false');
-    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ aegis_version: undefined }));
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ aegis_version: undefined }), expect.any(Object));
     expect(wrapper.findComponent({ name: 'VueUiXy' }).props('dataset')).toEqual(originalDataset);
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
     await button('Download CSV').trigger('click');
@@ -196,7 +211,7 @@ describe('kPI dashboard', () => {
       aegis_version: undefined,
       recorded_after: undefined,
       recorded_before: undefined,
-    });
+    }, expect.any(AbortSignal));
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
   });
 
@@ -215,7 +230,7 @@ describe('kPI dashboard', () => {
     await flushPromises();
     expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({
       recorded_after: '2026-08-31T00:00:00.000Z', recorded_before: '2026-09-06T23:59:59.999Z',
-    }));
+    }), expect.any(AbortSignal));
     getFeedback.mockResolvedValueOnce(feedback);
     await button('Refresh').trigger('click');
     await flushPromises();
@@ -242,7 +257,9 @@ describe('kPI dashboard', () => {
     expect((wrapper.get('#kpi-range-end').element as HTMLInputElement).value).toBe('3');
     await wrapper.get('#kpi-range-start').setValue('1');
     await flushPromises();
-    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ recorded_after: '2026-08-03T00:00:00.000Z' }));
+    expect(getBot).toHaveBeenLastCalledWith(
+      expect.objectContaining({ recorded_after: '2026-08-03T00:00:00.000Z' }), expect.any(Object),
+    );
   });
 
   it('uses server-filtered feedback, including historical records absent from the initial response', async () => {
@@ -466,8 +483,8 @@ describe('kPI dashboard', () => {
       recorded_after: '2026-09-01T00:00:00.000Z',
       recorded_before: '2026-09-02T23:59:59.999Z',
     };
-    expect(getFeedback).toHaveBeenCalledExactlyOnceWith('all', query);
-    expect(getBot).toHaveBeenCalledExactlyOnceWith(query);
+    expect(getFeedback).toHaveBeenCalledExactlyOnceWith('all', query, expect.any(AbortSignal));
+    expect(getBot).toHaveBeenCalledExactlyOnceWith(query, expect.any(Object));
     expect((wrapper.get('#feature-select').element as HTMLSelectElement).value).toBe('suggest-impact');
     expect(button('0.9.2').attributes('aria-pressed')).toBe('true');
     expect(wrapper.find('[role="alert"]').exists()).toBe(false);
@@ -495,7 +512,7 @@ describe('kPI dashboard', () => {
     expect(wrapper.find('[role="alert"]').exists()).toBe(false);
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
     expect(button('Download CSV').attributes('disabled')).toBeUndefined();
-    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'kernel' }));
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({ component: 'kernel' }), expect.any(Object));
   });
 
   it('discards pending failures when a date change makes the range invalid', async () => {
@@ -545,5 +562,134 @@ describe('kPI dashboard', () => {
     resolveOld({});
     await flushPromises();
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
+  });
+
+  const publish = (metrics: AegisBotKpiMetrics, call = 0) => getBot.mock.calls[call][1].onSnapshot(metrics);
+
+  it('shows immediate zero delivery before either endpoint responds, then actual received progress', async () => {
+    let resolveBot!: (value: AegisBotKpiMetrics) => void;
+    getBot.mockReset().mockReturnValue(new Promise((resolve) => { resolveBot = resolve; }));
+    getFeedback.mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    expect(wrapper.text()).toContain('0 flaws received; determining selected total');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
+    publish(snapshot(0));
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
+    publish(snapshot(100));
+    await flushPromises();
+    const bar = wrapper.get('[role="progressbar"]');
+    expect(bar.attributes('aria-label')).toBe('osidb-bot KPI delivery progress');
+    expect(bar.attributes('aria-valuemin')).toBe('0');
+    expect(bar.attributes('aria-valuemax')).toBe('100');
+    expect(bar.attributes('aria-valuenow')).toBe('25');
+    expect(wrapper.text()).toContain('100 / 400 flaws received');
+    const fill = bar.get('.progress-bar');
+    expect(fill.attributes('style')).toContain('width: 25%');
+    expect(fill.text()).toBe('25%');
+    publish(snapshot(400));
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('100');
+    resolveBot(snapshot(400));
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Loading feedback metrics');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('100.0% — 1 of 1');
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
+  });
+
+  it('renders feedback immediately while bot network response is pending', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('50.0% — 1 of 2');
+    expect(wrapper.text()).toContain('Partial Acceptance Rate');
+    expect(wrapper.text()).toContain('0 flaws received');
+    expect(wrapper.text()).not.toContain('Loading feedback metrics');
+  });
+
+  it('shows an empty received snapshot without inventing records or NaN', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    getFeedback.mockResolvedValue({});
+    await mount();
+    publish({ ...snapshot(0), entries: [], features: {}, total_flaws_processed: 0 });
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
+    expect(wrapper.text()).toContain('No KPI records received yet');
+    expect(wrapper.text()).not.toMatch(/NaN|90%/);
+  });
+
+  it.each([409, 410, 500])('retains received details and partial averages after HTTP %s', async (status) => {
+    let rejectBot!: (reason: unknown) => void;
+    getBot.mockReturnValue(new Promise((_resolve, reject) => { rejectBot = reject; }));
+    await mount();
+    publish(snapshot(1, 5));
+    await flushPromises();
+    rejectBot({ response: { status }, message: 'Run stopped' });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws received');
+    expect(wrapper.text()).toContain('Charts and totals cover only received data');
+    expect(wrapper.text()).toContain('Partial Acceptance Rate');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+    expect(wrapper.get('[data-testid="processed-flaws"]').text())
+      .toContain('1 processed flaws in the received portion');
+    expect(wrapper.get('tbody').text()).toContain('0.80');
+    expect(wrapper.text()).toContain('Run stopped');
+    if (status !== 500) expect(wrapper.text()).toContain('expired or was invalidated');
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+    getBot.mockResolvedValue(bot);
+    await button('Refresh').trigger('click');
+    await flushPromises();
+    expect(wrapper.text()).not.toContain('Incomplete osidb-bot metrics');
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it('keeps legacy intermediate details but hides unavailable aggregates and unknown delivery counts', async () => {
+    let rejectBot!: (reason: unknown) => void;
+    getBot.mockReturnValue(new Promise((_resolve, reject) => { rejectBot = reject; }));
+    await mount();
+    publish({ ...bot, aggregates_available: false, features: {}, total_flaws_processed: 0 });
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    expect(wrapper.text()).toContain('Received flaw count unavailable');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
+    expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
+    expect(wrapper.find('tbody').exists()).toBe(false);
+    rejectBot(new Error('Offline'));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Aggregate bot metrics are unavailable until loading completes');
+    expect(wrapper.text()).toContain('does not report how many selected flaws have been received');
+    expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
+  });
+
+  it('aborts obsolete scope and ignores its snapshots after a filter change', async () => {
+    let resolveSuperseded!: (value: AegisBotKpiMetrics) => void;
+    getBot.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSuperseded = resolve; }))
+      .mockReturnValueOnce(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    const supersededOptions = getBot.mock.calls[0][1];
+    const feedbackSignal = getFeedback.mock.calls[0][2];
+    publish(snapshot(100));
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
+
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await flushPromises();
+    expect(supersededOptions.signal.aborted).toBe(true);
+    expect(feedbackSignal.aborted).toBe(true);
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    supersededOptions.onSnapshot(snapshot(200));
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    publish(snapshot(150, 600), 1);
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics… 150 / 600 flaws');
+
+    resolveSuperseded(bot);
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
   });
 });
