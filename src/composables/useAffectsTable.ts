@@ -93,7 +93,7 @@ export function useAffectsTable(
 
   const {
     actions: { fileTracker, markModified, markNew, markRemoved, refreshData, revertAffect },
-    state: { affectUUIDMap, currentAffects, modifiedAffects, newAffects, removedAffects },
+    state: { affectIdAliases, affectUUIDMap, currentAffects, modifiedAffects, newAffects, removedAffects },
   } = useAffectsModel();
 
   const {
@@ -207,7 +207,7 @@ export function useAffectsTable(
   const globalFilter = ref('');
   const columnFilters = ref<ColumnFiltersState>([]);
   const isFetchingSuggestedTrackers = ref(false);
-  const expandedRows = ref({});
+  const expandedRows = ref<Record<string, boolean>>({});
 
   const totalPages = computed(() => {
     const affectCount = settings.value.affectsGrouping
@@ -411,6 +411,36 @@ export function useAffectsTable(
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getExpandedRowModel: getExpandedRowModel(),
+  });
+
+  watch(affectIdAliases, (aliases) => {
+    const remap = (id: string) => aliases[id] ?? id;
+
+    const selection = table.getState().rowSelection;
+    const nextSelection: Record<string, boolean> = {};
+    let selectionChanged = false;
+    for (const [id, selected] of Object.entries(selection)) {
+      const nextId = remap(id);
+      if (nextId !== id) selectionChanged = true;
+      if (selected) nextSelection[nextId] = true;
+    }
+    if (selectionChanged) table.setRowSelection(nextSelection);
+
+    if (typeof expandedRows.value === 'object') {
+      const nextExpanded: Record<string, boolean> = {};
+      let expandedChanged = false;
+      for (const [id, open] of Object.entries(expandedRows.value)) {
+        const nextId = remap(id);
+        if (nextId !== id) expandedChanged = true;
+        nextExpanded[nextId] = Boolean(open);
+      }
+      if (expandedChanged) expandedRows.value = nextExpanded;
+    }
+
+    const nextBulkIds = bulkEditSelectedRowIds.value.map(remap);
+    if (nextBulkIds.some((id, index) => id !== bulkEditSelectedRowIds.value[index])) {
+      bulkEditSelectedRowIds.value = nextBulkIds;
+    }
   });
 
   function toggleColumnVisibility(column: Column<any, any>) {

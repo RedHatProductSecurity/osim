@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Provide conflict handling solutions for flaw affects operations (`OSIDB-5794`)
+
 ## [2026.11.1]
 ### Added
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
