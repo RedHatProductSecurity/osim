@@ -1,3 +1,5 @@
+import { nextTick } from 'vue';
+
 import { createTestingPinia } from '@pinia/testing';
 
 import { useAffectsTable } from '@/composables/useAffectsTable';
@@ -41,4 +43,29 @@ it('clears closing state even when the post-close refresh callback throws', asyn
   expect(state.showCloseDialog.value).toBe(false);
 
   vi.restoreAllMocks();
+});
+
+it('keeps a promoted row selected under its server id', async () => {
+  const localId = 'local-row';
+  const serverId = 'server-uuid';
+  const { flaw } = useFlaw();
+  const source = structuredClone(SampleFlawFull as unknown as ZodFlawType);
+  const draft = { ...source.affects[0], _uuid: localId, uuid: null };
+  flaw.value = { ...source, affects: [] };
+  const model = useAffectsModel();
+  model.actions.initializeAffects([]);
+  model.state.currentAffects.value = [draft];
+  model.actions.markNew(localId);
+  model.actions.refreshData();
+
+  const { state } = useAffectsTable(() => {});
+  state.table.getRow(localId).toggleSelected(true);
+  state.expandedRows.value = { [localId]: true };
+  model.state.affectIdAliases.value = { [localId]: serverId };
+  await nextTick();
+
+  expect(state.table.getState().rowSelection[serverId]).toBe(true);
+  expect(state.table.getState().rowSelection[localId]).toBeUndefined();
+  expect(state.expandedRows.value[serverId]).toBe(true);
+  expect(state.expandedRows.value[localId]).toBeUndefined();
 });
