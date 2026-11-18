@@ -6,7 +6,7 @@ import { useKpiDashboard } from '@/composables/aegis/useKpiDashboard';
 
 import { withSetup } from '@/__tests__/helpers';
 import { AegisAIService } from '@/services/AegisAIService';
-import type { AegisBotKpiMetrics } from '@/types/aegisAI';
+import type { AegisBotKpiCacheStatus, AegisBotKpiMetrics } from '@/types/aegisAI';
 
 vi.mock('@/services/AegisAIService');
 
@@ -24,6 +24,13 @@ describe('useKpiDashboard', () => {
     delivery: { run_id: 'run', page_id: 'page', received_flaws: 10, selected_flaws: 40, complete: false },
   };
   const publish = (call = 0) => getBot.mock.calls[call][1].onSnapshot(snapshot);
+  const cacheStatus: AegisBotKpiCacheStatus = {
+    fresh_count: 3,
+    outdated_count: 1,
+    stale_count: 2,
+    total_flaws_selected: 5,
+    uncached_count: 1,
+  };
 
   beforeEach(() => {
     getFeedback.mockReset().mockResolvedValue({});
@@ -117,15 +124,150 @@ describe('useKpiDashboard', () => {
     await flushPromises();
     getFeedback.mockClear();
     getBot.mockClear();
+    getCacheStatus.mockClear();
     dashboard.fromDate.value = '2026-09-03';
     dashboard.toDate.value = '2026-09-01';
     await flushPromises();
     expect(dashboard.invalidRange.value).toBe(true);
     expect(getFeedback).not.toHaveBeenCalled();
     expect(getBot).not.toHaveBeenCalled();
+    expect(getCacheStatus).not.toHaveBeenCalled();
     await dashboard.refresh();
     expect(getFeedback).not.toHaveBeenCalled();
     expect(getBot).not.toHaveBeenCalled();
+    expect(getCacheStatus).not.toHaveBeenCalled();
+    expect(dashboard.botCacheStatus.value).toBeNull();
     expect(dashboard.loading.value).toBe(false);
+  });
+
+  it('loads the cache status in parallel with both metric sources on a shared abort signal', async () => {
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    const signal = getFeedback.mock.calls[0][2];
+    expect(getCacheStatus).toHaveBeenCalledExactlyOnceWith(undefined, signal);
+    expect(getBot.mock.calls[0][1].signal).toBe(signal);
+    expect(dashboard.botCacheStatus.value).toEqual(cacheStatus);
+    expect(dashboard.cacheStatusError.value).toBeNull();
+  });
+
+  it('passes only the trimmed component filter to the cache status load', async () => {
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    dashboard.component.value = '  kernel  ';
+    await flushPromises();
+    expect(getCacheStatus).toHaveBeenLastCalledWith('kernel', expect.any(AbortSignal));
+
+    dashboard.component.value = '';
+    await flushPromises();
+    expect(getCacheStatus).toHaveBeenLastCalledWith(undefined, expect.any(AbortSignal));
+  });
+
+  it('resets the published cache status when a new refresh starts', async () => {
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    const dashboard = mountDashboard();
+    await flushPromises();
+    expect(dashboard.botCacheStatus.value).toEqual(cacheStatus);
+
+    getCacheStatus.mockReturnValueOnce(new Promise(() => {}));
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+
+    expect(getCacheStatus).toHaveBeenCalledTimes(2);
+    expect(dashboard.botCacheStatus.value).toBeNull();
+  });
+
+  it('resets a cache status failure when a new refresh starts', async () => {
+    getCacheStatus.mockRejectedValueOnce({ response: { status: 500 }, message: 'Cache read failed' });
+    const dashboard = mountDashboard();
+    await flushPromises();
+    expect(dashboard.cacheStatusError.value).toContain('could not be loaded');
+
+    getCacheStatus.mockReturnValueOnce(new Promise(() => {}));
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+
+    expect(dashboard.cacheStatusError.value).toBeNull();
+    expect(dashboard.botCacheStatus.value).toBeNull();
+  });
+
+  it('reports cache status failures separately from metric-source errors', async () => {
+    getBot.mockResolvedValue({ entries: [], features: {}, total_flaws_processed: 0 });
+    getCacheStatus.mockRejectedValueOnce({ response: { status: 503 }, message: 'Cache status unavailable' });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(dashboard.cacheStatusError.value).toContain('The osidb-bot KPI cache status could not be loaded');
+    expect(dashboard.cacheStatusError.value).toContain('HTTP 503: Cache status unavailable');
+    expect(dashboard.errors.value).toEqual([]);
+    expect(dashboard.loadedSources.value).toEqual(expect.arrayContaining(['Feedback', 'osidb-bot']));
+    expect(dashboard.loading.value).toBe(false);
+  });
+
+  it('treats a 404 from an older Aegis server as unsupported rather than failed', async () => {
+    getCacheStatus.mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(dashboard.botCacheStatus.value).toBeNull();
+    expect(dashboard.cacheStatusError.value).toBeNull();
+  });
+
+  it('does not gate the loading state on a pending cache status load', async () => {
+    getCacheStatus.mockReturnValue(new Promise(() => {}));
+    getBot.mockResolvedValue({ entries: [], features: {}, total_flaws_processed: 0 });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(dashboard.feedbackLoading.value).toBe(false);
+    expect(dashboard.botLoading.value).toBe(false);
+    expect(dashboard.loading.value).toBe(false);
+    expect(dashboard.cacheStatusError.value).toBeNull();
+  });
+
+  it('ignores a superseded cache status response arriving after a newer refresh', async () => {
+    let resolveSuperseded!: (value: AegisBotKpiCacheStatus) => void;
+    getCacheStatus.mockReturnValueOnce(new Promise((resolve) => { resolveSuperseded = resolve; }));
+    const dashboard = mountDashboard();
+    getCacheStatus.mockResolvedValueOnce({ ...cacheStatus, fresh_count: 5, stale_count: 0 });
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+
+    expect(getCacheStatus.mock.calls[0][1].aborted).toBe(true);
+    expect(dashboard.botCacheStatus.value).toMatchObject({ fresh_count: 5, stale_count: 0 });
+    resolveSuperseded(cacheStatus);
+    await flushPromises();
+    expect(dashboard.botCacheStatus.value).toMatchObject({ fresh_count: 5, stale_count: 0 });
+  });
+
+  it('ignores a superseded cache status failure arriving after a newer refresh', async () => {
+    let rejectSuperseded!: (reason: unknown) => void;
+    getCacheStatus.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectSuperseded = reject; }));
+    const dashboard = mountDashboard();
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+    expect(dashboard.botCacheStatus.value).toEqual(cacheStatus);
+
+    rejectSuperseded({ response: { status: 500 }, message: 'Obsolete cache failure' });
+    await flushPromises();
+
+    expect(dashboard.cacheStatusError.value).toBeNull();
+    expect(dashboard.botCacheStatus.value).toEqual(cacheStatus);
+  });
+
+  it('ignores a cache status response arriving after the dashboard unmounts', async () => {
+    let resolveStatus!: (value: AegisBotKpiCacheStatus) => void;
+    getCacheStatus.mockReturnValueOnce(new Promise((resolve) => { resolveStatus = resolve; }));
+    const dashboard = mountDashboard();
+    app!.unmount();
+    app = undefined;
+    expect(getCacheStatus.mock.calls[0][1].aborted).toBe(true);
+
+    resolveStatus(cacheStatus);
+    await flushPromises();
+    expect(dashboard.botCacheStatus.value).toBeNull();
   });
 });

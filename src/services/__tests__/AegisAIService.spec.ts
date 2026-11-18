@@ -9,6 +9,7 @@ import type {
   AegisAIComponentFeatureNameType,
   AegisAICVEAnalysisParamsType,
   AegisAIComponentAnalysisParamsType,
+  AegisBotKpiCacheStatus,
   AegisBotKpiEntry,
   AegisBotKpiPage,
   AegisKpiMetrics,
@@ -920,6 +921,123 @@ describe('aegisAIService', () => {
       });
       expect(requests).toHaveLength(4);
       expect(onBotKpiProgress).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getBotKpiCacheStatus', () => {
+    let accessToken: string;
+
+    beforeEach(() => {
+      accessToken = encodeJWT({ exp: Math.floor(Date.now() / 1000) + 3600, user_id: 1337 });
+      useAuthStore().accessToken = accessToken;
+    });
+
+    const cacheStatus: AegisBotKpiCacheStatus = {
+      fresh_count: 3,
+      outdated_count: 1,
+      stale_count: 2,
+      total_flaws_selected: 5,
+      uncached_count: 1,
+    };
+    const cacheStatusUrl = `${mockBaseUrl}/analysis/kpi/osidb-bot/cache-status`;
+
+    it('sends only the component filter on an authenticated no-store GET', async () => {
+      const requests: Request[] = [];
+      server.use(http.get(cacheStatusUrl, ({ request }) => {
+        requests.push(request);
+        const params = new URL(request.url).searchParams;
+        expect(params.get('component')).toBe('kernel & core');
+        for (const param of [
+          'feature',
+          'detail',
+          'aegis_version',
+          'recorded_after',
+          'recorded_before',
+          'changed_after',
+          'changed_before',
+          'delivery',
+          'limit',
+          'cursor',
+          'run_id',
+        ]) {
+          expect(params.has(param)).toBe(false);
+        }
+        expect(request.headers.get('Authorization')).toBe(`Bearer ${accessToken}`);
+        expect(request.credentials).toBe('include');
+        expect(request.cache).toBe('no-store');
+        return HttpResponse.json(cacheStatus);
+      }));
+
+      await expect(service.getBotKpiCacheStatus('kernel & core')).resolves.toEqual(cacheStatus);
+      expect(requests).toHaveLength(1);
+    });
+
+    it('omits the query string entirely without a component filter', async () => {
+      server.use(http.get(cacheStatusUrl, ({ request }) => {
+        expect(new URL(request.url).search).toBe('');
+        return HttpResponse.json(cacheStatus);
+      }));
+
+      await expect(service.getBotKpiCacheStatus()).resolves.toEqual(cacheStatus);
+    });
+
+    it('retries unmarked 503 responses three times before failing', async () => {
+      const requests: Request[] = [];
+      server.use(http.get(cacheStatusUrl, ({ request }) => {
+        requests.push(request);
+        return HttpResponse.json({ detail: 'Unable to connect to OSIDB.' }, { status: 503 });
+      }));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await expect(service.getBotKpiCacheStatus('kernel')).rejects.toMatchObject({
+        message: expect.stringContaining('Unable to connect to OSIDB.'),
+        response: { status: 503 },
+      });
+      expect(requests).toHaveLength(4);
+      expect(new Set(requests.map(request => request.url)).size).toBe(1);
+      expect(requests.every(request => request.cache === 'no-store')).toBe(true);
+      consoleSpy.mockRestore();
+    });
+
+    it('stops retrying once the backend marks its retry budget exhausted', async () => {
+      const requests: Request[] = [];
+      server.use(http.get(cacheStatusUrl, ({ request }) => {
+        requests.push(request);
+        return HttpResponse.json({ detail: 'Unavailable', retry_exhausted: true }, { status: 503 });
+      }));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await expect(service.getBotKpiCacheStatus()).rejects.toMatchObject({ response: { status: 503 } });
+      expect(requests).toHaveLength(1);
+      consoleSpy.mockRestore();
+    });
+
+    it('propagates non-retryable failures', async () => {
+      server.use(http.get(cacheStatusUrl, () =>
+        HttpResponse.json({ detail: 'Cache read failed' }, { status: 500 })));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await expect(service.getBotKpiCacheStatus()).rejects.toMatchObject({
+        message: expect.stringContaining('Cache read failed'),
+        response: { status: 500 },
+      });
+      consoleSpy.mockRestore();
+    });
+
+    it('does not send an already-aborted request', async () => {
+      const requests: Request[] = [];
+      server.use(http.get(cacheStatusUrl, ({ request }) => {
+        requests.push(request);
+        return HttpResponse.json(cacheStatus);
+      }));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const controller = new AbortController();
+      controller.abort();
+
+      await expect(service.getBotKpiCacheStatus(undefined, controller.signal))
+        .rejects.toMatchObject({ name: 'AbortError' });
+      expect(requests).toEqual([]);
+      consoleSpy.mockRestore();
     });
   });
 

@@ -232,4 +232,115 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     }
     if (action === 'invalid range') expect(wrapper!.text()).toContain('start date must be on or before');
   });
+
+  it('scopes the cache status request to the component filter and renders the backlog badge', async () => {
+    const requests: Request[] = [];
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
+        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, ({ request }) => {
+        requests.push(request);
+        return HttpResponse.json({
+          fresh_count: 1, outdated_count: 2, stale_count: 2, total_flaws_selected: 3, uncached_count: 0,
+        });
+      }),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(requests).toHaveLength(1));
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await vi.waitFor(() => expect(requests).toHaveLength(2));
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+
+    expect(new URL(requests[0].url).search).toBe('');
+    const params = new URL(requests[1].url).searchParams;
+    expect(params.get('component')).toBe('kernel');
+    for (const param of [
+      'feature',
+      'detail',
+      'aegis_version',
+      'recorded_after',
+      'recorded_before',
+      'changed_after',
+      'changed_before',
+    ]) {
+      expect(params.has(param)).toBe(false);
+    }
+    const badge = wrapper.get('.badge');
+    expect(badge.text()).toBe('Cache 1/3 fresh');
+    expect(badge.classes()).toEqual(expect.arrayContaining(['bg-warning', 'text-dark']));
+    expect(badge.attributes('title'))
+      .toBe('2 flaws refresh on the next osidb-bot metrics load: 0 uncached, 2 changed in OSIDB.');
+  });
+
+  it('treats a missing cache-status endpoint as unsupported and keeps the dashboard fully usable', async () => {
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
+        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () =>
+        HttpResponse.json({ detail: 'Not Found' }, { status: 404 })),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(wrapper.find('.badge').exists()).toBe(false);
+    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
+    expect(wrapper.text()).not.toContain('could not be loaded');
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it('reports a cache status failure through its own notice without gating results or export', async () => {
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
+        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () =>
+        HttpResponse.json({ detail: 'Cache read failed' }, { status: 500 })),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('The osidb-bot KPI cache status could not be loaded'));
+    const alert = wrapper.get('p[role="alert"]');
+    expect(alert.classes()).toEqual(expect.arrayContaining(['alert', 'alert-warning']));
+    expect(alert.text()).toContain('HTTP 500');
+    expect(alert.text()).toContain('Cache read failed');
+    expect(alert.text()).toContain('Select Refresh to try again');
+    expect(wrapper.find('div[role="alert"]').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Combined Acceptance Rate');
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it.each(['filter change', 'unmount'])('cancels the pending cache status request on %s', async (action) => {
+    const networkGate = gate();
+    const requests: Request[] = [];
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
+        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, async ({ request }) => {
+        requests.push(request);
+        await networkGate.promise;
+        return HttpResponse.json({
+          fresh_count: 1, outdated_count: 0, stale_count: 0, total_flaws_selected: 1, uncached_count: 0,
+        });
+      }),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(requests).toHaveLength(1));
+    if (action === 'filter change') await wrapper.get('#kpi-component').setValue('kernel');
+    else {
+      wrapper.unmount();
+      wrapper = undefined;
+    }
+    expect(requests[0].signal.aborted).toBe(true);
+    networkGate.resolve();
+    await flushPromises();
+    if (action === 'filter change') {
+      await vi.waitFor(() => expect(requests).toHaveLength(2));
+      await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+      expect(wrapper!.get('.badge').text()).toBe('Cache up to date (1 flaws)');
+      expect(wrapper!.findAll('[role="alert"]')).toHaveLength(0);
+    } else {
+      expect(requests).toHaveLength(1);
+    }
+  });
 });

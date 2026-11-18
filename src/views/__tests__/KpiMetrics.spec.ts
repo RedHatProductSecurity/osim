@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountWithConfig } from '@/__tests__/helpers';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
-import type { AegisBotKpiMetrics, AegisKpiMetrics } from '@/types/aegisAI';
+import type { AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics } from '@/types/aegisAI';
 import { downloadKpiCsv } from '@/utils/kpiReport';
 
 vi.mock('@/services/AegisAIService');
@@ -70,6 +70,14 @@ const snapshot = (received: number, selected = 400): AegisBotKpiMetrics => ({
     complete: received === selected,
   },
 });
+
+const cacheStatus: AegisBotKpiCacheStatus = {
+  fresh_count: 3,
+  outdated_count: 1,
+  stale_count: 2,
+  total_flaws_selected: 5,
+  uncached_count: 1,
+};
 
 describe('kPI dashboard', () => {
   let wrapper: VueWrapper;
@@ -755,5 +763,180 @@ describe('kPI dashboard', () => {
     resolveSuperseded(bot);
     await flushPromises();
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
+  });
+
+  it.each([
+    {
+      name: 'a fully fresh cache',
+      status: { ...cacheStatus, fresh_count: 5, stale_count: 0, outdated_count: 0, uncached_count: 0 },
+      text: 'Cache up to date (5 flaws)',
+      classes: ['bg-success'],
+      title: 'Cached data covers every selected flaw.',
+    },
+    {
+      name: 'a partially stale cache',
+      status: cacheStatus,
+      text: 'Cache 3/5 fresh',
+      classes: ['bg-warning', 'text-dark'],
+      title: '2 flaws refresh on the next osidb-bot metrics load: 1 uncached, 1 changed in OSIDB.',
+    },
+    {
+      name: 'an empty selection',
+      status: {
+        ...cacheStatus,
+        fresh_count: 0,
+        stale_count: 0,
+        outdated_count: 0,
+        total_flaws_selected: 0,
+        uncached_count: 0,
+      },
+      text: 'Cache empty',
+      classes: ['bg-secondary'],
+      title: 'No flaws match the current selection.',
+    },
+    {
+      name: 'a cold cache with no fresh flaws yet',
+      status: {
+        ...cacheStatus,
+        fresh_count: 0,
+        stale_count: 4,
+        outdated_count: 0,
+        total_flaws_selected: 4,
+        uncached_count: 4,
+      },
+      text: 'Cache 0/4 fresh',
+      classes: ['bg-warning', 'text-dark'],
+      title: '4 flaws refresh on the next osidb-bot metrics load: 4 uncached, 0 changed in OSIDB.',
+    },
+    {
+      name: 'a cache stale only from OSIDB changes',
+      status: { ...cacheStatus, fresh_count: 2, stale_count: 3, outdated_count: 3, uncached_count: 0 },
+      text: 'Cache 2/5 fresh',
+      classes: ['bg-warning', 'text-dark'],
+      title: '3 flaws refresh on the next osidb-bot metrics load: 0 uncached, 3 changed in OSIDB.',
+    },
+  ])('renders $name as a selection-scoped badge (AEGIS-550)', async ({ classes, status, text, title }) => {
+    getCacheStatus.mockResolvedValueOnce(status);
+    await mount();
+    const badge = wrapper.get('p[role="status"] .badge');
+    expect(badge.text()).toBe(text);
+    expect(badge.classes()).toEqual(expect.arrayContaining(classes));
+    expect(badge.attributes('title')).toBe(title);
+  });
+
+  it('omits the cache badge entirely while no cache status is available', async () => {
+    await mount();
+    expect(wrapper.find('.badge').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain('Cache up to date');
+    expect(wrapper.text()).not.toContain('could not be loaded');
+  });
+
+  it('replaces the cache badge with each refreshed selection', async () => {
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    await mount();
+    expect(wrapper.get('.badge').text()).toBe('Cache 3/5 fresh');
+
+    getCacheStatus.mockReturnValueOnce(new Promise(() => {}));
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await flushPromises();
+    expect(wrapper.find('.badge').exists()).toBe(false);
+
+    getCacheStatus.mockResolvedValueOnce({
+      ...cacheStatus, fresh_count: 5, stale_count: 0, outdated_count: 0, uncached_count: 0,
+    });
+    await button('Refresh').trigger('click');
+    await flushPromises();
+    expect(wrapper.get('.badge').text()).toBe('Cache up to date (5 flaws)');
+  });
+
+  it('leaves the cache badge absent and unreported on a 404 from an older Aegis server (AEGIS-550)', async () => {
+    getCacheStatus.mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
+    await mount();
+    expect(wrapper.find('.badge').exists()).toBe(false);
+    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
+    expect(wrapper.text()).not.toContain('could not be loaded');
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it.each([
+    {
+      name: 'expired authentication',
+      reason: { response: { status: 401 }, message: 'Token expired' },
+      detail: 'HTTP 401: Token expired',
+      guidance: 'Sign in again',
+    },
+    {
+      name: 'forbidden access',
+      reason: { response: { status: 403 }, message: 'Access denied' },
+      detail: 'HTTP 403: Access denied',
+      guidance: 'Contact support',
+    },
+    {
+      name: 'network failure',
+      reason: { isNetworkError: true, message: 'Failed to fetch' },
+      detail: 'Failed to fetch',
+      guidance: 'Check your network connection',
+    },
+    {
+      name: 'rate limiting',
+      reason: { response: { status: 429 }, message: 'Request quota exceeded' },
+      detail: 'HTTP 429: Request quota exceeded',
+      guidance: 'Wait a moment',
+    },
+    {
+      name: 'backend failure',
+      reason: { response: { status: 503 }, message: 'Report service unavailable' },
+      detail: 'HTTP 503: Report service unavailable',
+      guidance: 'Select Refresh to try again',
+    },
+    {
+      name: 'a failure without an HTTP status',
+      reason: new Error('Offline'),
+      detail: 'Offline',
+      guidance: 'Select Refresh to try again',
+    },
+  ])('reports $name on the cache status without gating the dashboard', async ({ detail, guidance, reason }) => {
+    getCacheStatus.mockRejectedValueOnce(reason);
+    await mount();
+    expect(wrapper.findAll('[role="alert"]')).toHaveLength(1);
+    const alert = wrapper.get('[role="alert"]');
+    expect(alert.classes()).toEqual(expect.arrayContaining(['alert', 'alert-warning']));
+    expect(alert.text()).toContain('The osidb-bot KPI cache status could not be loaded');
+    expect(alert.text()).toContain(detail);
+    expect(alert.text()).toContain(guidance);
+    expect(wrapper.text()).not.toContain('Incomplete KPI results');
+    expect(wrapper.text()).toContain('Combined Acceptance Rate');
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+    expect(button('Download CSV').attributes('title')).toBeUndefined();
+  });
+
+  it('keeps the CSV download working when only the cache status fails (AEGIS-550)', async () => {
+    getCacheStatus.mockRejectedValueOnce({ response: { status: 500 }, message: 'Cache read failed' });
+    await mount();
+    await button('Download CSV').trigger('click');
+    expect(downloadKpiCsv).toHaveBeenCalledOnce();
+  });
+
+  it('keeps a cache status failure out of the shared metric-source error block', async () => {
+    getBot.mockRejectedValue(new Error('Offline'));
+    getCacheStatus.mockRejectedValueOnce({ response: { status: 500 }, message: 'Cache read failed' });
+    await mount();
+    const cacheAlert = wrapper.get('p[role="alert"]');
+    expect(cacheAlert.text()).toContain('The osidb-bot KPI cache status could not be loaded');
+    const sourceAlert = wrapper.get('div[role="alert"]');
+    expect(sourceAlert.text()).toContain('Incomplete KPI results');
+    expect(sourceAlert.text()).toContain('osidb-bot metrics could not be loaded');
+    expect(sourceAlert.text()).not.toContain('KPI cache status');
+    expect(button('Download CSV').attributes('disabled')).toBeDefined();
+  });
+
+  it('renders results and keeps the CSV export available while the cache status is pending', async () => {
+    getCacheStatus.mockReturnValue(new Promise(() => {}));
+    await mount();
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+    expect(wrapper.text()).toContain('Combined Acceptance Rate');
+    expect(wrapper.find('.badge').exists()).toBe(false);
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false);
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
   });
 });
