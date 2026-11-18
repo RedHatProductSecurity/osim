@@ -103,4 +103,21 @@ describe('useKpiDashboard', () => {
     expect(getBot.mock.lastCall![1].signal.aborted).toBe(false);
     expect(dashboard.loading.value).toBe(true);
   });
+
+  it('short-circuits refresh before any request while the date range is invalid', async () => {
+    const dashboard = mountDashboard();
+    await flushPromises();
+    getFeedback.mockClear();
+    getBot.mockClear();
+    dashboard.fromDate.value = '2026-09-03';
+    dashboard.toDate.value = '2026-09-01';
+    await flushPromises();
+    expect(dashboard.invalidRange.value).toBe(true);
+    expect(getFeedback).not.toHaveBeenCalled();
+    expect(getBot).not.toHaveBeenCalled();
+    await dashboard.refresh();
+    expect(getFeedback).not.toHaveBeenCalled();
+    expect(getBot).not.toHaveBeenCalled();
+    expect(dashboard.loading.value).toBe(false);
+  });
 });

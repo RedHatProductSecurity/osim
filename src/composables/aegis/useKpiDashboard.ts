@@ -144,7 +144,12 @@ export function useKpiDashboard() {
     if (invalidRange.value) return;
     controller = new AbortController();
     const signal = controller.signal;
-    const currentQuery = query.value;
+    // An open-ended window is closed at the request moment so flaws updated
+    // later cannot join the selection and invalidate the delivery run.
+    const currentQuery: AegisKpiQuery = {
+      ...query.value,
+      recorded_before: query.value.recorded_before ?? DateTime.utc().toISO()!,
+    };
     await Promise.all([
       loadSource('Feedback', id, async () => {
         const metrics = await service.getKpiMetrics('all', currentQuery, signal);

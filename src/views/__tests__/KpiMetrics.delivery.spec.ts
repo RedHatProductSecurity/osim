@@ -116,6 +116,44 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     expect(requests).toHaveLength(4);
   });
 
+  it('closes the selection window at the original request moment for every page of a run', async () => {
+    const requestedAt = new Date();
+    vi.useFakeTimers({ toFake: ['Date'], now: requestedAt });
+    const firstPageGate = gate();
+    const botRequests: Request[] = [];
+    const feedbackRequests: Request[] = [];
+    const entries = [deliveryEntry('CVE-2026-1000'), deliveryEntry('CVE-2026-1000', 'cwe')];
+    const first = { ...deliveryPage('first', 1, 2, 'second', entries),
+      features: deliveryFeatures,
+      total_flaws_processed: 1 };
+    const second = { ...deliveryPage('second', 2, 2, null, entries),
+      features: deliveryFeatures,
+      total_flaws_processed: 2 };
+    const recordedBefore = (request: Request) => new URL(request.url).searchParams.get('recorded_before');
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
+        botRequests.push(request);
+        if (new URL(request.url).searchParams.get('cursor')) return HttpResponse.json(second);
+        await firstPageGate.promise;
+        return HttpResponse.json(first);
+      }),
+      http.get(`${baseUrl}/analysis/kpi/cve`, ({ request }) => {
+        feedbackRequests.push(request);
+        return HttpResponse.json(feedback);
+      }),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(botRequests).toHaveLength(1));
+    await vi.waitFor(() => expect(feedbackRequests).toHaveLength(1));
+    expect(recordedBefore(botRequests[0])).toBe(requestedAt.toISOString());
+    expect(recordedBefore(feedbackRequests[0])).toBe(requestedAt.toISOString());
+    vi.setSystemTime(new Date(requestedAt.getTime() + 60_000));
+    firstPageGate.resolve();
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(botRequests).toHaveLength(2);
+    expect(recordedBefore(botRequests[1])).toBe(requestedAt.toISOString());
+  });
+
   it.each(['filter', 'invalid range', 'unmount'])('cancels both pending HTTP sources on %s', async (action) => {
     const networkGate = gate();
     const requests: Request[] = [];

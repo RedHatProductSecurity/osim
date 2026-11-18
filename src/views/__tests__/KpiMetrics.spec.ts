@@ -89,7 +89,10 @@ describe('kPI dashboard', () => {
       return { getBotKpiMetrics: getBot, getKpiMetrics: getFeedback } as unknown as AegisAIService;
     });
   });
-  afterEach(() => wrapper?.unmount());
+  afterEach(() => {
+    wrapper?.unmount();
+    vi.useRealTimers();
+  });
 
   it('combines both endpoints using observation counts and displays bot processing metrics', async () => {
     await mount();
@@ -170,6 +173,57 @@ describe('kPI dashboard', () => {
     expect(getBot).toHaveBeenLastCalledWith(query, expect.any(Object));
   });
 
+  it('closes an open-ended window at the request moment for both sources', async () => {
+    const requestedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: requestedAt });
+    await mount();
+    expect(getFeedback.mock.calls[0][1].recorded_before).toBe(requestedAt.toISOString());
+    expect(getBot.mock.calls[0][0].recorded_before).toBe(requestedAt.toISOString());
+  });
+
+  it('caps a start-only date window at the request moment', async () => {
+    const requestedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: requestedAt });
+    await mount();
+    await wrapper.get('#kpi-from').setValue('2026-09-01');
+    await flushPromises();
+    const query = {
+      detail: true,
+      component: undefined,
+      aegis_version: undefined,
+      recorded_after: '2026-09-01T00:00:00.000Z',
+      recorded_before: requestedAt.toISOString(),
+    };
+    expect(getFeedback).toHaveBeenLastCalledWith('all', query, expect.any(AbortSignal));
+    expect(getBot).toHaveBeenLastCalledWith(query, expect.any(Object));
+  });
+
+  it('keeps an explicit Through date ahead of the request-moment cap', async () => {
+    const requestedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: requestedAt });
+    await mount();
+    await wrapper.get('#kpi-to').setValue('2026-12-24');
+    await flushPromises();
+    expect(getFeedback).toHaveBeenLastCalledWith('all', expect.objectContaining({
+      recorded_before: '2026-12-24T23:59:59.999Z',
+    }), expect.any(AbortSignal));
+    expect(getBot).toHaveBeenLastCalledWith(expect.objectContaining({
+      recorded_before: '2026-12-24T23:59:59.999Z',
+    }), expect.any(Object));
+  });
+
+  it('recaps the window at the request moment of each manual refresh', async () => {
+    const firstMoment = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: firstMoment });
+    await mount();
+    expect(getBot.mock.calls[0][0].recorded_before).toBe(firstMoment.toISOString());
+    vi.setSystemTime(new Date('2026-11-12T12:05:00.000Z'));
+    await button('Refresh').trigger('click');
+    await flushPromises();
+    expect(getFeedback.mock.lastCall![1].recorded_before).toBe('2026-11-12T12:05:00.000Z');
+    expect(getBot.mock.lastCall![0].recorded_before).toBe('2026-11-12T12:05:00.000Z');
+  });
+
   it('restores the full chart, summaries and export when the last version is deselected (OSIDB-5154)', async () => {
     getFeedback.mockImplementation((_feature, query) => Promise.resolve(query.aegis_version
       ? { 'suggest-impact': { acceptance_percentage: 100, entries: [feedback['suggest-impact'].entries[0]] } }
@@ -193,6 +247,8 @@ describe('kPI dashboard', () => {
   });
 
   it('clears every filter together and restores the original API scope (OSIDB-5154)', async () => {
+    const requestedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: requestedAt });
     await mount();
     await wrapper.get('#kpi-component').setValue('kernel');
     await wrapper.get('#feature-select').setValue('suggest-impact');
@@ -210,7 +266,7 @@ describe('kPI dashboard', () => {
       component: undefined,
       aegis_version: undefined,
       recorded_after: undefined,
-      recorded_before: undefined,
+      recorded_before: requestedAt.toISOString(),
     }, expect.any(AbortSignal));
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
   });
