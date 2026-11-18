@@ -13,6 +13,9 @@ vi.mock('@/services/AegisAIService');
 describe('useKpiDashboard', () => {
   const getFeedback = vi.fn();
   const getBot = vi.fn();
+  // Resolves null so the auxiliary cache-status load stays invisible to the
+  // pre-existing assertions; cache-status behavior has its own tests.
+  const getCacheStatus = vi.fn();
   let app: App | undefined;
   const snapshot: AegisBotKpiMetrics = {
     entries: [],
@@ -25,8 +28,13 @@ describe('useKpiDashboard', () => {
   beforeEach(() => {
     getFeedback.mockReset().mockResolvedValue({});
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    getCacheStatus.mockReset().mockResolvedValue(null);
     vi.mocked(AegisAIService).mockImplementation(function () {
-      return { getBotKpiMetrics: getBot, getKpiMetrics: getFeedback } as unknown as AegisAIService;
+      return {
+        getBotKpiCacheStatus: getCacheStatus,
+        getBotKpiMetrics: getBot,
+        getKpiMetrics: getFeedback,
+      } as unknown as AegisAIService;
     });
   });
   afterEach(() => {

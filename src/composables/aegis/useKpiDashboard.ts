@@ -2,19 +2,32 @@ import { computed, onUnmounted, ref, watch } from 'vue';
 
 import { DateTime } from 'luxon';
 
-import type { AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiQuery } from '@/types/aegisAI';
+import type {
+  AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiQuery,
+} from '@/types/aegisAI';
 import { AegisAIService } from '@/services/AegisAIService';
 import {
   botObservations, canonicalKpiFeature, compareKpiVersions, completeKpiWeeks,
   feedbackObservations, KpiFeatureLabels, kpiWeek,
 } from '@/utils/kpi';
 
-function kpiErrorMessage(source: string, reason: unknown): string {
+function httpStatusOf(reason: unknown): number | undefined {
   const error = reason && typeof reason === 'object' ? reason : {};
   const response = 'response' in error && error.response && typeof error.response === 'object'
     ? error.response
     : {};
-  const status = 'status' in response && typeof response.status === 'number' ? response.status : undefined;
+  return 'status' in response && typeof response.status === 'number' ? response.status : undefined;
+}
+
+// A 404 marks an Aegis server that predates the cache-status endpoint; the
+// indicator is then simply absent instead of reported as a failure.
+function isCacheStatusUnsupported(reason: unknown): boolean {
+  return httpStatusOf(reason) === 404;
+}
+
+function kpiErrorMessage(source: string, reason: unknown, what = 'metrics'): string {
+  const error = reason && typeof reason === 'object' ? reason : {};
+  const status = httpStatusOf(reason);
   const message = 'message' in error && typeof error.message === 'string'
     ? error.message
     : 'errorMsg' in error && typeof error.errorMsg === 'string' ? error.errorMsg : '';
@@ -34,7 +47,7 @@ function kpiErrorMessage(source: string, reason: unknown): string {
   }
   const statusDetail = status && !message.includes(`HTTP ${status}`) ? `HTTP ${status}` : '';
   const detail = [statusDetail, message].filter(Boolean).join(': ');
-  return `${source} metrics could not be loaded.${detail ? ` ${detail}` : ''} ${guidance}`;
+  return `${source} ${what} could not be loaded.${detail ? ` ${detail}` : ''} ${guidance}`;
 }
 
 export function useKpiDashboard() {
@@ -49,6 +62,8 @@ export function useKpiDashboard() {
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
   const botComplete = ref(false);
+  const botCacheStatus = ref<AegisBotKpiCacheStatus | null>(null);
+  const cacheStatusError = ref<null | string>(null);
   const loading = computed(() => botLoading.value || feedbackLoading.value);
   const botIncomplete = computed(() => !!bot.value && !botComplete.value);
   const errors = ref<string[]>([]);
@@ -107,6 +122,8 @@ export function useKpiDashboard() {
     bot.value = null;
     botProgress.value = { received: 0, selected: null };
     botComplete.value = false;
+    botCacheStatus.value = null;
+    cacheStatusError.value = null;
     errors.value = [];
     loadedSources.value = [];
     botLoading.value = !invalidRange.value;
@@ -133,6 +150,20 @@ export function useKpiDashboard() {
       if (id === requestId) {
         if (source === 'Feedback') feedbackLoading.value = false;
         else botLoading.value = false;
+      }
+    }
+  }
+
+  // Best-effort auxiliary load: cache status never gates `loading` or CSV
+  // export, so its failure is reported through its own error instead of the
+  // metric-source `errors` array.
+  async function loadCacheStatus(id: number, component: string | undefined, signal: AbortSignal) {
+    try {
+      const status = await service.getBotKpiCacheStatus(component, signal);
+      if (id === requestId) botCacheStatus.value = status;
+    } catch (reason) {
+      if (id === requestId && !isCacheStatusUnsupported(reason)) {
+        cacheStatusError.value = kpiErrorMessage('The osidb-bot KPI cache', reason, 'status');
       }
     }
   }
@@ -166,6 +197,9 @@ export function useKpiDashboard() {
         publishBot(metrics, id);
         botComplete.value = true;
       }),
+      // Only the component filter maps to the cache-status selection; the
+      // recorded_* windows scope suggestions, not flaw freshness.
+      loadCacheStatus(id, currentQuery.component, signal),
     ]);
   }
 
@@ -201,6 +235,8 @@ export function useKpiDashboard() {
     botLoading,
     feedbackLoading,
     botIncomplete,
+    botCacheStatus,
+    cacheStatusError,
     loading,
     errors,
     loadedSources,

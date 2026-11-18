@@ -13,6 +13,7 @@ import type {
   AegisBotKpiPage,
   AegisBotKpiOptions,
   AegisBotKpiProgressCallback,
+  AegisBotKpiCacheStatus,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
   AegisMultiAnalysisParams,
@@ -397,6 +398,23 @@ export class AegisAIService {
       return result.data;
     } catch (error) {
       console.error('AegisAIService::generateResponse() Error:', error);
+      throw error;
+    }
+  }
+
+  /** Read-only osidb-bot KPI cache refresh counts; never triggers a refresh. */
+  async getBotKpiCacheStatus(component?: string, signal?: AbortSignal): Promise<AegisBotKpiCacheStatus> {
+    try {
+      const result = await this.fetchKpi({
+        method: 'GET',
+        url: '/analysis/kpi/osidb-bot/cache-status',
+        params: { component },
+        signal,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error('AegisAIService::getBotKpiCacheStatus() Error:', error);
       throw error;
     }
   }

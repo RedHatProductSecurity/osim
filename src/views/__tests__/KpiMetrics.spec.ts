@@ -75,6 +75,9 @@ describe('kPI dashboard', () => {
   let wrapper: VueWrapper;
   const getFeedback = vi.fn();
   const getBot = vi.fn();
+  // Resolves null so the auxiliary cache-status badge stays out of the
+  // pre-existing rendering assertions; cache-status behavior has its own tests.
+  const getCacheStatus = vi.fn();
   const mount = async () => {
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
@@ -85,8 +88,13 @@ describe('kPI dashboard', () => {
     vi.mocked(downloadKpiCsv).mockClear();
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
+    getCacheStatus.mockReset().mockResolvedValue(null);
     vi.mocked(AegisAIService).mockImplementation(function () {
-      return { getBotKpiMetrics: getBot, getKpiMetrics: getFeedback } as unknown as AegisAIService;
+      return {
+        getBotKpiCacheStatus: getCacheStatus,
+        getBotKpiMetrics: getBot,
+        getKpiMetrics: getFeedback,
+      } as unknown as AegisAIService;
     });
   });
   afterEach(() => {

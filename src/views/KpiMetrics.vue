@@ -12,12 +12,39 @@ import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
   availableComponents, availableFeatures, availableVersions, availableWeeks,
-  bot, botIncomplete, botLoading, botProgress,
-  clearFilters, component, errors, feature, feedbackLoading, fromDate,
+  bot, botCacheStatus, botIncomplete, botLoading, botProgress,
+  cacheStatusError, clearFilters, component, errors, feature, feedbackLoading, fromDate,
   invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
 const allSourcesFailed = computed(() => !loading.value && errors.value.length > 0 && !loadedSources.value.length);
+// Refresh state of the osidb-bot KPI cache for the current selection. The
+// counts are selection-scoped and intentionally not tied to
+// total_flaws_processed, which counts only bot-processed flaws.
+const botCacheBadge = computed(() => {
+  const status = botCacheStatus.value;
+  if (!status) return null;
+  if (!status.total_flaws_selected) {
+    return {
+      class: 'bg-secondary',
+      text: 'Cache empty',
+      title: 'No flaws match the current selection.',
+    };
+  }
+  if (!status.stale_count) {
+    return {
+      class: 'bg-success',
+      text: `Cache up to date (${status.total_flaws_selected} flaws)`,
+      title: 'Cached data covers every selected flaw.',
+    };
+  }
+  return {
+    class: 'bg-warning text-dark',
+    text: `Cache ${status.fresh_count}/${status.total_flaws_selected} fresh`,
+    title: `${status.stale_count} flaws refresh on the next osidb-bot metrics load: `
+    + `${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB.`,
+  };
+});
 const botProgressPercent = computed(() => {
   const { received, selected } = botProgress.value;
   return selected !== null && received !== null
@@ -236,6 +263,10 @@ function changeRange(event: Event, edge: 'end' | 'start') {
       </template>
       <template v-if="!botLoading">Select Refresh to start a new run.</template>
     </p>
+    <p v-if="botCacheBadge" role="status">
+      <span class="badge" :class="botCacheBadge.class" :title="botCacheBadge.title">{{ botCacheBadge.text }}</span>
+    </p>
+    <p v-else-if="cacheStatusError" role="alert" class="alert alert-warning">{{ cacheStatusError }}</p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
       <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
       <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>

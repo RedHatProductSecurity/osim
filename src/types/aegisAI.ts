@@ -237,6 +237,17 @@ export type AegisBotKpiMetrics = {
 // Invoked only when the server reports actual delivery counts, not cache freshness.
 export type AegisBotKpiProgressCallback = (receivedFlaws: number, selectedFlaws: number) => void;
 
+// Read-only osidb-bot KPI cache refresh counts, scoped to the flaw selection
+// of the request. Invariants: total_flaws_selected = fresh_count + stale_count,
+// and stale_count = uncached_count + outdated_count.
+export type AegisBotKpiCacheStatus = {
+  fresh_count: number;
+  outdated_count: number;
+  stale_count: number;
+  total_flaws_selected: number;
+  uncached_count: number;
+};
+
 export type AegisKpiFeatureParamType =
   'all'
   | 'suggest-affected-components'
