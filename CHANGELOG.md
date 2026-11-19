@@ -6,6 +6,7 @@
 
 ## [2026.11.1]
 ### Added
+* Capture sampled browser OpenTelemetry traces for page loads, SPA navigations, requests, and errors; support OTLP runtime configuration and a same-origin collector proxy
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)
