@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
+import { cvssDiffParts } from '@/utils/cvssRebase';
 import type { CollisionChoice } from '@/utils/flawRebase';
 
 export type CollisionConflictItem = {
@@ -84,6 +85,20 @@ function confirm() {
   if (props.saving || !canConfirm.value) return;
   emit('confirm', Object.fromEntries(allLeaves().map(item => [item.id, choices.value[item.id]])));
 }
+
+const ConflictValue = defineComponent({
+  name: 'ConflictValue',
+  props: {
+    other: { required: true, type: String },
+    value: { required: true, type: String },
+  },
+  setup(componentProps) {
+    return () => h('span', { class: 'conflict-value' }, cvssDiffParts(componentProps.value, componentProps.other)
+      .map((part, index) => part.changed
+        ? h('mark', { class: 'conflict-diff', key: index }, part.text)
+        : part.text));
+  },
+});
 </script>
 
 <template>
@@ -142,7 +157,7 @@ function confirm() {
               :aria-pressed="isSelected(item, 'mine')"
               @click="chooseItem(item, 'mine')"
             >
-              <span class="conflict-value">{{ item.mine }}</span>
+              <ConflictValue :value="item.mine" :other="item.server" />
             </button>
             <div class="conflict-arrows">
               <button
@@ -178,7 +193,7 @@ function confirm() {
               :aria-pressed="isSelected(item, 'server')"
               @click="chooseItem(item, 'server')"
             >
-              <span class="conflict-value">{{ item.server }}</span>
+              <ConflictValue :value="item.server" :other="item.mine" />
             </button>
           </div>
           <button
@@ -205,7 +220,7 @@ function confirm() {
                   :aria-pressed="choices[row.id] === 'mine'"
                   @click="chooseItem(row, 'mine')"
                 >
-                  <span class="conflict-value">{{ row.mine }}</span>
+                  <ConflictValue :value="row.mine" :other="row.server" />
                 </button>
                 <div class="conflict-arrows">
                   <button
@@ -241,7 +256,7 @@ function confirm() {
                   :aria-pressed="choices[row.id] === 'server'"
                   @click="chooseItem(row, 'server')"
                 >
-                  <span class="conflict-value">{{ row.server }}</span>
+                  <ConflictValue :value="row.server" :other="row.mine" />
                 </button>
               </div>
             </div>
@@ -383,6 +398,13 @@ function confirm() {
   overflow: auto;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+:deep(.conflict-diff) {
+  padding: 0 0.12em;
+  border-radius: 0.15em;
+  background: var(--bs-warning-bg-subtle, #fff3cd);
+  color: inherit;
 }
 
 .conflict-arrows {

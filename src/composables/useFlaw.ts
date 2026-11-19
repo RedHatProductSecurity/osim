@@ -1,8 +1,11 @@
 import { ref, readonly, computed } from 'vue';
 
-import type { ZodFlawCVSSType, ZodFlawLabelType, ZodFlawType } from '@/types/zodFlaw';
-import { deepCopyFromRaw, mergeBy, serializeWithExclude } from '@/utils/helpers';
+import { clearCvssConflict } from '@/composables/cvssConflictState';
+
 import type { ZodAffectType } from '@/types';
+import type { ZodFlawCVSSType, ZodFlawLabelType, ZodFlawType } from '@/types/zodFlaw';
+import { replaceMatchingCvssScore } from '@/utils/cvssRebase';
+import { deepCopyFromRaw, mergeBy, serializeWithExclude } from '@/utils/helpers';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
 const initialFlaw = ref<ZodFlawType>(blankFlaw());
@@ -27,7 +30,9 @@ type WithUUID = { uuid: string }[];
 function setFlaw(flawData: FlawDataType, key?: FlawFieldsWithEndpoints, replace: boolean = true) {
   const previousFlaw = flaw.value;
   if (!key) {
-    flaw.value = flawData as ZodFlawType;
+    const nextFlaw = flawData as ZodFlawType;
+    if (previousFlaw.uuid && nextFlaw.uuid !== previousFlaw.uuid) clearCvssConflict();
+    flaw.value = nextFlaw;
     if (flawData !== previousFlaw && previousFlaw.uuid && (flawData as ZodFlawType).uuid === previousFlaw.uuid) {
       serverChosenFlawFields.value = new Set();
       flawResyncCount.value += 1;
@@ -103,6 +108,15 @@ function acceptSavedAffects(saved: ZodAffectType[]) {
   );
 }
 
+function acceptSavedCvssScores(saved: ZodFlawCVSSType[]) {
+  if (!saved.length) return;
+  flaw.value.cvss_scores = saved.reduce(
+    (scores, score) => replaceMatchingCvssScore(scores, score),
+    flaw.value.cvss_scores ?? [],
+  );
+  initialFlaw.value.cvss_scores = cloneField(flaw.value.cvss_scores);
+}
+
 function dropAffects(uuids: string[]) {
   if (!uuids.length) return;
   const gone = new Set(uuids);
@@ -145,6 +159,7 @@ export function useFlaw() {
     acceptServerTimestamp,
     acceptAddedAffects,
     acceptSavedAffects,
+    acceptSavedCvssScores,
     dropAffects,
     resetFlaw,
     setFlaw,

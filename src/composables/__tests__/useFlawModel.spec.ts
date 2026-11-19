@@ -3,6 +3,7 @@ import { computed, type App } from 'vue';
 import { flushPromises } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 
+import { pendingCvssConflict } from '@/composables/cvssConflictState';
 import { useFlawModel } from '@/composables/useFlawModel';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
 import { useAegisSteeringNotes } from '@/composables/aegis/useAegisSteeringNotes';
@@ -14,7 +15,7 @@ import { withSetup, router } from '@/__tests__/helpers';
 import type { ZodFlawType, ZodAffectType } from '@/types';
 import { FlawLabelTypeEnum } from '@/types/zodFlaw';
 import { deleteAffects, getAffects, postAffects, putAffects } from '@/services/AffectService';
-import { getFlaw, postFlaw, putFlaw } from '@/services/FlawService';
+import { getFlaw, postFlaw, putFlaw, putFlawCvssScores } from '@/services/FlawService';
 import { createLabel } from '@/services/LabelsService';
 import { deepCopyFromRaw } from '@/utils/helpers';
 
@@ -114,6 +115,7 @@ describe('useFlawModel', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    pendingCvssConflict.value = null;
     vi.mocked(deleteAffects).mockReset();
     vi.mocked(postAffects).mockReset();
     vi.mocked(putAffects).mockReset();
@@ -950,6 +952,55 @@ describe('useFlawModel', () => {
 
       expect(putFlaw).not.toHaveBeenCalled();
       expect(flaw.value.uuid).toBe('other-flaw');
+    });
+
+    it('opens the dialog when a flaw CVSS save overlaps the server', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      setFlaw(flawData);
+      const score = flaw.value.cvss_scores.find(item => item.issuer === 'RH')!;
+      score.vector = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N';
+      score.score = 7.5;
+      vi.mocked(putFlawCvssScores).mockRejectedValueOnce({ response: { status: 409, data: {} } });
+      vi.mocked(getFlaw).mockResolvedValueOnce({
+        ...flawData,
+        cvss_scores: flawData.cvss_scores.map(item => item.issuer === 'RH'
+          ? { ...item, score: 9.1, updated_dt: '2026-04-01T00:00:00Z', vector: 'CVSS:3.1/SERVER' }
+          : item),
+      });
+
+      const { collisionConflicts, showCollisionDialog, updateFlaw } = mountFlawModel();
+      await updateFlaw();
+
+      expect(putFlawCvssScores).toHaveBeenCalledTimes(1);
+      expect(showCollisionDialog.value).toBe(true);
+      expect(collisionConflicts.value).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: 'flaw:RH:V3:vector', mine: expect.stringContaining('C:H') }),
+      ]));
+      expect(flaw.value.cvss_scores.find(item => item.issuer === 'RH')?.vector).toContain('C:H');
+    });
+
+    it('drops a flaw CVSS reload when the flaw changes', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { flaw, setFlaw } = useFlaw();
+      const flawData = deepCopyFromRaw(sampleFlawFull as ZodFlawType);
+      setFlaw(flawData);
+      const score = flaw.value.cvss_scores.find(item => item.issuer === 'RH')!;
+      score.vector = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N';
+      score.score = 7.5;
+      vi.mocked(putFlawCvssScores).mockImplementationOnce(async () => {
+        setFlaw({ ...deepCopyFromRaw(sampleFlawFull as ZodFlawType), uuid: 'other-flaw' });
+        throw { response: { data: {}, status: 409 } };
+      });
+
+      const { showCollisionDialog, updateFlaw } = mountFlawModel();
+      await updateFlaw();
+
+      expect(getFlaw).not.toHaveBeenCalled();
+      expect(showCollisionDialog.value).toBe(false);
+      expect(flaw.value.uuid).toBe('other-flaw');
+      expect(pendingCvssConflict.value).toBeNull();
     });
   });
 

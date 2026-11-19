@@ -14,6 +14,23 @@ function mountDialog() {
 }
 
 describe('collision conflict dialog', () => {
+  it('highlights the CVSS metrics that differ', () => {
+    const wrapper = mount(CollisionConflictDialog, {
+      props: {
+        conflicts: [{
+          id: 'flaw:RH:V3:vector',
+          label: 'Vector · Flaw RH CVSSV3',
+          mine: '7.5 CVSS:3.1/AV:N/AC:L',
+          server: '9.1 CVSS:3.1/AV:N/AC:H',
+        }],
+        show: true,
+      },
+    });
+
+    const marks = wrapper.findAll('mark.conflict-diff').map(mark => mark.text());
+    expect(marks).toEqual(['7.5', 'AC:L', '9.1', 'AC:H']);
+  });
+
   it('lists each conflict and confirms the selected side', async () => {
     const wrapper = mountDialog();
 
