@@ -90,7 +90,7 @@ function serverFlawB(): ZodFlawType {
   };
 }
 
-type AffectsResponse = { data: { results: ZodAffectType[] }; response: Response };
+type AffectsResponse = { data: { count?: number; next?: null | string; results: ZodAffectType[] }; response: Response };
 
 const FLAW_A_CVE = 'CVE-2024-1234';
 const FLAW_B_CVE = 'CVE-2024-5678';

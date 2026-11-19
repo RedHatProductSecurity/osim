@@ -10,12 +10,47 @@ export async function getAffect(uuid: string): Promise<ZodAffectType> {
 }
 
 type AffectFetchCallback = (fetchedCount: number, totalCount: number) => void;
-export async function getAffects(cveOrUuid: string, onFetchedCallback?: AffectFetchCallback):
-Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
-  const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
-  const pageSize = 100;
 
-  // First request to get up to 100 affects and the total count
+export type AffectFetchOptions = {
+  concurrency?: number;
+  pageSize?: number;
+  // optional AbortSignal to cancel in-flight fetches (e.g. on route leave); forwarded to osidbFetch/fetch
+  signal?: AbortSignal;
+};
+
+// Bounded-concurrency mapper without extra deps
+async function pMap<T, R>(
+  items: T[],
+  // mapper: async transform for each item; receives item + original index (e.g. offset => fetch page)
+  mapper: (item: T, index: number) => Promise<R>,
+  { concurrency = 5 }: { concurrency?: number } = {},
+): Promise<R[]> {
+  const results: R[] = Array.from({ length: items.length });
+  let nextIndex = 0;
+  async function worker() {
+    while (nextIndex < items.length) {
+      // claim next slot atomically; idx preserves input order despite parallel workers
+      const idx = nextIndex++;
+      results[idx] = await mapper(items[idx], idx);
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
+  );
+  return results;
+}
+
+export async function getAffects(
+  cveOrUuid: string,
+  onFetchedCallback?: AffectFetchCallback,
+  opts: AffectFetchOptions = {},
+): Promise<{ data: { count?: number; next?: null | string; results: ZodAffectType[] }; response: Response }> {
+  const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
+  const pageSize = opts.pageSize ?? 100;
+  const concurrency = opts.concurrency ?? 5;
+  const signal = opts.signal;
+
+  // First request to get up to `pageSize` affects and the total count
   const firstResponse = await osidbFetch({
     method: 'get',
     url: '/osidb/api/v2/affects',
@@ -23,44 +58,115 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
       [field]: cveOrUuid,
       limit: pageSize,
     },
+    signal,
   });
 
-  const allAffects = [...firstResponse.data.results];
-  let nextUrl = firstResponse.data.next;
+  const allAffects: ZodAffectType[] = [...firstResponse.data.results];
+  const totalCount: number = firstResponse.data.count;
 
   if (onFetchedCallback) {
-    onFetchedCallback(allAffects.length, firstResponse.data.count);
+    try {
+      onFetchedCallback(allAffects.length, totalCount);
+    } catch { void 0; }
   }
 
-  // Fetch remaining affects using the next URL
+  // Offset math is straightforward once count is known from the first response.
+  // If count is finite, fan out remaining offsets in parallel with bounded concurrency.
+  if (Number.isFinite(totalCount)) {
+    const pages = Math.ceil(totalCount / pageSize);
+    if (pages > 1) {
+      const offsets = Array.from(
+        { length: pages - 1 },
+        (_, i) => (i + 1) * pageSize,
+      );
+      const pagesData = await pMap(
+        offsets,
+        async (offset) => {
+          signal?.throwIfAborted();
+          const response = await osidbFetch({
+            method: 'get',
+            url: '/osidb/api/v2/affects',
+            params: {
+              [field]: cveOrUuid,
+              limit: pageSize,
+              offset,
+            },
+            signal,
+          });
+          return response;
+        },
+        { concurrency },
+      );
+
+      // Merge in offset order (pMap preserves input order) and emit progress
+      for (const page of pagesData) {
+        for (const affect of page.data.results) {
+          allAffects.push(affect);
+        }
+        if (onFetchedCallback) {
+          try {
+            onFetchedCallback(allAffects.length, totalCount);
+          } catch { void 0; }
+        }
+      }
+
+      return {
+        data: {
+          ...firstResponse.data,
+          results: allAffects,
+          next: null,
+        },
+        response: firstResponse.response,
+      };
+    }
+  }
+
+  // Fallback: cursor-chasing sequential path when count is unknown (keeps compatibility
+  // if server ever migrates to cursor-only). Mirrors original behavior with fixes.
+  let nextUrl: null | string = firstResponse.data.next;
+  const seen = new Set<string>();
+  let pagesFetched = 0;
+  const MAX_PAGES = 100;
+
   while (nextUrl !== null) {
-    // Extract the path and query parameters from the full URL
-    const url = new URL(nextUrl);
-    const relativePath = url.pathname + url.search;
+    signal?.throwIfAborted();
+    if (seen.has(nextUrl)) break;
+    if (++pagesFetched > MAX_PAGES) break;
+    seen.add(nextUrl);
+
+    // Handle absolute or relative next URL
+    const relativePath = nextUrl.startsWith('http')
+      ? (() => {
+          const url = new URL(nextUrl, window.location.origin);
+          return url.pathname + url.search;
+        })()
+      : nextUrl;
 
     const response = await osidbFetch({
       method: 'get',
       url: relativePath,
+      signal,
     });
 
-    allAffects.push(...response.data.results);
+    for (const affect of response.data.results) allAffects.push(affect);
     nextUrl = response.data.next;
 
     if (onFetchedCallback) {
-      onFetchedCallback(allAffects.length, firstResponse.data.count);
+      try {
+        onFetchedCallback(allAffects.length, totalCount);
+      } catch { void 0; }
     }
 
-    // Safety check to prevent infinite loops
     if (response.data.results.length === 0) {
       break;
     }
   }
 
-  // Return response in the same format as the original
   return {
     data: {
       ...firstResponse.data,
       results: allAffects,
+      next: null,
     },
     response: firstResponse.response,
   };
