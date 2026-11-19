@@ -103,6 +103,12 @@ function acceptSavedAffects(saved: ZodAffectType[]) {
   );
 }
 
+function acceptSavedCvssScores(saved: ZodFlawCVSSType[]) {
+  if (!saved.length) return;
+  flaw.value.cvss_scores = mergeBy(flaw.value.cvss_scores, saved, 'uuid');
+  initialFlaw.value.cvss_scores = cloneField(flaw.value.cvss_scores);
+}
+
 function dropAffects(uuids: string[]) {
   if (!uuids.length) return;
   const gone = new Set(uuids);
@@ -145,6 +151,7 @@ export function useFlaw() {
     acceptServerTimestamp,
     acceptAddedAffects,
     acceptSavedAffects,
+    acceptSavedCvssScores,
     dropAffects,
     resetFlaw,
     setFlaw,

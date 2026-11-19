@@ -18,6 +18,8 @@ import {
   putAffectCvssScore,
 } from '@/services/AffectService';
 import { fileTrackingFor, findExistingTracker, parseTrackerId, updateExistingTracker } from '@/services/TrackerService';
+import { affectConflictLabel } from '@/utils/affectRebase';
+import { cvssScope, isCvssWriteConflict, rebaseCvssScore } from '@/utils/cvssRebase';
 import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 
 import {
@@ -28,6 +30,7 @@ import {
   isDuplicateAffectFailure,
   useAffectCollision,
 } from './useAffectCollision';
+import { pendingCvssConflict, recordCvssConflict } from './cvssConflictState';
 import { useFlaw } from './useFlaw';
 
 // A score that has not been given a server uuid yet still has to be posted.
@@ -297,17 +300,60 @@ function useAffects() {
     const savedCvssScores: ZodAffectCVSSType[] = [];
     const deletedScores: Record<string, string> = {};
 
-    // Create operations in parallel
+    const writeOptions = { suppressConflictToast: true };
+    const writeAffectScore = async (
+      affectUuid: string,
+      cvssScore: ZodAffectCVSSType,
+      mode: 'create' | 'delete' | 'update',
+    ) => {
+      const send = (nextMode: typeof mode, score: ZodAffectCVSSType) => {
+        if (nextMode === 'delete') return deleteAffectCvssScore(affectUuid, score.uuid!, writeOptions);
+        if (nextMode === 'update') return putAffectCvssScore(affectUuid, score.uuid!, score, writeOptions);
+        return postAffectCvssScore(affectUuid, score, writeOptions);
+      };
+      const match = (score: ZodAffectCVSSType) =>
+        score.issuer === cvssScore.issuer && score.cvss_version === cvssScore.cvss_version;
+      try {
+        return await send(mode, cvssScore);
+      } catch (error) {
+        if (!isCvssWriteConflict(error)) throw error;
+        const serverAffect = await getAffect(affectUuid);
+        const loaded = initialAffects.value.find(affect => affect.uuid === affectUuid);
+        const current = currentAffects.value.find(affect => affect.uuid === affectUuid) ?? serverAffect;
+        const serverScore = serverAffect.cvss_scores?.find(match);
+        const scope = cvssScope(cvssScore, affectUuid);
+        const label = `${affectConflictLabel(current)} ${cvssScore.issuer} CVSS${cvssScore.cvss_version}`;
+        const result = rebaseCvssScore(loaded?.cvss_scores?.find(match), cvssScore, serverScore, label, scope);
+        if (result.conflicts.length) {
+          recordCvssConflict({
+            affectUuid,
+            formEdits: result.formEdits,
+            issuer: cvssScore.issuer,
+            local: cvssScore,
+            scope,
+            server: serverScore,
+            version: cvssScore.cvss_version,
+          }, result.conflicts);
+          throw new Error('CVSS scores conflict');
+        }
+        if (!result.merged) throw error;
+        Object.assign(cvssScore, result.merged);
+        if (result.remove && result.merged.uuid) return send('delete', cvssScore);
+        const retryMode = mode === 'create' && cvssScore.uuid ? 'update' : mode;
+        return send(retryMode, cvssScore);
+      }
+    };
+
     const createOps = Object.entries(toCreate).map(([affectUuid, cvssScore]) =>
-      postAffectCvssScore(affectUuid, cvssScore),
+      writeAffectScore(affectUuid, cvssScore, 'create'),
     );
 
     const updateOps = Object.entries(toUpdate).map(([affectUuid, cvssScore]) =>
-      putAffectCvssScore(affectUuid, cvssScore.uuid!, cvssScore),
+      writeAffectScore(affectUuid, cvssScore, 'update'),
     );
 
     const deleteOps = Object.entries(toDelete).map(([affectUuid, scoreUuid]) =>
-      deleteAffectCvssScore(affectUuid, scoreUuid).then(() => ({ affectUuid, scoreUuid })),
+      deleteAffectCvssScore(affectUuid, scoreUuid, writeOptions).then(() => ({ affectUuid, scoreUuid })),
     );
 
     // Execute all operations in parallel
@@ -321,8 +367,9 @@ function useAffects() {
       deletedScores[affectUuid] = scoreUuid;
     });
 
-    // Update state with successful operations
+    // Update state with successful operations. A conflict throws before the saved-row reset.
     updateCvssScoresInAffects(updatedAffects, savedCvssScores, deletedScores);
+    if (pendingCvssConflict.value?.conflicts.length) throw new Error('CVSS scores conflict');
 
     // Show separate success notifications for each operation type
     showSuccessToast(createResults.successful.length, 'CVSS score', 'created');
@@ -615,6 +662,18 @@ function useAffects() {
     };
   }
 
+  async function saveAffectCvss() {
+    const targets = currentAffects.value.filter(affect => affect.uuid && modifiedAffects.has(affect.uuid));
+    const hasErrors = await saveCvssScores(targets.length ? targets : currentAffects.value);
+    if (hasErrors || pendingCvssConflict.value?.conflicts.length) return hasErrors;
+    const fresh = await Promise.all(targets.map(affect => getAffect(affect.uuid!)));
+    if (fresh.length) {
+      resetSavedAffects(fresh);
+      useFlaw().acceptSavedAffects(fresh);
+    }
+    return false;
+  }
+
   return {
     state: {
       // Data
@@ -648,6 +707,7 @@ function useAffects() {
       integrateServerAffects,
       linkExistingTracker,
       saveAffects,
+      saveAffectCvss,
       stageAffectConflicts,
       removeAffects,
     },

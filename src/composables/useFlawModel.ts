@@ -23,6 +23,7 @@ import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
 import { groupAffectConflicts } from '@/utils/affectRebase';
+import { cvssFromChoices, type CvssScoreSnapshot } from '@/utils/cvssRebase';
 import {
   flawBodyFromChoices,
   flawRebaseFieldLabel,
@@ -44,6 +45,27 @@ import {
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useAffectsModel } from './useAffectsModel';
 import { useCollisionConflict } from './useCollisionConflict';
+import { pendingCvssConflict } from './cvssConflictState';
+
+type CvssRow = { created_dt?: null | string; cvss_version?: null | string; issuer?: null | string };
+
+function replaceCvssScore<T extends CvssRow>(
+  scores: T[],
+  chosen: CvssScoreSnapshot,
+  issuer?: null | string,
+  version?: null | string,
+): T[] {
+  const index = scores.findIndex(score => score.issuer === issuer && score.cvss_version === version);
+  if (!chosen.vector && !chosen.uuid) {
+    return index >= 0 ? scores.filter((_, itemIndex) => itemIndex !== index) : scores;
+  }
+  if (index >= 0) {
+    Object.assign(scores[index], chosen);
+    if (!chosen.uuid) delete scores[index].created_dt;
+    return scores;
+  }
+  return [...scores, { ...chosen } as T];
+}
 
 // Map field names to feature names for programmatic feedback
 const FieldToFeatureName: Record<string, string> = {
@@ -57,6 +79,7 @@ const FieldToFeatureName: Record<string, string> = {
 export function useFlawModel() {
   const {
     acceptSavedAffects,
+    acceptSavedCvssScores,
     acceptServerFlaw,
     flaw,
     initialFlaw,
@@ -148,6 +171,7 @@ export function useFlawModel() {
       integrateServerAffects,
       removeAffects,
       resetSavedAffects,
+      saveAffectCvss,
       saveAffects,
       stageAffectConflicts,
     },
@@ -285,7 +309,8 @@ export function useFlawModel() {
   }
 
   const showCollisionDialog = computed(() => pendingFlawConflict.value !== null
-    || (pendingAffectConflict.value?.conflicts.length ?? 0) > 0);
+    || (pendingAffectConflict.value?.conflicts.length ?? 0) > 0
+    || (pendingCvssConflict.value?.conflicts.length ?? 0) > 0);
 
   const collisionConflicts = computed(() => [
     ...(pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
@@ -295,11 +320,34 @@ export function useFlawModel() {
       server: formatCollisionValue(conflict.server),
     })),
     ...groupAffectConflicts(pendingAffectConflict.value?.conflicts ?? []),
+    ...(pendingCvssConflict.value?.conflicts ?? []).map(conflict => ({
+      id: conflict.id,
+      label: conflict.label,
+      mine: conflict.mine,
+      server: conflict.server,
+    })),
   ]);
 
   function cancelCollisionDialog() {
     pendingFlawConflict.value = null;
     pendingAffectConflict.value = null;
+    pendingCvssConflict.value = null;
+  }
+
+  function applyCvssResolution(choices: Record<string, CollisionChoice>) {
+    const pending = pendingCvssConflict.value;
+    if (!pending) return;
+    for (const row of pending.scores) {
+      const chosen = cvssFromChoices(row.local, row.server, row.formEdits, choices, row.scope);
+      if (row.affectUuid) {
+        const affect = currentAffects.value.find(item => item.uuid === row.affectUuid);
+        if (!affect) continue;
+        affect.cvss_scores = replaceCvssScore(affect.cvss_scores ?? [], chosen, row.issuer, row.version);
+        continue;
+      }
+      flaw.value.cvss_scores = replaceCvssScore(flaw.value.cvss_scores ?? [], chosen, row.issuer, row.version);
+    }
+    pendingCvssConflict.value = null;
   }
 
   function finishConfirmedAffects(deleteFailed: boolean, savedAffects: ZodAffectType[], saveFailed: boolean) {
@@ -317,12 +365,17 @@ export function useFlawModel() {
     if (isSaving.value) return;
     const pending = pendingFlawConflict.value;
     const affectPending = pendingAffectConflict.value;
+    const cvssPending = pendingCvssConflict.value;
     const hasAffectConflict = (affectPending?.conflicts.length ?? 0) > 0;
-    if (!pending && !hasAffectConflict) return;
+    const hasCvssConflict = (cvssPending?.conflicts.length ?? 0) > 0;
+    if (!pending && !hasAffectConflict && !hasCvssConflict) return;
 
     const approvedDeletes = (affectPending?.blockedDeletes ?? []).flatMap(affect =>
       affect.uuid && choices[`${affect.uuid}:deleted`] === 'mine' ? [affect.uuid] : []);
-    const affectsNeedSave = Boolean(affectPending) || wereAffectsEditedOrAdded.value;
+    const cvssAffectOnly = Boolean(
+      hasCvssConflict && cvssPending?.scores.some(score => score.affectUuid) && !hasAffectConflict,
+    );
+    const retryFlawCvss = Boolean(cvssPending?.scores.some(score => !score.affectUuid));
 
     isSaving.value = true;
     try {
@@ -343,6 +396,7 @@ export function useFlawModel() {
         applyAffectResolution(choices);
         pendingAffectConflict.value = null;
       }
+      applyCvssResolution(choices);
       const deleting = removedAffects.size > 0;
       let deletedUuids: string[] = [];
       let deleteFailed = false;
@@ -353,13 +407,21 @@ export function useFlawModel() {
       }
       let savedAffects: ZodAffectType[] = [];
       let saveFailed = false;
-      if (affectsNeedSave || wereAffectsEditedOrAdded.value) {
+      const saveAffectRows = hasAffectConflict || (wereAffectsEditedOrAdded.value && !cvssAffectOnly);
+      if (saveAffectRows) {
         const saved = await saveAffects();
         savedAffects = saved.savedAffects;
         saveFailed = saved.hasErrors;
+      } else if (cvssAffectOnly) {
+        saveFailed = await saveAffectCvss();
       }
-      if (affectPending || affectsNeedSave || deleting || deletedUuids.length) {
+      if (affectPending || saveAffectRows || deleting || deletedUuids.length) {
         finishConfirmedAffects(deleteFailed, savedAffects, saveFailed);
+      }
+      if (retryFlawCvss) {
+        const savedScores = (await saveCvssScores())
+          .filter(score => score && typeof score === 'object' && 'uuid' in score);
+        acceptSavedCvssScores(savedScores);
       }
       // Affects are saved before the flaw when the affect conflict stopped the queue first.
       // Leave the flaw updated_dt alone: copying a newer token here would hide a field collision.

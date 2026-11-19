@@ -1,8 +1,10 @@
 import { createTestingPinia } from '@pinia/testing';
 
+import { pendingCvssConflict } from '@/composables/cvssConflictState';
 import { useAffectsModel } from '@/composables/useAffectsModel';
 import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 
+import { IssuerEnum } from '@/generated-client';
 import * as AffectService from '@/services/AffectService';
 import * as TrackerService from '@/services/TrackerService';
 import type { ZodAffectType, ZodTrackerType } from '@/types';
@@ -114,6 +116,7 @@ async function promoteDifferingDuplicate() {
 describe('useAffectsModel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    pendingCvssConflict.value = null;
     useFlaw().resetFlaw();
     const { actions: { initializeAffects } } = useAffectsModel();
     initializeAffects([]);
@@ -293,6 +296,7 @@ describe('useAffectsModel', () => {
     expect(AffectService.postAffectCvssScore).toHaveBeenCalledWith(
       savedAffect.uuid,
       expect.objectContaining({ score: 7.5 }),
+      { suppressConflictToast: true },
     );
   });
 
@@ -685,6 +689,7 @@ describe('useAffectsModel', () => {
     expect(AffectService.postAffectCvssScore).toHaveBeenCalledWith(
       'saved-uuid',
       expect.objectContaining({ score: 7.5 }),
+      { suppressConflictToast: true },
     );
     expect(newAffects.size).toBe(0);
     expect(currentAffects.value[0].cvss_scores).toEqual([
@@ -728,6 +733,7 @@ describe('useAffectsModel', () => {
     expect(AffectService.postAffectCvssScore).toHaveBeenCalledWith(
       'created-uuid',
       expect.objectContaining({ score: 7.5 }),
+      { suppressConflictToast: true },
     );
     expect(currentAffects.value.find(affect => affect.ps_component === 'new-component')).toMatchObject({
       uuid: 'created-uuid',
@@ -811,6 +817,53 @@ describe('useAffectsModel', () => {
     expect(useFlaw().flaw.value.affects.map(affect => affect.uuid)).toEqual([other.uuid]);
     expect(pendingAffectConflict.value?.conflicts).toEqual([
       expect.objectContaining({ field: 'deleted', id: `${other.uuid}:deleted` }),
+    ]);
+  });
+
+  it('keeps a local affect CVSS score when the update overlaps the server', async () => {
+    const loaded = {
+      alerts: [],
+      comment: '',
+      created_dt: '2026-01-01T00:00:00Z',
+      cvss_version: 'V3',
+      embargoed: false,
+      issuer: IssuerEnum.Rh,
+      score: 5.3,
+      updated_dt: '2026-01-01T00:00:00Z',
+      uuid: 'cvss-uuid',
+      vector: 'CVSS:3.1/BASE',
+    };
+    const affect = savedAffectFromOsidb({ cvss_scores: [loaded], uuid: 'saved-uuid' });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+    initializeAffects([affect]);
+    const local = currentAffects.value[0].cvss_scores![0];
+    local.vector = 'CVSS:3.1/MINE';
+    local.score = 7.5;
+    markModified('saved-uuid');
+    vi.mocked(AffectService.putAffects).mockResolvedValue({
+      data: {
+        failed: [],
+        results: [savedAffectFromOsidb({
+          cvss_scores: [loaded],
+          updated_dt: '2026-02-01T00:00:00Z',
+          uuid: 'saved-uuid',
+        })],
+      },
+    } as any);
+    vi.mocked(AffectService.putAffectCvssScore).mockRejectedValue({ response: { data: {}, status: 409 } });
+    vi.mocked(AffectService.getAffect).mockResolvedValue(savedAffectFromOsidb({
+      cvss_scores: [{ ...loaded, score: 9.1, updated_dt: '2026-03-01T00:00:00Z', vector: 'CVSS:3.1/SERVER' }],
+      uuid: 'saved-uuid',
+    }));
+
+    await expect(saveAffects()).rejects.toThrow('CVSS scores conflict');
+
+    expect(currentAffects.value[0].cvss_scores?.[0].vector).toBe('CVSS:3.1/MINE');
+    expect(pendingCvssConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ id: 'saved-uuid:RH:V3:vector' }),
     ]);
   });
 });

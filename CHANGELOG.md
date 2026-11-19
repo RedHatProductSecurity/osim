@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 * Provide conflict handling solutions for flaw affects operations (`OSIDB-5794`)
+* Provide conflict handling solutions for CVSS score operations (`OSIDB-5792`)
 
 ## [2026.11.1]
 ### Added

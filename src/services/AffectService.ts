@@ -1,5 +1,6 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
+import { isCvssWriteConflict } from '@/utils/cvssRebase';
 import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
@@ -154,23 +155,36 @@ export async function deleteAffects(
 // "embargoed": true
 //   "updated_dt": "2024-02-06T16:02:54.708Z"
 // }
+type CvssWriteOptions = { suppressConflictToast?: boolean };
+
+function rejectAffectCvssWrite(error: unknown, options: CvssWriteOptions): never {
+  if (!(options.suppressConflictToast && isCvssWriteConflict(error))) {
+    createCatchHandler('Problem updating affect CVSS scores:', false)(error);
+  }
+  throw error;
+}
+
 export async function putAffectCvssScore(
   affectId: string,
   cvssScoresId: string,
   cvssScoreObject: ZodAffectCVSSType,
+  options: CvssWriteOptions = {},
 ) {
   const putObject: Record<string, any> = Object.assign({}, cvssScoreObject);
   delete putObject['uuid'];
   delete putObject['affect'];
   delete putObject['created_dt'];
 
-  return osidbFetch({
-    method: 'put',
-    url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
-    data: putObject,
-  })
-    .then(response => response.data)
-    .catch(createCatchHandler('Problem updating affect CVSS scores:'));
+  try {
+    const response = await osidbFetch({
+      method: 'put',
+      url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
+      data: putObject,
+    });
+    return response.data;
+  } catch (error) {
+    rejectAffectCvssWrite(error, options);
+  }
 }
 
 // {
@@ -180,22 +194,36 @@ export async function putAffectCvssScore(
 // "vector": "string",
 // "embargoed": true
 // }
-export async function postAffectCvssScore(affectId: string, cvssScoreObject: ZodAffectCVSSType) {
+export async function postAffectCvssScore(
+  affectId: string,
+  cvssScoreObject: ZodAffectCVSSType,
+  options: CvssWriteOptions = {},
+) {
   const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
-  return osidbFetch({
-    method: 'post',
-    url: `/osidb/api/v2/affects/${affectId}/cvss-scores`,
-    data: postObject,
-  })
-    .then(response => response.data)
-    .catch(createCatchHandler('Problem updating affect CVSS scores:'));
+  try {
+    const response = await osidbFetch({
+      method: 'post',
+      url: `/osidb/api/v2/affects/${affectId}/cvss-scores`,
+      data: postObject,
+    });
+    return response.data;
+  } catch (error) {
+    rejectAffectCvssWrite(error, options);
+  }
 }
 
-export async function deleteAffectCvssScore(affectId: string, cvssScoresId: string) {
-  return osidbFetch({
-    method: 'delete',
-    url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
-  })
-    .then(response => response.data)
-    .catch(createCatchHandler('Problem deleting affect CVSS scores:'));
+export async function deleteAffectCvssScore(
+  affectId: string,
+  cvssScoresId: string,
+  options: CvssWriteOptions = {},
+) {
+  try {
+    const response = await osidbFetch({
+      method: 'delete',
+      url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
+    });
+    return response.data;
+  } catch (error) {
+    rejectAffectCvssWrite(error, options);
+  }
 }
