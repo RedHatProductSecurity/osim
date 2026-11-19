@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 
 import Modal from '@/widgets/Modal/Modal.vue';
+import { cvssDiffParts } from '@/utils/cvssRebase';
 import type { CollisionChoice } from '@/utils/flawRebase';
 
 export type CollisionConflictItem = {
+  detail?: string;
   id: string;
   label: string;
   mine: string;
+  rows?: CollisionConflictItem[];
   server: string;
 };
 
@@ -27,32 +30,75 @@ const emit = defineEmits<{
 }>();
 
 const choices = ref<Record<string, CollisionChoice>>({});
+const expanded = ref<Record<string, boolean>>({});
 
 watch(() => props.conflicts, () => {
   choices.value = {};
+  expanded.value = {};
 }, { immediate: true });
 
-const canConfirm = computed(() => props.conflicts.length > 0
-  && props.conflicts.every(item => choices.value[item.id]));
+function leavesOf(item: CollisionConflictItem) {
+  return item.rows?.length ? item.rows : [item];
+}
+
+function allLeaves() {
+  return props.conflicts.flatMap(leavesOf);
+}
+
+const canConfirm = computed(() => {
+  const leaves = allLeaves();
+  return leaves.length > 0 && leaves.every(item => choices.value[item.id]);
+});
 
 const allMine = computed(() => canConfirm.value
-  && props.conflicts.every(item => choices.value[item.id] === 'mine'));
+  && allLeaves().every(item => choices.value[item.id] === 'mine'));
 
 const allServer = computed(() => canConfirm.value
-  && props.conflicts.every(item => choices.value[item.id] === 'server'));
+  && allLeaves().every(item => choices.value[item.id] === 'server'));
 
-function choose(id: string, choice: CollisionChoice) {
-  choices.value = { ...choices.value, [id]: choice };
+function isSelected(item: CollisionConflictItem, choice: CollisionChoice) {
+  return leavesOf(item).every(leaf => choices.value[leaf.id] === choice);
+}
+
+function chooseItem(item: CollisionConflictItem, choice: CollisionChoice) {
+  const next = { ...choices.value };
+  for (const leaf of leavesOf(item)) next[leaf.id] = choice;
+  choices.value = next;
 }
 
 function keepAll(choice: CollisionChoice) {
-  choices.value = Object.fromEntries(props.conflicts.map(item => [item.id, choice]));
+  choices.value = Object.fromEntries(allLeaves().map(item => [item.id, choice]));
+}
+
+function isOpen(item: CollisionConflictItem) {
+  if (!item.rows?.length) return false;
+  return expanded.value[item.id] ?? item.rows.length <= 3;
+}
+
+function groupChoice(item: CollisionConflictItem) {
+  const chosen = leavesOf(item).map(leaf => choices.value[leaf.id]).filter(Boolean);
+  if (chosen.length === 0) return '';
+  return chosen.every(choice => choice === chosen[0]) ? '' : 'Choices differ per affect';
 }
 
 function confirm() {
   if (props.saving || !canConfirm.value) return;
-  emit('confirm', { ...choices.value });
+  emit('confirm', Object.fromEntries(allLeaves().map(item => [item.id, choices.value[item.id]])));
 }
+
+const ConflictValue = defineComponent({
+  name: 'ConflictValue',
+  props: {
+    other: { required: true, type: String },
+    value: { required: true, type: String },
+  },
+  setup(componentProps) {
+    return () => h('span', { class: 'conflict-value' }, cvssDiffParts(componentProps.value, componentProps.other)
+      .map((part, index) => part.changed
+        ? h('mark', { class: 'conflict-diff', key: index }, part.text)
+        : part.text));
+  },
+});
 </script>
 
 <template>
@@ -99,28 +145,28 @@ function confirm() {
       </div>
       <div class="conflict-list">
         <article v-for="item in conflicts" :key="item.id" class="conflict-row">
-          <h2 class="conflict-label">
+          <h2 class="conflict-label" :title="item.detail || undefined">
             {{ item.label }}
           </h2>
           <div class="conflict-compare">
             <button
               type="button"
               class="conflict-side"
-              :class="{ selected: choices[item.id] === 'mine' }"
+              :class="{ selected: isSelected(item, 'mine') }"
               :aria-label="`Your edit for ${item.label}`"
-              :aria-pressed="choices[item.id] === 'mine'"
-              @click="choose(item.id, 'mine')"
+              :aria-pressed="isSelected(item, 'mine')"
+              @click="chooseItem(item, 'mine')"
             >
-              <span class="conflict-value">{{ item.mine }}</span>
+              <ConflictValue :value="item.mine" :other="item.server" />
             </button>
             <div class="conflict-arrows">
               <button
                 type="button"
                 class="conflict-arrow"
-                :class="{ selected: choices[item.id] === 'mine' }"
+                :class="{ selected: isSelected(item, 'mine') }"
                 :aria-label="`Keep your ${item.label}`"
-                :aria-pressed="choices[item.id] === 'mine'"
-                @click="choose(item.id, 'mine')"
+                :aria-pressed="isSelected(item, 'mine')"
+                @click="chooseItem(item, 'mine')"
               >
                 <svg viewBox="0 0 16 16" aria-hidden="true">
                   <path d="M10 3 L5 8 L10 13" />
@@ -129,10 +175,10 @@ function confirm() {
               <button
                 type="button"
                 class="conflict-arrow"
-                :class="{ selected: choices[item.id] === 'server' }"
+                :class="{ selected: isSelected(item, 'server') }"
                 :aria-label="`Keep the server ${item.label}`"
-                :aria-pressed="choices[item.id] === 'server'"
-                @click="choose(item.id, 'server')"
+                :aria-pressed="isSelected(item, 'server')"
+                @click="chooseItem(item, 'server')"
               >
                 <svg viewBox="0 0 16 16" aria-hidden="true">
                   <path d="M6 3 L11 8 L6 13" />
@@ -142,13 +188,78 @@ function confirm() {
             <button
               type="button"
               class="conflict-side"
-              :class="{ selected: choices[item.id] === 'server' }"
+              :class="{ selected: isSelected(item, 'server') }"
               :aria-label="`Server value for ${item.label}`"
-              :aria-pressed="choices[item.id] === 'server'"
-              @click="choose(item.id, 'server')"
+              :aria-pressed="isSelected(item, 'server')"
+              @click="chooseItem(item, 'server')"
             >
-              <span class="conflict-value">{{ item.server }}</span>
+              <ConflictValue :value="item.server" :other="item.mine" />
             </button>
+          </div>
+          <button
+            v-if="item.rows?.length"
+            type="button"
+            class="conflict-expand"
+            :aria-expanded="isOpen(item)"
+            @click="expanded[item.id] = !isOpen(item)"
+          >
+            {{ isOpen(item) ? 'Hide' : 'Show' }} {{ item.rows.length }} affects
+            <span v-if="groupChoice(item)"> · {{ groupChoice(item) }}</span>
+          </button>
+          <div v-if="item.rows?.length && isOpen(item)" class="conflict-nested">
+            <div v-for="row in item.rows" :key="row.id" class="conflict-affect">
+              <h3 class="conflict-affect-label" :title="row.detail || undefined">
+                {{ row.label }}
+              </h3>
+              <div class="conflict-compare">
+                <button
+                  type="button"
+                  class="conflict-side"
+                  :class="{ selected: choices[row.id] === 'mine' }"
+                  :aria-label="`Your edit for ${row.label}`"
+                  :aria-pressed="choices[row.id] === 'mine'"
+                  @click="chooseItem(row, 'mine')"
+                >
+                  <ConflictValue :value="row.mine" :other="row.server" />
+                </button>
+                <div class="conflict-arrows">
+                  <button
+                    type="button"
+                    class="conflict-arrow"
+                    :class="{ selected: choices[row.id] === 'mine' }"
+                    :aria-label="`Keep your ${row.label}`"
+                    :aria-pressed="choices[row.id] === 'mine'"
+                    @click="chooseItem(row, 'mine')"
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M10 3 L5 8 L10 13" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="conflict-arrow"
+                    :class="{ selected: choices[row.id] === 'server' }"
+                    :aria-label="`Keep the server ${row.label}`"
+                    :aria-pressed="choices[row.id] === 'server'"
+                    @click="chooseItem(row, 'server')"
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M6 3 L11 8 L6 13" />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  class="conflict-side"
+                  :class="{ selected: choices[row.id] === 'server' }"
+                  :aria-label="`Server value for ${row.label}`"
+                  :aria-pressed="choices[row.id] === 'server'"
+                  @click="chooseItem(row, 'server')"
+                >
+                  <ConflictValue :value="row.server" :other="row.mine" />
+                </button>
+              </div>
+            </div>
           </div>
         </article>
       </div>
@@ -215,13 +326,40 @@ function confirm() {
   margin-top: 1.25rem;
 }
 
-.conflict-label {
+.conflict-label,
+.conflict-affect-label {
   margin: 0 0 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--bs-border-color);
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
+}
+
+.conflict-affect-label {
+  font-size: 1rem;
+}
+
+.conflict-label[title],
+.conflict-affect-label[title] {
+  cursor: help;
+}
+
+.conflict-expand {
+  display: block;
+  margin: 0.75rem auto 0;
+  border: 0;
+  background: transparent;
+  color: var(--bs-primary);
+  font: inherit;
+  text-decoration: underline;
+}
+
+.conflict-nested {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .conflict-compare {
@@ -260,6 +398,13 @@ function confirm() {
   overflow: auto;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+:deep(.conflict-diff) {
+  padding: 0 0.12em;
+  border-radius: 0.15em;
+  background: var(--bs-warning-bg-subtle, #fff3cd);
+  color: inherit;
 }
 
 .conflict-arrows {

@@ -22,6 +22,8 @@ import { AegisAIService } from '@/services/AegisAIService';
 import { useDraftFlawStore } from '@/stores/DraftFlawStore';
 import { useToastStore } from '@/stores/ToastStore';
 import { useUserStore } from '@/stores/UserStore';
+import { groupAffectConflicts } from '@/utils/affectRebase';
+import { cvssFromChoices, type CvssScoreSnapshot } from '@/utils/cvssRebase';
 import {
   flawBodyFromChoices,
   flawRebaseFieldLabel,
@@ -29,7 +31,7 @@ import {
   type CollisionChoice,
   type FlawRebaseField,
 } from '@/utils/flawRebase';
-import { mergeBy } from '@/utils/helpers';
+import { deepCopyFromRaw, mergeBy } from '@/utils/helpers';
 import {
   flawSources,
   flawImpacts,
@@ -43,6 +45,27 @@ import {
 import { createSuccessHandler, createCatchHandler } from './service-helpers';
 import { useAffectsModel } from './useAffectsModel';
 import { useCollisionConflict } from './useCollisionConflict';
+import { pendingCvssConflict } from './cvssConflictState';
+
+type CvssRow = { created_dt?: null | string; cvss_version?: null | string; issuer?: null | string };
+
+function replaceCvssScore<T extends CvssRow>(
+  scores: T[],
+  chosen: CvssScoreSnapshot,
+  issuer?: null | string,
+  version?: null | string,
+): T[] {
+  const index = scores.findIndex(score => score.issuer === issuer && score.cvss_version === version);
+  if (!chosen.vector && !chosen.uuid) {
+    return index >= 0 ? scores.filter((_, itemIndex) => itemIndex !== index) : scores;
+  }
+  if (index >= 0) {
+    Object.assign(scores[index], chosen);
+    if (!chosen.uuid) delete scores[index].created_dt;
+    return scores;
+  }
+  return [...scores, { ...chosen } as T];
+}
 
 // Map field names to feature names for programmatic feedback
 const FieldToFeatureName: Record<string, string> = {
@@ -54,7 +77,16 @@ const FieldToFeatureName: Record<string, string> = {
 };
 
 export function useFlawModel() {
-  const { acceptServerFlaw, flaw, initialFlaw, isFlawUpdated, setFlaw } = useFlaw();
+  const {
+    acceptSavedAffects,
+    acceptSavedCvssScores,
+    acceptServerFlaw,
+    flaw,
+    initialFlaw,
+    isFlawUpdated,
+    setFlaw,
+    setLateFlawField,
+  } = useFlaw();
   const isSaving = ref(false);
   const { addToast } = useToastStore();
   const { adopted, pendingFlawConflict, resolveFlawSave } = useCollisionConflict();
@@ -133,8 +165,17 @@ export function useFlawModel() {
   } = useCvssScores();
 
   const {
-    actions: { initializeAffects, removeAffects, resetSavedAffects, saveAffects },
-    state: { currentAffects, removedAffects, wereAffectsEditedOrAdded },
+    actions: {
+      applyAffectResolution,
+      initializeAffects,
+      integrateServerAffects,
+      removeAffects,
+      resetSavedAffects,
+      saveAffectCvss,
+      saveAffects,
+      stageAffectConflicts,
+    },
+    state: { currentAffects, pendingAffectConflict, removedAffects, wereAffectsEditedOrAdded },
   } = useAffectsModel();
 
   const { areLabelsUpdated, updateLabels } = useFlawLabels();
@@ -267,37 +308,136 @@ export function useFlawModel() {
     });
   }
 
-  const collisionConflicts = computed(() => (pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
-    id: conflict.field,
-    label: flawRebaseFieldLabel(conflict.field),
-    mine: formatCollisionValue(conflict.mine),
-    server: formatCollisionValue(conflict.server),
-  })));
+  const showCollisionDialog = computed(() => pendingFlawConflict.value !== null
+    || (pendingAffectConflict.value?.conflicts.length ?? 0) > 0
+    || (pendingCvssConflict.value?.conflicts.length ?? 0) > 0);
+
+  const collisionConflicts = computed(() => [
+    ...(pendingFlawConflict.value?.conflicts ?? []).map(conflict => ({
+      id: conflict.field,
+      label: flawRebaseFieldLabel(conflict.field),
+      mine: formatCollisionValue(conflict.mine),
+      server: formatCollisionValue(conflict.server),
+    })),
+    ...groupAffectConflicts(pendingAffectConflict.value?.conflicts ?? []),
+    ...(pendingCvssConflict.value?.conflicts ?? []).map(conflict => ({
+      id: conflict.id,
+      label: conflict.label,
+      mine: conflict.mine,
+      server: conflict.server,
+    })),
+  ]);
 
   function cancelCollisionDialog() {
     pendingFlawConflict.value = null;
+    pendingAffectConflict.value = null;
+    pendingCvssConflict.value = null;
+  }
+
+  function applyCvssResolution(choices: Record<string, CollisionChoice>) {
+    const pending = pendingCvssConflict.value;
+    if (!pending) return;
+    for (const row of pending.scores) {
+      const chosen = cvssFromChoices(row.local, row.server, row.formEdits, choices, row.scope);
+      if (row.affectUuid) {
+        const affect = currentAffects.value.find(item => item.uuid === row.affectUuid);
+        if (!affect) continue;
+        affect.cvss_scores = replaceCvssScore(affect.cvss_scores ?? [], chosen, row.issuer, row.version);
+        continue;
+      }
+      flaw.value.cvss_scores = replaceCvssScore(flaw.value.cvss_scores ?? [], chosen, row.issuer, row.version);
+    }
+    pendingCvssConflict.value = null;
+  }
+
+  function finishConfirmedAffects(deleteFailed: boolean, savedAffects: ZodAffectType[], saveFailed: boolean) {
+    if (deleteFailed || saveFailed) {
+      acceptSavedAffects(savedAffects);
+      if (savedAffects.length) resetSavedAffects(savedAffects);
+      return;
+    }
+    // Copy the affect list only. setFlaw would mark unsaved flaw fields and labels clean.
+    setLateFlawField('affects', deepCopyFromRaw(currentAffects.value));
+    initializeAffects(flaw.value.affects);
   }
 
   async function confirmCollisionDialog(choices: Record<string, CollisionChoice>) {
     if (isSaving.value) return;
     const pending = pendingFlawConflict.value;
-    if (!pending) return;
+    const affectPending = pendingAffectConflict.value;
+    const cvssPending = pendingCvssConflict.value;
+    const hasAffectConflict = (affectPending?.conflicts.length ?? 0) > 0;
+    const hasCvssConflict = (cvssPending?.conflicts.length ?? 0) > 0;
+    if (!pending && !hasAffectConflict && !hasCvssConflict) return;
+
+    const approvedDeletes = (affectPending?.blockedDeletes ?? []).flatMap(affect =>
+      affect.uuid && choices[`${affect.uuid}:deleted`] === 'mine' ? [affect.uuid] : []);
+    const cvssAffectOnly = Boolean(
+      hasCvssConflict && cvssPending?.scores.some(score => score.affectUuid) && !hasAffectConflict,
+    );
+    const retryFlawCvss = Boolean(cvssPending?.scores.some(score => !score.affectUuid));
 
     isSaving.value = true;
     try {
-      const saved = await putFlaw(
-        flaw.value.uuid,
-        flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
-        shouldCreateJiraTask.value,
-      );
-      acceptServerFlaw(
-        saved,
-        Object.keys(choices).filter(field => choices[field] === 'server'),
-      );
-      pendingFlawConflict.value = null;
-      toastAdoptedFields(pending.adopted);
+      if (pending) {
+        const saved = await putFlaw(
+          flaw.value.uuid,
+          flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
+          shouldCreateJiraTask.value,
+        );
+        acceptServerFlaw(
+          saved,
+          pending.formEdits.filter(field => choices[field] === 'server'),
+        );
+        pendingFlawConflict.value = null;
+        toastAdoptedFields(pending.adopted);
+      }
+      if (affectPending) {
+        applyAffectResolution(choices);
+        pendingAffectConflict.value = null;
+      }
+      applyCvssResolution(choices);
+      const deleting = removedAffects.size > 0;
+      let deletedUuids: string[] = [];
+      let deleteFailed = false;
+      if (deleting) {
+        const removed = await removeAffects({ skipCheckFor: approvedDeletes });
+        deletedUuids = removed.deletedUuids;
+        deleteFailed = removed.hasErrors;
+      }
+      let savedAffects: ZodAffectType[] = [];
+      let saveFailed = false;
+      const saveAffectRows = hasAffectConflict || (wereAffectsEditedOrAdded.value && !cvssAffectOnly);
+      if (saveAffectRows) {
+        const saved = await saveAffects();
+        savedAffects = saved.savedAffects;
+        saveFailed = saved.hasErrors;
+      } else if (cvssAffectOnly) {
+        saveFailed = await saveAffectCvss();
+      }
+      if (affectPending || saveAffectRows || deleting || deletedUuids.length) {
+        finishConfirmedAffects(deleteFailed, savedAffects, saveFailed);
+      }
+      if (retryFlawCvss) {
+        const savedScores = (await saveCvssScores())
+          .filter(score => score && typeof score === 'object' && 'uuid' in score);
+        acceptSavedCvssScores(savedScores);
+      }
+      // Affects are saved before the flaw when the affect conflict stopped the queue first.
+      // Leave the flaw updated_dt alone: copying a newer token here would hide a field collision.
+      if (!pending && (isFlawUpdated.value || shouldCreateJiraTask.value)) {
+        const validatedFlaw = validate();
+        if (validatedFlaw.success) {
+          const saved = await putFlawResolvingDisjointConflict({
+            ...validatedFlaw.data,
+            ...getAegisMetadataIfChanged(),
+            updated_dt: flaw.value.updated_dt,
+          });
+          acceptServerFlaw(saved);
+        }
+      }
     } catch {
-      // putFlaw already shows the error. Leave the dialog open.
+      // The save already shows the error. Leave the dialog open when a conflict remains.
     } finally {
       isSaving.value = false;
     }
@@ -315,9 +455,20 @@ export function useFlawModel() {
       isSaving.value = false;
       return;
     }
+    const savingFlawUuid = flaw.value.uuid;
+    const guardFlaw = () => {
+      if (flaw.value.uuid !== savingFlawUuid) {
+        throw new Error('Affect reload discarded because the flaw changed.');
+      }
+    };
+    queue.push(async () => {
+      guardFlaw();
+      await integrateServerAffects();
+    });
     // If the flaw is in triage and has no affects, we need to save the affects first
     if (isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
+        guardFlaw();
         const response = await saveAffects();
 
         if (typeof response === 'object' && 'savedAffects' in response) {
@@ -325,12 +476,11 @@ export function useFlawModel() {
           // Always merge saved affects into flaw state (even on partial success)
           afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
 
-          // If no errors, do full reset; if partial success, only reset saved items
-          if (hasErrors && resetSavedAffects) {
-            afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
-          } else {
-            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
-          }
+          // Failed deletes may still be queued when this runs. A full reset would drop them.
+          afterSuccessQueue.push(() => {
+            if (hasErrors || removedAffects.size) resetSavedAffects(savedAffects);
+            else initializeAffects(flaw.value.affects);
+          });
         } else {
           afterSuccessQueue.push(() => setFlaw(response as ZodAffectType[], 'affects', false));
           afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
@@ -340,12 +490,19 @@ export function useFlawModel() {
 
     if (isFlawUpdated.value || shouldCreateJiraTask.value) {
       queue.push(async () => {
+        guardFlaw();
         // Add aegis metadata if there are AI changes
         const payload = {
           ...validatedFlaw.data,
           ...getAegisMetadataIfChanged(),
         };
-        const response = await putFlawResolvingDisjointConflict(payload);
+        let response: ZodFlawType;
+        try {
+          response = await putFlawResolvingDisjointConflict(payload);
+        } catch (error) {
+          if (pendingFlawConflict.value) await stageAffectConflicts();
+          throw error;
+        }
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
         afterSuccessQueue.push(() => setFlaw({
@@ -357,6 +514,7 @@ export function useFlawModel() {
     }
     if (wasFlawCvssModified.value) {
       queue.push(async () => {
+        guardFlaw();
         const response = await saveCvssScores();
         afterSuccessQueue.push(() => setFlaw(response, 'cvss_scores'));
       });
@@ -364,6 +522,7 @@ export function useFlawModel() {
 
     if (removedAffects.size) {
       queue.push(async () => {
+        guardFlaw();
         const response = await removeAffects();
 
         if (response && typeof response === 'object' && 'deletedUuids' in response) {
@@ -376,9 +535,12 @@ export function useFlawModel() {
             );
           }
 
-          // Only do full reset if all deletions succeeded
+          // A later affect save owns the reset. Initializing here would drop edits
+          // that save reports as failed, including a conflict still on screen.
           if (!hasErrors) {
-            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
+            afterSuccessQueue.push(() => {
+              if (!wereAffectsEditedOrAdded.value) initializeAffects(flaw.value.affects);
+            });
           }
           // If hasErrors, failed deletions stay in removedAffects Set for retry
         }
@@ -387,6 +549,7 @@ export function useFlawModel() {
 
     if (!isInTriageWithoutAffects.value && wereAffectsEditedOrAdded.value) {
       queue.push(async () => {
+        guardFlaw();
         const response = await saveAffects();
 
         if (typeof response === 'object' && 'savedAffects' in response) {
@@ -394,12 +557,11 @@ export function useFlawModel() {
           // Always merge saved affects into flaw state (even on partial success)
           afterSuccessQueue.push(() => setFlaw(mergeBy(flaw.value.affects, savedAffects, 'uuid'), 'affects'));
 
-          // If no errors, do full reset; if partial success, only reset saved items
-          if (hasErrors && resetSavedAffects) {
-            afterSuccessQueue.push(() => resetSavedAffects(savedAffects));
-          } else {
-            afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
-          }
+          // Failed deletes may still be queued when this runs. A full reset would drop them.
+          afterSuccessQueue.push(() => {
+            if (hasErrors || removedAffects.size) resetSavedAffects(savedAffects);
+            else initializeAffects(flaw.value.affects);
+          });
         } else {
           afterSuccessQueue.push(() => setFlaw(response, 'affects', false));
           afterSuccessQueue.push(() => initializeAffects(flaw.value.affects));
@@ -409,6 +571,7 @@ export function useFlawModel() {
 
     if (areLabelsUpdated.value) {
       queue.push(async () => {
+        guardFlaw();
         const { hasErrors } = await updateLabels();
         // Re-fetch the full flaw so side-effects on the backend (e.g. classification.state
         // changing to DONE when approved/rejected label is added) are reflected immediately.
@@ -484,7 +647,7 @@ export function useFlawModel() {
     collisionConflicts,
     confirmCollisionDialog,
     createFlaw,
-    showCollisionDialog: computed(() => pendingFlawConflict.value !== null),
+    showCollisionDialog,
     updateFlaw,
     afterSaveSuccess,
     updateVector,

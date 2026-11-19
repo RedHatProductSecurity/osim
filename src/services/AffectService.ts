@@ -1,5 +1,6 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
+import { isCvssWriteConflict } from '@/utils/cvssRebase';
 import { isCveValid } from '@/utils/helpers';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import type { ZodAffectType, ZodAffectCVSSType } from '@/types/';
@@ -10,8 +11,11 @@ export async function getAffect(uuid: string): Promise<ZodAffectType> {
 }
 
 type AffectFetchCallback = (fetchedCount: number, totalCount: number) => void;
-export async function getAffects(cveOrUuid: string, onFetchedCallback?: AffectFetchCallback):
-Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
+export async function getAffects(
+  cveOrUuid: string,
+  onFetchedCallback?: AffectFetchCallback,
+  fresh = false,
+): Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const field = isCveValid(cveOrUuid) ? 'cve_id' : 'flaw__uuid';
   const pageSize = 100;
 
@@ -19,6 +23,7 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
   const firstResponse = await osidbFetch({
     method: 'get',
     url: '/osidb/api/v2/affects',
+    cache: fresh ? 'no-cache' : 'default',
     params: {
       [field]: cveOrUuid,
       limit: pageSize,
@@ -41,6 +46,7 @@ Promise<{ data: { results: ZodAffectType[] }; response: Response }> {
     const response = await osidbFetch({
       method: 'get',
       url: relativePath,
+      cache: fresh ? 'no-cache' : 'default',
     });
 
     allAffects.push(...response.data.results);
@@ -80,35 +86,65 @@ export async function putAffectWithHandlers(uuid: string, affectObject: any) {
     .catch(createCatchHandler('Error updating Affect:'));
 }
 
-export async function putAffects(affectObjects: any[]) {
-  return osidbFetch({
-    method: 'put',
-    url: '/osidb/api/v2/affects/bulk',
-    data: affectObjects,
-  })
-    .catch(createCatchHandler('Error updating Affects:'));
+export async function putAffects(
+  affectObjects: any[],
+  options: { suppressConflictToast?: boolean } = {},
+) {
+  try {
+    return await osidbFetch({
+      method: 'put',
+      url: '/osidb/api/v2/affects/bulk',
+      data: affectObjects,
+    });
+  } catch (error) {
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    // 409 is a stale updated_dt. 404 is an affect the server no longer has.
+    const reconcile = options.suppressConflictToast && (status === 409 || status === 404);
+    if (!reconcile) {
+      createCatchHandler('Error updating Affects:', false)(error);
+    }
+    throw error;
+  }
 }
 
 type AffectPost = Omit<ZodAffectType, 'alerts' | 'cvss_scores' | 'trackers'>;
-export async function postAffects(affectObjects: AffectPost[]) {
-  return osidbFetch({
-    method: 'post',
-    url: '/osidb/api/v2/affects/bulk',
-    data: affectObjects,
-  })
-    .catch(createCatchHandler('Error creating Affects:'));
+export async function postAffects(
+  affectObjects: AffectPost[],
+  options: { suppressErrorToast?: boolean } = {},
+) {
+  try {
+    return await osidbFetch({
+      method: 'post',
+      url: '/osidb/api/v2/affects/bulk',
+      data: affectObjects,
+    });
+  } catch (error) {
+    if (!options.suppressErrorToast) {
+      createCatchHandler('Error creating Affects:', false)(error);
+    }
+    throw error;
+  }
 }
 
-export async function deleteAffects(affectUuids: string[]) {
+export async function deleteAffects(
+  affectUuids: string[],
+  options: { suppressErrorToast?: boolean } = {},
+) {
   if (affectUuids.length === 0) {
     return;
   }
-  return osidbFetch({
-    method: 'delete',
-    url: '/osidb/api/v2/affects/bulk',
-    data: affectUuids,
-  })
-    .catch(createCatchHandler('Error deleting Affect:'));
+  try {
+    return await osidbFetch({
+      method: 'delete',
+      url: '/osidb/api/v2/affects/bulk',
+      data: affectUuids,
+    });
+  } catch (error) {
+    if (!options.suppressErrorToast) {
+      createCatchHandler('Error deleting Affect:', false)(error);
+    }
+    throw error;
+  }
 }
 
 // {
@@ -119,23 +155,36 @@ export async function deleteAffects(affectUuids: string[]) {
 // "embargoed": true
 //   "updated_dt": "2024-02-06T16:02:54.708Z"
 // }
+type CvssWriteOptions = { suppressConflictToast?: boolean };
+
+function rejectAffectCvssWrite(error: unknown, options: CvssWriteOptions): never {
+  if (!(options.suppressConflictToast && isCvssWriteConflict(error))) {
+    createCatchHandler('Problem updating affect CVSS scores:', false)(error);
+  }
+  throw error;
+}
+
 export async function putAffectCvssScore(
   affectId: string,
   cvssScoresId: string,
   cvssScoreObject: ZodAffectCVSSType,
+  options: CvssWriteOptions = {},
 ) {
   const putObject: Record<string, any> = Object.assign({}, cvssScoreObject);
   delete putObject['uuid'];
   delete putObject['affect'];
   delete putObject['created_dt'];
 
-  return osidbFetch({
-    method: 'put',
-    url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
-    data: putObject,
-  })
-    .then(response => response.data)
-    .catch(createCatchHandler('Problem updating affect CVSS scores:'));
+  try {
+    const response = await osidbFetch({
+      method: 'put',
+      url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
+      data: putObject,
+    });
+    return response.data;
+  } catch (error) {
+    rejectAffectCvssWrite(error, options);
+  }
 }
 
 // {
@@ -145,22 +194,36 @@ export async function putAffectCvssScore(
 // "vector": "string",
 // "embargoed": true
 // }
-export async function postAffectCvssScore(affectId: string, cvssScoreObject: ZodAffectCVSSType) {
+export async function postAffectCvssScore(
+  affectId: string,
+  cvssScoreObject: ZodAffectCVSSType,
+  options: CvssWriteOptions = {},
+) {
   const postObject: Record<string, any> = Object.assign({}, cvssScoreObject);
-  return osidbFetch({
-    method: 'post',
-    url: `/osidb/api/v2/affects/${affectId}/cvss-scores`,
-    data: postObject,
-  })
-    .then(response => response.data)
-    .catch(createCatchHandler('Problem updating affect CVSS scores:'));
+  try {
+    const response = await osidbFetch({
+      method: 'post',
+      url: `/osidb/api/v2/affects/${affectId}/cvss-scores`,
+      data: postObject,
+    });
+    return response.data;
+  } catch (error) {
+    rejectAffectCvssWrite(error, options);
+  }
 }
 
-export async function deleteAffectCvssScore(affectId: string, cvssScoresId: string) {
-  return osidbFetch({
-    method: 'delete',
-    url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
-  })
-    .then(response => response.data)
-    .catch(createCatchHandler('Problem deleting affect CVSS scores:'));
+export async function deleteAffectCvssScore(
+  affectId: string,
+  cvssScoresId: string,
+  options: CvssWriteOptions = {},
+) {
+  try {
+    const response = await osidbFetch({
+      method: 'delete',
+      url: `/osidb/api/v2/affects/${affectId}/cvss-scores/${cvssScoresId}`,
+    });
+    return response.data;
+  } catch (error) {
+    rejectAffectCvssWrite(error, options);
+  }
 }

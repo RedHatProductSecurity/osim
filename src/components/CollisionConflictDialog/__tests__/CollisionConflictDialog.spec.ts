@@ -14,6 +14,23 @@ function mountDialog() {
 }
 
 describe('collision conflict dialog', () => {
+  it('highlights the CVSS metrics that differ', () => {
+    const wrapper = mount(CollisionConflictDialog, {
+      props: {
+        conflicts: [{
+          id: 'flaw:RH:V3:vector',
+          label: 'Vector · Flaw RH CVSSV3',
+          mine: '7.5 CVSS:3.1/AV:N/AC:L',
+          server: '9.1 CVSS:3.1/AV:N/AC:H',
+        }],
+        show: true,
+      },
+    });
+
+    const marks = wrapper.findAll('mark.conflict-diff').map(mark => mark.text());
+    expect(marks).toEqual(['7.5', 'AC:L', '9.1', 'AC:H']);
+  });
+
   it('lists each conflict and confirms the selected side', async () => {
     const wrapper = mountDialog();
 
@@ -70,6 +87,53 @@ describe('collision conflict dialog', () => {
 
     expect(wrapper.get('.modal-footer .btn-primary').attributes('disabled')).toBeDefined();
     expect(wrapper.emitted('confirm')).toBeUndefined();
+  });
+
+  it('keeps one summary for many affects and still allows a single override', async () => {
+    const rows = [
+      {
+        id: 'a:impact',
+        label: 'rhel-9 · rhel-9 · kernel',
+        detail: 'Analyzed component: pkg:rpm/kernel',
+        mine: 'LOW',
+        server: 'MODERATE',
+      },
+      { id: 'b:impact', label: 'openssl (rhel-9)', mine: 'LOW', server: 'MODERATE' },
+      { id: 'c:impact', label: 'glibc (rhel-8)', mine: 'LOW', server: 'IMPORTANT' },
+      { id: 'd:impact', label: 'httpd (rhel-8)', mine: 'LOW', server: 'MODERATE' },
+    ];
+    const wrapper = mount(CollisionConflictDialog, {
+      props: {
+        conflicts: [{
+          id: 'affect-field:impact',
+          label: 'Impact · 4 affects',
+          mine: 'LOW',
+          rows,
+          server: 'MODERATE (3)\nIMPORTANT (1)',
+        }],
+        show: true,
+      },
+    });
+
+    expect(wrapper.text()).toContain('Impact · 4 affects');
+    expect(wrapper.text()).not.toContain('rhel-9 · rhel-9 · kernel');
+
+    await wrapper.get('[aria-label="Keep your Impact · 4 affects"]').trigger('click');
+    await wrapper.get('.conflict-expand').trigger('click');
+    expect(wrapper.get('.conflict-affect-label').attributes('title')).toBe(
+      'Analyzed component: pkg:rpm/kernel',
+    );
+    expect(wrapper.text()).toContain('rhel-9 · rhel-9 · kernel');
+
+    await wrapper.get('[aria-label="Keep the server openssl (rhel-9)"]').trigger('click');
+    await wrapper.get('.modal-footer .btn-primary').trigger('click');
+
+    expect(wrapper.emitted('confirm')?.[0]).toEqual([{
+      'a:impact': 'mine',
+      'b:impact': 'server',
+      'c:impact': 'mine',
+      'd:impact': 'mine',
+    }]);
   });
 
   it('closes without a choice when cancelled', async () => {
