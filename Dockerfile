@@ -24,7 +24,7 @@ STOPSIGNAL SIGQUIT
 # Upgrade base packages
 RUN microdnf --refresh --best --nodocs --noplugins --setopt install_weak_deps=0 -y upgrade \
 # Install Nginx and clean up
-    && microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx \
+    && microdnf --nodocs --noplugins --setopt install_weak_deps=0 -y install nginx openssl python3 \
     && microdnf clean all \
 # Set up unprivileged nginx
     && sed -i '/^user nginx;$/d' /etc/nginx/nginx.conf \
