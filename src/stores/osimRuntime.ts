@@ -51,12 +51,7 @@ export async function configureBackends() {
 
   setupCallCount++;
   parseRuntime();
-  await fetchOsidbHealthy();
-  // If an error was not set, then the status is still INIT.
-  // If the status is still INIT after all the initialization, then set the status to READY.
-  if (status.value === OsimRuntimeStatus.INIT) {
-    status.value = OsimRuntimeStatus.READY;
-  }
+  await checkBackendHealth();
 }
 
 async function fetchOsimVersionFallback() {
@@ -73,7 +68,7 @@ async function fetchOsimVersionFallback() {
     .catch(e => console.error('osimRuntime::fetchOsimVersionFallback() failed', e));
 }
 
-function parseRuntime() {
+export function parseRuntime() {
   if (!window.__osim_runtime) {
     console.error('osimRuntime::parseRuntime() Unable to get backends');
     runtime.value.error =
@@ -84,7 +79,7 @@ function parseRuntime() {
 
   console.debug('OsimRuntime', window.__osim_runtime);
   try {
-    runtime.value = OsimRuntime.parse(window.__osim_runtime);
+    runtime.value = OsimRuntime.parse({ ...window.__osim_runtime, telemetry: undefined });
   } catch (e) {
     console.error('osimRuntime::parseRuntime() Unable to parse OsimRuntime',
       e,
@@ -96,6 +91,13 @@ function parseRuntime() {
     status.value = OsimRuntimeStatus.ERROR;
   }
 
+  const telemetry = OsimRuntime.shape.telemetry.safeParse(window.__osim_runtime?.telemetry);
+  if (telemetry.success) runtime.value.telemetry = telemetry.data;
+  else {
+    runtime.value.telemetry = undefined;
+    console.warn('osimRuntime::parseRuntime() Invalid telemetry configuration; tracing disabled');
+  }
+
   if (runtime.value.osimVersion.timestamp === '1970-01-01T00:00:00Z'
     || runtime.value.osimVersion.timestamp === '1969-12-31T23:59:59Z') {
     // 0 unix timestamp (or -1 unix timestamp, for when `date` is a second off)
@@ -104,6 +106,11 @@ function parseRuntime() {
   if (runtime.value.osimVersion.rev === '' && runtime.value.osimVersion.tag === '') {
     fetchOsimVersionFallback();
   }
+}
+
+export async function checkBackendHealth() {
+  await fetchOsidbHealthy();
+  if (status.value === OsimRuntimeStatus.INIT) status.value = OsimRuntimeStatus.READY;
 }
 
 function fetchOsidbHealthy() {

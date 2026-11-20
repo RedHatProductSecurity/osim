@@ -66,6 +66,25 @@ describe('osimRuntime', () => {
       } });
   });
 
+  it('ignores invalid telemetry without marking the backend runtime as broken', async () => {
+    window.__osim_runtime = { ...runtime, telemetry: { otlpEndpoint: '/wrong-proxy' } };
+
+    await configureBackends();
+
+    expect(osimRuntimeStatus.value).toBe(OsimRuntimeStatus.READY);
+    expect(osimRuntime.value.telemetry).toBeUndefined();
+  });
+
+  it('clears previously valid telemetry when the next runtime is invalid', async () => {
+    window.__osim_runtime = { ...runtime, telemetry: { otlpEndpoint: 'https://collector.example/v1/traces' } };
+    await configureBackends();
+    expect(osimRuntime.value.telemetry?.otlpEndpoint).toBe('https://collector.example/v1/traces');
+
+    window.__osim_runtime = { ...runtime, telemetry: { otlpEndpoint: '/wrong-proxy' } };
+    await configureBackends();
+    expect(osimRuntime.value.telemetry).toBeUndefined();
+  });
+
   it('should set status to ERROR if osidb is not healthy', async () => {
     server.use(http.get('http://localhost:3000/osidb/osidb/healthy', () => HttpResponse.error()));
 

@@ -5,13 +5,20 @@ if [ -z "$OSIM_NGINX_PROXY_MITRE" ]; then
     exit 0;
 fi
 
-# Get proxy certificate
-curl --xattr "$OSIM_NGINX_PROXY_CA" -o /tmp/Proxy-CA.crt
+# Script 20 may already have downloaded and validated the proxy CA.
+if [ ! -f /tmp/Proxy-CA.crt ]; then
+    ca_tmp=$(mktemp /tmp/Proxy-CA.crt.XXXXXX) || exit 1
+    if ! curl -fsS --max-time 30 --xattr "$OSIM_NGINX_PROXY_CA" -o "$ca_tmp" ||
+       ! mv -f "$ca_tmp" /tmp/Proxy-CA.crt; then
+        rm -f "$ca_tmp"
+        exit 1
+    fi
+fi
 
 # Ensure no trailing slash in variable, so no duplicate trailing slash is added in proxy_pass
 OSIM_NGINX_PROXY_MITRE="${OSIM_NGINX_PROXY_MITRE%/}"
 
-echo resolver "$(awk -v ORS=' ' '$1=="nameserver" {print $2}' /etc/resolv.conf)" ";" >/etc/nginx/conf.d/resolvers.conf
+echo resolver "$(awk -v ORS=' ' '$1=="nameserver" {print $2 ~ /:/ ? "[" $2 "]" : $2}' /etc/resolv.conf)" ";" >/etc/nginx/conf.d/resolvers.conf
 
 # Add MITRE reverse proxy endpoint
 cat <<EOF >>/tmp/osim-nginx-proxy.conf

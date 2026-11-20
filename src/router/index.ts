@@ -18,6 +18,7 @@ import LogoutView from '@/views/LogoutView.vue';
 import KpiMetricsView from '@/views/KpiMetrics.vue';
 import { osimRuntime } from '@/stores/osimRuntime';
 import { getNextAccessToken } from '@/services/OsidbAuthService';
+import { recordNavigation } from '@/services/telemetryRecorder';
 
 import FlawEditView from '../views/FlawEditView.vue';
 import IndexView from '../views/IndexView.vue';
@@ -156,7 +157,10 @@ function apiKeysGuard(shouldRedirectToSettings = false) {
   };
 }
 
+const navigationStartTimes = new WeakMap<object, number>();
+
 router.beforeEach(async (to, from) => {
+  navigationStartTimes.set(to, performance.now());
   const isNavigationBackButton = popStateDetected;
   const popState = popStateEvent?.state;
   popStateDetected = false;
@@ -212,7 +216,13 @@ router.beforeEach(async (to, from) => {
   }
 });
 
-router.afterEach((to) => {
+router.afterEach((to, _from, failure) => {
+  if (!failure) {
+    const startedAt = navigationStartTimes.get(to);
+    if (startedAt !== undefined) {
+      recordNavigation(to.matched.at(-1)?.path ?? '/unmatched', startedAt, performance.now());
+    }
+  }
   vueNextTick(() => {
     document.title = `OSIM ${environmentString()}| ${to.meta.title}`;
   });
