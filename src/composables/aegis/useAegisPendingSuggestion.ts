@@ -26,6 +26,11 @@ export function useAegisPendingSuggestion(
   function mirrorAppendOnFlaw(entry: AegisChangeEntry) {
     const metadata = flaw.value.aegis_meta;
     if (!metadata) return;
+    const entries = metadata[fieldName];
+    // The tracking store shares entry arrays with the flaw copy when both were
+    // loaded from the same fetch (setFlaw + setAegisMetadata), so appending to
+    // the store has already updated the flaw copy.
+    if (Array.isArray(entries) && entries.includes(entry)) return;
     metadata[fieldName] ||= [];
     metadata[fieldName].push(entry);
   }
