@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
 import sanitizeHtml from 'sanitize-html';
 import * as marked from 'marked';
@@ -11,12 +11,25 @@ import Modal from '@/widgets/Modal/Modal.vue';
 const { closeModal, isModalOpen, openModal } = useModal();
 
 const html = ref({ header: '', body: '' });
+const loadError = ref(false);
+
+let loading: Promise<void> | undefined;
+function openChangeLog() {
+  openModal();
+  loading ??= fetchChangeLog().then(() => { loadError.value = false; }).catch(() => {
+    loadError.value = true;
+    loading = undefined;
+  });
+}
 
 function fetchChangeLog() {
   const scriptEl = document.head.querySelector('script[src]') as HTMLScriptElement;
   const buildString = scriptEl?.src?.match(/\/index-(\w+)\.js/)?.[1];
   return fetch(`/CHANGELOG.md?build=${buildString}`)
-    .then(response => response.text())
+    .then((response) => {
+      if (!response.ok) throw new Error('Could not load changelog');
+      return response.text();
+    })
     .then(async (text) => {
       const parsedCleanHtml = await marked.parse(sanitizeHtml(text));
       const htmlAsDom = new DOMParser().parseFromString(parsedCleanHtml, 'text/html');
@@ -31,12 +44,11 @@ function fetchChangeLog() {
       html.value.body = htmlAsDom.body.outerHTML || '';
     });
 }
-onMounted(fetchChangeLog);
 </script>
 
 <template>
   <div class="osim-changelog">
-    <a href="#" class="m-0 p-0" @click.prevent="openModal">
+    <a href="#" class="m-0 p-0" @click.prevent="openChangeLog">
       <span class="badge bg-success rounded-pill">🪵 OSIM CHANGELOG 🪵</span>
     </a>
     <Modal :show="isModalOpen" @close="closeModal">
@@ -56,6 +68,7 @@ onMounted(fetchChangeLog);
 
       </template>
       <template #body>
+        <p v-if="loadError" role="alert">Could not load changelog. Close and reopen to retry.</p>
         <!--eslint-disable-next-line vue/no-v-html -->
         <div class="px-2" v-html="html.body" />
       </template>
