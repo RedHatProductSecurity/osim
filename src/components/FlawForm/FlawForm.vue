@@ -107,6 +107,7 @@ const {
   updateFlaw,
 } = useFlawModel();
 const {
+  affectsFetchError,
   currentlyFetchedAffectCount,
   fetchedAffectsPercentage,
   historyFetchError,
@@ -640,6 +641,10 @@ const isArrayFieldValueAIBot = (fieldName: string, currentValue: null | string[]
                 >{{ currentlyFetchedAffectCount }}</div>
               </div>
             </template>
+          </div>
+          <div v-else-if="affectsFetchError" class="alert alert-warning mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Failed to load affects. Please try refreshing the page.</span>
           </div>
           <AffectsTable v-else @refresh:flaw="emit('refresh:flaw')" />
         </div>

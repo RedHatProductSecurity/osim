@@ -15,6 +15,7 @@ import { isCveValid, normalizeCveId } from '@/utils/helpers';
 const isFetchingAffects = ref(false);
 const totalAffectCount = ref(0);
 const currentlyFetchedAffectCount = ref(0);
+const affectsFetchError = ref(false);
 const historyFetchError = ref(false);
 // Shared across composable instances: a fetch started for one flaw must not
 // write into the model after a newer fetchFlaw call has replaced it.
@@ -32,18 +33,13 @@ export function useFetchFlaw() {
 
   const didFetchFail = ref<boolean>(false);
 
-  async function fetchFlawAffects(flawCveOrId: string, isCurrentFetch: () => boolean) {
-    try {
-      isFetchingAffects.value = true;
-      return await getAffects(flawCveOrId, (fetchedCount, totalCount) => {
-        if (!isCurrentFetch()) return;
-        totalAffectCount.value = totalCount;
-        currentlyFetchedAffectCount.value = fetchedCount;
-      });
-    } catch (error) {
-      console.error(`Error while fetching affects for flaw ${flawCveOrId}:`, error);
-      throw error;
-    }
+  function fetchFlawAffects(flawCveOrId: string, isCurrentFetch: () => boolean) {
+    isFetchingAffects.value = true;
+    return getAffects(flawCveOrId, (fetchedCount, totalCount) => {
+      if (!isCurrentFetch()) return;
+      totalAffectCount.value = totalCount;
+      currentlyFetchedAffectCount.value = fetchedCount;
+    });
   }
 
   async function fetchFlaw(flawCveOrId: string) {
@@ -58,12 +54,15 @@ export function useFetchFlaw() {
     const generation = ++fetchGeneration;
     const isCurrentFetch = () => generation === fetchGeneration;
 
-    try {
-      didFetchFail.value = false;
-      historyFetchError.value = false;
-      const fetchedFlaw = getFlaw(normalizedId);
-      const fetchedAffects = fetchFlawAffects(normalizedId, isCurrentFetch);
+    didFetchFail.value = false;
+    affectsFetchError.value = false;
+    historyFetchError.value = false;
+    const fetchedFlaw = getFlaw(normalizedId);
+    const fetchedAffects = fetchFlawAffects(normalizedId, isCurrentFetch);
+    // A superseded or failed flaw fetch returns before this is awaited.
+    void fetchedAffects.catch(() => {});
 
+    try {
       const flawResult = await fetchedFlaw;
       if (!isCurrentFetch()) return;
       setFlaw(Object.assign({ affects: [], history: undefined }, flawResult));
@@ -88,11 +87,6 @@ export function useFetchFlaw() {
             setLateFlawField('history', []);
           });
       }
-
-      const affectResults = (await fetchedAffects).data.results;
-      if (!isCurrentFetch()) return;
-      isFetchingAffects.value = false;
-      setLateFlawField('affects', affectResults);
     } catch (error) {
       // A superseded fetch failing must not reset or flag the flaw now on screen.
       if (!isCurrentFetch()) return;
@@ -104,6 +98,19 @@ export function useFetchFlaw() {
         body: getDisplayedOsidbError(error),
       });
       console.error('FlawEditView::refreshFlaw() Error loading flaw', error);
+      return;
+    }
+
+    try {
+      const affectResults = (await fetchedAffects).data.results;
+      if (!isCurrentFetch()) return;
+      isFetchingAffects.value = false;
+      setLateFlawField('affects', affectResults);
+    } catch (affectError) {
+      if (!isCurrentFetch()) return;
+      console.error('useFetchFlaw::fetchFlaw() Error loading affects:', affectError);
+      isFetchingAffects.value = false;
+      affectsFetchError.value = true;
     }
   }
 
@@ -115,6 +122,7 @@ export function useFetchFlaw() {
     fetchedAffectsPercentage,
     fetchFlaw,
     didFetchFail,
+    affectsFetchError,
     historyFetchError,
   };
 }

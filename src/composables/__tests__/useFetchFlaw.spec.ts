@@ -216,6 +216,33 @@ describe('useFetchFlaw', () => {
     expect(isFlawUpdated.value).toBe(false);
   });
 
+  it('keeps the flaw when the affects fetch fails', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw());
+    const affectsDeferred = deferred<AffectsResponse>();
+    vi.mocked(getAffects).mockReturnValue(affectsDeferred.promise);
+
+    const { affectsFetchError, didFetchFail, fetchFlaw, isFetchingAffects } = useFetchFlaw();
+    const fetching = fetchFlaw('CVE-2024-1234');
+    await flushPromises();
+
+    flaw.value.cve_description = 'Edited while affects load';
+    expect(isFlawUpdated.value).toBe(true);
+
+    affectsDeferred.reject(new Error('affects unavailable'));
+    await fetching;
+    await flushPromises();
+    consoleError.mockRestore();
+
+    expect(didFetchFail.value).toBe(false);
+    expect(affectsFetchError.value).toBe(true);
+    expect(isFetchingAffects.value).toBe(false);
+    expect(flaw.value.uuid).toBe('flaw-uuid-1');
+    expect(flaw.value.cve_description).toBe('Edited while affects load');
+    expect(isFlawUpdated.value).toBe(true);
+    expect(mockAddToast).not.toHaveBeenCalled();
+  });
+
   it('keeps flaw edits when the audit history fetch fails', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     runtime.value.flags = { flawHistory: true };
