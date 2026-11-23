@@ -42,6 +42,7 @@ vi.mock('@/composables/useFlawModel', () => ({
 }));
 vi.mock('@/composables/useFetchFlaw', () => ({
   useFetchFlaw: () => ({
+    affectsFetchError: ref(false),
     currentlyFetchedAffectCount: ref(0),
     fetchedAffectsPercentage: ref(0),
     historyFetchError: ref(false),
