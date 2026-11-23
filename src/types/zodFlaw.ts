@@ -18,7 +18,7 @@ import { zodOsimDateTime, ImpactEnumWithBlank, ZodFlawClassification, ZodAlertSc
 import { ZodAffectSchema, type ZodAffectType } from './zodAffect';
 
 // Aegis AI Change Types
-export const ZodAegisChangeTypeEnum = z.enum(['AI', 'Partial AI', 'AI-Bot', 'AI-Bot-Skipped']);
+export const ZodAegisChangeTypeEnum = z.enum(['AI', 'Partial AI', 'AI-Bot', 'AI-Bot-Skipped', 'AI-Bot-Pending']);
 export type AegisChangeType = z.infer<typeof ZodAegisChangeTypeEnum>;
 
 export const FlawSourceEnumWithBlank = { '': '', ...FlawSourceEnum } as const;

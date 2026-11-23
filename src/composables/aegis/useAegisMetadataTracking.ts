@@ -70,6 +70,19 @@ function isFieldAegisChange(historyEntry: ZodFlawHistoryItemType, fieldName: str
   return !!getFieldAegisType(historyEntry, fieldName);
 }
 
+function matchesCurrentValue(
+  entryValue: null | string | string[] | undefined,
+  currentValue: null | string | string[] | undefined,
+): boolean {
+  // For array fields, compare arrays directly
+  if (Array.isArray(currentValue) && Array.isArray(entryValue)) {
+    return JSON.stringify(currentValue) === JSON.stringify(entryValue);
+  }
+
+  // For string fields, compare strings directly
+  return entryValue === currentValue;
+}
+
 function isFieldValueAIBot(fieldName: string, currentValue: null | string | string[] | undefined): boolean {
   const metadata = aegisMetadata.value[fieldName];
   if (!metadata?.length) return false;
@@ -79,13 +92,7 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
     // Skipped attempts never change the provenance of the applied value.
     if (entry.type === 'AI-Bot-Skipped') return false;
 
-    // For array fields, compare arrays directly
-    if (Array.isArray(currentValue) && Array.isArray(entry.value)) {
-      return JSON.stringify(currentValue) === JSON.stringify(entry.value);
-    }
-
-    // For string fields, compare strings directly
-    return entry.value === currentValue;
+    return matchesCurrentValue(entry.value, currentValue);
   });
 
   if (matchingEntries.length === 0) return false;
@@ -97,6 +104,48 @@ function isFieldValueAIBot(fieldName: string, currentValue: null | string | stri
 
 function getAIBotEntry(fieldName: string): AegisChangeEntry | undefined {
   return aegisMetadata.value[fieldName]?.findLast(entry => entry.type === 'AI-Bot');
+}
+
+/**
+ * Returns the field's trailing AI-Bot-Pending suggestion when it is still
+ * unprocessed, i.e. no later entry has superseded it and its value differs
+ * from the current field value (a matching value needs no decision).
+ */
+function getPendingAIBotEntry(
+  fieldName: string,
+  currentValue: null | string | string[] | undefined,
+): AegisChangeEntry | null {
+  const entries = aegisMetadata.value[fieldName];
+  if (!Array.isArray(entries) || !entries.length) return null;
+
+  const entry = entries[entries.length - 1];
+  if (entry?.type !== 'AI-Bot-Pending') return null;
+
+  if (matchesCurrentValue(entry.value, currentValue)) return null;
+
+  return entry;
+}
+
+/**
+ * Appends a complete AegisChangeEntry, preserving fields that trackAIChange
+ * would drop (explanation, confidence, data_quality, tools_used).
+ */
+function appendAegisChangeEntry(fieldName: string, entry: AegisChangeEntry) {
+  aegisMetadata.value[fieldName] ||= [];
+  aegisMetadata.value[fieldName].push(entry);
+}
+
+/**
+ * Removes the field's trailing AI-Bot-Pending entry once a decision has been
+ * recorded. Deletes the field key entirely if the array becomes empty.
+ */
+function removePendingAIBotEntry(fieldName: string) {
+  const entries = aegisMetadata.value[fieldName];
+  if (!Array.isArray(entries) || !entries.length) return;
+  if (entries[entries.length - 1]?.type !== 'AI-Bot-Pending') return;
+
+  entries.pop();
+  if (!entries.length) delete aegisMetadata.value[fieldName];
 }
 
 function formatAegisSuggestionValue(value: unknown): string {
@@ -209,6 +258,9 @@ export function useAegisMetadataTracking() {
     isFieldAegisChange,
     isFieldValueAIBot,
     getAIBotEntry,
+    getPendingAIBotEntry,
+    appendAegisChangeEntry,
+    removePendingAIBotEntry,
     getAIBotSkipTooltip,
     getAIBotTooltip,
     hasAIBotProcessing,
