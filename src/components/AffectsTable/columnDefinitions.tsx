@@ -151,18 +151,14 @@ export default function AffectColumnDefinitions(
       },
     }),
     columnHelper.accessor('labels', {
-      cell: ({ getValue, row }) => (
-        <div class="d-flex gap-1 flex-wrap">
-          <ProvenanceBadge affect={row.original} iconOnly />
-          {getValue()?.map(name => (
-            <span
-              class="badge rounded-pill border text-black"
-              style={{ backgroundColor: labelColorMap[name] }}
-            >
-              {name}
-            </span>
-          ))}
-        </div>
+      cell: column => (column.getValue()?.map(name => (
+        <span
+          class="badge rounded-pill border text-black"
+          style={{ backgroundColor: labelColorMap[name] }}
+        >
+          {name}
+        </span>
+      ))
       ),
       filterFn: 'arrIncludesPartial',
       header: 'Label',

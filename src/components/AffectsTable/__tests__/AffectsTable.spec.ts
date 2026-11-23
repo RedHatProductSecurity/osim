@@ -1196,29 +1196,31 @@ describe('affectsTable', () => {
       await flushPromises();
     });
 
-    it('renders the icon-only provenance badge before the label pills', async () => {
+    it('renders label pills in the Label column without a provenance badge', async () => {
       const wrapper = await mountAffectsTable();
+
       const labelCell = rowByStream(wrapper, 'xxxx-0-001').findAll('td')[headerIndex(wrapper, 'Label')];
-
-      const badges = labelCell.findAll('.badge');
-      expect(badges).toHaveLength(2);
-      expect(badges[0].text()).toBe('');
-      expect(badges[0].attributes('aria-label')).toBe('Human');
-      expect(badges[0].find('i').classes()).toContain('bi-person-fill');
-      expect(badges[0].classes()).toContain('bg-success');
-      expect(badges[1].text()).toBe('cloud');
-      expect(badges[1].classes()).toContain('rounded-pill');
-    });
-
-    it('renders the icon-only provenance badge when the affect has no labels', async () => {
-      const wrapper = await mountAffectsTable();
-      const labelCell = rowByStream(wrapper, 'xxxx-0-005').findAll('td')[headerIndex(wrapper, 'Label')];
-
       const badges = labelCell.findAll('.badge');
       expect(badges).toHaveLength(1);
-      expect(badges[0].text()).toBe('');
-      expect(badges[0].attributes('aria-label')).toBe('ACE automation');
-      expect(badges[0].find('i').classes()).toContain('bi-robot');
+      expect(badges[0].text()).toBe('cloud');
+      expect(badges[0].classes()).toContain('rounded-pill');
+      expect(badges[0].attributes('aria-label')).toBeUndefined();
+      expect(labelCell.find('[data-bs-toggle="tooltip"]').exists()).toBe(false);
+
+      // a label-less affect renders an empty Label cell, as on main
+      const emptyCell = rowByStream(wrapper, 'xxxx-0-005').findAll('td')[headerIndex(wrapper, 'Label')];
+      expect(emptyCell.findAll('.badge')).toHaveLength(0);
+    });
+
+    it('renders the provenance badge only in the Provenance column', async () => {
+      const wrapper = await mountAffectsTable();
+      const provenanceColumn = headerIndex(wrapper, 'Provenance');
+
+      for (const row of rows(wrapper)) {
+        const provenanceBadges = row.findAll('.badge[data-bs-toggle="tooltip"]');
+        expect(provenanceBadges).toHaveLength(1);
+        expect(row.findAll('td')[provenanceColumn].element.contains(provenanceBadges[0].element)).toBe(true);
+      }
     });
 
     it('renders a distinct badge per provenance category', async () => {
