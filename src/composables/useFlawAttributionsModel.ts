@@ -231,17 +231,37 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
     pendingAttributionConflict,
     stageAttributionConflicts,
   } = useAttributionCollision({
-    acknowledgments: { create: createAcknowledgment, update: putAcknowledgment },
+    acknowledgments: {
+      create: createAcknowledgment,
+      remove: (uuid) => {
+        // The collision resolution issues raw deletes; its own error handling
+        // keeps the dialog open, so only the toast is suppressed here.
+        return deleteFlawAcknowledgment(flaw.value.uuid, uuid, { suppressErrorToast: true });
+      },
+      update: putAcknowledgment,
+    },
     finishSaving,
-    references: { create: createReference, update: putReference },
+    references: {
+      create: createReference,
+      remove: (uuid) => {
+        // The collision resolution issues raw deletes; its own error handling
+        // keeps the dialog open, so only the toast is suppressed here.
+        return deleteFlawReference(flaw.value.uuid, uuid, { suppressErrorToast: true });
+      },
+      update: putReference,
+    },
     startSaving,
   });
 
   async function saveReferences(references: ZodFlawReferenceType[]) {
     startSaving();
+    // Bind the save to the flaw it started on: a navigation mid-save must not
+    // write the remaining items against the newly loaded flaw.
+    const originUuid = flaw.value.uuid;
     const unsaved = [...references];
     try {
       while (unsaved.length > 0) {
+        if (flaw.value.uuid !== originUuid) break;
         const reference = unsaved[0];
         try {
           if (reference.uuid) {
@@ -260,7 +280,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       }
       // Fold in server-side changes the save did not touch, staging any
       // both-side overlap it finds for the collision dialog.
-      await integrateServerAttributions();
+      await integrateServerAttributions(originUuid);
     } finally {
       finishSaving();
     }
@@ -269,9 +289,13 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
 
   async function saveAcknowledgments(acknowledgments: ZodFlawAcknowledgmentType[]) {
     startSaving();
+    // Bind the save to the flaw it started on: a navigation mid-save must not
+    // write the remaining items against the newly loaded flaw.
+    const originUuid = flaw.value.uuid;
     const unsaved = [...acknowledgments];
     try {
       while (unsaved.length > 0) {
+        if (flaw.value.uuid !== originUuid) break;
         const acknowledgment = unsaved[0];
         try {
           if (acknowledgment.uuid) {
@@ -290,7 +314,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
       }
       // Fold in server-side changes the save did not touch, staging any
       // both-side overlap it finds for the collision dialog.
-      await integrateServerAttributions();
+      await integrateServerAttributions(originUuid);
     } finally {
       finishSaving();
     }

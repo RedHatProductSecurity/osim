@@ -89,7 +89,7 @@ export type AttributionConflict = {
   itemLabel: string;
   /** Item kind; combined with the uuid to build the choice key. */
   kind: AttributionKind;
-  /** Multi-line summary of the local edits. */
+  /** Multi-line summary of the local edits, or 'Removed'. */
   mine: string;
   /** Multi-line summary of the server changes, or 'Removed'. */
   server: string;
@@ -97,16 +97,17 @@ export type AttributionConflict = {
   uuid: string;
 };
 
-/** The mine/server pair behind one conflict, kept for resolution. */
-export type AttributionConflictedRow<TItem extends AttributionItem> = {
-  kind: AttributionKind;
-  /** Local copy of the item. */
-  mine: TItem;
-  /** Server copy; null when the server removed the item. */
-  server: null | TItem;
-  /** Server-assigned identity of the item. */
-  uuid: string;
-};
+/**
+ * The mine/server pair behind one conflict, kept for resolution. Exactly one
+ * side is null when the disagreement is about the item's existence.
+ */
+export type AttributionConflictedRow<TItem extends AttributionItem> =
+  /** Both sides edited the item. */
+  | { kind: AttributionKind; mine: null; server: TItem; uuid: string }
+  /** The server removed an item the form edited. */
+  | { kind: AttributionKind; mine: TItem; server: null; uuid: string }
+  /** The form removed an item the server edited. */
+  | { kind: AttributionKind; mine: TItem; server: TItem; uuid: string };
 
 export type AttributionRebaseResult<TItem extends AttributionItem> = {
   /** Server items added since page load that the local list does not have. */
@@ -129,6 +130,8 @@ export type AttributionChoiceResult<TItem extends AttributionItem> = {
   drop: string[];
   /** Local items that won a changed-item conflict, stamped with the server token. */
   keepMine: TItem[];
+  /** Uuids whose local removal won over a server edit. */
+  keepRemoved: string[];
   /** Local items that won a removed-item conflict, ready to re-POST. */
   recreate: TItem[];
 };
@@ -220,6 +223,22 @@ function itemConflict<TItem extends AttributionItem, TField extends keyof TItem 
   };
 }
 
+/** Conflict row for an item the form removed that the server edited. */
+function deletedItemConflict<TItem extends AttributionItem, TField extends keyof TItem & string>(
+  config: AttributionConfig<TItem, TField>,
+  loaded: TItem,
+  serverItem: TItem,
+  uuid: string,
+): AttributionConflict {
+  return {
+    kind: config.kind,
+    mine: 'Removed',
+    itemLabel: config.itemLabel(loaded),
+    server: summarizeAttributionItem(loaded, serverItem, config),
+    uuid,
+  };
+}
+
 /**
  * Three-way compare of one attribution collection. `base` is the page-load
  * list, `mine` the current form list, `server` a fresh fetch. Items without a
@@ -272,9 +291,19 @@ export function rebaseAttributionCollection<TItem extends AttributionItem, TFiel
   }
 
   for (const [uuid, serverItem] of serverByUuid) {
-    // Items the form dropped stay deleted; adopt only server additions.
-    if (mineByUuid.has(uuid) || baseByUuid.has(uuid)) continue;
-    adoptedAdditions.push(serverItem);
+    if (mineByUuid.has(uuid)) continue;
+    const loaded = baseByUuid.get(uuid) ?? null;
+    if (loaded === null) {
+      // The page load never saw it: a server addition.
+      adoptedAdditions.push(serverItem);
+      continue;
+    }
+    // The form dropped the item. An unchanged server copy keeps the deletion
+    // authoritative; a server edit is a both-side divergence the dialog settles.
+    if (!itemsEqual(loaded, serverItem, config.fields)) {
+      conflicts.push(deletedItemConflict(config, loaded, serverItem, uuid));
+      conflictedRows.push({ kind: config.kind, mine: null, server: serverItem, uuid });
+    }
   }
 
   return { adoptedAdditions, adoptedRemovals, adoptedUpdates, conflicts, conflictedRows };
@@ -292,7 +321,7 @@ export function attributionDialogRows(conflicts: readonly AttributionConflict[])
 
 /**
  * Split conflicted rows by the dialog picks. A row without a pick keeps the
- * local item, mirroring the flaw field dialog.
+ * local side, mirroring the flaw field dialog.
  */
 export function applyAttributionChoices<TItem extends AttributionItem>(
   conflictedRows: readonly AttributionConflictedRow<TItem>[],
@@ -301,21 +330,29 @@ export function applyAttributionChoices<TItem extends AttributionItem>(
   const adoptServer: TItem[] = [];
   const drop: string[] = [];
   const keepMine: TItem[] = [];
+  const keepRemoved: string[] = [];
   const recreate: TItem[] = [];
 
   for (const row of conflictedRows) {
-    if (choices[attributionChoiceKey(row.kind, row.uuid)] === 'server') {
-      if (row.server === null) {
-        drop.push(row.uuid);
-        continue;
+    const choice = choices[attributionChoiceKey(row.kind, row.uuid)];
+    if (row.server === null) {
+      if (row.mine !== null) {
+        // The server item is gone: the server side accepts the removal, the
+        // local side re-POSTs the local item as new.
+        if (choice === 'server') drop.push(row.uuid);
+        else recreate.push({ ...row.mine, updated_dt: null, uuid: '' });
       }
-      adoptServer.push(row.server);
       continue;
     }
-
-    if (row.server === null) {
-      // The server item is gone; re-POST the local item as new.
-      recreate.push({ ...row.mine, updated_dt: null, uuid: '' });
+    if (row.mine === null) {
+      // The form removed the item: the server side resurrects the server
+      // copy, the local side confirms the deletion.
+      if (choice === 'server') adoptServer.push(row.server);
+      else keepRemoved.push(row.uuid);
+      continue;
+    }
+    if (choice === 'server') {
+      adoptServer.push(row.server);
       continue;
     }
     // Keep the local edits on the server's copy: server-managed fields such as
@@ -323,5 +360,5 @@ export function applyAttributionChoices<TItem extends AttributionItem>(
     keepMine.push(overlayEditableFields(row.mine, row.server, row.kind));
   }
 
-  return { adoptServer, drop, keepMine, recreate };
+  return { adoptServer, drop, keepMine, keepRemoved, recreate };
 }

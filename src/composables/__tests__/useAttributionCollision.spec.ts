@@ -130,6 +130,47 @@ describe('useAttributionCollision', () => {
     expect(mockAddToast).not.toHaveBeenCalled();
   });
 
+  it('no longer counts saved references as dirty after a save with no server-side changes', async () => {
+    loadFlaw([reference()]);
+    const model = mountModel();
+    const edited = reference({ url: 'https://example.com/a-edited' });
+    flaw.value.references = [edited];
+    expect(isFlawUpdated.value).toBe(true);
+
+    vi.mocked(putFlawReference).mockResolvedValue({
+      data: { ...edited, updated_dt: '2024-06-02T00:00:00Z' },
+    } as any);
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({
+      references: [reference({ url: 'https://example.com/a-edited', updated_dt: '2024-06-02T00:00:00Z' })],
+      acknowledgments: [],
+    }));
+
+    await model.saveReferences([edited]);
+    await flushPromises();
+
+    // The just-saved values converged with the server, so the baseline
+    // advanced and the save no longer counts as dirty work.
+    expect(isFlawUpdated.value).toBe(false);
+    expect(model.pendingAttributionConflict.value).toBeNull();
+  });
+
+  it('keeps uuid-less new references dirty after a save', async () => {
+    loadFlaw([]);
+    const model = mountModel();
+    const added = reference({ uuid: '', url: 'https://example.com/added', updated_dt: null });
+    flaw.value.references = [added];
+
+    // The create did not hand back a server identity, so the item stays
+    // genuinely unsaved local work.
+    vi.mocked(postFlawReference).mockResolvedValue(undefined as never);
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({ references: [], acknowledgments: [] }));
+
+    await model.saveReferences([added]);
+    await flushPromises();
+
+    expect(isFlawUpdated.value).toBe(true);
+  });
+
   it('retries the interrupted save against the reloaded server state', async () => {
     loadFlaw([reference()]);
     const model = mountModel();
@@ -197,10 +238,8 @@ describe('useAttributionCollision', () => {
     vi.mocked(putFlawReference).mockResolvedValue({
       data: { ...edited, updated_dt: '2024-06-02T00:00:00Z' },
     } as any);
-    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({
-      references: [reference({ url: 'https://example.com/a-edited', updated_dt: '2024-06-02T00:00:00Z' })],
-      acknowledgments: [],
-    }));
+    const resaved = reference({ url: 'https://example.com/a-edited', updated_dt: '2024-06-02T00:00:00Z' });
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({ references: [resaved], acknowledgments: [] }));
 
     await model.applyAttributionResolution({ 'reference:ref-a': 'mine' });
     await flushPromises();
@@ -216,7 +255,10 @@ describe('useAttributionCollision', () => {
     expect(flaw.value.references[0]).toMatchObject({ url: 'https://example.com/a-edited' });
     // The new item the conflict interrupted is still around, unsaved.
     expect(flaw.value.references[1]).toMatchObject({ url: 'https://example.com/added', uuid: '' });
-    expect(initialFlaw.value.references).toEqual([serverCopy]);
+    // The post-resolution baseline equals the final re-fetched server state,
+    // not the conflict-time copy the resolution was picked against.
+    expect(initialFlaw.value.references).toEqual([resaved]);
+    expect(serverCopy.updated_dt).toBe('2024-06-01T00:00:00Z');
   });
 
   it('adopts the server copy of a resolved conflict without re-saving it', async () => {
@@ -291,6 +333,220 @@ describe('useAttributionCollision', () => {
     expect(initialFlaw.value.references).toEqual([]);
   });
 
+  it('stages a delete-versus-edit conflict with the local side shown as Removed', () => {
+    const loadedSecond = reference({ uuid: 'ref-b', url: 'https://example.com/b' });
+    loadFlaw([reference(), loadedSecond]);
+    const model = mountModel();
+    // The form deleted ref-b locally while the server edited it.
+    flaw.value.references = [reference()];
+    const serverEdited = reference({
+      uuid: 'ref-b',
+      url: 'https://example.com/b-server',
+      updated_dt: '2024-06-01T00:00:00Z',
+    });
+
+    model.mergeServerAttributions({ references: [reference(), serverEdited], acknowledgments: [] });
+
+    expect(model.pendingAttributionConflict.value?.references?.conflicts).toEqual([{
+      itemLabel: 'https://example.com/b',
+      kind: 'reference',
+      mine: 'Removed',
+      server: 'Link URL: https://example.com/b-server',
+      uuid: 'ref-b',
+    }]);
+    expect(model.pendingAttributionConflict.value?.references?.conflictedRows).toEqual([
+      { kind: 'reference', mine: null, server: serverEdited, uuid: 'ref-b' },
+    ]);
+    // The staged kind leaves both the local list and the baseline alone.
+    expect(flaw.value.references).toEqual([reference()]);
+    expect(initialFlaw.value.references).toEqual([reference(), loadedSecond]);
+  });
+
+  it('keeps a local deletion silent when the server copy is unchanged', () => {
+    loadFlaw([reference(), reference({ uuid: 'ref-b', url: 'https://example.com/b' })]);
+    const model = mountModel();
+    flaw.value.references = [reference()];
+
+    // Only the concurrency token moved: the editable fields are unchanged.
+    model.mergeServerAttributions({
+      references: [reference(), reference({ uuid: 'ref-b', url: 'https://example.com/b', updated_dt: '2024-06-01T00:00:00Z' })],
+      acknowledgments: [],
+    });
+
+    expect(model.pendingAttributionConflict.value).toBeNull();
+    // The deletion stays authoritative: the merge must not resurrect the item.
+    expect(flaw.value.references).toEqual([reference()]);
+    expect(mockAddToast).not.toHaveBeenCalled();
+    // The deletion is still unsaved work, not something the merge swallowed.
+    expect(isFlawUpdated.value).toBe(true);
+  });
+
+  it('resurrects the server-edited item when the user keeps the server side', async () => {
+    loadFlaw([reference(), reference({ uuid: 'ref-b', url: 'https://example.com/b' })]);
+    const model = mountModel();
+    flaw.value.references = [reference()];
+    const serverEdited = reference({
+      uuid: 'ref-b',
+      url: 'https://example.com/b-server',
+      updated_dt: '2024-06-01T00:00:00Z',
+    });
+    model.mergeServerAttributions({ references: [reference(), serverEdited], acknowledgments: [] });
+
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({ references: [reference(), serverEdited], acknowledgments: [] }));
+
+    await model.applyAttributionResolution({ 'reference:ref-b': 'server' });
+    await flushPromises();
+
+    expect(deleteFlawReference).not.toHaveBeenCalled();
+    expect(putFlawReference).not.toHaveBeenCalled();
+    expect(flaw.value.references).toEqual([reference(), serverEdited]);
+    expect(model.pendingAttributionConflict.value).toBeNull();
+    expect(isFlawUpdated.value).toBe(false);
+  });
+
+  it('deletes the server-edited item the user keeps removed', async () => {
+    loadFlaw([reference(), reference({ uuid: 'ref-b', url: 'https://example.com/b' })]);
+    const model = mountModel();
+    flaw.value.references = [reference()];
+    const serverEdited = reference({
+      uuid: 'ref-b',
+      url: 'https://example.com/b-server',
+      updated_dt: '2024-06-01T00:00:00Z',
+    });
+    model.mergeServerAttributions({ references: [reference(), serverEdited], acknowledgments: [] });
+
+    vi.mocked(deleteFlawReference).mockResolvedValue({} as any);
+    // The fresh fetch reflects the completed deletion.
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({ references: [reference()], acknowledgments: [] }));
+
+    await model.applyAttributionResolution({ 'reference:ref-b': 'mine' });
+    await flushPromises();
+
+    expect(deleteFlawReference).toHaveBeenCalledWith('flaw-1', 'ref-b', { suppressErrorToast: true });
+    expect(flaw.value.references).toEqual([reference()]);
+    expect(initialFlaw.value.references).toEqual([reference()]);
+    expect(model.pendingAttributionConflict.value).toBeNull();
+    expect(isFlawUpdated.value).toBe(false);
+  });
+
+  it('re-stages a failed resolution against the fresh server values', async () => {
+    const { model } = await stageReferenceConflict();
+
+    // The confirm write hits its own stale token...
+    vi.mocked(putFlawReference).mockClear();
+    vi.mocked(putFlawReference).mockRejectedValueOnce({ response: { status: 409 } });
+    // ...and the reload shows the server moved again while the write was failing.
+    const fresherCopy = reference({ url: 'https://example.com/a-server', updated_dt: '2024-06-03T00:00:00Z' });
+    vi.mocked(getFlaw).mockResolvedValueOnce(serverFlaw({ references: [fresherCopy], acknowledgments: [] }));
+
+    await expect(model.applyAttributionResolution({ 'reference:ref-a': 'mine' }))
+      .rejects.toMatchObject({ response: { status: 409 } });
+
+    // The dialog stays open, re-staged against the fresh server copy instead
+    // of the stale one the failed write carried.
+    expect(model.pendingAttributionConflict.value?.references?.conflictedRows[0]?.server)
+      .toMatchObject({ updated_dt: '2024-06-03T00:00:00Z' });
+
+    vi.mocked(putFlawReference).mockResolvedValue({ data: {} } as any);
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({ references: [fresherCopy], acknowledgments: [] }));
+
+    await model.applyAttributionResolution({ 'reference:ref-a': 'mine' });
+    await flushPromises();
+
+    // The retry confirms against the fresh token instead of replaying the
+    // stale one and failing again.
+    expect(putFlawReference).toHaveBeenCalledWith(
+      'flaw-1',
+      'ref-a',
+      expect.objectContaining({ url: 'https://example.com/a-edited', updated_dt: '2024-06-03T00:00:00Z' }),
+      undefined,
+    );
+    expect(model.pendingAttributionConflict.value).toBeNull();
+  });
+
+  it('does not duplicate adopted server additions when a confirmation is retried', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    loadFlaw([reference()]);
+    const model = mountModel();
+    const edited = reference({ url: 'https://example.com/a-edited' });
+    flaw.value.references = [edited];
+    const serverCopy = reference({ url: 'https://example.com/a-server', updated_dt: '2024-06-01T00:00:00Z' });
+    const added = reference({ uuid: 'ref-c', url: 'https://example.com/c', updated_dt: '2024-06-01T00:00:00Z' });
+    // The server edited ref-a (a conflict) and added ref-c (an adoption).
+    model.mergeServerAttributions({ references: [serverCopy, added], acknowledgments: [] });
+    expect(model.pendingAttributionConflict.value).not.toBeNull();
+
+    // The confirm keeps ref-a and fails its write; the re-stage reload fails
+    // too, so the same pending result must survive the retry.
+    vi.mocked(putFlawReference).mockRejectedValueOnce({ response: { status: 409 } });
+    vi.mocked(getFlaw).mockRejectedValueOnce(new Error('reload failed'));
+    await expect(model.applyAttributionResolution({ 'reference:ref-a': 'mine' }))
+      .rejects.toMatchObject({ response: { status: 409 } });
+    // The first confirmation already folded the server addition into the list.
+    expect(flaw.value.references).toEqual([
+      expect.objectContaining({ uuid: 'ref-a', url: 'https://example.com/a-edited' }),
+      expect.objectContaining({ uuid: 'ref-c' }),
+    ]);
+
+    vi.mocked(putFlawReference).mockResolvedValue({ data: {} } as any);
+    vi.mocked(getFlaw).mockResolvedValue(serverFlaw({ references: [serverCopy, added], acknowledgments: [] }));
+
+    await model.applyAttributionResolution({ 'reference:ref-a': 'mine' });
+    await flushPromises();
+
+    expect(flaw.value.references.filter(item => item.uuid === 'ref-c')).toHaveLength(1);
+    expect(flaw.value.references).toHaveLength(2);
+    expect(model.pendingAttributionConflict.value).toBeNull();
+  });
+
+  it('stops saving references when the user navigates to another flaw mid-save', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    loadFlaw([reference(), reference({ uuid: 'ref-b', url: 'https://example.com/b' })]);
+    const model = mountModel();
+    const first = reference({ url: 'https://example.com/a-edited' });
+    const second = reference({ uuid: 'ref-b', url: 'https://example.com/b-edited' });
+    flaw.value.references = [first, second];
+
+    let resolveFirstPut!: (response: unknown) => void;
+    vi.mocked(putFlawReference).mockImplementationOnce(() => new Promise((resolve) => {
+      resolveFirstPut = resolve;
+    }) as any);
+
+    const saving = model.saveReferences([first, second]);
+    // The user navigates while the first PUT is still in flight.
+    setFlaw({ ...serverFlaw({ references: [], acknowledgments: [] }), uuid: 'flaw-2' });
+    resolveFirstPut({ data: {} });
+    await saving;
+    await flushPromises();
+
+    // Only the item saved before the navigation was written, and it went to
+    // the flaw the save started on.
+    expect(putFlawReference).toHaveBeenCalledTimes(1);
+    expect(putFlawReference).toHaveBeenCalledWith(
+      'flaw-1',
+      'ref-a',
+      expect.objectContaining({ url: 'https://example.com/a-edited' }),
+      { suppressConflictToast: true },
+    );
+    expect(getFlaw).not.toHaveBeenCalledWith('flaw-2', true);
+    expect(isSaving.value).toBe(false);
+  });
+
+  it('ignores a dialog resolution after the user navigated to another flaw', async () => {
+    const { model } = await stageReferenceConflict();
+    setFlaw({ ...serverFlaw({ references: [], acknowledgments: [] }), uuid: 'flaw-2' });
+
+    vi.mocked(putFlawReference).mockClear();
+    await model.applyAttributionResolution({ 'reference:ref-a': 'mine' });
+
+    expect(putFlawReference).not.toHaveBeenCalled();
+    expect(postFlawReference).not.toHaveBeenCalled();
+    expect(deleteFlawReference).not.toHaveBeenCalled();
+    // The staged conflict survives for the flaw it belongs to.
+    expect(model.pendingAttributionConflict.value).not.toBeNull();
+    expect(isSaving.value).toBe(false);
+  });
+
   it('folds server additions, updates, and removals into the model and baselines them', () => {
     loadFlaw(
       [reference(), reference({ uuid: 'ref-b', url: 'https://example.com/b' })],
@@ -343,8 +599,36 @@ describe('useAttributionCollision', () => {
 
     expect(model.pendingAttributionConflict.value?.references?.conflicts).toHaveLength(1);
     expect(flaw.value.references).toEqual([edited]);
-    expect(initialFlaw.value.references).toEqual([serverCopy]);
+    // Staging must not advance the baseline: a canceled dialog has to be able
+    // to re-detect the conflict on the next save.
+    expect(initialFlaw.value.references).toEqual([reference()]);
     expect(isFlawUpdated.value).toBe(true);
+  });
+
+  it('re-stages a canceled conflict on the next save', async () => {
+    loadFlaw([reference()]);
+    const model = mountModel();
+    const pendingConflict = model.pendingAttributionConflict;
+    const edited = reference({ url: 'https://example.com/a-edited' });
+    flaw.value.references = [edited];
+    const serverCopy = reference({ url: 'https://example.com/a-server', updated_dt: '2024-06-01T00:00:00Z' });
+    model.mergeServerAttributions({ references: [serverCopy], acknowledgments: [] });
+    expect(pendingConflict.value).not.toBeNull();
+    // The user dismisses the dialog without choosing anything.
+    pendingConflict.value = null;
+
+    vi.mocked(putFlawReference).mockRejectedValueOnce({ response: { status: 409 } });
+    vi.mocked(getFlaw).mockResolvedValueOnce(serverFlaw({ references: [serverCopy], acknowledgments: [] }));
+
+    await expect(model.saveReferences([edited])).rejects.toMatchObject({ response: { status: 409 } });
+
+    expect(model.pendingAttributionConflict.value?.references?.conflicts).toEqual([
+      expect.objectContaining({ kind: 'reference', uuid: 'ref-a' }),
+    ]);
+    expect(flaw.value.references).toEqual([edited]);
+    // The page-load baseline survived staging and cancellation, so the save
+    // re-detected the conflict instead of silently swallowing it.
+    expect(initialFlaw.value.references).toEqual([reference()]);
   });
 
   it('treats a 404 delete as already gone and clears the item', async () => {
@@ -371,6 +655,35 @@ describe('useAttributionCollision', () => {
 
     expect(flaw.value.acknowledgments).toEqual([]);
     expect(mockAddToast).not.toHaveBeenCalled();
+  });
+
+  it('baselines a confirmed reference removal while other items remain in the baseline', async () => {
+    // The baseline update clones the remaining items out of the readonly
+    // initialFlaw collection; the clone must not choke on the Vue proxies.
+    const remaining = reference({ uuid: 'ref-b', url: 'https://example.com/b' });
+    loadFlaw([reference(), remaining]);
+    const model = mountModel();
+    vi.mocked(deleteFlawReference).mockRejectedValueOnce({ response: { status: 404, data: 'Not found.' } });
+
+    await model.deleteReference('ref-a');
+
+    expect(flaw.value.references).toEqual([remaining]);
+    expect(initialFlaw.value.references).toEqual([remaining]);
+    expect(isSaving.value).toBe(false);
+  });
+
+  it('baselines a confirmed acknowledgment removal while other items remain in the baseline', async () => {
+    const remaining = acknowledgment({ uuid: 'ack-2', name: 'second name' });
+    loadFlaw([], [acknowledgment(), remaining]);
+    const model = mountModel();
+    vi.mocked(deleteFlawAcknowledgment).mockRejectedValueOnce({
+      response: { status: 400, data: { detail: 'Acknowledgment does not exist.' } },
+    });
+
+    await model.deleteAcknowledgment('ack-1');
+
+    expect(flaw.value.acknowledgments).toEqual([remaining]);
+    expect(initialFlaw.value.acknowledgments).toEqual([remaining]);
   });
 
   it('toasts and rethrows other delete errors', async () => {

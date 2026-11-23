@@ -139,6 +139,52 @@ describe('rebaseAttributionCollection', () => {
     expect(result.conflicts).toEqual([]);
   });
 
+  it('conflicts when the form removed an item the server edited', () => {
+    const base = [reference(), reference({ uuid: 'ref-2', url: 'https://example.com/two' })];
+    const serverEdited = reference({
+      uuid: 'ref-2',
+      url: 'https://example.com/two-server',
+      updated_dt: '2024-06-01T00:00:00Z',
+    });
+
+    const result = rebaseAttributionCollection(base, [reference()], [reference(), serverEdited], REFERENCE_CONFIG);
+
+    expect(result.conflicts).toEqual([{
+      itemLabel: 'https://example.com/two',
+      kind: 'reference',
+      mine: 'Removed',
+      server: 'Link URL: https://example.com/two-server',
+      uuid: 'ref-2',
+    }]);
+    expect(result.conflictedRows).toEqual([{ kind: 'reference', mine: null, server: serverEdited, uuid: 'ref-2' }]);
+    expect(result.adoptedAdditions).toEqual([]);
+  });
+
+  it('conflicts when the form removed an acknowledgment the server edited', () => {
+    const base = [acknowledgment(), acknowledgment({ uuid: 'ack-2', name: 'second name' })];
+    const serverEdited = acknowledgment({
+      uuid: 'ack-2',
+      name: 'second name',
+      affiliation: 'server affiliation',
+      updated_dt: '2024-06-01T00:00:00Z',
+    });
+
+    const result = rebaseAttributionCollection(
+      base,
+      [acknowledgment()],
+      [acknowledgment(), serverEdited],
+      ACKNOWLEDGMENT_CONFIG,
+    );
+
+    expect(result.conflicts).toEqual([{
+      itemLabel: 'second name',
+      kind: 'acknowledgment',
+      mine: 'Removed',
+      server: 'Affiliation: server affiliation',
+      uuid: 'ack-2',
+    }]);
+  });
+
   it('does not treat server-managed fields as changes', () => {
     // updated_dt, embargoed, and alerts are server-managed: a server copy that
     // differs only in them must count as unchanged.
@@ -236,6 +282,7 @@ describe('applyAttributionChoices', () => {
       adoptServer: [],
       drop: [],
       keepMine: [{ ...mine, updated_dt: '2024-06-01T00:00:00Z' }],
+      keepRemoved: [],
       recreate: [],
     });
   });
@@ -273,6 +320,40 @@ describe('applyAttributionChoices', () => {
 
     expect(outcome.drop).toEqual(['ref-1']);
     expect(outcome.recreate).toEqual([]);
+  });
+
+  it('resurrects the server copy for a server choice on a form-removed item', () => {
+    const server = reference({ url: 'https://example.com/server', updated_dt: '2024-06-01T00:00:00Z' });
+
+    const outcome = applyAttributionChoices(
+      [{ kind: 'reference', mine: null, server, uuid: 'ref-1' }],
+      { 'reference:ref-1': 'server' },
+    );
+
+    expect(outcome.adoptServer).toEqual([server]);
+    expect(outcome.keepRemoved).toEqual([]);
+    expect(outcome.recreate).toEqual([]);
+  });
+
+  it('keeps the local removal for a mine choice on a form-removed item', () => {
+    const outcome = applyAttributionChoices(
+      [{ kind: 'reference', mine: null, server: reference(), uuid: 'ref-1' }],
+      { 'reference:ref-1': 'mine' },
+    );
+
+    expect(outcome.keepRemoved).toEqual(['ref-1']);
+    expect(outcome.adoptServer).toEqual([]);
+    expect(outcome.keepMine).toEqual([]);
+    expect(outcome.recreate).toEqual([]);
+  });
+
+  it('defaults to keeping the removal when a form-removed item has no choice', () => {
+    const outcome = applyAttributionChoices(
+      [{ kind: 'reference', mine: null, server: reference(), uuid: 'ref-1' }],
+      {},
+    );
+
+    expect(outcome.keepRemoved).toEqual(['ref-1']);
   });
 
   it('defaults to the local side when a row has no choice', () => {

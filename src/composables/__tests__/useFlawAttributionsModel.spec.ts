@@ -2,23 +2,39 @@ import { ref } from 'vue';
 
 import { flushPromises } from '@vue/test-utils';
 
-import { blankFlaw } from '@/composables/useFlaw';
+import { blankFlaw, useFlaw } from '@/composables/useFlaw';
 import { useFlawAttributionsModel } from '@/composables/useFlawAttributionsModel';
 
-import { postFlawAcknowledgment, postFlawReference, putFlawReference } from '@/services/FlawService';
+import { getFlaw, postFlawAcknowledgment, postFlawReference, putFlawReference } from '@/services/FlawService';
 import type { ZodFlawType, ZodFlawReferenceType } from '@/types/zodFlaw';
 
 vi.mock('@/services/FlawService');
 
 describe('useFlawAttributionsModel', () => {
-  const flaw = ref<ZodFlawType>({
-    ...blankFlaw(),
-    uuid: 'uuid-123',
-    references: [],
-    acknowledgments: [],
-  });
+  // useAttributionCollision reconciles against the useFlaw() singleton, so the
+  // model must be driven through the singleton's own flaw ref like useFlawModel
+  // does; a detached local ref leaves the save bound to a blank flaw uuid.
+  const { flaw, resetFlaw, setFlaw } = useFlaw();
   const isSaving = ref(false);
   const afterSaveSuccess = vi.fn();
+
+  function loadFlaw() {
+    setFlaw({
+      ...blankFlaw(),
+      uuid: 'uuid-123',
+      references: [],
+      acknowledgments: [],
+    } as ZodFlawType);
+    // The post-save reconciliation refetches the server collections.
+    vi.mocked(getFlaw).mockResolvedValue({ ...blankFlaw(), uuid: 'uuid-123' } as ZodFlawType);
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetFlaw();
+    loadFlaw();
+  });
+
   it('should update a reference successfully', async () => {
     const reference: ZodFlawReferenceType = {
       uuid: 'ref-123',

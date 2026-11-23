@@ -76,7 +76,10 @@ const CHILD_COLLECTIONS = new Set<keyof ZodFlawType>([
 ]);
 
 function cloneField<T>(value: T): T {
-  return value === undefined ? value : structuredClone(value);
+  // deepCopyFromRaw unwraps Vue proxies; structuredClone rejects the readonly
+  // proxies callers pass from initialFlaw collections with a DataCloneError.
+  if (value === undefined) return value;
+  return deepCopyFromRaw(value as Record<string, any>) as T;
 }
 
 // Copy the saved flaw onto both snapshots, leaving child collections dirty when they still differ.
