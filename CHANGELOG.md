@@ -1,5 +1,13 @@
 # OSIM Changelog
 
+## Unreleased
+### Changed
+* Load the changelog only when opened instead of during page startup.
+* Avoid unnecessary work when viewing flaws with many affects by excluding affect collections from the flaw change check and computing affect filter suggestions only when opened.
+
+### Fixed
+* Update tracker actions immediately after filing a tracker without losing the selected affects.
+
 ## [2026.11.1]
 ### Added
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
