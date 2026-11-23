@@ -1,7 +1,7 @@
 import { ref, readonly, computed } from 'vue';
 
 import type { ZodFlawCVSSType, ZodFlawLabelType, ZodFlawType } from '@/types/zodFlaw';
-import { deepCopyFromRaw, mergeBy, serializeWithExclude } from '@/utils/helpers';
+import { deepCopyFromRaw, mergeBy } from '@/utils/helpers';
 import type { ZodAffectType } from '@/types';
 
 const flaw = ref<ZodFlawType>(blankFlaw());
@@ -94,13 +94,14 @@ function acceptServerFlaw(saved: ZodFlawType, serverChosenFields: Iterable<strin
   flawResyncCount.value += 1;
 }
 
-const isFlawUpdated = computed(
-  () => {
-    const keysToExclude: Array<keyof ZodFlawType> = ['affects', 'trackers', 'cvss_scores'];
-    return serializeWithExclude(flaw.value, keysToExclude)
-      !== serializeWithExclude(initialFlaw.value, keysToExclude);
-  },
+const excludedFlawFields = new Set(['affects', 'trackers', 'cvss_scores']);
+const comparableFlaw = (value: ZodFlawType) => JSON.stringify(
+  Object.fromEntries(Object.keys(value)
+    .filter(key => !excludedFlawFields.has(key))
+    .map(key => [key, value[key as keyof ZodFlawType]])),
+  (key, fieldValue) => excludedFlawFields.has(key) ? undefined : fieldValue,
 );
+const isFlawUpdated = computed(() => comparableFlaw(flaw.value) !== comparableFlaw(initialFlaw.value));
 
 export function useFlaw() {
   return {

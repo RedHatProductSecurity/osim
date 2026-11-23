@@ -1,3 +1,5 @@
+import { watchEffect, nextTick } from 'vue';
+
 import type { ZodAffectType } from '@/types';
 
 import { blankFlaw, useFlaw } from '../useFlaw';
@@ -8,6 +10,32 @@ describe('useFlaw', () => {
 
     resetFlaw();
   });
+  it('does not invalidate the dirty check when excluded collections change', async () => {
+    const { flaw, isFlawUpdated, setFlaw, setLateFlawField } = useFlaw();
+    setFlaw(blankFlaw());
+    expect(isFlawUpdated.value).toBe(false);
+    let evaluations = 0;
+    const stop = watchEffect(() => {
+      void isFlawUpdated.value;
+      evaluations++;
+    });
+
+    const affects = Array.from({ length: 500 }, (_, i) => ({ uuid: String(i) })) as ZodAffectType[];
+    setLateFlawField('affects', affects);
+    flaw.value.affects = [{ uuid: 'different' } as ZodAffectType];
+    flaw.value.trackers = [];
+    flaw.value.cvss_scores = [];
+    await nextTick();
+    expect(evaluations).toBe(1);
+    expect(isFlawUpdated.value).toBe(false);
+
+    flaw.value.title = 'Changed';
+    await nextTick();
+    expect(evaluations).toBe(2);
+    expect(isFlawUpdated.value).toBe(true);
+    stop();
+  });
+
   it('should replace the flaw', () => {
     const { flaw, setFlaw } = useFlaw();
     const newFlaw = {
