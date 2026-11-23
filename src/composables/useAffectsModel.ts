@@ -330,7 +330,9 @@ function useAffects() {
 
       const result = await fileTrackingFor(trackerToFile);
       if (result && 'uuid' in result) {
-        currentAffects.value.find(affect => affect.uuid === uuid)!.tracker = result;
+        currentAffects.value = currentAffects.value.map(affect => affect.uuid === uuid
+          ? { ...affect, tracker: result }
+          : affect);
       }
       return;
     }
@@ -345,12 +347,10 @@ function useAffects() {
 
     const result = await fileTrackingFor(trackerToFile);
     if (result && 'uuid' in result) {
-      for (const affectUuid of affects) {
-        const affect = currentAffects.value.find(a => a.uuid === affectUuid);
-        if (affect) {
-          affect.tracker = result;
-        }
-      }
+      const affectedUuids = new Set(affects);
+      currentAffects.value = currentAffects.value.map(affect => affectedUuids.has(affect.uuid!)
+        ? { ...affect, tracker: result }
+        : affect);
     }
   }
 

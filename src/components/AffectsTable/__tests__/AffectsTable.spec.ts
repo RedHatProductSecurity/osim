@@ -573,6 +573,56 @@ describe('affectsTable', () => {
         expect(removedRow).toBeDefined();
       });
 
+      it('updates the selection count and tracker actions for a mixed selection', async () => {
+        useSettingsStore().settings.affectsPerPage = SampleFlawFull.affects.length;
+        const wrapper = await mountAffectsTable();
+        const rows = wrapper.findAll('tbody tr');
+        const withoutTracker = SampleFlawFull.affects.findIndex(affect => !affect.tracker);
+        const withJira = SampleFlawFull.affects.findIndex(affect =>
+          affect.tracker?.type === 'JIRA' && affect.tracker.external_system_id);
+        expect(withoutTracker).toBeGreaterThanOrEqual(0);
+        expect(withJira).toBeGreaterThanOrEqual(0);
+
+        await rows[withoutTracker].find('input[type="checkbox"]').setValue(true);
+        await flushPromises();
+        expect(wrapper.find('.badge.bg-secondary').text()).toContain('1 Selected');
+        expect(wrapper.find('button[title="File trackers for selected affects"]').exists()).toBe(true);
+        expect(wrapper.find('button[title="Close Jira trackers for selected affects"]').exists()).toBe(false);
+
+        await rows[withJira].find('input[type="checkbox"]').setValue(true);
+        await flushPromises();
+        expect(wrapper.find('.badge.bg-secondary').text()).toContain('2 Selected');
+        expect(wrapper.find('button[title="Close Jira trackers for selected affects"]').exists()).toBe(true);
+      });
+
+      it('updates tracker actions after filing without changing selection', async () => {
+        useSettingsStore().settings.affectsPerPage = SampleFlawFull.affects.length;
+        const tracker = {
+          uuid: 'filed-tracker', type: 'JIRA', external_system_id: 'TEST-123',
+        } as NonNullable<ZodFlawType['affects'][number]['tracker']>;
+        const fileSpy = vi.spyOn(TrackerService, 'fileTrackingFor').mockResolvedValue(tracker);
+        try {
+          const wrapper = await mountAffectsTable();
+          const withoutTracker = SampleFlawFull.affects.findIndex(affect => !affect.tracker);
+          expect(withoutTracker).toBeGreaterThanOrEqual(0);
+          await wrapper.findAll('tbody tr')[withoutTracker].find('input[type="checkbox"]').setValue(true);
+          await flushPromises();
+          expect(wrapper.find('button[title="File trackers for selected affects"]').exists()).toBe(true);
+          expect(wrapper.find('button[title="Close Jira trackers for selected affects"]').exists()).toBe(false);
+
+          await wrapper.find('button[title="File trackers for selected affects"]').trigger('click');
+          await flushPromises();
+          expect(fileSpy).toHaveBeenCalledOnce();
+          expect(wrapper.find('.badge.bg-secondary').text()).toContain('1 Selected');
+          expect(wrapper.findAll('tbody tr')[withoutTracker].find('input[type="checkbox"]').element)
+            .toHaveProperty('checked', true);
+          expect(wrapper.find('button[title="File trackers for selected affects"]').exists()).toBe(false);
+          expect(wrapper.find('button[title="Close Jira trackers for selected affects"]').exists()).toBe(true);
+        } finally {
+          fileSpy.mockRestore();
+        }
+      });
+
       it('should show create trackers button when affects without trackers are selected', async () => {
         const wrapper = await mountAffectsTable();
 

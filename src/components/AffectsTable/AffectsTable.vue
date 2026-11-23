@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, toRaw, watch, nextTick } from 'vue';
+import { computed, onMounted, toRaw, watch, nextTick } from 'vue';
 
 import { FlexRender } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia';
@@ -81,6 +81,13 @@ const {
   sessionFailedSelection.set(flaw.value.uuid, failed);
 });
 
+const selectedRows = computed(() => table.getSelectedRowModel().flatRows);
+const hasSelection = computed(() => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected());
+const canFileTrackers = computed(() => hasSelection.value && selectedRows.value.some(row => !row.original.tracker));
+const canCloseTrackers = computed(() => hasSelection.value && selectedRows.value.some(row =>
+  row.original.tracker?.type === 'JIRA' && row.original.tracker?.external_system_id,
+));
+
 watch(() => initialAffects.value, () => refreshData());
 // The parent temporarily unmounts the table while reloading affects; restore failed selection on remount.
 async function restoreFailedSelection() {
@@ -120,14 +127,13 @@ onMounted(() => {
     </div>
     <div class="d-flex flex-row gap-2">
       <span
-        v-if="table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()"
+        v-if="hasSelection"
         class="badge bg-secondary text-nowrap align-self-center fs-6 px-3 py-2"
       >
-        {{ table.getSelectedRowModel().flatRows.length }} Selected
+        {{ selectedRows.length }} Selected
       </span>
       <button
-        v-if="(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())
-          && table.getSelectedRowModel().flatRows.filter(row => !row.original.tracker).length"
+        v-if="canFileTrackers"
         class="btn btn-danger text-nowrap"
         type="button"
         title="File trackers for selected affects"
@@ -136,9 +142,7 @@ onMounted(() => {
         Create trackers
       </button>
       <button
-        v-if="(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())
-          && table.getSelectedRowModel().flatRows.some(row => row.original.tracker?.type === 'JIRA'
-            && row.original.tracker?.external_system_id)"
+        v-if="canCloseTrackers"
         v-osim-loading="isClosingTrackers"
         :disabled="isClosingTrackers"
         class="btn btn-warning text-nowrap"
@@ -150,7 +154,7 @@ onMounted(() => {
         Close trackers
       </button>
       <button
-        v-if="!isBulkEditMode && (table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())"
+        v-if="!isBulkEditMode && hasSelection"
         class="btn btn-primary text-nowrap"
         type="button"
         title="Bulk edit selected affects"
@@ -180,7 +184,7 @@ onMounted(() => {
         Cancel
       </button>
       <button
-        v-if="!isBulkEditMode && (table.getIsSomeRowsSelected() || table.getIsAllRowsSelected())"
+        v-if="!isBulkEditMode && hasSelection"
         class="btn btn-danger"
         type="button"
         title="Remove selected affects"
