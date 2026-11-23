@@ -12,12 +12,14 @@ const props = defineProps<{
 }>();
 
 const inputFilter = ref<string>('');
+const isOpen = ref(false);
 const columnFilter = computed({
   get: () => props.column.getFilterValue() as string | string[],
   set: value => props.column.setFilterValue(value),
 });
-const sortedUniqueValues = computed(() =>
-  Array.from(new Set([...props.column.getFacetedUniqueValues().keys()].flat())).sort(),
+const sortedUniqueValues = computed(() => isOpen.value
+  ? Array.from(new Set([...props.column.getFacetedUniqueValues().keys()].flat())).sort()
+  : [],
 );
 const metaEnum = computed(() =>
   props.column.columnDef.meta?.enum
@@ -39,7 +41,8 @@ watch(() => inputFilter.value, newValue => columnFilter.value = newValue);
   <DropDownMenu
     placement="bottom-start"
     @click.stop
-    @open="inputFilter = columnFilter as string"
+    @open="inputFilter = columnFilter as string; isOpen = true"
+    @close="isOpen = false"
   >
     <template #trigger>
       <i
