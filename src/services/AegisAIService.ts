@@ -216,7 +216,7 @@ export class AegisAIService {
   private botKpiFetchId = 0;
   isFetching: Ref<boolean>;
   // Optional hook invoked after each page of the paginated bot KPI fetch
-  // (see getBotKpiMetrics) with the flaws delivered so far and selected total.
+  // (see getBotKpiMetrics) with the flaws refreshed so far and selected total.
   onBotKpiProgress?: AegisBotKpiProgressCallback;
   requestDuration: Ref<number>;
 
@@ -226,7 +226,7 @@ export class AegisAIService {
   }
 
   private async fetchBotKpiPage(
-    query: AegisKpiQuery, options: AegisBotKpiOptions, cursor: null | string, runId?: string,
+    query: AegisKpiQuery, options: AegisBotKpiOptions, cursor: null | string,
   ) {
     return this.fetchKpi({
       method: 'GET',
@@ -235,10 +235,8 @@ export class AegisAIService {
       params: {
         ...query,
         cursor: cursor ?? undefined,
-        delivery: true,
         detail: true,
         limit: BOT_KPI_MAX_FLAWS_PER_PAGE,
-        run_id: runId,
       },
     });
   }
@@ -249,34 +247,19 @@ export class AegisAIService {
   ): Promise<AegisBotKpiMetrics> {
     const delivery = createKpiDelivery();
     let nextCursor: null | string = null;
-    let runId: string | undefined;
-    let pages = 0;
-    let idleResponses = 0;
-    for (let request = 0; request < 10000 && pages < 200; request++) {
+    for (let pages = 0; pages < 200; pages++) {
       options.signal?.throwIfAborted();
-      const result = await this.fetchBotKpiPage(query, options, nextCursor, runId);
+      const result = await this.fetchBotKpiPage(query, options, nextCursor);
       options.signal?.throwIfAborted();
       if (fetchId !== this.botKpiFetchId) throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
       const data = result.data as AegisBotKpiPage;
       const snapshot = delivery.accept(data);
-      const token = continuation(data);
-      const waiting = data.delivery?.deferred || data.delivery?.selection_complete === false || !snapshot;
-      idleResponses = waiting && token === nextCursor ? idleResponses + 1 : 0;
-      if (snapshot) {
-        runId = snapshot.delivery?.run_id;
-        if (snapshot.delivery && snapshot.delivery.selection_complete !== false) {
-          onProgress?.(snapshot.delivery.received_flaws, snapshot.delivery.selected_flaws);
-        }
-        options.onSnapshot?.(snapshot);
-        if (!token) return snapshot;
-      }
-      nextCursor = token;
-      if (idleResponses >= 120) throw new Error('KPI delivery remained deferred. Select Refresh to try again.');
-      if (waiting) await retryDelay(2, options.signal);
-      else pages++;
+      if (data.progress) onProgress?.(data.progress.refreshed_flaws, data.progress.selected_flaws);
+      options.onSnapshot?.(snapshot);
+      nextCursor = continuation(data);
+      if (!nextCursor) return snapshot;
     }
-    const limit = pages >= 200 ? '200 pages' : '10000 discovery requests';
-    throw new Error(`osidb-bot KPI pagination did not complete after ${limit}.`);
+    throw new Error('osidb-bot KPI pagination did not complete after 200 pages.');
   }
 
   private async fetchKpi(config: AegisAIGetFetchOptions) {
@@ -430,7 +413,7 @@ export class AegisAIService {
     }
   }
 
-  /** Publish cumulative snapshots while fetching a stable delivery run. */
+  /** Publish cumulative snapshots while following the paginated bot KPI endpoint. */
   async getBotKpiMetrics(query: AegisKpiQuery = {}, options: AegisBotKpiOptions = {}): Promise<AegisBotKpiMetrics> {
     this.botKpiController?.abort(new Error('osidb-bot KPI fetch was superseded by a newer request.'));
     const controller = new AbortController();

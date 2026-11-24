@@ -62,25 +62,30 @@
     * Therefore, Pinia would add complexity in this case without significant
       benefit
 
-## KPI delivery reports
+## KPI pagination
 
-The dashboard requests `/analysis/kpi/osidb-bot`. Each response contains
-current-page detail entries, cumulative delivered-population aggregates, and delivery
-metadata (`run_id`, `page_id`, `received_flaws`, `selected_flaws`, `complete`). Subsequent
-requests retain the run ID and pass `delivery.continue_token` as the `cursor` parameter. Each accepted page is processed once.
+The dashboard requests `/analysis/kpi/osidb-bot` with `limit=400` and follows
+`next_cursor` page by page until a page arrives without it. Each page carries
+its own slice of detail `entries` and a `progress` block (`selected_flaws`,
+`refreshed_flaws`, `complete`); the final page adds the aggregate over the
+whole selection (`features`, `total_flaws_processed`,
+`available_components`). OSIM accumulates entries across pages so the result
+contains each entry exactly once, publishes a cumulative snapshot per page,
+and cuts off a server that never finishes paginating after 200 pages.
 
-The additive `selection_complete: false` means selection discovery is pending: both counts
-are zero, but the total is unknown. Once discovery completes, the selected count becomes
-known and must remain stable for that run. Missing `selection_complete` means a known
-selection, for compatibility with earlier delivery servers. Membership is fixed once
-discovered; fetched flaw values are observed during delivery, not an atomic historical snapshot.
+A selection that is entirely cached is served as one pre-pagination response
+with neither cursor nor progress, indistinguishable from an older
+non-paginated server; the client treats a response without `next_cursor` as
+final either way. Because `refreshed_flaws` counts flaws fresh in the server
+cache (not only those already delivered), the progress bar can run ahead on a
+partially warm cache; on a cold cache it tracks delivery exactly.
 
-Request-budget exhaustion is a successful HTTP 200 deferral (`deferred: true`), not an
-upstream outage. Deferred pages contain no new entries and can hold the same continuation;
-their page IDs differ from the eventual delivered page. OSIM waits one abortable second
-between discovery, deferred, or replay responses. Safety limits are 120 consecutive held
-continuations without progress, 200 delivered pages, and 10,000 total discovery/delivery
-requests. Discovery and deferred responses do not consume the delivered-page limit.
+The read-only `/analysis/kpi/osidb-bot/cache-status` endpoint reports the
+selection's cache backlog (`fresh_count`, `stale_count`, `uncached_count`,
+`outdated_count`, `total_flaws_selected`). The dashboard renders it as loading
+text and uses `total_flaws_selected` as the progress denominator until the
+run's own `progress.selected_flaws` arrives: both cover the same
+component-scoped flaw population.
 
 Actual HTTP 503 failures receive up to three retries, unless `retry_exhausted: true` indicates
 that Aegis already exhausted its upstream retry budget. Failed, expired (410), or invalidated

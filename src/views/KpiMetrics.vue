@@ -20,8 +20,8 @@ const {
 } = useKpiDashboard();
 
 const allSourcesFailed = computed(() => !loading.value && errors.value.length > 0 && !loadedSources.value.length);
-// The delivery run's selected_flaws is authoritative once selection discovery
-// completes; until then the cache-status selection total is the same flaw
+// The run's own progress.selected_flaws is authoritative once the first page
+// reports it; until then the cache-status selection total is the same flaw
 // population and serves as the progress total.
 const botSelectedTotal = computed(() =>
   botProgress.value.selected ?? botCacheStatus.value?.total_flaws_selected ?? null);
@@ -34,19 +34,22 @@ const botCacheStatusText = computed(() => {
     + `(${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB).`;
 });
 const botProgressPercent = computed(() => {
-  const { received } = botProgress.value;
+  const { refreshed } = botProgress.value;
   const selected = botSelectedTotal.value;
-  return selected !== null && received !== null
-    ? selected === 0 ? 100 : Math.min(100, Math.round((received / selected) * 100))
+  return selected !== null && refreshed !== null
+    ? selected === 0 ? 100 : Math.min(100, Math.round((refreshed / selected) * 100))
     : null;
 });
-// Delivered pages and their estimated total, only once the run's selection is
-// known: deferrals, retries, and short pages make the total approximate.
+// Refreshed pages and their estimated total, only once the run reports
+// progress: retries and short pages make the total approximate.
 const botPageEstimate = computed(() => {
-  const { pages } = botProgress.value;
+  const { refreshed } = botProgress.value;
   const selected = botSelectedTotal.value;
-  return selected !== null && selected > 0 && pages > 0
-    ? { delivered: pages, estimated: Math.ceil(selected / BOT_KPI_MAX_FLAWS_PER_PAGE) }
+  return selected !== null && selected > 0 && refreshed !== null && refreshed > 0
+    ? {
+        delivered: Math.ceil(refreshed / BOT_KPI_MAX_FLAWS_PER_PAGE),
+        estimated: Math.ceil(selected / BOT_KPI_MAX_FLAWS_PER_PAGE),
+      }
     : null;
 });
 const history = computed(() => kpiHistory(observations.value));
@@ -176,24 +179,23 @@ function applyComponent(event: Event) {
     <div v-if="botLoading" class="mb-3">
       <span role="status">
         Loading osidb-bot metrics…
-        <template v-if="botProgress.received !== null && botSelectedTotal !== null">
-          {{ botProgress.received }} / {{ botSelectedTotal }} flaws received
+        <template v-if="botProgress.refreshed !== null && botSelectedTotal !== null">
+          {{ botProgress.refreshed }} / {{ botSelectedTotal }} flaws refreshed
         </template>
-        <template v-else-if="botProgress.received === 0">0 flaws received; determining selected total…</template>
+        <template v-else-if="botProgress.refreshed === 0">0 flaws refreshed; awaiting the first page…</template>
         <template v-else-if="botSelectedTotal !== null">
-          Received flaw count unavailable from this server ({{ botSelectedTotal }} flaws selected).
+          Flaw refresh counts unavailable from this server ({{ botSelectedTotal }} flaws selected).
         </template>
-        <template v-else>Received flaw count unavailable from this server.</template>
+        <template v-else>Flaw refresh counts unavailable from this server.</template>
         <template v-if="botPageEstimate">
           · page {{ botPageEstimate.delivered }} of ~{{ botPageEstimate.estimated }}
         </template>
         <template v-if="botCacheStatusText">{{ botCacheStatusText }}</template>
-        <template v-if="bot?.delivery?.deferred">Aegis deferred this page; continuing automatically…</template>
       </span>
       <div
         class="progress"
         role="progressbar"
-        aria-label="osidb-bot KPI delivery progress"
+        aria-label="osidb-bot KPI refresh progress"
         :aria-valuenow="botProgressPercent ?? undefined"
         aria-valuemin="0"
         aria-valuemax="100"
@@ -208,13 +210,10 @@ function applyComponent(event: Event) {
     </div>
     <p v-if="botIncomplete" role="status" class="alert alert-warning">
       Incomplete osidb-bot metrics:
-      <template v-if="botProgress.received !== null && botSelectedTotal !== null">
-        {{ botProgress.received }} / {{ botSelectedTotal }} selected flaws received.
+      <template v-if="botProgress.refreshed !== null && botSelectedTotal !== null">
+        {{ botProgress.refreshed }} / {{ botSelectedTotal }} selected flaws refreshed.
       </template>
-      <template v-else-if="bot?.delivery?.selection_complete === false">
-        Selection discovery is still in progress; 0 flaws received.
-      </template>
-      <template v-else>The server does not report how many selected flaws have been received.</template>
+      <template v-else>The server does not report how many selected flaws have been refreshed.</template>
       Charts and totals cover only received data.
       <template v-if="!botLoading && botCacheStatusText">
         Cache status when the run started: {{ botCacheStatusText }}

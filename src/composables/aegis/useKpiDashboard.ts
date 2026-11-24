@@ -58,8 +58,8 @@ export function useKpiDashboard() {
   const toDate = ref('');
   const feedback = ref<AegisKpiMetrics>({});
   const bot = ref<AegisBotKpiMetrics | null>(null);
-  const botProgress = ref<{ pages: number; received: null | number; selected: null | number }>(
-    { pages: 0, received: 0, selected: null },
+  const botProgress = ref<{ refreshed: null | number; selected: null | number }>(
+    { refreshed: 0, selected: null },
   );
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
@@ -76,10 +76,6 @@ export function useKpiDashboard() {
   const service = new AegisAIService();
   let requestId = 0;
   let controller: AbortController | undefined;
-  // Delivered pages of the current bot run, keyed by their unique delivery
-  // page_id: discovery and deferred responses never publish a snapshot, and
-  // the resolved run's final snapshot repeats the last page_id.
-  let botPageIds = new Set<string>();
   onUnmounted(() => {
     requestId++;
     controller?.abort();
@@ -118,8 +114,7 @@ export function useKpiDashboard() {
   function resetResults() {
     feedback.value = {};
     bot.value = null;
-    botProgress.value = { pages: 0, received: 0, selected: null };
-    botPageIds = new Set();
+    botProgress.value = { refreshed: 0, selected: null };
     botComplete.value = false;
     botCacheStatus.value = null;
     cacheStatusError.value = null;
@@ -132,12 +127,9 @@ export function useKpiDashboard() {
   function publishBot(metrics: AegisBotKpiMetrics, id: number) {
     if (id !== requestId) return;
     bot.value = metrics;
-    const { delivery } = metrics;
-    if (delivery && delivery.selection_complete !== false) botPageIds.add(delivery.page_id);
     botProgress.value = {
-      pages: botPageIds.size,
-      received: delivery?.received_flaws ?? null,
-      selected: delivery && delivery.selection_complete !== false ? delivery.selected_flaws ?? null : null,
+      refreshed: metrics.progress?.refreshed_flaws ?? null,
+      selected: metrics.progress?.selected_flaws ?? null,
     };
     if (!loadedSources.value.includes('osidb-bot')) loadedSources.value.push('osidb-bot');
     collectOptions();
@@ -178,7 +170,7 @@ export function useKpiDashboard() {
     controller = new AbortController();
     const signal = controller.signal;
     // An open-ended window is closed at the request moment so flaws updated
-    // later cannot join the selection and invalidate the delivery run.
+    // later cannot join the selection and invalidate the paginated run.
     const currentQuery: AegisKpiQuery = {
       ...query.value,
       recorded_before: query.value.recorded_before ?? DateTime.utc().toISO()!,
