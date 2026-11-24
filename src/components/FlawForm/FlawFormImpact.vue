@@ -3,6 +3,7 @@ import { computed } from 'vue';
 
 import Nudge from '@/components/Nudge/Nudge.vue';
 import AegisImpactActions from '@/components/Aegis/AegisImpactActions.vue';
+import AegisPendingSuggestion from '@/components/Aegis/AegisPendingSuggestion.vue';
 
 import type { AegisSuggestionContextRefs } from '@/composables/aegis/useAegisSuggestionContext';
 import { useAegisMetadataTracking } from '@/composables/aegis/useAegisMetadataTracking';
@@ -65,6 +66,11 @@ const { getAIBotSkipTooltip, isFieldValueAIBot } = useAegisMetadataTracking();
         :aegisContext="aegisContext"
         :modelValue="modelValue"
         @update:impact="handleImpactChange"
+      />
+      <AegisPendingSuggestion
+        fieldName="impact"
+        :modelValue="modelValue"
+        @update:field="handleImpactChange"
       />
       {{ label }}
       <Nudge

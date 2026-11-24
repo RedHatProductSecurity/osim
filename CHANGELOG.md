@@ -1,6 +1,9 @@
 # OSIM Changelog
 
 ## [Unreleased]
+### Added
+* Show pending Aegis AI-Bot impact suggestions with their value, explanation, and metadata, and let analysts accept or reject them from the Impact field (`OSIDB-5908`)
+
 ### Fixed
 * Do not break flaw view when an affect request fails (`OSIDB-5909`)
 
