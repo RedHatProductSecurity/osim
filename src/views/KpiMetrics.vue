@@ -20,35 +20,22 @@ const {
 } = useKpiDashboard();
 
 const allSourcesFailed = computed(() => !loading.value && errors.value.length > 0 && !loadedSources.value.length);
-// Refresh state of the osidb-bot KPI cache for the current selection. The
-// counts are selection-scoped and intentionally not tied to
-// total_flaws_processed, which counts only bot-processed flaws.
-const botCacheBadge = computed(() => {
+// The delivery run's selected_flaws is authoritative once selection discovery
+// completes; until then the cache-status selection total is the same flaw
+// population and serves as the progress total.
+const botSelectedTotal = computed(() =>
+  botProgress.value.selected ?? botCacheStatus.value?.total_flaws_selected ?? null);
+const botCacheStatusText = computed(() => {
   const status = botCacheStatus.value;
   if (!status) return null;
-  if (!status.total_flaws_selected) {
-    return {
-      class: 'bg-secondary',
-      text: 'Cache empty',
-      title: 'No flaws match the current selection.',
-    };
-  }
-  if (!status.stale_count) {
-    return {
-      class: 'bg-success',
-      text: `Cache up to date (${status.total_flaws_selected} flaws)`,
-      title: 'Cached data covers every selected flaw.',
-    };
-  }
-  return {
-    class: 'bg-warning text-dark',
-    text: `Cache ${status.fresh_count}/${status.total_flaws_selected} fresh`,
-    title: `${status.stale_count} flaws refresh on the next osidb-bot metrics load: `
-    + `${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB.`,
-  };
+  if (!status.total_flaws_selected) return 'No flaws match the current selection.';
+  if (!status.stale_count) return `All ${status.total_flaws_selected} selected flaws are cached fresh.`;
+  return `${status.stale_count} of ${status.total_flaws_selected} selected flaws are not cached fresh `
+    + `(${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB).`;
 });
 const botProgressPercent = computed(() => {
-  const { received, selected } = botProgress.value;
+  const { received } = botProgress.value;
+  const selected = botSelectedTotal.value;
   return selected !== null && received !== null
     ? selected === 0 ? 100 : Math.min(100, Math.round((received / selected) * 100))
     : null;
@@ -56,7 +43,8 @@ const botProgressPercent = computed(() => {
 // Delivered pages and their estimated total, only once the run's selection is
 // known: deferrals, retries, and short pages make the total approximate.
 const botPageEstimate = computed(() => {
-  const { pages, selected } = botProgress.value;
+  const { pages } = botProgress.value;
+  const selected = botSelectedTotal.value;
   return selected !== null && selected > 0 && pages > 0
     ? { delivered: pages, estimated: Math.ceil(selected / BOT_KPI_MAX_FLAWS_PER_PAGE) }
     : null;
@@ -237,18 +225,22 @@ function changeRange(event: Event, edge: 'end' | 'start') {
     <div v-if="botLoading" class="mb-3">
       <span role="status">
         Loading osidb-bot metrics…
-        <template v-if="botProgress.selected !== null">
-          {{ botProgress.received }} / {{ botProgress.selected }} flaws received
+        <template v-if="botProgress.received !== null && botSelectedTotal !== null">
+          {{ botProgress.received }} / {{ botSelectedTotal }} flaws received
         </template>
         <template v-else-if="botProgress.received === 0">0 flaws received; determining selected total…</template>
+        <template v-else-if="botSelectedTotal !== null">
+          Received flaw count unavailable from this server ({{ botSelectedTotal }} flaws selected).
+        </template>
         <template v-else>Received flaw count unavailable from this server.</template>
         <template v-if="botPageEstimate">
           · page {{ botPageEstimate.delivered }} of ~{{ botPageEstimate.estimated }}
         </template>
+        <template v-if="botCacheStatusText">{{ botCacheStatusText }}</template>
         <template v-if="bot?.delivery?.deferred">Aegis deferred this page; continuing automatically…</template>
       </span>
       <div
-        class="progress position-relative"
+        class="progress"
         role="progressbar"
         aria-label="osidb-bot KPI delivery progress"
         :aria-valuenow="botProgressPercent ?? undefined"
@@ -261,27 +253,20 @@ function changeRange(event: Event, edge: 'end' | 'start') {
           :style="{ width: `${botProgressPercent}%` }"
         >{{ botProgressPercent }}%</div>
         <div v-else class="progress-bar kpi-progress-indeterminate"></div>
-        <span
-          v-if="botCacheBadge"
-          class="badge kpi-cache-status"
-          :class="botCacheBadge.class"
-          :title="botCacheBadge.title"
-        >{{ botCacheBadge.text }}</span>
       </div>
     </div>
     <p v-if="botIncomplete" role="status" class="alert alert-warning">
       Incomplete osidb-bot metrics:
-      <template v-if="botProgress.selected !== null">
-        {{ botProgress.received }} / {{ botProgress.selected }} selected flaws received.
+      <template v-if="botProgress.received !== null && botSelectedTotal !== null">
+        {{ botProgress.received }} / {{ botSelectedTotal }} selected flaws received.
       </template>
       <template v-else-if="bot?.delivery?.selection_complete === false">
         Selection discovery is still in progress; 0 flaws received.
       </template>
       <template v-else>The server does not report how many selected flaws have been received.</template>
       Charts and totals cover only received data.
-      <template v-if="!botLoading && botCacheBadge">
-        Cache status when the run started:
-        <span class="badge" :class="botCacheBadge.class" :title="botCacheBadge.title">{{ botCacheBadge.text }}</span>
+      <template v-if="!botLoading && botCacheStatusText">
+        Cache status when the run started: {{ botCacheStatusText }}
       </template>
       <template v-if="bot?.aggregates_available === false">
         Aggregate bot metrics are unavailable until loading completes.
@@ -375,14 +360,6 @@ function changeRange(event: Event, edge: 'end' | 'start') {
 </template>
 
 <style scoped>
-.kpi-cache-status {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.65rem;
-}
-
 .kpi-progress-indeterminate {
   position: relative;
   width: 30%;
