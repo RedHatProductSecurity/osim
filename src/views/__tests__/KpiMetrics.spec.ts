@@ -4,7 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountWithConfig } from '@/__tests__/helpers';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
-import type { AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics } from '@/types/aegisAI';
+import type {
+  AegisBotKpiCacheStatus, AegisBotKpiDelivery, AegisBotKpiMetrics, AegisKpiMetrics,
+} from '@/types/aegisAI';
 import { downloadKpiCsv } from '@/utils/kpiReport';
 
 vi.mock('@/services/AegisAIService');
@@ -60,7 +62,9 @@ const bot: AegisBotKpiMetrics = {
   ],
 };
 
-const snapshot = (received: number, selected = 400): AegisBotKpiMetrics => ({
+const snapshot = (
+  received: number, selected = 400, delivery: Partial<AegisBotKpiDelivery> = {},
+): AegisBotKpiMetrics => ({
   ...bot,
   delivery: {
     run_id: 'run-a',
@@ -68,6 +72,7 @@ const snapshot = (received: number, selected = 400): AegisBotKpiMetrics => ({
     received_flaws: received,
     selected_flaws: selected,
     complete: received === selected,
+    ...delivery,
   },
 });
 
@@ -120,8 +125,8 @@ describe('kPI dashboard', () => {
     expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('1 processed flaws');
     expect(wrapper.text()).toContain('Unknown version');
     expect(wrapper.text()).toContain('manual: 100.0%');
-    expect(wrapper.text()).toContain('programmatic: 0.0%');
-    expect(wrapper.text()).toContain('osidb-bot: 100.0%');
+    expect(wrapper.text()).toContain('Requested by User: 0.0%');
+    expect(wrapper.text()).toContain('Automated (OSIDB Bot): 100.0%');
     expect(wrapper.get('tbody').text()).toContain('0.80');
   });
 
@@ -155,6 +160,11 @@ describe('kPI dashboard', () => {
     const csv = vi.mocked(downloadKpiCsv).mock.calls[0][0];
     expect(csv).toContain('"kernel","suggest-impact"');
     expect(csv).toContain('"2","3","66.7"');
+    // The export keeps raw source values even though the list renders labels.
+    expect(csv).toContain('"programmatic","suggest-impact"');
+    expect(csv).toContain('"osidb-bot","suggest-impact"');
+    expect(csv).not.toContain('Requested by User');
+    expect(csv).not.toContain('Automated (OSIDB Bot)');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
   });
 
@@ -765,6 +775,70 @@ describe('kPI dashboard', () => {
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
   });
 
+  it('renders a genuinely indeterminate bar while the selected total is unknown', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    let fill = wrapper.get('[role="progressbar"] .progress-bar');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    expect(fill.classes()).toContain('kpi-progress-indeterminate');
+    expect(fill.classes()).not.toContain('progress-bar-striped');
+    expect(fill.attributes('style')).toBeUndefined();
+    expect(fill.text()).toBe('');
+
+    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }));
+    await flushPromises();
+    expect(wrapper.text()).toContain('determining selected total');
+    fill = wrapper.get('[role="progressbar"] .progress-bar');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    expect(fill.classes()).toContain('kpi-progress-indeterminate');
+    expect(fill.attributes('style')).toBeUndefined();
+
+    publish(snapshot(100));
+    await flushPromises();
+    const determinate = wrapper.get('[role="progressbar"] .progress-bar');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
+    expect(determinate.classes()).not.toContain('kpi-progress-indeterminate');
+    expect(determinate.classes()).toContain('progress-bar-striped');
+    expect(determinate.attributes('style')).toContain('width: 25%');
+    expect(determinate.text()).toBe('25%');
+  });
+
+  it('appends the delivered page estimate once the selection and first page are known', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    expect(wrapper.text()).not.toContain('of ~');
+
+    // Selection discovery is still pending: no page estimate.
+    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }));
+    await flushPromises();
+    expect(wrapper.text()).toContain('determining selected total');
+    expect(wrapper.text()).not.toContain('of ~');
+
+    publish(snapshot(400, 800, { page_id: 'page-1' }));
+    await flushPromises();
+    expect(wrapper.text()).toContain('400 / 800 flaws received');
+    expect(wrapper.text()).toContain('· page 1 of ~2');
+
+    publish(snapshot(800, 800, { page_id: 'page-2' }));
+    await flushPromises();
+    expect(wrapper.text()).toContain('· page 2 of ~2');
+
+    // The resolved run re-publishes its final snapshot: no double count.
+    publish(snapshot(800, 800, { page_id: 'page-2' }));
+    await flushPromises();
+    expect(wrapper.text()).toContain('· page 2 of ~2');
+    expect(wrapper.text()).not.toContain('· page 3');
+  });
+
+  it('omits the page estimate on legacy snapshots without delivery counts', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    publish({ ...bot, aggregates_available: false, features: {}, total_flaws_processed: 0 });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Received flaw count unavailable from this server');
+    expect(wrapper.text()).not.toContain('of ~');
+  });
+
   it.each([
     {
       name: 'a fully fresh cache',
@@ -815,13 +889,17 @@ describe('kPI dashboard', () => {
       classes: ['bg-warning', 'text-dark'],
       title: '3 flaws refresh on the next osidb-bot metrics load: 0 uncached, 3 changed in OSIDB.',
     },
-  ])('renders $name as a selection-scoped badge (AEGIS-550)', async ({ classes, status, text, title }) => {
+  ])('renders $name as a selection-scoped pill inside the loading bar (AEGIS-550)', async ({
+    classes, status, text, title,
+  }) => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
     getCacheStatus.mockResolvedValueOnce(status);
     await mount();
-    const badge = wrapper.get('p[role="status"] .badge');
+    const badge = wrapper.get('[role="progressbar"] .badge.kpi-cache-status');
     expect(badge.text()).toBe(text);
     expect(badge.classes()).toEqual(expect.arrayContaining(classes));
     expect(badge.attributes('title')).toBe(title);
+    expect(wrapper.findAll('.badge')).toHaveLength(1);
   });
 
   it('omits the cache badge entirely while no cache status is available', async () => {
@@ -831,22 +909,56 @@ describe('kPI dashboard', () => {
     expect(wrapper.text()).not.toContain('could not be loaded');
   });
 
-  it('replaces the cache badge with each refreshed selection', async () => {
+  it('replaces the cache badge with each refreshed selection and removes it once loaded', async () => {
+    let resolveBot!: (value: AegisBotKpiMetrics) => void;
+    getBot.mockReset().mockReturnValueOnce(new Promise((resolve) => { resolveBot = resolve; }));
     getCacheStatus.mockResolvedValueOnce(cacheStatus);
     await mount();
-    expect(wrapper.get('.badge').text()).toBe('Cache 3/5 fresh');
+    expect(wrapper.get('[role="progressbar"] .badge').text()).toBe('Cache 3/5 fresh');
 
-    getCacheStatus.mockReturnValueOnce(new Promise(() => {}));
-    await wrapper.get('#kpi-component').setValue('kernel');
+    resolveBot(bot);
     await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
     expect(wrapper.find('.badge').exists()).toBe(false);
 
+    getBot.mockReturnValueOnce(new Promise(() => {}));
     getCacheStatus.mockResolvedValueOnce({
       ...cacheStatus, fresh_count: 5, stale_count: 0, outdated_count: 0, uncached_count: 0,
     });
     await button('Refresh').trigger('click');
     await flushPromises();
-    expect(wrapper.get('.badge').text()).toBe('Cache up to date (5 flaws)');
+    expect(wrapper.get('[role="progressbar"] .badge').text()).toBe('Cache up to date (5 flaws)');
+
+    getBot.mockReturnValueOnce(new Promise(() => {}));
+    getCacheStatus.mockReturnValueOnce(new Promise(() => {}));
+    await wrapper.get('#kpi-component').setValue('kernel');
+    await flushPromises();
+    expect(wrapper.find('.badge').exists()).toBe(false);
+  });
+
+  it('repeats the cache status inside the incomplete warning only after the failed load ends', async () => {
+    let rejectBot!: (reason: unknown) => void;
+    getBot.mockReset().mockReturnValueOnce(new Promise((_resolve, reject) => { rejectBot = reject; }));
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    await mount();
+    publish(snapshot(1, 5));
+    await flushPromises();
+    const warning = wrapper.get('p[role="status"]');
+    expect(warning.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws received');
+    expect(warning.find('.badge').exists()).toBe(false);
+    expect(warning.text()).not.toContain('Cache status when the run started');
+    expect(wrapper.get('[role="progressbar"] .badge').text()).toBe('Cache 3/5 fresh');
+
+    rejectBot({ response: { status: 500 }, message: 'Run stopped' });
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+    expect(wrapper.get('p[role="status"]').text()).toContain('Cache status when the run started');
+    const badge = wrapper.get('p[role="status"] .badge');
+    expect(badge.text()).toBe('Cache 3/5 fresh');
+    expect(badge.classes()).toEqual(expect.arrayContaining(['bg-warning', 'text-dark']));
+    expect(badge.classes()).not.toContain('kpi-cache-status');
+    expect(badge.attributes('title'))
+      .toBe('2 flaws refresh on the next osidb-bot metrics load: 1 uncached, 1 changed in OSIDB.');
   });
 
   it('leaves the cache badge absent and unreported on a 404 from an older Aegis server (AEGIS-550)', async () => {

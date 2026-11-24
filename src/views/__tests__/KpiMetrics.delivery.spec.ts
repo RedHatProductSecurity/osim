@@ -233,12 +233,15 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     if (action === 'invalid range') expect(wrapper!.text()).toContain('start date must be on or before');
   });
 
-  it('scopes the cache status request to the component filter and renders the backlog badge', async () => {
+  it('scopes the cache status request to the component filter and renders the backlog pill while loading', async () => {
+    const botGate = gate();
     const requests: Request[] = [];
     server.use(
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
-      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
-        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async () => {
+        await botGate.promise;
+        return HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]));
+      }),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, ({ request }) => {
         requests.push(request);
         return HttpResponse.json({
@@ -248,9 +251,9 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     );
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
     await vi.waitFor(() => expect(requests).toHaveLength(1));
+    await vi.waitFor(() => expect(wrapper!.get('[role="progressbar"] .badge').text()).toBe('Cache 1/3 fresh'));
     await wrapper.get('#kpi-component').setValue('kernel');
     await vi.waitFor(() => expect(requests).toHaveLength(2));
-    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
 
     expect(new URL(requests[0].url).search).toBe('');
     const params = new URL(requests[1].url).searchParams;
@@ -266,11 +269,15 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     ]) {
       expect(params.has(param)).toBe(false);
     }
-    const badge = wrapper.get('.badge');
+    const badge = wrapper.get('[role="progressbar"] .badge');
     expect(badge.text()).toBe('Cache 1/3 fresh');
     expect(badge.classes()).toEqual(expect.arrayContaining(['bg-warning', 'text-dark']));
     expect(badge.attributes('title'))
       .toBe('2 flaws refresh on the next osidb-bot metrics load: 0 uncached, 2 changed in OSIDB.');
+
+    botGate.resolve();
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(wrapper.find('.badge').exists()).toBe(false);
   });
 
   it('treats a missing cache-status endpoint as unsupported and keeps the dashboard fully usable', async () => {
@@ -311,11 +318,14 @@ describe('rendered KPI delivery with real service and HTTP', () => {
 
   it.each(['filter change', 'unmount'])('cancels the pending cache status request on %s', async (action) => {
     const networkGate = gate();
+    const botGate = gate();
     const requests: Request[] = [];
     server.use(
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
-      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
-        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async () => {
+        await botGate.promise;
+        return HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]));
+      }),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, async ({ request }) => {
         requests.push(request);
         await networkGate.promise;
@@ -336,11 +346,40 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     await flushPromises();
     if (action === 'filter change') {
       await vi.waitFor(() => expect(requests).toHaveLength(2));
+      await vi.waitFor(() => expect(wrapper!.get('[role="progressbar"] .badge').text())
+        .toBe('Cache up to date (1 flaws)'));
+      expect(wrapper!.text()).toContain('Loading osidb-bot metrics');
+      botGate.resolve();
       await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
-      expect(wrapper!.get('.badge').text()).toBe('Cache up to date (1 flaws)');
+      expect(wrapper!.find('.badge').exists()).toBe(false);
       expect(wrapper!.findAll('[role="alert"]')).toHaveLength(0);
     } else {
       expect(requests).toHaveLength(1);
     }
+  });
+
+  it('estimates delivered pages against the selection while paginating', async () => {
+    const secondPageGate = gate();
+    const first = { ...deliveryPage('page-1', 400, 600, 'page-2', [deliveryEntry('CVE-2026-1000')]),
+      features: deliveryFeatures,
+      total_flaws_processed: 1 };
+    const second = { ...deliveryPage('page-2', 600, 600, null, [deliveryEntry('CVE-2026-1001')]),
+      features: deliveryFeatures,
+      total_flaws_processed: 2 };
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
+        if (new URL(request.url).searchParams.get('cursor') !== 'page-2') return HttpResponse.json(first);
+        await secondPageGate.promise;
+        return HttpResponse.json(second);
+      }),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('400 / 600 flaws received'));
+    expect(wrapper.text()).toContain('· page 1 of ~2');
+    secondPageGate.resolve();
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain('of ~');
   });
 });

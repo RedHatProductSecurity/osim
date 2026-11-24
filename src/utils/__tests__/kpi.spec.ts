@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import type { AegisBotKpiEntry } from '@/types/aegisAI';
-import { botObservations, compareKpiVersions, feedbackObservations, kpiHistory, summarizeKpi } from '@/utils/kpi';
+import {
+  botObservations, compareKpiVersions, feedbackObservations, kpiHistory, kpiSourceLabel, summarizeKpi,
+} from '@/utils/kpi';
 
 const record = (overrides: Partial<AegisBotKpiEntry> = {}): AegisBotKpiEntry => ({
   cve_id: 'CVE-2026-1000',
@@ -97,6 +99,49 @@ describe('kPI aggregation', () => {
     const observations = [...feedback, ...botObservations([record(), record({ cve_id: 'CVE-2026-1001' })])];
     expect(feedback[0].feature).toBe('suggest-description');
     expect(summarizeKpi(observations).percentage).toBeCloseTo(200 / 3);
+  });
+
+  it('labels known sources for display and passes the rest through unchanged', () => {
+    expect(kpiSourceLabel('programmatic')).toBe('Requested by User');
+    expect(kpiSourceLabel('osidb-bot')).toBe('Automated (OSIDB Bot)');
+    expect(kpiSourceLabel('feedback')).toBe('feedback');
+    expect(kpiSourceLabel('manual')).toBe('manual');
+  });
+
+  it('canonicalizes osidb-bot statement and mitigation entries to their feedback features', () => {
+    const observations = botObservations([
+      record({ cve_id: 'CVE-2026-1000', feature: 'statement', deviation: 0 }),
+      record({ cve_id: 'CVE-2026-1001', feature: 'mitigation', deviation: 1 }),
+      record({ cve_id: 'CVE-2026-1002', feature: 'title', deviation: 0 }),
+    ]);
+    expect(observations.map(entry => [entry.cveId, entry.feature])).toEqual([
+      ['CVE-2026-1000', 'suggest-statement'],
+      ['CVE-2026-1001', 'suggest-mitigation'],
+      ['CVE-2026-1002', 'suggest-title'],
+    ]);
+  });
+
+  it('merges canonical osidb-bot statement and mitigation entries with feedback observations', () => {
+    const feedback = feedbackObservations({
+      'suggest-statement': { acceptance_percentage: 0,
+        entries: [
+          { cve_id: 'CVE-2026-1000', accepted: false, aegis_version: '0.9.2', datetime: '2026-09-01 00:00:00' },
+        ] },
+      'suggest-mitigation': { acceptance_percentage: 100,
+        entries: [
+          { cve_id: 'CVE-2026-1001', accepted: true, aegis_version: '0.9.2', datetime: '2026-09-02 00:00:00' },
+        ] },
+    });
+    const observations = [...feedback, ...botObservations([
+      record({ cve_id: 'CVE-2026-1000', feature: 'statement', deviation: 0 }),
+      record({ cve_id: 'CVE-2026-1001', feature: 'mitigation', deviation: 1 }),
+    ])];
+    expect([...new Set(observations.map(entry => entry.feature))].sort())
+      .toEqual(['suggest-mitigation', 'suggest-statement']);
+    expect(summarizeKpi(observations.filter(entry => entry.feature === 'suggest-statement')))
+      .toMatchObject({ accepted: 1, total: 2, percentage: 50 });
+    expect(summarizeKpi(observations.filter(entry => entry.feature === 'suggest-mitigation')))
+      .toMatchObject({ accepted: 1, total: 2, percentage: 50 });
   });
 
   it('aligns sparse feature series and excludes undated observations only from history', () => {

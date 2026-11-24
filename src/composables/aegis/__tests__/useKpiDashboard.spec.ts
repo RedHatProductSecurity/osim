@@ -58,11 +58,11 @@ describe('useKpiDashboard', () => {
   it('starts at zero with unknown selected count and publishes snapshots while loading', () => {
     const dashboard = mountDashboard();
 
-    expect(dashboard.botProgress.value).toEqual({ received: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
     expect(dashboard.loading.value).toBe(true);
 
     publish();
-    expect(dashboard.botProgress.value).toEqual({ received: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
     expect(dashboard.bot.value).toEqual(snapshot);
     expect(dashboard.botIncomplete.value).toBe(true);
   });
@@ -76,18 +76,47 @@ describe('useKpiDashboard', () => {
     await flushPromises();
 
     expect(signal.aborted).toBe(true);
-    expect(dashboard.botProgress.value).toEqual({ received: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
     publish();
-    expect(dashboard.botProgress.value).toEqual({ received: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
     publish(1);
-    expect(dashboard.botProgress.value).toEqual({ received: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
+  });
+
+  it('counts distinct delivered pages, ignoring discovery pages and repeated snapshots', () => {
+    const dashboard = mountDashboard();
+    getBot.mock.calls[0][1].onSnapshot({
+      ...snapshot,
+      delivery: {
+        run_id: 'run',
+        page_id: 'discovery',
+        received_flaws: 0,
+        selected_flaws: 0,
+        complete: false,
+        selection_complete: false,
+      },
+    });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
+
+    publish();
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
+
+    // The resolved run re-publishes its final snapshot with the same page_id.
+    publish();
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
+
+    getBot.mock.calls[0][1].onSnapshot({
+      ...snapshot,
+      delivery: { run_id: 'run', page_id: 'page-2', received_flaws: 20, selected_flaws: 40, complete: false },
+    });
+    expect(dashboard.botProgress.value).toEqual({ pages: 2, received: 20, selected: 40 });
   });
 
   it('ignores progress callbacks after the dashboard unmounts', () => {
     const dashboard = mountDashboard();
     publish();
     const signal = getBot.mock.calls[0][1].signal;
-    expect(dashboard.botProgress.value).toEqual({ received: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
 
     app!.unmount();
     getBot.mock.calls[0][1].onSnapshot({ ...snapshot, total_flaws_processed: 20 });
