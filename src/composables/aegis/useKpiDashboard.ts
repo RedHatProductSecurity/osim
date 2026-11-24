@@ -7,8 +7,8 @@ import type {
 } from '@/types/aegisAI';
 import { AegisAIService } from '@/services/AegisAIService';
 import {
-  botObservations, canonicalKpiFeature, compareKpiVersions, completeKpiWeeks,
-  feedbackObservations, KpiFeatureLabels, kpiWeek,
+  botObservations, canonicalKpiFeature, compareKpiVersions,
+  feedbackObservations, KpiFeatureLabels,
 } from '@/utils/kpi';
 
 function httpStatusOf(reason: unknown): number | undefined {
@@ -73,7 +73,6 @@ export function useKpiDashboard() {
   const availableVersions = ref<string[]>([]);
   const availableComponents = ref<string[]>(['kernel']);
   const availableFeatures = ref(Object.keys(KpiFeatureLabels));
-  const availableWeeks = ref<string[]>([]);
   const service = new AegisAIService();
   let requestId = 0;
   let controller: AbortController | undefined;
@@ -114,13 +113,6 @@ export function useKpiDashboard() {
       ...Object.keys(feedback.value).map(canonicalKpiFeature),
       ...Object.keys(bot.value?.features ?? {}).map(canonicalKpiFeature),
     ])];
-    // Retain loaded history so narrowing a window cannot move its range handles
-    // or prevent expanding back to the original scope.
-    availableWeeks.value = completeKpiWeeks([...new Set([
-      ...availableWeeks.value,
-      ...feedbackMetrics.flatMap(value => value.entries.map(entry => kpiWeek(entry.datetime))),
-      ...(bot.value?.entries.map(entry => kpiWeek(entry.datetime)) ?? []),
-    ].filter((week): week is string => week !== null))]);
   }
 
   function resetResults() {
@@ -254,7 +246,6 @@ export function useKpiDashboard() {
     availableVersions,
     availableComponents,
     availableFeatures,
-    availableWeeks,
     observations,
     refresh,
     toggleVersion,
