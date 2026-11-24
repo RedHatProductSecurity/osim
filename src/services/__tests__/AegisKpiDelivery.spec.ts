@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import { createPinia, setActivePinia } from 'pinia';
 
 import { encodeJWT } from '@/__tests__/helpers';
-import { deferred, deliveryEntry, deliveryFeatures, deliveryPage } from '@/__tests__/kpiDeliveryFixtures';
+import { botEntry, botFeatures, botPage, deferred } from '@/__tests__/kpiDeliveryFixtures';
 import { server } from '@/__tests__/setup';
 import { AegisAIService } from '@/services/AegisAIService';
 import { useAuthStore } from '@/stores/AuthStore';
@@ -12,7 +12,7 @@ import type { AegisBotKpiPage } from '@/types/aegisAI';
 
 const baseUrl = 'http://localhost:8080';
 const botUrl = `${baseUrl}/analysis/kpi/osidb-bot`;
-const legacy = { entries: [], features: {}, total_flaws_processed: 0 };
+const finalPage = botPage([], null);
 
 function servePages(pages: AegisBotKpiPage[]) {
   const requests: Request[] = [];
@@ -23,7 +23,7 @@ function servePages(pages: AegisBotKpiPage[]) {
   return requests;
 }
 
-describe('kPI delivery service over HTTP', () => {
+describe('osidb-bot KPI cursor pagination over HTTP', () => {
   let service: AegisAIService;
   let consoleError: ReturnType<typeof vi.spyOn>;
 
@@ -40,127 +40,193 @@ describe('kPI delivery service over HTTP', () => {
     consoleError.mockRestore();
   });
 
-  it('counts delivery independently of cache freshness and entries, replacing cumulative aggregates', async () => {
-    const entries = [deliveryEntry('CVE-2026-1000'), deliveryEntry('CVE-2026-1000', 'cwe')];
-    const metadata = deliveryPage('metadata', 0, 10, 'opaque/+?=first');
-    metadata.progress = { complete: false, refreshed_flaws: 9, selected_flaws: 10 };
-    const first = { ...deliveryPage('first', 1, 10, 'opaque/+?=empty', entries),
-      features: deliveryFeatures,
-      total_flaws_processed: 1 };
-    const empty = { ...deliveryPage('empty', 2, 10, 'opaque/+?=last'),
-      features: deliveryFeatures,
-      total_flaws_processed: 2 };
-    const final = { ...deliveryPage('last', 10, 10, null, [deliveryEntry('CVE-2026-1001')]),
-      features: { impact: { ...deliveryFeatures.impact, suggested: 3, avg_data_quality: 0.55 } },
-      total_flaws_processed: 7 };
-    const requests = servePages([metadata, first, empty, final]);
+  it('chains cursors into cumulative snapshots and an authoritative final aggregate', async () => {
+    const firstEntries = [botEntry('CVE-2026-1000'), botEntry('CVE-2026-1000', 'cwe')];
+    const secondEntries = [botEntry('CVE-2026-1001')];
+    const lastEntries = [botEntry('CVE-2026-1002')];
+    const first = botPage(
+      firstEntries,
+      'opaque/+?=first',
+      { complete: false, refreshed_flaws: 2, selected_flaws: 10 },
+    );
+    const second = botPage(
+      secondEntries,
+      'opaque/+?=last',
+      { complete: false, refreshed_flaws: 9, selected_flaws: 10 },
+    );
+    const last = botPage(
+      lastEntries,
+      null,
+      { complete: true, refreshed_flaws: 10, selected_flaws: 10 },
+      { available_components: ['kernel'], features: botFeatures, total_flaws_processed: 7 },
+    );
+    const requests = servePages([first, second, last]);
     const onSnapshot = vi.fn();
-    const originalHook = vi.fn();
-    const replacementHook = vi.fn();
-    service.onBotKpiProgress = originalHook;
-    const pending = service.getBotKpiMetrics({ component: 'kernel' }, { onSnapshot });
-    service.onBotKpiProgress = replacementHook;
-    const result = await pending;
+    const onBotKpiProgress = vi.fn();
+    service.onBotKpiProgress = onBotKpiProgress;
 
-    expect(originalHook.mock.calls).toEqual([[0, 10], [1, 10], [2, 10], [10, 10]]);
-    expect(replacementHook).not.toHaveBeenCalled();
-    const snapshots = onSnapshot.mock.calls.map(([metrics]) => metrics);
-    expect(snapshots.map(metrics => metrics.entries.length)).toEqual([0, 2, 2, 3]);
-    expect(snapshots.map(metrics => metrics.total_flaws_processed)).toEqual([0, 1, 2, 7]);
-    expect(snapshots[1].features).toEqual(deliveryFeatures);
-    expect(snapshots[2].features).toEqual(deliveryFeatures);
-    expect(result.features).toEqual(final.features);
-    expect(result.entries).toEqual([...entries, deliveryEntry('CVE-2026-1001')]);
-    expect(snapshots[0].entries).toEqual([]);
-    expect(snapshots[1].entries).toEqual(entries);
+    const result = await service.getBotKpiMetrics({ component: 'kernel' }, { onSnapshot });
+
     expect(requests.map(request => new URL(request.url).searchParams.get('cursor')))
-      .toEqual([null, 'opaque/+?=first', 'opaque/+?=empty', 'opaque/+?=last']);
-    for (const [index, request] of requests.entries()) {
+      .toEqual([null, 'opaque/+?=first', 'opaque/+?=last']);
+    for (const request of requests) {
       const params = new URL(request.url).searchParams;
-      expect(params.get('run_id')).toBe(index === 0 ? null : 'stable-run');
-      expect(params.get('delivery')).toBe('true');
       expect(params.get('detail')).toBe('true');
       expect(params.get('limit')).toBe('400');
       expect(params.get('component')).toBe('kernel');
-      expect(params.has('max_refresh_secs')).toBe(false);
+      expect(params.has('delivery')).toBe(false);
+      expect(params.has('run_id')).toBe(false);
       expect(request.cache).toBe('no-store');
     }
+    expect(onBotKpiProgress.mock.calls).toEqual([[2, 10], [9, 10], [10, 10]]);
+    const snapshots = onSnapshot.mock.calls.map(([metrics]) => metrics);
+    expect(snapshots.map(metrics => metrics.entries)).toEqual([
+      firstEntries,
+      [...firstEntries, ...secondEntries],
+      [...firstEntries, ...secondEntries, ...lastEntries],
+    ]);
+    expect(snapshots[0]).toMatchObject({
+      aggregates_available: false,
+      features: {},
+      progress: { complete: false, refreshed_flaws: 2, selected_flaws: 10 },
+      total_flaws_processed: 0,
+    });
+    expect(snapshots[1]).toMatchObject({
+      aggregates_available: false,
+      features: {},
+      progress: { complete: false, refreshed_flaws: 9, selected_flaws: 10 },
+      total_flaws_processed: 0,
+    });
+    expect(result).toBe(snapshots[2]);
+    expect(result).toEqual({
+      available_components: ['kernel'],
+      entries: [...firstEntries, ...secondEntries, ...lastEntries],
+      features: botFeatures,
+      progress: { complete: true, refreshed_flaws: 10, selected_flaws: 10 },
+      total_flaws_processed: 7,
+    });
   });
 
-  it('does not append entries, replace aggregates, or publish progress twice for a replayed page', async () => {
-    const first = { ...deliveryPage('first', 1, 2, 'cursor-2', [deliveryEntry('CVE-2026-1000')]),
-      features: deliveryFeatures,
-      total_flaws_processed: 1 };
-    const requests = servePages([first, first, deliveryPage('last', 2, 2, null, [deliveryEntry('CVE-2026-1001')])]);
+  it('captures the progress hook when the fetch starts', async () => {
+    servePages([
+      botPage([], 'cursor-2', { complete: false, refreshed_flaws: 1, selected_flaws: 2 }),
+      botPage([], null, null, { features: botFeatures, total_flaws_processed: 1 }),
+    ]);
+    const originalHook = vi.fn();
+    const replacementHook = vi.fn();
+    service.onBotKpiProgress = originalHook;
+    const pending = service.getBotKpiMetrics({});
+    service.onBotKpiProgress = replacementHook;
+    await pending;
+    expect(originalHook.mock.calls).toEqual([[1, 2]]);
+    expect(replacementHook).not.toHaveBeenCalled();
+  });
+
+  it('serves a fully cached selection from one pre-pagination response', async () => {
+    const requests = servePages([botPage([botEntry('CVE-2026-1000')], null, null, {
+      available_components: ['kernel'],
+      features: botFeatures,
+      total_flaws_processed: 1,
+    })]);
     const onSnapshot = vi.fn();
     service.onBotKpiProgress = vi.fn();
+
     const result = await service.getBotKpiMetrics({}, { onSnapshot });
-    expect(result.entries).toHaveLength(2);
-    expect(onSnapshot).toHaveBeenCalledTimes(2);
-    expect(service.onBotKpiProgress).toHaveBeenCalledTimes(2);
-    expect(requests).toHaveLength(3);
-    expect(new URL(requests[2].url).searchParams.get('cursor')).toBe('cursor-2');
-    expect(onSnapshot.mock.calls[0][0].features).toEqual(deliveryFeatures);
+
+    expect(result).toEqual({
+      available_components: ['kernel'],
+      entries: [botEntry('CVE-2026-1000')],
+      features: botFeatures,
+      total_flaws_processed: 1,
+    });
+    expect(requests).toHaveLength(1);
+    expect(new URL(requests[0].url).searchParams.has('cursor')).toBe(false);
+    expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(result);
+    expect(service.onBotKpiProgress).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ['different run', { run_id: 'another-run' }],
-    ['changed selection', { selected_flaws: 5 }],
-    ['regressed count', { received_flaws: 0 }],
-    ['fractional count', { received_flaws: 1.5 }],
-    ['count exceeds selection', { received_flaws: 4 }],
-    ['missing page identity', { page_id: '' }],
-    ['completed partial selection', { complete: true }],
-  ])('rejects %s without publishing the corrupt snapshot', async (_name, change) => {
-    const first = deliveryPage('first', 1, 3, 'cursor-2', [deliveryEntry('CVE-2026-1000')]);
-    const second = deliveryPage('second', 2, 3, 'cursor-3');
-    second.delivery = { ...second.delivery!, ...change };
-    const requests = servePages([first, second]);
+  it('rejects a later page whose entries is not an array before publishing it', async () => {
+    const first = botPage([botEntry('CVE-2026-1000')], 'cursor-2');
+    servePages([first, { features: {}, total_flaws_processed: 3 }]);
     const onSnapshot = vi.fn();
-    await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toThrow(/inconsistent/);
-    expect(requests).toHaveLength(2);
+    await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toThrow(
+      'The Aegis server does not support detailed bot KPI reports yet.',
+    );
     expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-      entries: first.entries, delivery: first.delivery,
+      aggregates_available: false, entries: first.entries,
     }));
   });
 
-  it.each(['disappeared', 'changed replay', 'contradictory continuation'])(
-    'rejects %s metadata and retains last valid snapshot', async (scenario) => {
-      const first = deliveryPage('first', 1, 3, 'cursor-2', [deliveryEntry('CVE-2026-1000')]);
-      const second = deliveryPage('second', 2, 3, 'cursor-3');
-      if (scenario === 'disappeared') delete second.delivery;
-      if (scenario === 'changed replay') second.delivery!.page_id = 'first';
-      if (scenario === 'contradictory continuation') second.next_cursor = null;
-      servePages([first, second]);
-      const onSnapshot = vi.fn();
-      await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toThrow(/Refresh/);
-      expect(onSnapshot).toHaveBeenCalledTimes(1);
-    },
-  );
-
-  it('does not silently switch a legacy paginated response into delivery mode', async () => {
-    servePages([{ ...legacy, next_cursor: 'legacy' }, deliveryPage('new-mode', 1, 1, null)]);
+  it.each([
+    { name: 'an empty string', cursor: '' },
+    { name: 'a non-string value', cursor: 42 },
+  ])('rejects $name as a continuation without requesting the next page', async ({ cursor }) => {
+    const first = botPage([botEntry('CVE-2026-1000')], 'cursor-2');
+    const invalid = botPage([botEntry('CVE-2026-1001')], cursor as unknown as string);
+    const requests = servePages([first, invalid]);
     const onSnapshot = vi.fn();
-    await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toThrow('mode changed');
-    expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ aggregates_available: false }));
+    await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toThrow(
+      'KPI pagination continuation is invalid. Select Refresh.',
+    );
+    expect(requests).toHaveLength(2);
+    expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+      aggregates_available: false, entries: first.entries,
+    }));
   });
 
-  it('finishes an empty selection without NaN or a follow-up page', async () => {
-    const requests = servePages([deliveryPage('empty', 0, 0, null)]);
+  it('cuts off a server that never stops paginating after 200 pages', async () => {
+    const requests: Request[] = [];
+    server.use(http.get(botUrl, ({ request }) => {
+      requests.push(request);
+      return HttpResponse.json(botPage([botEntry('CVE-2026-1000')], 'opaque'));
+    }));
+
+    await expect(service.getBotKpiMetrics()).rejects.toThrow(
+      'osidb-bot KPI pagination did not complete after 200 pages.',
+    );
+    expect(requests).toHaveLength(200);
+  });
+
+  it('finishes an empty selection without a follow-up page', async () => {
+    const requests = servePages([botPage([], null, { complete: true, refreshed_flaws: 0, selected_flaws: 0 })]);
     const onSnapshot = vi.fn();
     service.onBotKpiProgress = vi.fn();
     await expect(service.getBotKpiMetrics({}, { onSnapshot })).resolves.toMatchObject({
-      entries: [], features: {}, total_flaws_processed: 0, delivery: { complete: true },
+      entries: [], features: {}, total_flaws_processed: 0,
     });
     expect(requests).toHaveLength(1);
     expect(service.onBotKpiProgress).toHaveBeenCalledExactlyOnceWith(0, 0);
     expect(onSnapshot).toHaveBeenCalledTimes(1);
   });
 
-  it.each([409, 410, 500])('retains snapshots on HTTP %s and restarts only on manual request', async (status) => {
-    const partial = { ...deliveryPage('partial', 1, 3, 'opaque', [deliveryEntry('CVE-2026-1000')]),
-      features: deliveryFeatures,
-      total_flaws_processed: 1 };
+  it('publishes intermediate snapshots without progress when the server reports none', async () => {
+    servePages([
+      botPage([botEntry('CVE-2026-1000')], 'legacy'),
+      botPage([botEntry('CVE-2026-1001')], null, null, { features: botFeatures, total_flaws_processed: 2 }),
+    ]);
+    const onSnapshot = vi.fn();
+    service.onBotKpiProgress = vi.fn();
+
+    const result = await service.getBotKpiMetrics({}, { onSnapshot });
+
+    expect(onSnapshot.mock.calls[0][0]).toMatchObject({
+      aggregates_available: false, entries: [botEntry('CVE-2026-1000')], features: {}, total_flaws_processed: 0,
+    });
+    expect(onSnapshot.mock.calls[0][0].progress).toBeUndefined();
+    expect(service.onBotKpiProgress).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      entries: [botEntry('CVE-2026-1000'), botEntry('CVE-2026-1001')],
+      features: botFeatures,
+      total_flaws_processed: 2,
+    });
+  });
+
+  it.each([409, 410, 500])('retains the partial snapshot on HTTP %s and restarts on request', async (status) => {
+    const partial = botPage(
+      [botEntry('CVE-2026-1000')],
+      'opaque',
+      { complete: false, refreshed_flaws: 1, selected_flaws: 3 },
+    );
     const requests: Request[] = [];
     server.use(http.get(botUrl, ({ request }) => {
       requests.push(request);
@@ -172,40 +238,29 @@ describe('kPI delivery service over HTTP', () => {
     await expect(service.getBotKpiMetrics({}, { onSnapshot })).rejects.toMatchObject({ response: { status } });
     expect(requests).toHaveLength(2);
     expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-      delivery: partial.delivery, entries: partial.entries, features: deliveryFeatures, total_flaws_processed: 1,
+      aggregates_available: false, entries: partial.entries, features: {}, total_flaws_processed: 0,
     }));
     server.use(http.get(botUrl, ({ request }) => {
       requests.push(request);
-      expect(new URL(request.url).searchParams.has('run_id')).toBe(false);
       expect(new URL(request.url).searchParams.has('cursor')).toBe(false);
-      return HttpResponse.json(deliveryPage('new', 0, 0, null));
+      return HttpResponse.json(finalPage);
     }));
-    await expect(service.getBotKpiMetrics()).resolves.toMatchObject({ delivery: { complete: true } });
+    await expect(service.getBotKpiMetrics()).resolves.toMatchObject({ entries: [] });
     expect(requests).toHaveLength(3);
   });
 
-  it('publishes legacy details with unknown delivery and hides placeholder aggregates and cache progress', async () => {
-    const first = {
-      entries: [deliveryEntry('CVE-2026-1000')],
-      features: deliveryFeatures,
-      total_flaws_processed: 99,
-      next_cursor: 'legacy',
-      progress: { complete: false, refreshed_flaws: 90, selected_flaws: 100 } };
-    servePages([first, {
-      ...legacy, entries: [deliveryEntry('CVE-2026-1001')], features: deliveryFeatures, total_flaws_processed: 2,
-    }]);
-    const onSnapshot = vi.fn();
-    service.onBotKpiProgress = vi.fn();
-    const result = await service.getBotKpiMetrics({}, { onSnapshot });
-    expect(onSnapshot.mock.calls[0][0]).toMatchObject({
-      aggregates_available: false, features: {}, total_flaws_processed: 0, entries: first.entries,
-    });
-    expect(onSnapshot.mock.calls[0][0].delivery).toBeUndefined();
-    expect(service.onBotKpiProgress).not.toHaveBeenCalled();
-    expect(result.aggregates_available).not.toBe(false);
-    expect(result.total_flaws_processed).toBe(2);
-    expect(result.features).toEqual(deliveryFeatures);
-    expect(result.entries).toHaveLength(2);
+  it('requests pages back-to-back without pacing waits', async () => {
+    const timeout = vi.spyOn(globalThis, 'setTimeout');
+    servePages([
+      botPage([botEntry('CVE-2026-1000')], 'opaque'),
+      botPage([], null, null, { features: botFeatures, total_flaws_processed: 1 }),
+    ]);
+    try {
+      await expect(service.getBotKpiMetrics()).resolves.toMatchObject({ total_flaws_processed: 1 });
+      expect(timeout).not.toHaveBeenCalled();
+    } finally {
+      timeout.mockRestore();
+    }
   });
 
   const outages = [
@@ -249,10 +304,13 @@ describe('kPI delivery service over HTTP', () => {
       const index = requests.push(request) - 1;
       return index < markers.length
         ? HttpResponse.json({ retry_exhausted: markers[index] }, { status: 503 })
-        : HttpResponse.json(endpoint === 'cve' ? {} : legacy);
+        : HttpResponse.json(endpoint === 'cve' ? {} : finalPage);
     }));
     const pending = endpoint === 'cve' ? service.getKpiMetrics() : service.getBotKpiMetrics();
-    await expect(pending).resolves.toEqual(endpoint === 'cve' ? {} : legacy);
+    const expected = endpoint === 'cve'
+      ? {}
+      : { entries: [], features: {}, total_flaws_processed: 0 };
+    await expect(pending).resolves.toEqual(expected);
     expect(requests).toHaveLength(4);
   });
 
@@ -271,7 +329,7 @@ describe('kPI delivery service over HTTP', () => {
     const requests: Request[] = [];
     server.use(http.get(`${baseUrl}/analysis/kpi/${endpoint}`, ({ request }) => {
       requests.push(request);
-      return HttpResponse.json(endpoint === 'cve' ? {} : legacy);
+      return HttpResponse.json(endpoint === 'cve' ? {} : finalPage);
     }));
     const controller = new AbortController();
     controller.abort();
@@ -282,28 +340,27 @@ describe('kPI delivery service over HTTP', () => {
     expect(requests).toEqual([]);
   });
 
-  it('resets the retry budget per page and uses 250/500/1000ms backoffs on the same run and cursor', async () => {
+  it('resets the retry budget per page and uses 250/500/1000ms backoffs on the same cursor', async () => {
     const requests: Request[] = [];
     const timeout = vi.spyOn(globalThis, 'setTimeout');
     server.use(http.get(botUrl, ({ request }) => {
       requests.push(request);
       if (requests.length % 4 !== 0) return HttpResponse.text('Retry', { status: 503 });
       return HttpResponse.json(new URL(request.url).searchParams.has('cursor')
-        ? deliveryPage('last', 1, 1, null, [deliveryEntry('CVE-2026-1000')])
-        : deliveryPage('metadata', 0, 1, 'opaque'));
+        ? botPage([botEntry('CVE-2026-1000')], null, null, { features: botFeatures, total_flaws_processed: 1 })
+        : botPage([], 'opaque'));
     }));
     try {
-      await expect(service.getBotKpiMetrics()).resolves.toMatchObject({ delivery: { received_flaws: 1 } });
+      await expect(service.getBotKpiMetrics()).resolves.toMatchObject({ total_flaws_processed: 1 });
       expect(requests).toHaveLength(8);
       expect(timeout.mock.calls.filter(([, ms]) => [250, 500, 1000].includes(Number(ms))).map(([, ms]) => ms))
         .toEqual([250, 500, 1000, 250, 500, 1000]);
       const params = requests.slice(4).map(request => new URL(request.url).searchParams);
-      expect(params.every(value => value.get('run_id') === 'stable-run')).toBe(true);
       expect(params.every(value => value.get('cursor') === 'opaque')).toBe(true);
     } finally {
       timeout.mockRestore();
     }
-  });
+  }, 15000);
 
   it.each(['cve', 'osidb-bot'])('aborts pending %s HTTP promptly without a failure snapshot', async (endpoint) => {
     const gate = deferred();
@@ -311,7 +368,7 @@ describe('kPI delivery service over HTTP', () => {
     server.use(http.get(`${baseUrl}/analysis/kpi/${endpoint}`, async ({ request }) => {
       requests.push(request);
       await gate.promise;
-      return HttpResponse.json(endpoint === 'cve' ? {} : legacy);
+      return HttpResponse.json(endpoint === 'cve' ? {} : finalPage);
     }));
     const controller = new AbortController();
     const onSnapshot = vi.fn();

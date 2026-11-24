@@ -21,8 +21,11 @@ describe('useKpiDashboard', () => {
     entries: [],
     features: {},
     total_flaws_processed: 0,
-    delivery: { run_id: 'run', page_id: 'page', received_flaws: 10, selected_flaws: 40, complete: false },
   };
+  const withProgress = (refreshed: number, selected: number): AegisBotKpiMetrics => ({
+    ...snapshot,
+    progress: { complete: refreshed === selected, refreshed_flaws: refreshed, selected_flaws: selected },
+  });
   const publish = (call = 0) => getBot.mock.calls[call][1].onSnapshot(snapshot);
   const cacheStatus: AegisBotKpiCacheStatus = {
     fresh_count: 3,
@@ -55,74 +58,63 @@ describe('useKpiDashboard', () => {
     return dashboard;
   }
 
-  it('starts at zero with unknown selected count and publishes snapshots while loading', () => {
+  it('starts at zero with unknown selected count and tracks progress from each snapshot', () => {
     const dashboard = mountDashboard();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 0, selected: null });
     expect(dashboard.loading.value).toBe(true);
 
-    publish();
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
-    expect(dashboard.bot.value).toEqual(snapshot);
+    getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 10, selected: 40 });
+    expect(dashboard.bot.value).toEqual(withProgress(10, 40));
     expect(dashboard.botIncomplete.value).toBe(true);
+
+    getBot.mock.calls[0][1].onSnapshot(withProgress(30, 40));
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 30, selected: 40 });
+
+    // A page without a progress block clears both counts.
+    publish();
+    expect(dashboard.botProgress.value).toEqual({ refreshed: null, selected: null });
   });
 
   it('resets bot progress when a new refresh starts and ignores progress from the superseded fetch', async () => {
     const dashboard = mountDashboard();
-    publish();
+    getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
 
     dashboard.component.value = 'kernel';
     await flushPromises();
 
     expect(signal.aborted).toBe(true);
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
-    publish();
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
-    publish(1);
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 0, selected: null });
+    getBot.mock.calls[0][1].onSnapshot(withProgress(20, 40));
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 0, selected: null });
+    getBot.mock.calls[1][1].onSnapshot(withProgress(5, 30));
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 5, selected: 30 });
   });
 
-  it('counts distinct delivered pages, ignoring discovery pages and repeated snapshots', () => {
+  it('publishes the resolved metrics with their final progress when the run finishes', async () => {
+    getBot.mockResolvedValue(withProgress(40, 40));
     const dashboard = mountDashboard();
-    getBot.mock.calls[0][1].onSnapshot({
-      ...snapshot,
-      delivery: {
-        run_id: 'run',
-        page_id: 'discovery',
-        received_flaws: 0,
-        selected_flaws: 0,
-        complete: false,
-        selection_complete: false,
-      },
-    });
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, received: 0, selected: null });
+    await flushPromises();
 
-    publish();
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
-
-    // The resolved run re-publishes its final snapshot with the same page_id.
-    publish();
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
-
-    getBot.mock.calls[0][1].onSnapshot({
-      ...snapshot,
-      delivery: { run_id: 'run', page_id: 'page-2', received_flaws: 20, selected_flaws: 40, complete: false },
-    });
-    expect(dashboard.botProgress.value).toEqual({ pages: 2, received: 20, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 40, selected: 40 });
+    expect(dashboard.botIncomplete.value).toBe(false);
+    expect(dashboard.loading.value).toBe(false);
   });
 
-  it('ignores progress callbacks after the dashboard unmounts', () => {
+  it('ignores snapshots after the dashboard unmounts', () => {
     const dashboard = mountDashboard();
-    publish();
+    getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, received: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 10, selected: 40 });
 
     app!.unmount();
     getBot.mock.calls[0][1].onSnapshot({ ...snapshot, total_flaws_processed: 20 });
 
     expect(signal.aborted).toBe(true);
-    expect(dashboard.bot.value).toEqual(snapshot);
+    expect(dashboard.bot.value).toEqual(withProgress(10, 40));
+    expect(dashboard.botProgress.value).toEqual({ refreshed: 10, selected: 40 });
     app = undefined;
   });
 

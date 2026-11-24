@@ -5,7 +5,7 @@ import { mountWithConfig } from '@/__tests__/helpers';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
 import type {
-  AegisBotKpiCacheStatus, AegisBotKpiDelivery, AegisBotKpiMetrics, AegisKpiMetrics,
+  AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics,
 } from '@/types/aegisAI';
 import { downloadKpiCsv } from '@/utils/kpiReport';
 
@@ -62,19 +62,19 @@ const bot: AegisBotKpiMetrics = {
   ],
 };
 
-const snapshot = (
-  received: number, selected = 400, delivery: Partial<AegisBotKpiDelivery> = {},
-): AegisBotKpiMetrics => ({
+// A cumulative snapshot whose last page reported cache-refresh progress.
+const snapshot = (refreshed: number, selected = 400): AegisBotKpiMetrics => ({
   ...bot,
-  delivery: {
-    run_id: 'run-a',
-    page_id: `page-${received}`,
-    received_flaws: received,
-    selected_flaws: selected,
-    complete: received === selected,
-    ...delivery,
-  },
+  progress: { complete: refreshed === selected, refreshed_flaws: refreshed, selected_flaws: selected },
 });
+// An intermediate snapshot whose pages carry no progress block: aggregate
+// placeholders only, so no refresh counts are known.
+const uncountedSnapshot: AegisBotKpiMetrics = {
+  ...bot,
+  aggregates_available: false,
+  features: {},
+  total_flaws_processed: 0,
+};
 
 const cacheStatus: AegisBotKpiCacheStatus = {
   fresh_count: 3,
@@ -625,25 +625,26 @@ describe('kPI dashboard', () => {
 
   const publish = (metrics: AegisBotKpiMetrics, call = 0) => getBot.mock.calls[call][1].onSnapshot(metrics);
 
-  it('shows immediate zero delivery before either endpoint responds, then actual received progress', async () => {
+  it('shows immediate zero progress before either endpoint responds, then actual refreshed counts', async () => {
     let resolveBot!: (value: AegisBotKpiMetrics) => void;
     getBot.mockReset().mockReturnValue(new Promise((resolve) => { resolveBot = resolve; }));
     getFeedback.mockReturnValue(new Promise(() => {}));
     wrapper = mountWithConfig(KpiMetrics);
-    expect(wrapper.text()).toContain('0 flaws received; determining selected total');
+    expect(wrapper.text()).toContain('0 flaws refreshed; awaiting the first page');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(button('Download CSV').attributes('disabled')).toBeDefined();
     publish(snapshot(0));
     await flushPromises();
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
+    expect(wrapper.text()).not.toContain('of ~');
     publish(snapshot(100));
     await flushPromises();
     const bar = wrapper.get('[role="progressbar"]');
-    expect(bar.attributes('aria-label')).toBe('osidb-bot KPI delivery progress');
+    expect(bar.attributes('aria-label')).toBe('osidb-bot KPI refresh progress');
     expect(bar.attributes('aria-valuemin')).toBe('0');
     expect(bar.attributes('aria-valuemax')).toBe('100');
     expect(bar.attributes('aria-valuenow')).toBe('25');
-    expect(wrapper.text()).toContain('100 / 400 flaws received');
+    expect(wrapper.text()).toContain('100 / 400 flaws refreshed');
     const fill = bar.get('.progress-bar');
     expect(fill.attributes('style')).toContain('width: 25%');
     expect(fill.text()).toBe('25%');
@@ -663,11 +664,11 @@ describe('kPI dashboard', () => {
     await mount();
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('50.0% — 1 of 2');
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
-    expect(wrapper.text()).toContain('0 flaws received');
+    expect(wrapper.text()).toContain('0 flaws refreshed');
     expect(wrapper.text()).not.toContain('Loading feedback metrics');
   });
 
-  it('shows an empty received snapshot without inventing records or NaN', async () => {
+  it('shows an empty refreshed snapshot without inventing records or NaN', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     getFeedback.mockResolvedValue({});
     await mount();
@@ -678,7 +679,7 @@ describe('kPI dashboard', () => {
     expect(wrapper.text()).not.toMatch(/NaN|90%/);
   });
 
-  it.each([409, 410, 500])('retains received details and partial averages after HTTP %s', async (status) => {
+  it.each([409, 410, 500])('retains refreshed details and partial averages after HTTP %s', async (status) => {
     let rejectBot!: (reason: unknown) => void;
     getBot.mockReturnValue(new Promise((_resolve, reject) => { rejectBot = reject; }));
     await mount();
@@ -686,7 +687,7 @@ describe('kPI dashboard', () => {
     await flushPromises();
     rejectBot({ response: { status }, message: 'Run stopped' });
     await flushPromises();
-    expect(wrapper.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws received');
+    expect(wrapper.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws refreshed');
     expect(wrapper.text()).toContain('Charts and totals cover only received data');
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
@@ -704,21 +705,21 @@ describe('kPI dashboard', () => {
     expect(button('Download CSV').attributes('disabled')).toBeUndefined();
   });
 
-  it('keeps legacy intermediate details but hides unavailable aggregates and unknown delivery counts', async () => {
+  it('keeps legacy intermediate details but hides unavailable aggregates and unknown refresh counts', async () => {
     let rejectBot!: (reason: unknown) => void;
     getBot.mockReturnValue(new Promise((_resolve, reject) => { rejectBot = reject; }));
     await mount();
-    publish({ ...bot, aggregates_available: false, features: {}, total_flaws_processed: 0 });
+    publish(uncountedSnapshot);
     await flushPromises();
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
-    expect(wrapper.text()).toContain('Received flaw count unavailable');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server.');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2 of 3');
     expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
     expect(wrapper.find('tbody').exists()).toBe(false);
     rejectBot(new Error('Offline'));
     await flushPromises();
     expect(wrapper.text()).toContain('Aggregate bot metrics are unavailable until loading completes');
-    expect(wrapper.text()).toContain('does not report how many selected flaws have been received');
+    expect(wrapper.text()).toContain('The server does not report how many selected flaws have been refreshed.');
     expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
   });
 
@@ -745,14 +746,14 @@ describe('kPI dashboard', () => {
     publish(snapshot(150, 600), 1);
     await flushPromises();
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
-    expect(wrapper.text()).toContain('Loading osidb-bot metrics… 150 / 600 flaws');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics… 150 / 600 flaws refreshed');
 
     resolveSuperseded(bot);
     await flushPromises();
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('25');
   });
 
-  it('renders a genuinely indeterminate bar while the selected total is unknown', async () => {
+  it('renders a genuinely indeterminate bar while the refresh counts are unknown', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     await mount();
     let fill = wrapper.get('[role="progressbar"] .progress-bar');
@@ -762,9 +763,10 @@ describe('kPI dashboard', () => {
     expect(fill.attributes('style')).toBeUndefined();
     expect(fill.text()).toBe('');
 
-    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }));
+    // A page without a progress block leaves the counts unknown.
+    publish(uncountedSnapshot);
     await flushPromises();
-    expect(wrapper.text()).toContain('determining selected total');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server.');
     fill = wrapper.get('[role="progressbar"] .progress-bar');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(fill.classes()).toContain('kpi-progress-indeterminate');
@@ -780,88 +782,73 @@ describe('kPI dashboard', () => {
     expect(determinate.text()).toBe('25%');
   });
 
-  it('uses the cache-status total as the progress denominator during selection discovery', async () => {
+  it('uses the cache-status total as the fallback denominator until the run reports its own', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    await mount();
-    // Without a cache status the discovery phase stays indeterminate.
-    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }));
-    await flushPromises();
-    expect(wrapper.text()).toContain('0 flaws received; determining selected total');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
-
     getCacheStatus.mockResolvedValueOnce(cacheStatus);
-    await wrapper.get('#kpi-component').setValue('kernel');
-    await flushPromises();
-    expect(wrapper.text()).toContain('0 / 5 flaws received');
-    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }), 1);
-    await flushPromises();
-    expect(wrapper.text()).toContain('0 / 5 flaws received');
+    await mount();
+    // Before the first page, the cache-status total already sizes the counts.
+    expect(wrapper.text()).toContain('0 / 5 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).not.toContain('kpi-progress-indeterminate');
 
-    // The run's own selection total is authoritative once discovery reports it.
-    publish(snapshot(2, 10), 1);
+    // A page without progress keeps the cache-status denominator.
+    publish(uncountedSnapshot);
     await flushPromises();
-    expect(wrapper.text()).toContain('2 / 10 flaws received');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server (5 flaws selected).');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
+
+    // The run's own selection total is authoritative once progress reports it.
+    publish(snapshot(2, 10));
+    await flushPromises();
+    expect(wrapper.text()).toContain('2 / 10 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('20');
     expect(wrapper.text()).toContain('· page 1 of ~1');
   });
 
-  it('falls back to the cache-status total in the incomplete warning when a discovery run fails', async () => {
-    let rejectBot!: (reason: unknown) => void;
-    getBot.mockReset().mockReturnValueOnce(new Promise((_resolve, reject) => { rejectBot = reject; }));
-    getCacheStatus.mockResolvedValueOnce(cacheStatus);
-    await mount();
-    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }));
-    await flushPromises();
-    rejectBot({ response: { status: 500 }, message: 'Run stopped' });
-    await flushPromises();
-    expect(wrapper.text()).toContain('Incomplete osidb-bot metrics: 0 / 5 selected flaws received');
-  });
-
-  it('appends the delivered page estimate once the selection and first page are known', async () => {
+  it('appends the page estimate once refreshed and selected counts are known', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     await mount();
     expect(wrapper.text()).not.toContain('of ~');
 
-    // Selection discovery is still pending: no page estimate.
-    publish(snapshot(0, 0, { page_id: 'discovery', selection_complete: false, complete: false }));
+    // No progress yet: awaiting the first page, no page estimate.
+    publish(uncountedSnapshot);
     await flushPromises();
-    expect(wrapper.text()).toContain('determining selected total');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server.');
     expect(wrapper.text()).not.toContain('of ~');
 
-    publish(snapshot(400, 800, { page_id: 'page-1' }));
+    publish(snapshot(400, 800));
     await flushPromises();
-    expect(wrapper.text()).toContain('400 / 800 flaws received');
+    expect(wrapper.text()).toContain('400 / 800 flaws refreshed');
     expect(wrapper.text()).toContain('· page 1 of ~2');
 
-    publish(snapshot(800, 800, { page_id: 'page-2' }));
+    publish(snapshot(800, 800));
     await flushPromises();
     expect(wrapper.text()).toContain('· page 2 of ~2');
 
     // The resolved run re-publishes its final snapshot: no double count.
-    publish(snapshot(800, 800, { page_id: 'page-2' }));
+    publish(snapshot(800, 800));
     await flushPromises();
     expect(wrapper.text()).toContain('· page 2 of ~2');
     expect(wrapper.text()).not.toContain('· page 3');
   });
 
-  it('omits the page estimate on legacy snapshots without delivery counts', async () => {
+  it('omits the page estimate on snapshots without progress counts', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     await mount();
-    publish({ ...bot, aggregates_available: false, features: {}, total_flaws_processed: 0 });
+    publish(uncountedSnapshot);
     await flushPromises();
-    expect(wrapper.text()).toContain('Received flaw count unavailable from this server');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server');
     expect(wrapper.text()).not.toContain('of ~');
   });
 
-  it('sizes the legacy-server notice with the cache-status total while received counts are unavailable', async () => {
+  it('sizes the unavailable-counts notice with the cache-status total', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     getCacheStatus.mockResolvedValueOnce(cacheStatus);
     await mount();
-    publish({ ...bot, aggregates_available: false, features: {}, total_flaws_processed: 0 });
+    publish(uncountedSnapshot);
     await flushPromises();
-    expect(wrapper.text()).toContain('Received flaw count unavailable from this server (5 flaws selected).');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server (5 flaws selected).');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
   });
@@ -955,7 +942,7 @@ describe('kPI dashboard', () => {
     await wrapper.get('#kpi-component').setValue('kernel');
     await flushPromises();
     expect(wrapper.text()).not.toContain('cached fresh');
-    expect(wrapper.text()).toContain('determining selected total');
+    expect(wrapper.text()).toContain('0 flaws refreshed; awaiting the first page');
     expect(wrapper.find('.badge').exists()).toBe(false);
   });
 
@@ -968,7 +955,7 @@ describe('kPI dashboard', () => {
     publish(snapshot(1, 5));
     await flushPromises();
     const warning = wrapper.get('p[role="status"]');
-    expect(warning.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws received');
+    expect(warning.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws refreshed');
     expect(warning.text()).not.toContain('Cache status when the run started');
     expect(wrapper.get('span[role="status"]').text()).toContain(stale);
 

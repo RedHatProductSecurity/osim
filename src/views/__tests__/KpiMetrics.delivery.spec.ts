@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import { createPinia, setActivePinia } from 'pinia';
 
 import { encodeJWT, mountWithConfig } from '@/__tests__/helpers';
-import { deferred, deliveryEntry, deliveryFeatures, deliveryPage } from '@/__tests__/kpiDeliveryFixtures';
+import { botEntry, botFeatures, botPage, deferred } from '@/__tests__/kpiDeliveryFixtures';
 import { server } from '@/__tests__/setup';
 import { useAuthStore } from '@/stores/AuthStore';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -17,7 +17,7 @@ const baseUrl = 'http://localhost:8080';
 const feedback = { 'suggest-impact': { acceptance_percentage: 100,
   entries: [{ datetime: '2026-09-01 12:00:00', accepted: true, aegis_version: '0.9.2' }] } };
 
-describe('rendered KPI delivery with real service and HTTP', () => {
+describe('rendered KPI pagination with real service and HTTP', () => {
   let wrapper: undefined | VueWrapper;
   let pinia: ReturnType<typeof createPinia>;
   let consoleError: ReturnType<typeof vi.spyOn>;
@@ -53,29 +53,23 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     consoleError.mockRestore();
   });
 
-  it('renders real delivery instead of cache freshness and retains partial snapshots on failure', async () => {
-    const metadataGate = gate();
+  it('renders live pagination progress and retains partial snapshots on failure', async () => {
     const firstGate = gate();
-    const zeroEntryGate = gate();
+    const secondGate = gate();
     const failureGate = gate();
     const feedbackGate = gate();
-    const metadata = deliveryPage('metadata', 0, 10, 'first');
-    metadata.progress = { complete: false, refreshed_flaws: 9, selected_flaws: 10 };
-    const entries = [deliveryEntry('CVE-2026-1000'), deliveryEntry('CVE-2026-1000', 'cwe')];
-    const first = { ...deliveryPage('first', 1, 10, 'zero-entry', entries),
-      features: deliveryFeatures,
-      total_flaws_processed: 1 };
-    const empty = { ...deliveryPage('zero-entry', 2, 10, 'failure'),
-      features: { impact: { ...deliveryFeatures.impact, avg_data_quality: 0.55 } },
-      total_flaws_processed: 2 };
-    const pages = [metadata, first, empty];
-    const pageGates = [metadataGate, firstGate, zeroEntryGate, failureGate];
+    const entries = [botEntry('CVE-2026-1000'), botEntry('CVE-2026-1000', 'cwe')];
+    const first = botPage(entries, 'second', { complete: false, refreshed_flaws: 2, selected_flaws: 10 });
+    const second = botPage([botEntry('CVE-2026-1001')], 'third',
+      { complete: false, refreshed_flaws: 9, selected_flaws: 10 });
+    const pages = [first, second];
+    const pageGates = [firstGate, secondGate, failureGate];
     const requests: Request[] = [];
     server.use(
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
         const index = requests.push(request) - 1;
         await pageGates[index].promise;
-        return index === 3
+        return index === 2
           ? HttpResponse.json({ detail: 'Run invalidated' }, { status: 409 })
           : HttpResponse.json(pages[index]);
       }),
@@ -85,42 +79,37 @@ describe('rendered KPI delivery with real service and HTTP', () => {
       }),
     );
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
-    expect(wrapper.text()).toContain('0 flaws received; determining selected total');
+    expect(wrapper.text()).toContain('0 flaws refreshed; awaiting the first page');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(button('Download CSV').attributes('disabled')).toBeDefined();
     await vi.waitFor(() => expect(requests).toHaveLength(1));
     feedbackGate.resolve();
     await vi.waitFor(() => expect(wrapper!.get('[data-testid="overall-rate"]').text()).toContain('1 of 1'));
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
-    metadataGate.resolve();
-    await vi.waitFor(() => expect(requests).toHaveLength(2));
-    expect(wrapper.text()).toContain('0 / 10 flaws received');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
-    expect(wrapper.text()).not.toContain('90%');
     firstGate.resolve();
-    await vi.waitFor(() => expect(requests).toHaveLength(3));
-    expect(wrapper.text()).toContain('1 / 10 flaws received');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('10');
-    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('3 of 3');
-    expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('1 processed flaws');
-    expect(wrapper.get('tbody').text()).toContain('0.60');
-    zeroEntryGate.resolve();
-    await vi.waitFor(() => expect(requests).toHaveLength(4));
-    expect(wrapper.text()).toContain('2 / 10 flaws received');
+    await vi.waitFor(() => expect(requests).toHaveLength(2));
+    expect(wrapper.text()).toContain('2 / 10 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('20');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('3 of 3');
-    expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('2 processed flaws');
-    expect(wrapper.get('tbody').text()).toContain('0.55');
+    // Intermediate snapshots hide placeholder aggregates.
+    expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
+    expect(wrapper.find('tbody').exists()).toBe(false);
+    secondGate.resolve();
+    await vi.waitFor(() => expect(requests).toHaveLength(3));
+    expect(wrapper.text()).toContain('9 / 10 flaws refreshed');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('90');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('4 of 4');
+    expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
     failureGate.resolve();
     await vi.waitFor(() => expect(wrapper!.text()).toContain('Run invalidated'));
-    expect(wrapper.text()).toContain('Incomplete osidb-bot metrics: 2 / 10 selected flaws received');
+    expect(wrapper.text()).toContain('Incomplete osidb-bot metrics: 9 / 10 selected flaws refreshed');
+    expect(wrapper.text()).toContain('Aggregate bot metrics are unavailable until loading completes');
     expect(wrapper.text()).toContain('expired or was invalidated');
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
-    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('3 of 3');
-    expect(wrapper.get('tbody').text()).toContain('0.55');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('4 of 4');
     expect(button('Download CSV').attributes('disabled')).toBeDefined();
     expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
-    expect(requests).toHaveLength(4);
+    expect(requests).toHaveLength(3);
   });
 
   it('closes the selection window at the original request moment for every page of a run', async () => {
@@ -129,13 +118,11 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     const firstPageGate = gate();
     const botRequests: Request[] = [];
     const feedbackRequests: Request[] = [];
-    const entries = [deliveryEntry('CVE-2026-1000'), deliveryEntry('CVE-2026-1000', 'cwe')];
-    const first = { ...deliveryPage('first', 1, 2, 'second', entries),
-      features: deliveryFeatures,
-      total_flaws_processed: 1 };
-    const second = { ...deliveryPage('second', 2, 2, null, entries),
-      features: deliveryFeatures,
-      total_flaws_processed: 2 };
+    const entries = [botEntry('CVE-2026-1000'), botEntry('CVE-2026-1000', 'cwe')];
+    const first = botPage(entries, 'second', { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+      { features: botFeatures, total_flaws_processed: 1 });
+    const second = botPage(entries, null, { complete: true, refreshed_flaws: 2, selected_flaws: 2 },
+      { features: botFeatures, total_flaws_processed: 2 });
     const recordedBefore = (request: Request) => new URL(request.url).searchParams.get('recorded_before');
     server.use(
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
@@ -168,7 +155,7 @@ describe('rendered KPI delivery with real service and HTTP', () => {
       server.use(http.get(`${baseUrl}/analysis/kpi/${endpoint}`, async ({ request }) => {
         requests.push(request);
         await networkGate.promise;
-        return HttpResponse.json(endpoint === 'cve' ? feedback : deliveryPage('empty', 0, 0, null));
+        return HttpResponse.json(endpoint === 'cve' ? feedback : botPage([], null));
       }));
     }
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
@@ -204,7 +191,7 @@ describe('rendered KPI delivery with real service and HTTP', () => {
       server.use(http.get(`${baseUrl}/analysis/kpi/${endpoint}`, ({ request }) => {
         requests.push(request);
         return new URL(request.url).searchParams.get('component') === 'kernel'
-          ? HttpResponse.json(endpoint === 'cve' ? feedback : deliveryPage('empty', 0, 0, null))
+          ? HttpResponse.json(endpoint === 'cve' ? feedback : botPage([], null))
           : HttpResponse.text('Unavailable', { status: 503 });
       }));
     }
@@ -240,7 +227,9 @@ describe('rendered KPI delivery with real service and HTTP', () => {
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async () => {
         await botGate.promise;
-        return HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]));
+        return HttpResponse.json(botPage([botEntry('CVE-2026-1000')], null, null, {
+          features: botFeatures, total_flaws_processed: 1,
+        }));
       }),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, ({ request }) => {
         requests.push(request);
@@ -254,7 +243,7 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     const stale = '2 of 3 selected flaws are not cached fresh (0 uncached, 2 changed in OSIDB).';
     await vi.waitFor(() => expect(wrapper!.get('span[role="status"]').text()).toContain(stale));
     // The cache selection total drives the progress denominator until the run reports its own.
-    expect(wrapper.text()).toContain('0 / 3 flaws received');
+    expect(wrapper.text()).toContain('0 / 3 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
     await wrapper.get('#kpi-component').setValue('kernel');
     await vi.waitFor(() => expect(requests).toHaveLength(2));
@@ -286,7 +275,9 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     server.use(
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
-        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+        HttpResponse.json(botPage([botEntry('CVE-2026-1000')], null, null, {
+          features: botFeatures, total_flaws_processed: 1,
+        }))),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () =>
         HttpResponse.json({ detail: 'Not Found' }, { status: 404 })),
     );
@@ -302,7 +293,9 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     server.use(
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, () =>
-        HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]))),
+        HttpResponse.json(botPage([botEntry('CVE-2026-1000')], null, null, {
+          features: botFeatures, total_flaws_processed: 1,
+        }))),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () =>
         HttpResponse.json({ detail: 'Cache read failed' }, { status: 500 })),
     );
@@ -326,7 +319,9 @@ describe('rendered KPI delivery with real service and HTTP', () => {
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async () => {
         await botGate.promise;
-        return HttpResponse.json(deliveryPage('first', 1, 1, null, [deliveryEntry('CVE-2026-1000')]));
+        return HttpResponse.json(botPage([botEntry('CVE-2026-1000')], null, null, {
+          features: botFeatures, total_flaws_processed: 1,
+        }));
       }),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, async ({ request }) => {
         requests.push(request);
@@ -361,14 +356,12 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     }
   });
 
-  it('estimates delivered pages against the selection while paginating', async () => {
+  it('estimates refreshed pages against the selection while paginating', async () => {
     const secondPageGate = gate();
-    const first = { ...deliveryPage('page-1', 400, 600, 'page-2', [deliveryEntry('CVE-2026-1000')]),
-      features: deliveryFeatures,
-      total_flaws_processed: 1 };
-    const second = { ...deliveryPage('page-2', 600, 600, null, [deliveryEntry('CVE-2026-1001')]),
-      features: deliveryFeatures,
-      total_flaws_processed: 2 };
+    const first = botPage([botEntry('CVE-2026-1000')], 'page-2',
+      { complete: false, refreshed_flaws: 400, selected_flaws: 600 });
+    const second = botPage([botEntry('CVE-2026-1001')], null,
+      { complete: true, refreshed_flaws: 600, selected_flaws: 600 });
     server.use(
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
@@ -378,7 +371,7 @@ describe('rendered KPI delivery with real service and HTTP', () => {
       }),
     );
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
-    await vi.waitFor(() => expect(wrapper!.text()).toContain('400 / 600 flaws received'));
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('400 / 600 flaws refreshed'));
     expect(wrapper.text()).toContain('· page 1 of ~2');
     secondPageGate.resolve();
     await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));

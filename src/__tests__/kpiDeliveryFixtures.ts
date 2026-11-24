@@ -1,6 +1,8 @@
-import type { AegisBotKpiEntry, AegisBotKpiPage } from '@/types/aegisAI';
+import type {
+  AegisBotFeatureKpi, AegisBotKpiEntry, AegisBotKpiPage, AegisBotKpiProgress,
+} from '@/types/aegisAI';
 
-export const deliveryEntry = (cve: string, feature = 'impact'): AegisBotKpiEntry => ({
+export const botEntry = (cve: string, feature = 'impact'): AegisBotKpiEntry => ({
   cve_id: cve,
   feature,
   aegis_version: '0.9.2',
@@ -11,7 +13,7 @@ export const deliveryEntry = (cve: string, feature = 'impact'): AegisBotKpiEntry
   confidence: 0.9,
 });
 
-export const deliveryFeatures: AegisBotKpiPage['features'] = {
+export const botFeatures: Record<string, AegisBotFeatureKpi> = {
   impact: {
     suggested: 2,
     kept: 1,
@@ -24,23 +26,23 @@ export const deliveryFeatures: AegisBotKpiPage['features'] = {
   },
 };
 
-export function deliveryPage(
-  pageId: string, received: number, selected: number, nextCursor: null | string,
-  entries: AegisBotKpiEntry[] = [],
+// One page of the cursor-paginated osidb-bot KPI protocol: `entries` covers
+// only this page's slice of the selection, `nextCursor` continues the run
+// (null ends it), and `progress` reports the cumulative cache-refresh counts.
+// A fully cached selection is served as one page without cursor or progress.
+export function botPage(
+  entries: AegisBotKpiEntry[],
+  nextCursor: null | string,
+  progress?: AegisBotKpiProgress | null,
+  overrides: Partial<AegisBotKpiPage> = {},
 ): AegisBotKpiPage {
   return {
-    delivery: {
-      run_id: 'stable-run',
-      page_id: pageId,
-      received_flaws: received,
-      selected_flaws: selected,
-      complete: nextCursor === null,
-    },
     entries,
     features: {},
-    total_flaws_processed: 0,
     next_cursor: nextCursor,
-    progress: { complete: true, refreshed_flaws: selected, selected_flaws: selected },
+    progress: progress ?? undefined,
+    total_flaws_processed: 0,
+    ...overrides,
   };
 }
 

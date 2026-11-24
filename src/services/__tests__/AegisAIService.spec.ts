@@ -612,7 +612,8 @@ describe('aegisAIService', () => {
         expect(url.searchParams.get('detail')).toBe('true');
         expect(url.searchParams.get('limit')).toBe('400');
         expect(url.searchParams.has('max_refresh_secs')).toBe(false);
-        expect(url.searchParams.get('delivery')).toBe('true');
+        expect(url.searchParams.has('delivery')).toBe(false);
+        expect(url.searchParams.has('run_id')).toBe(false);
         expect(url.searchParams.get('component')).toBe('kernel');
         expect(url.searchParams.getAll('aegis_version')).toEqual(['0.9.2']);
         expect(url.searchParams.get('recorded_after')).toBe('2026-09-01T00:00:00Z');
@@ -626,7 +627,7 @@ describe('aegisAIService', () => {
       expect(result.features).toEqual(finalFeatures);
       expect(result.total_flaws_processed).toBe(5);
       expect(result.available_components).toEqual(['kernel', 'openssl']);
-      expect(onBotKpiProgress).not.toHaveBeenCalled();
+      expect(onBotKpiProgress.mock.calls).toEqual([[2, 5], [4, 5], [5, 5]]);
     });
 
     it('does not invoke the progress hook for pages without a progress block', async () => {
@@ -649,7 +650,7 @@ describe('aegisAIService', () => {
 
       await service.getBotKpiMetrics();
 
-      expect(onBotKpiProgress).not.toHaveBeenCalled();
+      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2]]);
     });
 
     it('returns a legacy single-page response unchanged without progress reporting', async () => {
@@ -778,7 +779,7 @@ describe('aegisAIService', () => {
       ]);
       expect(result.entries.map(entry => entry.cve_id)).toEqual(['CVE-2026-0001', 'CVE-2026-0002']);
       expect(result.total_flaws_processed).toBe(2);
-      expect(onBotKpiProgress).not.toHaveBeenCalled();
+      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2], [2, 2]]);
       expect(service.isFetching.value).toBe(false);
     });
 
@@ -858,6 +859,7 @@ describe('aegisAIService', () => {
         available_components: ['openssl'],
         entries: [botEntry('CVE-2026-0101'), botEntry('CVE-2026-0102'), botEntry('CVE-2026-0103')],
         features: finalFeatures,
+        progress: { complete: true, refreshed_flaws: 4, selected_flaws: 4 },
         total_flaws_processed: 4,
       });
       expect(requests.filter(url => url.searchParams.get('component') === 'openssl')).toHaveLength(2);
@@ -870,7 +872,7 @@ describe('aegisAIService', () => {
       expect(service.isFetching.value).toBe(false);
     });
 
-    it('does not report cache freshness to either callback when a legacy fetch is superseded', async () => {
+    it('keeps each progress hook scoped to the fetch that captured it when superseded', async () => {
       const { releaseSupersededPage, requests } = serveSupersededBotPages();
       const firstHook = vi.fn();
       const secondHook = vi.fn();
@@ -886,8 +888,10 @@ describe('aegisAIService', () => {
       releaseSupersededPage();
       await expect(superseded).rejects.toThrow('superseded by a newer request');
 
+      // The superseded run never accepted a page; the replacement reports its
+      // own per-page progress to the hook it captured at start.
       expect(firstHook).not.toHaveBeenCalled();
-      expect(secondHook).not.toHaveBeenCalled();
+      expect(secondHook.mock.calls).toEqual([[2, 4], [4, 4]]);
     });
 
     it('completes a later paginated fetch normally after an earlier one finished', async () => {
@@ -920,7 +924,7 @@ describe('aegisAIService', () => {
         total_flaws_processed: 2,
       });
       expect(requests).toHaveLength(4);
-      expect(onBotKpiProgress).not.toHaveBeenCalled();
+      expect(onBotKpiProgress.mock.calls).toEqual([[1, 2], [1, 2]]);
     });
   });
 
