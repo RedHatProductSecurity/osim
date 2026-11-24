@@ -22,6 +22,8 @@ const featureAliases: Record<string, string> = {
   impact: 'suggest-impact',
   cwe_id: 'suggest-cwe',
   cvss3_vector: 'suggest-cvss',
+  statement: 'suggest-statement',
+  mitigation: 'suggest-mitigation',
 };
 
 export const canonicalKpiFeature = (feature: string) => featureAliases[feature] ?? feature;
