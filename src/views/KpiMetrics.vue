@@ -5,8 +5,10 @@ import { VueUiXy } from 'vue-data-ui/vue-ui-xy';
 
 import { useKpiDashboard } from '@/composables/aegis/useKpiDashboard';
 
+import { BOT_KPI_MAX_FLAWS_PER_PAGE } from '@/services/AegisAIService';
 import {
-  canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiVersionLabel, parseKpiDate, summarizeKpi,
+  canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiSourceLabel, kpiVersionLabel, parseKpiDate,
+  summarizeKpi,
 } from '@/utils/kpi';
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
@@ -49,6 +51,14 @@ const botProgressPercent = computed(() => {
   const { received, selected } = botProgress.value;
   return selected !== null && received !== null
     ? selected === 0 ? 100 : Math.min(100, Math.round((received / selected) * 100))
+    : null;
+});
+// Delivered pages and their estimated total, only once the run's selection is
+// known: deferrals, retries, and short pages make the total approximate.
+const botPageEstimate = computed(() => {
+  const { pages, selected } = botProgress.value;
+  return selected !== null && selected > 0 && pages > 0
+    ? { delivered: pages, estimated: Math.ceil(selected / BOT_KPI_MAX_FLAWS_PER_PAGE) }
     : null;
 });
 const history = computed(() => kpiHistory(observations.value));
@@ -232,10 +242,13 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         </template>
         <template v-else-if="botProgress.received === 0">0 flaws received; determining selected total…</template>
         <template v-else>Received flaw count unavailable from this server.</template>
+        <template v-if="botPageEstimate">
+          · page {{ botPageEstimate.delivered }} of ~{{ botPageEstimate.estimated }}
+        </template>
         <template v-if="bot?.delivery?.deferred">Aegis deferred this page; continuing automatically…</template>
       </span>
       <div
-        class="progress"
+        class="progress position-relative"
         role="progressbar"
         aria-label="osidb-bot KPI delivery progress"
         :aria-valuenow="botProgressPercent ?? undefined"
@@ -243,9 +256,17 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         aria-valuemax="100"
       >
         <div
+          v-if="botProgressPercent !== null"
           class="progress-bar progress-bar-striped progress-bar-animated"
-          :style="{ width: `${botProgressPercent ?? 100}%` }"
-        ><template v-if="botProgressPercent !== null">{{ botProgressPercent }}%</template></div>
+          :style="{ width: `${botProgressPercent}%` }"
+        >{{ botProgressPercent }}%</div>
+        <div v-else class="progress-bar kpi-progress-indeterminate"></div>
+        <span
+          v-if="botCacheBadge"
+          class="badge kpi-cache-status"
+          :class="botCacheBadge.class"
+          :title="botCacheBadge.title"
+        >{{ botCacheBadge.text }}</span>
       </div>
     </div>
     <p v-if="botIncomplete" role="status" class="alert alert-warning">
@@ -258,15 +279,16 @@ function changeRange(event: Event, edge: 'end' | 'start') {
       </template>
       <template v-else>The server does not report how many selected flaws have been received.</template>
       Charts and totals cover only received data.
+      <template v-if="!botLoading && botCacheBadge">
+        Cache status when the run started:
+        <span class="badge" :class="botCacheBadge.class" :title="botCacheBadge.title">{{ botCacheBadge.text }}</span>
+      </template>
       <template v-if="bot?.aggregates_available === false">
         Aggregate bot metrics are unavailable until loading completes.
       </template>
       <template v-if="!botLoading">Select Refresh to start a new run.</template>
     </p>
-    <p v-if="botCacheBadge" role="status">
-      <span class="badge" :class="botCacheBadge.class" :title="botCacheBadge.title">{{ botCacheBadge.text }}</span>
-    </p>
-    <p v-else-if="cacheStatusError" role="alert" class="alert alert-warning">{{ cacheStatusError }}</p>
+    <p v-if="cacheStatusError" role="alert" class="alert alert-warning">{{ cacheStatusError }}</p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
       <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
       <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>
@@ -315,7 +337,8 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         <h3 class="h5">By Source</h3>
         <ul>
           <li v-for="metrics in perSource" :key="metrics.source">
-            {{ metrics.source }}: {{ percentage(metrics.percentage) }} ({{ metrics.accepted }} / {{ metrics.total }})
+            {{ kpiSourceLabel(metrics.source) }}: {{ percentage(metrics.percentage) }}
+            ({{ metrics.accepted }} / {{ metrics.total }})
           </li>
         </ul>
       </template>
@@ -350,3 +373,35 @@ function changeRange(event: Event, edge: 'end' | 'start') {
     </div>
   </main>
 </template>
+
+<style scoped>
+.kpi-cache-status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.65rem;
+}
+
+.kpi-progress-indeterminate {
+  position: relative;
+  width: 30%;
+  animation: kpi-progress-slide 1.5s ease-in-out infinite;
+}
+
+@keyframes kpi-progress-slide {
+  from {
+    left: -30%;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-progress-indeterminate {
+    animation: none;
+  }
+}
+</style>

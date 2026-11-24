@@ -205,6 +205,10 @@ function retryDelay(attempt: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
+// Maximum flaws requested per delivered osidb-bot KPI page. The backend's
+// refresh-time budget can end a page early, so pages may deliver fewer flaws.
+export const BOT_KPI_MAX_FLAWS_PER_PAGE = 400;
+
 export class AegisAIService {
   // Monotonic id of the latest bot KPI fetch: starting a new one supersedes
   // any pagination still in flight on this service instance.
@@ -228,7 +232,14 @@ export class AegisAIService {
       method: 'GET',
       url: '/analysis/kpi/osidb-bot',
       signal: options.signal,
-      params: { ...query, cursor: cursor ?? undefined, delivery: true, detail: true, limit: 400, run_id: runId },
+      params: {
+        ...query,
+        cursor: cursor ?? undefined,
+        delivery: true,
+        detail: true,
+        limit: BOT_KPI_MAX_FLAWS_PER_PAGE,
+        run_id: runId,
+      },
     });
   }
 

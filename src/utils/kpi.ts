@@ -14,6 +14,11 @@ export const KpiFeatureLabels: Record<string, string> = {
   'suggest-affected-components': 'Suggest Affected Components',
 };
 
+export const KpiSourceLabels: Record<string, string> = {
+  'osidb-bot': 'Automated (OSIDB Bot)',
+  'programmatic': 'Requested by User',
+};
+
 const featureAliases: Record<string, string> = {
   components: 'suggest-affected-components',
   source_component: 'suggest-affected-components',
@@ -28,6 +33,7 @@ const featureAliases: Record<string, string> = {
 
 export const canonicalKpiFeature = (feature: string) => featureAliases[feature] ?? feature;
 export const kpiFeatureLabel = (feature: string) => KpiFeatureLabels[feature] ?? feature;
+export const kpiSourceLabel = (source: string) => KpiSourceLabels[source] ?? source;
 export const kpiVersionLabel = (version: string) => version || 'Unknown version';
 
 const versionCollator = new Intl.Collator('en', { numeric: true });
