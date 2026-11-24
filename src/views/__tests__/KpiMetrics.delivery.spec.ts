@@ -37,7 +37,7 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     // @ts-expect-error Runtime configuration is read-only outside tests.
     osimRuntime.value.backends.aegisai = baseUrl;
     // The dashboard also queries the read-only cache-status endpoint; a fresh
-    // cache keeps its badge out of the assertions below.
+    // cache keeps its status text out of the assertions below.
     server.use(
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () => HttpResponse.json({
         fresh_count: 2, outdated_count: 0, stale_count: 0, total_flaws_selected: 2, uncached_count: 0,
@@ -233,7 +233,7 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     if (action === 'invalid range') expect(wrapper!.text()).toContain('start date must be on or before');
   });
 
-  it('scopes the cache status request to the component filter and renders the backlog pill while loading', async () => {
+  it('scopes the cache status request to the component filter and renders the stale-cache text', async () => {
     const botGate = gate();
     const requests: Request[] = [];
     server.use(
@@ -251,7 +251,11 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     );
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
     await vi.waitFor(() => expect(requests).toHaveLength(1));
-    await vi.waitFor(() => expect(wrapper!.get('[role="progressbar"] .badge').text()).toBe('Cache 1/3 fresh'));
+    const stale = '2 of 3 selected flaws are not cached fresh (0 uncached, 2 changed in OSIDB).';
+    await vi.waitFor(() => expect(wrapper!.get('span[role="status"]').text()).toContain(stale));
+    // The cache selection total drives the progress denominator until the run reports its own.
+    expect(wrapper.text()).toContain('0 / 3 flaws received');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
     await wrapper.get('#kpi-component').setValue('kernel');
     await vi.waitFor(() => expect(requests).toHaveLength(2));
 
@@ -269,14 +273,12 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     ]) {
       expect(params.has(param)).toBe(false);
     }
-    const badge = wrapper.get('[role="progressbar"] .badge');
-    expect(badge.text()).toBe('Cache 1/3 fresh');
-    expect(badge.classes()).toEqual(expect.arrayContaining(['bg-warning', 'text-dark']));
-    expect(badge.attributes('title'))
-      .toBe('2 flaws refresh on the next osidb-bot metrics load: 0 uncached, 2 changed in OSIDB.');
+    expect(wrapper.get('span[role="status"]').text()).toContain(stale);
+    expect(wrapper.find('.badge').exists()).toBe(false);
 
     botGate.resolve();
     await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(wrapper.text()).not.toContain('not cached fresh');
     expect(wrapper.find('.badge').exists()).toBe(false);
   });
 
@@ -346,11 +348,12 @@ describe('rendered KPI delivery with real service and HTTP', () => {
     await flushPromises();
     if (action === 'filter change') {
       await vi.waitFor(() => expect(requests).toHaveLength(2));
-      await vi.waitFor(() => expect(wrapper!.get('[role="progressbar"] .badge').text())
-        .toBe('Cache up to date (1 flaws)'));
+      await vi.waitFor(() => expect(wrapper!.get('span[role="status"]').text())
+        .toContain('All 1 selected flaws are cached fresh.'));
       expect(wrapper!.text()).toContain('Loading osidb-bot metrics');
       botGate.resolve();
       await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+      expect(wrapper!.text()).not.toContain('cached fresh');
       expect(wrapper!.find('.badge').exists()).toBe(false);
       expect(wrapper!.findAll('[role="alert"]')).toHaveLength(0);
     } else {
