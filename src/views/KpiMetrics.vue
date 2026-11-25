@@ -33,13 +33,6 @@ const botCacheStatusText = computed(() => {
   return `${status.stale_count} of ${status.total_flaws_selected} selected flaws are not cached fresh `
     + `(${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB).`;
 });
-const botProgressPercent = computed(() => {
-  const { refreshed } = botProgress.value;
-  const selected = botSelectedTotal.value;
-  return selected !== null && refreshed !== null
-    ? selected === 0 ? 100 : Math.min(100, Math.round((refreshed / selected) * 100))
-    : null;
-});
 // Received pages and their projected total. Warm-cache pages serve up to
 // 1000 flaws regardless of the requested limit, so the total projects from
 // the observed delivery pace — distinct delivered CVEs per page — floored at
@@ -51,6 +44,13 @@ const botPageEstimate = computed(() => {
   const deliveredFlaws = new Set(bot.value?.entries.map(entry => entry.cve_id)).size;
   const pace = Math.max(BOT_KPI_MAX_FLAWS_PER_PAGE, Math.ceil(deliveredFlaws / pages));
   return { delivered: pages, estimated: Math.max(pages, Math.ceil(total / pace)) };
+});
+// The bar follows delivery, not the refreshed count: refreshed_flaws counts
+// flaws fresh in the server cache, which saturates while warm pages are
+// still streaming.
+const botProgressPercent = computed(() => {
+  const estimate = botPageEstimate.value;
+  return estimate ? Math.round((estimate.delivered / estimate.estimated) * 100) : null;
 });
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
@@ -190,9 +190,10 @@ function applyComponent(event: Event) {
         <template v-if="botPageEstimate">
           · page {{ botPageEstimate.delivered }} of ~{{ botPageEstimate.estimated }}
         </template>
-        <template v-if="botCacheStatusText">{{ botCacheStatusText }}</template>
+        <template v-if="botCacheStatusText">· {{ botCacheStatusText }}</template>
       </span>
       <div
+        v-if="botProgressPercent !== 100"
         class="progress"
         role="progressbar"
         aria-label="osidb-bot KPI refresh progress"
@@ -208,20 +209,20 @@ function applyComponent(event: Event) {
         <div v-else class="progress-bar kpi-progress-indeterminate"></div>
       </div>
     </div>
-    <p v-if="botIncomplete" role="status" class="alert alert-warning">
+    <p v-if="botIncomplete && !botLoading" role="status" class="alert alert-warning">
       Incomplete osidb-bot metrics:
       <template v-if="botProgress.refreshed !== null && botSelectedTotal !== null">
         {{ botProgress.refreshed }} / {{ botSelectedTotal }} selected flaws refreshed.
       </template>
       <template v-else>The server does not report how many selected flaws have been refreshed.</template>
       Charts and totals cover only received data.
-      <template v-if="!botLoading && botCacheStatusText">
+      <template v-if="botCacheStatusText">
         Cache status when the run started: {{ botCacheStatusText }}
       </template>
       <template v-if="bot?.aggregates_available === false">
-        Aggregate bot metrics are unavailable until loading completes.
+        Aggregate bot metrics are unavailable without a completed run.
       </template>
-      <template v-if="!botLoading">Select Refresh to start a new run.</template>
+      Select Refresh to start a new run.
     </p>
     <p v-if="cacheStatusError" role="alert" class="alert alert-warning">{{ cacheStatusError }}</p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">

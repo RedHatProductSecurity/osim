@@ -84,11 +84,12 @@ non-paginated server. The client treats a response without `next_cursor` as
 final either way and makes no page-size assumptions, so warm and
 refresh-paced runs are handled identically. Because `refreshed_flaws` counts
 flaws fresh in the server cache (not only those already delivered), the
-progress bar can run ahead on a partially warm cache and saturates
-immediately on a fully warm one; on a cold cache it tracks delivery exactly.
-The page estimate counts received pages and projects the total from the
-observed delivery pace (distinct delivered CVEs per page), so it adapts to
-both 400-flaw refresh pages and 1000-flaw warm pages; retries and
+refreshed counts in the status line can run ahead on a partially warm cache
+and saturate immediately on a fully warm one. The progress bar therefore
+follows delivery instead — received pages over the projected total — and
+disappears once it reaches 100%. The projection adapts to the observed
+delivery pace (distinct delivered CVEs per page), so it handles both
+400-flaw refresh pages and 1000-flaw warm pages; retries and
 time-budget-shortened pages keep it approximate.
 
 The read-only `/analysis/kpi/osidb-bot/cache-status` endpoint reports the
