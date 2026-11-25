@@ -205,9 +205,11 @@ function retryDelay(attempt: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
-// Maximum flaws requested per delivered osidb-bot KPI page. The backend's
-// refresh-time budget can end a page early, so pages may deliver fewer flaws.
-export const BOT_KPI_MAX_FLAWS_PER_PAGE = 400;
+// The requested osidb-bot KPI page size. The server serves exactly this
+// many flaws per page -- the honest limit -- so this is the round-trip
+// lever: 1000 (the server's hard cap) trades larger responses for far
+// fewer requests on large selections.
+export const BOT_KPI_MAX_FLAWS_PER_PAGE = 1000;
 
 export class AegisAIService {
   // Monotonic id of the latest bot KPI fetch: starting a new one supersedes

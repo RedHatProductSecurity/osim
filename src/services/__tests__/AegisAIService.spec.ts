@@ -610,7 +610,7 @@ describe('aegisAIService', () => {
       expect(requests[0].searchParams.has('cursor')).toBe(false);
       for (const url of requests) {
         expect(url.searchParams.get('detail')).toBe('true');
-        expect(url.searchParams.get('limit')).toBe('400');
+        expect(url.searchParams.get('limit')).toBe('1000');
         expect(url.searchParams.has('max_refresh_secs')).toBe(false);
         expect(url.searchParams.has('delivery')).toBe(false);
         expect(url.searchParams.has('run_id')).toBe(false);

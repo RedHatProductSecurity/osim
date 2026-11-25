@@ -72,7 +72,7 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     for (const request of requests) {
       const params = new URL(request.url).searchParams;
       expect(params.get('detail')).toBe('true');
-      expect(params.get('limit')).toBe('400');
+      expect(params.get('limit')).toBe('1000');
       expect(params.get('component')).toBe('kernel');
       expect(params.has('delivery')).toBe(false);
       expect(params.has('run_id')).toBe(false);
@@ -170,7 +170,7 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     expect(requests.map(request => new URL(request.url).searchParams.get('cursor')))
       .toEqual([null, 'warm-2']);
     for (const request of requests) {
-      expect(new URL(request.url).searchParams.get('limit')).toBe('400');
+      expect(new URL(request.url).searchParams.get('limit')).toBe('1000');
     }
     const snapshots = onSnapshot.mock.calls.map(([metrics]) => metrics);
     expect(snapshots.map(metrics => metrics.entries)).toEqual([
