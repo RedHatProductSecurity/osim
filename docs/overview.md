@@ -69,16 +69,24 @@ The dashboard requests `/analysis/kpi/osidb-bot` with `limit=400` and follows
 its own slice of detail `entries` and a `progress` block (`selected_flaws`,
 `refreshed_flaws`, `complete`); the final page adds the aggregate over the
 whole selection (`features`, `total_flaws_processed`,
-`available_components`). OSIM accumulates entries across pages so the result
-contains each entry exactly once, publishes a cumulative snapshot per page,
-and cuts off a server that never finishes paginating after 200 pages.
+`available_components`). `progress.complete` marks the cache refresh, not the
+delivery — on a fully cached run it is true on the first page while cursors
+remain — so the client completes on the absence of `next_cursor` instead.
+OSIM accumulates entries across pages so the result contains each entry
+exactly once, publishes a cumulative snapshot per page, and cuts off a server
+that never finishes paginating after 200 pages.
 
-A selection that is entirely cached is served as one pre-pagination response
-with neither cursor nor progress, indistinguishable from an older
-non-paginated server; the client treats a response without `next_cursor` as
-final either way. Because `refreshed_flaws` counts flaws fresh in the server
-cache (not only those already delivered), the progress bar can run ahead on a
-partially warm cache; on a cold cache it tracks delivery exactly.
+A selection that is entirely cached carries no refresh work, so the backend
+serves it in larger 1000-flaw pages regardless of the requested `limit`; a
+fully cached remainder that fits one page is served as a single final
+response with neither cursor nor progress, indistinguishable from an older
+non-paginated server. The client treats a response without `next_cursor` as
+final either way and makes no page-size assumptions, so warm and
+refresh-paced runs are handled identically. Because `refreshed_flaws` counts
+flaws fresh in the server cache (not only those already delivered), the
+progress bar can run ahead on a partially warm cache and saturates
+immediately on a fully warm one; on a cold cache it tracks delivery exactly,
+and the 400-flaw-based page estimate overstates page numbers on warm runs.
 
 The read-only `/analysis/kpi/osidb-bot/cache-status` endpoint reports the
 selection's cache backlog (`fresh_count`, `stale_count`, `uncached_count`,
