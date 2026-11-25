@@ -61,20 +61,20 @@ describe('useKpiDashboard', () => {
   it('starts at zero with unknown selected count and tracks progress from each snapshot', () => {
     const dashboard = mountDashboard();
 
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
     expect(dashboard.loading.value).toBe(true);
 
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });
     expect(dashboard.bot.value).toEqual(withProgress(10, 40));
     expect(dashboard.botIncomplete.value).toBe(true);
 
     getBot.mock.calls[0][1].onSnapshot(withProgress(30, 40));
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 30, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 2, refreshed: 30, selected: 40 });
 
-    // A page without a progress block clears both counts.
+    // A page without a progress block clears both counts but still counts as a received page.
     publish();
-    expect(dashboard.botProgress.value).toEqual({ refreshed: null, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 3, refreshed: null, selected: null });
   });
 
   it('resets bot progress when a new refresh starts and ignores progress from the superseded fetch', async () => {
@@ -86,11 +86,11 @@ describe('useKpiDashboard', () => {
     await flushPromises();
 
     expect(signal.aborted).toBe(true);
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
     getBot.mock.calls[0][1].onSnapshot(withProgress(20, 40));
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
     getBot.mock.calls[1][1].onSnapshot(withProgress(5, 30));
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 5, selected: 30 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 5, selected: 30 });
   });
 
   it('publishes the resolved metrics with their final progress when the run finishes', async () => {
@@ -98,23 +98,38 @@ describe('useKpiDashboard', () => {
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 40, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 40, selected: 40 });
     expect(dashboard.botIncomplete.value).toBe(false);
     expect(dashboard.loading.value).toBe(false);
+  });
+
+  it('counts distinct snapshots as pages but not the resolved re-publish of the final one', async () => {
+    const first = withProgress(10, 40);
+    const final = withProgress(40, 40);
+    getBot.mockReset().mockImplementation((_query, options) => {
+      options.onSnapshot(first);
+      options.onSnapshot(final);
+      return Promise.resolve(final);
+    });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(dashboard.botProgress.value).toEqual({ pages: 2, refreshed: 40, selected: 40 });
+    expect(dashboard.botIncomplete.value).toBe(false);
   });
 
   it('ignores snapshots after the dashboard unmounts', () => {
     const dashboard = mountDashboard();
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });
 
     app!.unmount();
     getBot.mock.calls[0][1].onSnapshot({ ...snapshot, total_flaws_processed: 20 });
 
     expect(signal.aborted).toBe(true);
     expect(dashboard.bot.value).toEqual(withProgress(10, 40));
-    expect(dashboard.botProgress.value).toEqual({ refreshed: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });
     app = undefined;
   });
 

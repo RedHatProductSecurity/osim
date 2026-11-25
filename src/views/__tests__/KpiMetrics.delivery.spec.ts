@@ -143,6 +143,8 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     await vi.waitFor(() => expect(requests).toHaveLength(2));
     expect(wrapper.text()).toContain('2000 / 2000 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('100');
+    // The warm 1000-flaw page pace projects two pages, not the 400-flaw request basis.
+    expect(wrapper.text()).toContain('· page 1 of ~2');
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('1001 of 1001');
     // The pending last page keeps the run loading: no aggregate placeholders.

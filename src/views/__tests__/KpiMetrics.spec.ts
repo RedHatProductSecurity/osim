@@ -2,6 +2,7 @@ import { flushPromises, type VueWrapper } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { mountWithConfig } from '@/__tests__/helpers';
+import { botEntries } from '@/__tests__/kpiDeliveryFixtures';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
 import type {
@@ -66,6 +67,13 @@ const bot: AegisBotKpiMetrics = {
 const snapshot = (refreshed: number, selected = 400): AegisBotKpiMetrics => ({
   ...bot,
   progress: { complete: refreshed === selected, refreshed_flaws: refreshed, selected_flaws: selected },
+});
+// A cumulative snapshot of a cold run after `pages` received 400-flaw pages:
+// every page adds its delivered flaws to the entries.
+const coldSnapshot = (pages: number, selected: number): AegisBotKpiMetrics => ({
+  ...bot,
+  entries: botEntries(1, pages * 400),
+  progress: { complete: pages * 400 === selected, refreshed_flaws: pages * 400, selected_flaws: selected },
 });
 // An intermediate snapshot whose pages carry no progress block: aggregate
 // placeholders only, so no refresh counts are known.
@@ -672,12 +680,15 @@ describe('kPI dashboard', () => {
     getFeedback.mockReturnValue(new Promise(() => {}));
     wrapper = mountWithConfig(KpiMetrics);
     expect(wrapper.text()).toContain('0 flaws refreshed; awaiting the first page');
+    expect(wrapper.text()).not.toContain('of ~');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(button('Download CSV').attributes('disabled')).toBeDefined();
     publish(snapshot(0));
     await flushPromises();
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
-    expect(wrapper.text()).not.toContain('of ~');
+    // Zero refreshed flaws no longer hides the estimate: one received page and
+    // the selected total are enough to project it.
+    expect(wrapper.text()).toContain('· page 1 of ~1');
     publish(snapshot(100));
     await flushPromises();
     const bar = wrapper.get('[role="progressbar"]');
@@ -825,50 +836,48 @@ describe('kPI dashboard', () => {
 
   it('uses the cache-status total as the fallback denominator until the run reports its own', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    getCacheStatus.mockResolvedValueOnce({ ...cacheStatus, fresh_count: 1998, total_flaws_selected: 2000 });
     await mount();
     // Before the first page, the cache-status total already sizes the counts.
-    expect(wrapper.text()).toContain('0 / 5 flaws refreshed');
+    expect(wrapper.text()).toContain('0 / 2000 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).not.toContain('kpi-progress-indeterminate');
 
-    // A page without progress keeps the cache-status denominator.
+    // A page without progress keeps the cache-status denominator, including
+    // for the page estimate: 2000 flaws project as five 400-flaw pages.
     publish(uncountedSnapshot);
     await flushPromises();
-    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server (5 flaws selected).');
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server (2000 flaws selected).');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
+    expect(wrapper.text()).toContain('· page 1 of ~5');
 
-    // The run's own selection total is authoritative once progress reports it.
+    // The run's own selection total is authoritative once progress reports it,
+    // and the estimate never drops below the pages already received.
     publish(snapshot(2, 10));
     await flushPromises();
     expect(wrapper.text()).toContain('2 / 10 flaws refreshed');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('20');
-    expect(wrapper.text()).toContain('· page 1 of ~1');
+    expect(wrapper.text()).toContain('· page 2 of ~2');
   });
 
-  it('appends the page estimate once refreshed and selected counts are known', async () => {
+  it('appends the page estimate once a page is received and the total is known', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     await mount();
     expect(wrapper.text()).not.toContain('of ~');
 
-    // No progress yet: awaiting the first page, no page estimate.
-    publish(uncountedSnapshot);
-    await flushPromises();
-    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server.');
-    expect(wrapper.text()).not.toContain('of ~');
-
-    publish(snapshot(400, 800));
+    publish(coldSnapshot(1, 800));
     await flushPromises();
     expect(wrapper.text()).toContain('400 / 800 flaws refreshed');
     expect(wrapper.text()).toContain('· page 1 of ~2');
 
-    publish(snapshot(800, 800));
+    const final = coldSnapshot(2, 800);
+    publish(final);
     await flushPromises();
     expect(wrapper.text()).toContain('· page 2 of ~2');
 
-    // The resolved run re-publishes its final snapshot: no double count.
-    publish(snapshot(800, 800));
+    // The resolved run re-publishes the same final snapshot object: no double count.
+    publish(final);
     await flushPromises();
     expect(wrapper.text()).toContain('· page 2 of ~2');
     expect(wrapper.text()).not.toContain('· page 3');
@@ -881,6 +890,57 @@ describe('kPI dashboard', () => {
     await flushPromises();
     expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server');
     expect(wrapper.text()).not.toContain('of ~');
+  });
+
+  it('projects warm 1000-flaw pages from the delivered pace instead of the 400-flaw request limit', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    // A fully warm 2000-flaw selection: cached pages serve up to 1000 flaws
+    // regardless of the requested limit, and the first page already reports
+    // the whole selection refreshed.
+    const warmProgress = { complete: true, refreshed_flaws: 2000, selected_flaws: 2000 };
+    publish({ ...bot, entries: botEntries(1, 1000), progress: warmProgress });
+    await flushPromises();
+    expect(wrapper.text()).toContain('2000 / 2000 flaws refreshed');
+    expect(wrapper.text()).toContain('· page 1 of ~2');
+    expect(wrapper.text()).not.toContain('· page 1 of ~5');
+    publish({ ...bot, entries: botEntries(1, 2000), progress: warmProgress });
+    await flushPromises();
+    expect(wrapper.text()).toContain('· page 2 of ~2');
+  });
+
+  it('keeps the 400-flaw page basis on a cold refresh-paced run', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    publish(coldSnapshot(1, 2000));
+    await flushPromises();
+    expect(wrapper.text()).toContain('· page 1 of ~5');
+    publish(coldSnapshot(2, 2000));
+    await flushPromises();
+    expect(wrapper.text()).toContain('· page 2 of ~5');
+  });
+
+  it('shows a single-shot run as one page once the cache status supplies the total', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    await mount();
+    publish(bot);
+    await flushPromises();
+    expect(wrapper.text()).toContain('Flaw refresh counts unavailable from this server (5 flaws selected).');
+    expect(wrapper.text()).toContain('· page 1 of ~1');
+  });
+
+  it('keeps the estimate at the 400-flaw pace floor when filters shrink the delivered entries', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    await mount();
+    // A date-filtered run: the page refreshed 400 flaws of the 2000-flaw
+    // selection, but only 150 distinct flaws carry entries inside the window,
+    // so the observed pace degrades to the 400-flaw basis.
+    publish({ ...bot,
+      entries: botEntries(1, 150),
+      progress: { complete: false, refreshed_flaws: 400, selected_flaws: 2000 } });
+    await flushPromises();
+    expect(wrapper.text()).toContain('· page 1 of ~5');
   });
 
   it('sizes the unavailable-counts notice with the cache-status total', async () => {
