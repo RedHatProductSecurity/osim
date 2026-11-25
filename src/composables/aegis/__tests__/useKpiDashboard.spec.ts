@@ -37,6 +37,15 @@ describe('useKpiDashboard', () => {
     total_flaws_selected: 5,
     uncached_count: 1,
   };
+  // A post-slice cache-refresh response: the drain consumes only the stale and
+  // selection counts, but the payload mirrors the server's full status shape.
+  const drainCounts = (staleCount: number, totalFlaws: number): AegisBotKpiCacheStatus => ({
+    fresh_count: totalFlaws - staleCount,
+    outdated_count: 0,
+    stale_count: staleCount,
+    total_flaws_selected: totalFlaws,
+    uncached_count: staleCount,
+  });
 
   beforeEach(() => {
     getFeedback.mockReset().mockResolvedValue({});
@@ -313,5 +322,199 @@ describe('useKpiDashboard', () => {
     resolveStatus(cacheStatus);
     await flushPromises();
     expect(dashboard.botCacheStatus.value).toBeNull();
+  });
+
+  it('drains the cache before fetching pages, polling until the selection is fresh', async () => {
+    refreshCache
+      .mockResolvedValueOnce(drainCounts(5, 10))
+      .mockResolvedValueOnce(drainCounts(0, 10));
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(refreshCache).toHaveBeenCalledTimes(2);
+    expect(getBot).toHaveBeenCalledTimes(1);
+    // Pages are fetched only after the drain finished, on the shared abort signal.
+    expect(refreshCache.mock.invocationCallOrder[1]).toBeLessThan(getBot.mock.invocationCallOrder[0]);
+    expect(refreshCache.mock.calls[0][1]).toBe(getBot.mock.calls[0][1].signal);
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 0, total: 10 });
+    expect(dashboard.loading.value).toBe(true);
+  });
+
+  it('passes only the trimmed component filter to the cache drain', async () => {
+    const dashboard = mountDashboard();
+    await flushPromises();
+    expect(refreshCache).toHaveBeenNthCalledWith(1, undefined, expect.any(AbortSignal));
+
+    dashboard.component.value = '  kernel  ';
+    await flushPromises();
+    expect(refreshCache).toHaveBeenLastCalledWith('kernel', expect.any(AbortSignal));
+
+    dashboard.component.value = '';
+    await flushPromises();
+    expect(refreshCache).toHaveBeenLastCalledWith(undefined, expect.any(AbortSignal));
+  });
+
+  it('tracks the observed drain counts and resets them when a new refresh starts', async () => {
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    const dashboard = mountDashboard();
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+
+    resolveFirst(drainCounts(4, 6));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 4, total: 6 });
+
+    resolveSecond(drainCounts(1, 6));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 1, total: 6 });
+
+    // A new refresh clears the counts while its own drain is still pending.
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+    expect(getBot).not.toHaveBeenCalled();
+  });
+
+  it('skips the drain when an older Aegis server lacks the cache-refresh endpoint', async () => {
+    refreshCache.mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(refreshCache).toHaveBeenCalledTimes(1);
+    expect(getBot).toHaveBeenCalledTimes(1);
+    expect(dashboard.errors.value).toEqual([]);
+    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+  });
+
+  it('clears published drain counts when a later poll finds the endpoint unsupported', async () => {
+    refreshCache
+      .mockResolvedValueOnce(drainCounts(5, 10))
+      .mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(refreshCache).toHaveBeenCalledTimes(2);
+    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+    expect(getBot).toHaveBeenCalledTimes(1);
+    expect(dashboard.errors.value).toEqual([]);
+  });
+
+  it('keeps the replacement run\'s drain counts when a superseded poll rejects with 404', async () => {
+    let resolveSupersededPoll!: (value: AegisBotKpiCacheStatus) => void;
+    let rejectSupersededPoll!: (reason: unknown) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSupersededPoll = resolve; }))
+      .mockReturnValueOnce(new Promise((_resolve, reject) => { rejectSupersededPoll = reject; }))
+      .mockResolvedValueOnce(drainCounts(2, 8))
+      .mockReturnValue(new Promise(() => {}));
+    const dashboard = mountDashboard();
+    await flushPromises();
+    resolveSupersededPoll(drainCounts(5, 10));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 5, total: 10 });
+
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+    // The replacement run observed a partially stale cache and is still draining.
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 2, total: 8 });
+
+    rejectSupersededPoll({ response: { status: 404 }, message: 'Not Found' });
+    await flushPromises();
+    // The stale rejection neither clears the live counts nor surfaces an error.
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 2, total: 8 });
+    expect(dashboard.errors.value).toEqual([]);
+  });
+
+  it('surfaces a failed drain through the osidb-bot error path and never fetches pages', async () => {
+    refreshCache.mockRejectedValueOnce({ response: { status: 503 }, message: 'Refresh unavailable' });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(getBot).not.toHaveBeenCalled();
+    expect(dashboard.errors.value).toHaveLength(1);
+    expect(dashboard.errors.value[0]).toContain('osidb-bot metrics could not be loaded');
+    expect(dashboard.errors.value[0]).toContain('HTTP 503: Refresh unavailable');
+    expect(dashboard.botLoading.value).toBe(false);
+    expect(dashboard.loadedSources.value).toEqual(['Feedback']);
+  });
+
+  it.each(['a filter change', 'an invalid date range', 'an unmount'])(
+    'aborts the in-flight drain poll on %s without surfacing an error', async (action) => {
+      // Polls settle only through their abort signal, mirroring the real fetch.
+      refreshCache.mockReset().mockImplementation((_component: string | undefined, signal: AbortSignal) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () => reject({ name: 'AbortError' }));
+        }));
+      const dashboard = mountDashboard();
+      await flushPromises();
+      expect(refreshCache).toHaveBeenCalledTimes(1);
+      const drainSignal = refreshCache.mock.calls[0][1];
+      expect(drainSignal.aborted).toBe(false);
+
+      if (action === 'a filter change') dashboard.component.value = 'kernel';
+      if (action === 'an invalid date range') {
+        dashboard.fromDate.value = '2026-09-03';
+        await flushPromises();
+        dashboard.toDate.value = '2026-09-01';
+      }
+      if (action === 'an unmount') {
+        app!.unmount();
+        app = undefined;
+      }
+      await flushPromises();
+
+      expect(drainSignal.aborted).toBe(true);
+      // The aborted drain never issues another poll and never fetches pages.
+      expect(refreshCache.mock.calls.filter(([, signal]) => signal === drainSignal)).toHaveLength(1);
+      expect(getBot).not.toHaveBeenCalled();
+      expect(dashboard.errors.value).toEqual([]);
+      if (action === 'an invalid date range') {
+        expect(dashboard.invalidRange.value).toBe(true);
+        expect(dashboard.loading.value).toBe(false);
+      }
+    },
+  );
+
+  it('ignores a superseded drain poll that resolves after a newer refresh', async () => {
+    let resolveSuperseded!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReturnValueOnce(new Promise((resolve) => { resolveSuperseded = resolve; }));
+    const dashboard = mountDashboard();
+    await flushPromises();
+    expect(refreshCache).toHaveBeenCalledTimes(1);
+
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+    // The replacement run drained its own already-fresh cache and fetched pages.
+    expect(refreshCache).toHaveBeenCalledTimes(2);
+    expect(getBot).toHaveBeenCalledTimes(1);
+
+    resolveSuperseded(drainCounts(7, 9));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ remaining: 0, total: undefined });
+    expect(refreshCache).toHaveBeenCalledTimes(2);
+    expect(getBot).toHaveBeenCalledTimes(1);
+    expect(dashboard.errors.value).toEqual([]);
+  });
+
+  it('gives up the drain after ten thousand polls that never reach a fresh cache', async () => {
+    refreshCache.mockResolvedValue(drainCounts(5, 10));
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    expect(refreshCache).toHaveBeenCalledTimes(10_000);
+    expect(getBot).not.toHaveBeenCalled();
+    expect(dashboard.errors.value).toHaveLength(1);
+    // The thrown message carries no guidance of its own: kpiErrorMessage
+    // appends it exactly once.
+    expect(dashboard.errors.value[0]).toBe(
+      'osidb-bot metrics could not be loaded. osidb-bot KPI cache refresh did not drain. '
+      + 'Select Refresh to try again.',
+    );
+    expect(dashboard.botLoading.value).toBe(false);
   });
 });

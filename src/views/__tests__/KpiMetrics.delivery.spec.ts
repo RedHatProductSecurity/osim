@@ -436,4 +436,115 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
     expect(wrapper.text()).not.toContain('of ~');
   });
+
+  it('drains the cache-refresh endpoint over POST before requesting any page', async () => {
+    const firstDrainGate = gate();
+    const secondDrainGate = gate();
+    const pageGates = [gate(), gate()];
+    const refreshRequests: Request[] = [];
+    const pageRequests: Request[] = [];
+    const first = botPage([botEntry('CVE-2026-1000')], 'drain-page-2',
+      { complete: false, delivered_flaws: 5, selected_flaws: 10 });
+    const second = botPage([botEntry('CVE-2026-1001')], null,
+      { complete: true, delivered_flaws: 10, selected_flaws: 10 },
+      { features: botFeatures, total_flaws_processed: 10 });
+    server.use(
+      http.post(`${baseUrl}/analysis/kpi/osidb-bot/cache-refresh`, async ({ request }) => {
+        const index = refreshRequests.push(request) - 1;
+        await (index === 0 ? firstDrainGate : secondDrainGate).promise;
+        return HttpResponse.json(index === 0
+          ? { fresh_count: 2, outdated_count: 0, stale_count: 8, total_flaws_selected: 10, uncached_count: 8 }
+          : { fresh_count: 10, outdated_count: 0, stale_count: 0, total_flaws_selected: 10, uncached_count: 0 });
+      }),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
+        const index = pageRequests.push(request) - 1;
+        await pageGates[index].promise;
+        return HttpResponse.json(index === 0 ? first : second);
+      }),
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () => HttpResponse.json({
+        fresh_count: 2, outdated_count: 0, stale_count: 8, total_flaws_selected: 10, uncached_count: 8,
+      })),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+
+    // The first drain POST is issued while no page has been requested yet.
+    await vi.waitFor(() => expect(refreshRequests).toHaveLength(1));
+    expect(refreshRequests[0].method).toBe('POST');
+    expect(new URL(refreshRequests[0].url).search).toBe('');
+    expect(refreshRequests[0].headers.get('Authorization')).toMatch(/^Bearer /);
+    expect(refreshRequests[0].credentials).toBe('include');
+    expect(refreshRequests[0].cache).toBe('no-store');
+    expect(pageRequests).toHaveLength(0);
+
+    firstDrainGate.resolve();
+    await vi.waitFor(() => expect(refreshRequests).toHaveLength(2));
+    // Still draining: no page request and the DOM reports the drain progress.
+    expect(pageRequests).toHaveLength(0);
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Refreshing osidb-bot cache… 2 / 10 flaws refreshed'));
+
+    secondDrainGate.resolve();
+    await vi.waitFor(() => expect(pageRequests).toHaveLength(1));
+    // The drain line disappears once the cache is fresh, while pages still load.
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(wrapper.text()).toContain('0 / 10 flaws received');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+
+    pageGates[0].resolve();
+    await vi.waitFor(() => expect(pageRequests).toHaveLength(2));
+    expect(wrapper.text()).toContain('5 / 10 flaws received');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('50');
+
+    pageGates[1].resolve();
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(refreshRequests).toHaveLength(2);
+    for (const request of pageRequests) {
+      expect(new URL(request.url).searchParams.get('limit')).toBe('1000');
+    }
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+  });
+
+  it('skips the drain on a missing cache-refresh endpoint and still serves pages', async () => {
+    const refreshRequests: Request[] = [];
+    const pageRequests: Request[] = [];
+    server.use(
+      http.post(`${baseUrl}/analysis/kpi/osidb-bot/cache-refresh`, ({ request }) => {
+        refreshRequests.push(request);
+        return HttpResponse.json({ detail: 'Not Found' }, { status: 404 });
+      }),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        pageRequests.push(request);
+        return HttpResponse.json(botPage([botEntry('CVE-2026-1000')], null, null, {
+          features: botFeatures, total_flaws_processed: 1,
+        }));
+      }),
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(refreshRequests).toHaveLength(1);
+    expect(pageRequests).toHaveLength(1);
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it('reports a failed drain through the osidb-bot error path without requesting pages', async () => {
+    const pageRequests: Request[] = [];
+    server.use(
+      http.post(`${baseUrl}/analysis/kpi/osidb-bot/cache-refresh`, () =>
+        HttpResponse.json({ detail: 'Cache refresh failed' }, { status: 500 })),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, ({ request }) => {
+        pageRequests.push(request);
+        return HttpResponse.json(botPage([], null));
+      }),
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('osidb-bot metrics could not be loaded'));
+    expect(wrapper.text()).toContain('Cache refresh failed (HTTP 500 Internal Server Error)');
+    expect(pageRequests).toHaveLength(0);
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(wrapper.text()).toContain('Available-source Acceptance Rate');
+  });
 });

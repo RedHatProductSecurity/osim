@@ -83,6 +83,15 @@ const cacheStatus: AegisBotKpiCacheStatus = {
   total_flaws_selected: 5,
   uncached_count: 1,
 };
+// A post-slice cache-refresh response: the drain status consumes only the
+// stale and selection counts, but the payload mirrors the server's full shape.
+const drainCounts = (staleCount: number, totalFlaws: number): AegisBotKpiCacheStatus => ({
+  fresh_count: totalFlaws - staleCount,
+  outdated_count: 0,
+  stale_count: staleCount,
+  total_flaws_selected: totalFlaws,
+  uncached_count: staleCount,
+});
 
 describe('kPI dashboard', () => {
   let wrapper: VueWrapper;
@@ -1107,5 +1116,105 @@ describe('kPI dashboard', () => {
     expect(wrapper.find('.badge').exists()).toBe(false);
     expect(wrapper.find('[role="alert"]').exists()).toBe(false);
     expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it('renders the cache drain progress while flaws remain stale and clears it once fresh', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveThird!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveThird = resolve; }));
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics');
+
+    resolveFirst(drainCounts(8, 10));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 2 / 10 flaws refreshed');
+    // Pages have not started, so the delivery bar stays indeterminate.
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+
+    resolveSecond(drainCounts(3, 10));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 7 / 10 flaws refreshed');
+
+    resolveThird(drainCounts(0, 10));
+    await flushPromises();
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(getBot).toHaveBeenCalledTimes(1);
+    expect(wrapper.text()).toContain('0 flaws received; awaiting the first page');
+  });
+
+  it('counts remaining stale flaws while the drain reports no selection total', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    // A server response without a selection total: only the stale count arrives.
+    let resolvePoll!: (value: Partial<AegisBotKpiCacheStatus>) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolvePoll = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+    resolvePoll({ stale_count: 4 });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 4 flaws remaining');
+    expect(wrapper.text()).not.toContain('flaws refreshed');
+  });
+
+  it('caps the delivery bar at 100 percent when the server over-delivers the selection', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+    publish(snapshot(1200, 1600));
+    await flushPromises();
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('75');
+    publish(snapshot(1800, 1600));
+    await flushPromises();
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+    expect(wrapper.text()).toContain('1800 / 1600 flaws received');
+  });
+
+  it('keeps the dashboard usable when an older server lacks the cache-refresh endpoint', async () => {
+    refreshCache.mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
+    await mount();
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
+    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
+  });
+
+  it('clears the drain status line when a mid-drain poll hits an unsupported endpoint', async () => {
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let rejectSecond!: (reason: unknown) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((_resolve, reject) => { rejectSecond = reject; }));
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+    resolveFirst(drainCounts(5, 10));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 5 / 10 flaws refreshed');
+
+    rejectSecond({ response: { status: 404 }, message: 'Not Found' });
+    await flushPromises();
+    // The skipped drain stops claiming progress while pages still load.
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
+    expect(wrapper.text()).toContain('Loading osidb-bot metrics');
+    expect(getBot).toHaveBeenCalledTimes(1);
+    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
+  });
+
+  it('reports a failed cache drain as an osidb-bot load failure without fetching pages', async () => {
+    refreshCache.mockRejectedValueOnce({ response: { status: 503 }, message: 'Cache refresh unavailable' });
+    await mount();
+    const alert = wrapper.get('[role="alert"]').text();
+    expect(alert).toContain('osidb-bot metrics could not be loaded');
+    expect(alert).toContain('HTTP 503: Cache refresh unavailable');
+    expect(getBot).not.toHaveBeenCalled();
+    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
   });
 });
