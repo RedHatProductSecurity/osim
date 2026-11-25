@@ -298,6 +298,37 @@ describe('flawHistory', () => {
     expect(aiBadge.find('i.bi-robot').exists()).toBe(true);
   });
 
+  osimFullFlawTest('shows the pending tooltip for an AI-Bot-Pending badge', async ({ flaw }) => {
+    flaw.history = [];
+    flaw.history.push({
+      pgh_created_at: '2026-11-20T10:00:00.000000Z',
+      pgh_slug: 'osidb.FlawAudit:123458',
+      pgh_label: 'update',
+      pgh_context: { url: 'osidb/api/v1/flaws/12d3820a-a43b-417c-a22e-46e47c232a63', user: 1 },
+      pgh_diff: {
+        impact: ['CRITICAL', 'LOW'],
+        aegis_meta: [
+          {},
+          { impact: [{ type: 'AI-Bot-Pending', timestamp: '2026-11-20T10:00:00.000Z', value: 'LOW' }] },
+        ],
+      },
+    } as ZodFlawHistoryItemType);
+    const subject = mount(FlawHistory, {
+      props: {
+        history: flaw.history,
+      },
+      global: {
+        stubs: {
+          EditableDate: true,
+        },
+      },
+    });
+    const aiBadge = subject.find('.badge');
+    expect(aiBadge.exists()).toBe(true);
+    expect(aiBadge.text()).toContain('AI-Bot-Pending');
+    expect(aiBadge.attributes('title')).toBe('Pending Aegis-AI-Bot suggestion');
+  });
+
   osimFullFlawTest('displays correct badge for sequential AI changes (AI then Partial AI)', async ({ flaw }) => {
     // Scenario: User saves AI suggestion, then modifies and saves again
     // Entry 1 should show AI, Entry 2 should show Partial AI

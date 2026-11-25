@@ -20,6 +20,7 @@ const runtime = osimRuntime as Ref<OsimRuntimeType>;
 const pendingSelector = '[role="button"][aria-label="AI-Bot suggestion pending — click to review"]';
 const tooltipSelector = '.aegis-tooltip';
 const acceptSelector = 'button[title="Apply the suggested value"]';
+const acceptDisabledSelector = 'button[title="No suggested value to apply"]';
 const rejectSelector = 'button[title="Dismiss the suggested value"]';
 const copySelector = 'button[aria-label="Copy text"]';
 const closeSelector = 'button[aria-label="Close suggestion details"]';
@@ -279,6 +280,61 @@ describe('dismissing the pending suggestion details', () => {
     expect(wrapper.find(pendingSelector).exists()).toBe(true);
     expect(wrapper.emitted('update:field')).toBeUndefined();
     expect(tracking.getAegisMetadata().impact).toEqual([pending]);
+  });
+});
+
+describe('valueless pending suggestions', () => {
+  it.each<[string, AegisChangeEntry]>([
+    ['a missing value', { ...structuredClone(pending), value: undefined }],
+    ['a null value', { ...structuredClone(pending), value: null } as unknown as AegisChangeEntry],
+  ])('disables the accept button for a malformed pending suggestion with %s', async (_label, entry) => {
+    tracking.setAegisMetadata({ impact: [entry] });
+    const wrapper = mountSuggestion();
+    await openTooltip(wrapper);
+
+    const accept = wrapper.get(acceptDisabledSelector);
+    expect(accept.attributes('disabled')).toBeDefined();
+    expect(accept.text()).toBe('Accept');
+    expect(wrapper.find(acceptSelector).exists()).toBe(false);
+    expect(wrapper.get(rejectSelector).attributes('disabled')).toBeUndefined();
+  });
+
+  it('keeps the accept button enabled for an empty-string suggestion value', async () => {
+    tracking.setAegisMetadata({ impact: [{ ...structuredClone(pending), value: '' }] });
+    const wrapper = mountSuggestion();
+    await openTooltip(wrapper);
+
+    const accept = wrapper.get(acceptSelector);
+    expect(accept.attributes('disabled')).toBeUndefined();
+    expect(accept.attributes('title')).toBe('Apply the suggested value');
+    expect(wrapper.find(acceptDisabledSelector).exists()).toBe(false);
+  });
+
+  it('keeps the accept button enabled for a normal suggestion value', async () => {
+    tracking.setAegisMetadata({ impact: [structuredClone(pending)] });
+    const wrapper = mountSuggestion();
+    await openTooltip(wrapper);
+
+    const accept = wrapper.get(acceptSelector);
+    expect(accept.attributes('disabled')).toBeUndefined();
+    expect(accept.attributes('title')).toBe('Apply the suggested value');
+    expect(wrapper.get(rejectSelector).attributes('disabled')).toBeUndefined();
+  });
+
+  it('still rejects a valueless pending suggestion', async () => {
+    tracking.setAegisMetadata({ impact: [{ ...structuredClone(pending), value: undefined }] });
+    const wrapper = mountSuggestion();
+    await openTooltip(wrapper);
+
+    await wrapper.get(rejectSelector).trigger('click');
+    await nextTick();
+
+    expect(wrapper.emitted('update:field')).toBeUndefined();
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+    expect(wrapper.find(tooltipSelector).exists()).toBe(false);
+    expect(wrapper.find(pendingSelector).exists()).toBe(false);
+    expect(tracking.getAegisMetadata().impact).toBeUndefined();
+    expect(tracking.hasAegisChanges()).toBe(false);
   });
 });
 

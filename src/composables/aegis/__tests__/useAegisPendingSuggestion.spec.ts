@@ -190,6 +190,19 @@ describe('useAegisPendingSuggestion accept', () => {
     expect(tracking.getAegisMetadata().impact).toHaveLength(1);
   });
 
+  it.each<[string, AegisChangeEntry]>([
+    ['a missing value', { ...structuredClone(pending), value: undefined }],
+    ['a null value', { ...structuredClone(pending), value: null } as unknown as AegisChangeEntry],
+  ])('does nothing when the pending suggestion has %s to apply', (_label, entry) => {
+    tracking.setAegisMetadata({ impact: [structuredClone(entry)] });
+    const { accept, pendingEntry, valueRef } = usePendingField('impact', 'CRITICAL');
+    accept();
+
+    expect(valueRef.value).toBe('CRITICAL');
+    expect(pendingEntry.value).toEqual(entry);
+    expect(tracking.getAegisMetadata().impact).toEqual([entry]);
+  });
+
   it('records the accepted decision once even when the flaw metadata is decoupled from the tracking store', () => {
     // After a post-save resync the flaw owns a clone of the server metadata.
     const flawData = {
