@@ -202,7 +202,8 @@ function handleReject() {
             ref="acceptButton"
             type="button"
             class="btn btn-sm btn-success m-0"
-            title="Apply the suggested value"
+            :disabled="pendingEntry?.value == null"
+            :title="pendingEntry?.value == null ? 'No suggested value to apply' : 'Apply the suggested value'"
             @click.stop="handleAccept"
           >
             Accept
