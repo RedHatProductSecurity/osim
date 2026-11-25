@@ -64,8 +64,8 @@ export function useKpiDashboard() {
   const toDate = ref('');
   const feedback = ref<AegisKpiMetrics>({});
   const bot = ref<AegisBotKpiMetrics | null>(null);
-  const botProgress = ref<{ pages: number; refreshed: null | number; selected: null | number }>(
-    { pages: 0, refreshed: 0, selected: null },
+  const botProgress = ref<{ delivered: null | number; pages: number; selected: null | number }>(
+    { pages: 0, delivered: 0, selected: null },
   );
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
@@ -130,7 +130,7 @@ export function useKpiDashboard() {
   function resetResults() {
     feedback.value = {};
     bot.value = null;
-    botProgress.value = { pages: 0, refreshed: 0, selected: null };
+    botProgress.value = { pages: 0, delivered: 0, selected: null };
     botPages = 0;
     lastBotSnapshot = undefined;
     botComplete.value = false;
@@ -152,7 +152,7 @@ export function useKpiDashboard() {
     bot.value = metrics;
     botProgress.value = {
       pages: botPages,
-      refreshed: metrics.progress?.refreshed_flaws ?? null,
+      delivered: metrics.progress?.delivered_flaws ?? null,
       selected: metrics.progress?.selected_flaws ?? null,
     };
     if (!loadedSources.value.includes('osidb-bot')) loadedSources.value.push('osidb-bot');

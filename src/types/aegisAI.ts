@@ -188,7 +188,9 @@ export type AegisBotFeatureKpi = {
 
 export type AegisBotKpiProgress = {
   complete: boolean;
-  refreshed_flaws: number;
+  delivered_flaws: number;
+  // Cache-freshness count; still sent by the server but unused here.
+  refreshed_flaws?: number;
   selected_flaws: number;
 };
 
@@ -221,8 +223,8 @@ export type AegisBotKpiMetrics = {
   total_flaws_processed: number;
 };
 
-// Invoked after each page with the server's cache-refresh counts.
-export type AegisBotKpiProgressCallback = (refreshedFlaws: number, selectedFlaws: number) => void;
+// Invoked after each page with the server's delivery counts.
+export type AegisBotKpiProgressCallback = (deliveredFlaws: number, selectedFlaws: number) => void;
 
 // Read-only osidb-bot KPI cache refresh counts, scoped to the flaw selection
 // of the request. Invariants: total_flaws_selected = fresh_count + stale_count,

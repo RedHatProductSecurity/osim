@@ -5,7 +5,6 @@ import { VueUiXy } from 'vue-data-ui/vue-ui-xy';
 
 import { useKpiDashboard } from '@/composables/aegis/useKpiDashboard';
 
-import { BOT_KPI_MAX_FLAWS_PER_PAGE } from '@/services/AegisAIService';
 import {
   canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiSourceDescription, kpiSourceLabel, kpiVersionLabel,
   parseKpiDate, summarizeKpi,
@@ -33,24 +32,14 @@ const botCacheStatusText = computed(() => {
   return `${status.stale_count} of ${status.total_flaws_selected} selected flaws are not cached fresh `
     + `(${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB).`;
 });
-// Received pages and their projected total. Warm-cache pages serve up to
-// 1000 flaws regardless of the requested limit, so the total projects from
-// the observed delivery pace — distinct delivered CVEs per page — floored at
-// the requested page size. Retries and short pages keep it approximate.
-const botPageEstimate = computed(() => {
-  const { pages } = botProgress.value;
-  const total = botSelectedTotal.value;
-  if (total === null || total <= 0 || pages <= 0) return null;
-  const deliveredFlaws = new Set(bot.value?.entries.map(entry => entry.cve_id)).size;
-  const pace = Math.max(BOT_KPI_MAX_FLAWS_PER_PAGE, Math.ceil(deliveredFlaws / pages));
-  return { delivered: pages, estimated: Math.max(pages, Math.ceil(total / pace)) };
-});
-// The bar follows delivery, not the refreshed count: refreshed_flaws counts
-// flaws fresh in the server cache, which saturates while warm pages are
-// still streaming.
+// The bar follows delivery exactly: the server's delivered_flaws counts
+// every selected flaw delivered through the latest page, so delivered over
+// selected is the true completion ratio with no estimation.
 const botProgressPercent = computed(() => {
-  const estimate = botPageEstimate.value;
-  return estimate ? Math.round((estimate.delivered / estimate.estimated) * 100) : null;
+  const { delivered, selected } = botProgress.value;
+  return delivered !== null && selected !== null && selected > 0
+    ? Math.min(100, Math.round((delivered / selected) * 100))
+    : null;
 });
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
@@ -186,17 +175,14 @@ function applyComponent(event: Event) {
       </span>
       <span role="status">
         Loading osidb-bot metrics…
-        <template v-if="botProgress.refreshed !== null && botSelectedTotal !== null">
-          {{ botProgress.refreshed }} / {{ botSelectedTotal }} flaws refreshed
+        <template v-if="botProgress.delivered !== null && botSelectedTotal !== null">
+          {{ botProgress.delivered }} / {{ botSelectedTotal }} flaws received
         </template>
-        <template v-else-if="botProgress.refreshed === 0">0 flaws refreshed; awaiting the first page…</template>
+        <template v-else-if="botProgress.delivered === 0">0 flaws received; awaiting the first page…</template>
         <template v-else-if="botSelectedTotal !== null">
-          Flaw refresh counts unavailable from this server ({{ botSelectedTotal }} flaws selected).
+          Flaw delivery counts unavailable from this server ({{ botSelectedTotal }} flaws selected).
         </template>
-        <template v-else>Flaw refresh counts unavailable from this server.</template>
-        <template v-if="botPageEstimate">
-          · page {{ botPageEstimate.delivered }} of ~{{ botPageEstimate.estimated }}
-        </template>
+        <template v-else>Flaw delivery counts unavailable from this server.</template>
         <template v-if="botCacheStatusText">· {{ botCacheStatusText }}</template>
       </span>
       <div
@@ -218,10 +204,10 @@ function applyComponent(event: Event) {
     </div>
     <p v-if="botIncomplete && !botLoading" role="status" class="alert alert-warning">
       Incomplete osidb-bot metrics:
-      <template v-if="botProgress.refreshed !== null && botSelectedTotal !== null">
-        {{ botProgress.refreshed }} / {{ botSelectedTotal }} selected flaws refreshed.
+      <template v-if="botProgress.delivered !== null && botSelectedTotal !== null">
+        {{ botProgress.delivered }} / {{ botSelectedTotal }} selected flaws received.
       </template>
-      <template v-else>The server does not report how many selected flaws have been refreshed.</template>
+      <template v-else>The server does not report how many selected flaws have been delivered.</template>
       Charts and totals cover only received data.
       <template v-if="botCacheStatusText">
         Cache status when the run started: {{ botCacheStatusText }}

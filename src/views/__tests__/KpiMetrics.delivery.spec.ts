@@ -64,9 +64,9 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     const failureGate = gate();
     const feedbackGate = gate();
     const entries = [botEntry('CVE-2026-1000'), botEntry('CVE-2026-1000', 'cwe')];
-    const first = botPage(entries, 'second', { complete: false, refreshed_flaws: 2, selected_flaws: 1000 });
+    const first = botPage(entries, 'second', { complete: false, delivered_flaws: 2, selected_flaws: 1000 });
     const second = botPage([botEntry('CVE-2026-1001')], 'third',
-      { complete: false, refreshed_flaws: 9, selected_flaws: 1000 });
+      { complete: false, delivered_flaws: 9, selected_flaws: 1000 });
     const pages = [first, second];
     const pageGates = [firstGate, secondGate, failureGate];
     const requests: Request[] = [];
@@ -84,7 +84,7 @@ describe('rendered KPI pagination with real service and HTTP', () => {
       }),
     );
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
-    expect(wrapper.text()).toContain('0 flaws refreshed; awaiting the first page');
+    expect(wrapper.text()).toContain('0 flaws received; awaiting the first page');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(button('Download CSV').attributes('disabled')).toBeDefined();
     await vi.waitFor(() => expect(requests).toHaveLength(1));
@@ -93,10 +93,9 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
     firstGate.resolve();
     await vi.waitFor(() => expect(requests).toHaveLength(2));
-    expect(wrapper.text()).toContain('2 / 1000 flaws refreshed');
-    // The bar tracks delivered pages, not the refreshed count: one page of
-    // the three projected for the 1000-flaw selection.
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('33');
+    expect(wrapper.text()).toContain('2 / 1000 flaws received');
+    // The bar tracks the exact delivery ratio: 2 of 1000 flaws so far.
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('0');
     expect(wrapper.get('span[role="status"]').text()).toContain('· All 2 selected flaws are cached fresh.');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('3 of 3');
     // Intermediate snapshots hide placeholder aggregates.
@@ -104,14 +103,14 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     expect(wrapper.find('tbody').exists()).toBe(false);
     secondGate.resolve();
     await vi.waitFor(() => expect(requests).toHaveLength(3));
-    expect(wrapper.text()).toContain('9 / 1000 flaws refreshed');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('67');
+    expect(wrapper.text()).toContain('9 / 1000 flaws received');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('1');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('4 of 4');
     expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
     failureGate.resolve();
     await vi.waitFor(() => expect(wrapper!.text()).toContain('Run invalidated'));
     const warning = wrapper.get('p[role="status"]');
-    expect(warning.text()).toContain('Incomplete osidb-bot metrics: 9 / 1000 selected flaws refreshed');
+    expect(warning.text()).toContain('Incomplete osidb-bot metrics: 9 / 1000 selected flaws received');
     expect(warning.text()).toContain('Aggregate bot metrics are unavailable without a completed run');
     expect(warning.text()).toContain('Select Refresh to start a new run.');
     expect(wrapper.text()).toContain('expired or was invalidated');
@@ -128,7 +127,7 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     // A fully warm 2000-flaw selection: the first 1000-flaw page already
     // reports the whole selection refreshed, but the run only ends when the
     // last page arrives without a cursor.
-    const warmProgress = { complete: true, refreshed_flaws: 2000, selected_flaws: 2000 };
+    const warmProgress = { complete: true, delivered_flaws: 2000, selected_flaws: 2000 };
     const firstEntries = botEntries(1, 1000);
     const lastEntries = botEntries(1001, 1000);
     const first = botPage(firstEntries, 'warm-2', warmProgress);
@@ -151,13 +150,9 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     await vi.waitFor(() => expect(requests).toHaveLength(1));
     firstGate.resolve();
     await vi.waitFor(() => expect(requests).toHaveLength(2));
-    expect(wrapper.text()).toContain('2000 / 2000 flaws refreshed');
-    // The saturated refreshed count no longer completes the bar: one
-    // delivered page of the two the warm pace projects.
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('50');
-    expect(wrapper.get('[role="progressbar"] .progress-bar').attributes('style')).toContain('width: 50%');
-    // The warm 1000-flaw page pace projects two pages, not the 400-flaw request basis.
-    expect(wrapper.text()).toContain('· page 1 of ~2');
+    expect(wrapper.text()).toContain('2000 / 2000 flaws received');
+    // The completed delivery ratio hides the bar even though the pending
+    // last page keeps the run loading.
     expect(wrapper.text()).toContain('Partial Acceptance Rate');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('1001 of 1001');
     // The pending last page keeps the run loading: no aggregate placeholders.
@@ -168,7 +163,7 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2001 of 2001');
     expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('2000 processed flaws');
     expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
-    expect(wrapper.text()).not.toContain('flaws refreshed');
+    expect(wrapper.text()).not.toContain('flaws received');
     expect(new URL(requests[1].url).searchParams.get('cursor')).toBe('warm-2');
     expect(requests).toHaveLength(2);
   });
@@ -180,9 +175,9 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     const botRequests: Request[] = [];
     const feedbackRequests: Request[] = [];
     const entries = [botEntry('CVE-2026-1000'), botEntry('CVE-2026-1000', 'cwe')];
-    const first = botPage(entries, 'second', { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+    const first = botPage(entries, 'second', { complete: false, delivered_flaws: 1, selected_flaws: 2 },
       { features: botFeatures, total_flaws_processed: 1 });
-    const second = botPage(entries, null, { complete: true, refreshed_flaws: 2, selected_flaws: 2 },
+    const second = botPage(entries, null, { complete: true, delivered_flaws: 2, selected_flaws: 2 },
       { features: botFeatures, total_flaws_processed: 2 });
     const recordedBefore = (request: Request) => new URL(request.url).searchParams.get('recorded_before');
     server.use(
@@ -304,7 +299,7 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     const stale = '2 of 3 selected flaws are not cached fresh (0 uncached, 2 changed in OSIDB).';
     await vi.waitFor(() => expect(wrapper!.get('span[role="status"]').text()).toContain(stale));
     // The cache selection total drives the progress denominator until the run reports its own.
-    expect(wrapper.text()).toContain('0 / 3 flaws refreshed');
+    expect(wrapper.text()).toContain('0 / 3 flaws received');
     // No page has arrived yet, so the bar stays indeterminate despite the known total.
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
@@ -422,9 +417,9 @@ describe('rendered KPI pagination with real service and HTTP', () => {
   it('estimates refreshed pages against the selection while paginating', async () => {
     const secondPageGate = gate();
     const first = botPage([botEntry('CVE-2026-1000')], 'page-2',
-      { complete: false, refreshed_flaws: 400, selected_flaws: 600 });
+      { complete: false, delivered_flaws: 400, selected_flaws: 600 });
     const second = botPage([botEntry('CVE-2026-1001')], null,
-      { complete: true, refreshed_flaws: 600, selected_flaws: 600 });
+      { complete: true, delivered_flaws: 600, selected_flaws: 600 });
     server.use(
       http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
       http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
@@ -434,8 +429,8 @@ describe('rendered KPI pagination with real service and HTTP', () => {
       }),
     );
     wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
-    await vi.waitFor(() => expect(wrapper!.text()).toContain('400 / 600 flaws refreshed'));
-    expect(wrapper.text()).toContain('· page 1 of ~2');
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('400 / 600 flaws received'));
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('67');
     secondPageGate.resolve();
     await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
     expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);

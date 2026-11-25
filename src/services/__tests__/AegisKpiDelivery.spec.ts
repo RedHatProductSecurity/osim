@@ -47,17 +47,17 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     const first = botPage(
       firstEntries,
       'opaque/+?=first',
-      { complete: false, refreshed_flaws: 2, selected_flaws: 10 },
+      { complete: false, delivered_flaws: 2, selected_flaws: 10 },
     );
     const second = botPage(
       secondEntries,
       'opaque/+?=last',
-      { complete: false, refreshed_flaws: 9, selected_flaws: 10 },
+      { complete: false, delivered_flaws: 9, selected_flaws: 10 },
     );
     const last = botPage(
       lastEntries,
       null,
-      { complete: true, refreshed_flaws: 10, selected_flaws: 10 },
+      { complete: true, delivered_flaws: 10, selected_flaws: 10 },
       { available_components: ['kernel'], features: botFeatures, total_flaws_processed: 7 },
     );
     const requests = servePages([first, second, last]);
@@ -88,13 +88,13 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     expect(snapshots[0]).toMatchObject({
       aggregates_available: false,
       features: {},
-      progress: { complete: false, refreshed_flaws: 2, selected_flaws: 10 },
+      progress: { complete: false, delivered_flaws: 2, selected_flaws: 10 },
       total_flaws_processed: 0,
     });
     expect(snapshots[1]).toMatchObject({
       aggregates_available: false,
       features: {},
-      progress: { complete: false, refreshed_flaws: 9, selected_flaws: 10 },
+      progress: { complete: false, delivered_flaws: 9, selected_flaws: 10 },
       total_flaws_processed: 0,
     });
     expect(result).toBe(snapshots[2]);
@@ -102,14 +102,14 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
       available_components: ['kernel'],
       entries: [...firstEntries, ...secondEntries, ...lastEntries],
       features: botFeatures,
-      progress: { complete: true, refreshed_flaws: 10, selected_flaws: 10 },
+      progress: { complete: true, delivered_flaws: 10, selected_flaws: 10 },
       total_flaws_processed: 7,
     });
   });
 
   it('captures the progress hook when the fetch starts', async () => {
     servePages([
-      botPage([], 'cursor-2', { complete: false, refreshed_flaws: 1, selected_flaws: 2 }),
+      botPage([], 'cursor-2', { complete: false, delivered_flaws: 1, selected_flaws: 2 }),
       botPage([], null, null, { features: botFeatures, total_flaws_processed: 1 }),
     ]);
     const originalHook = vi.fn();
@@ -150,7 +150,7 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     // limit the client requests, and progress.complete is already true on the
     // first page because the whole selection is fresh: only the absent
     // next_cursor of the last page may end the run.
-    const warmProgress = { complete: true, refreshed_flaws: 2000, selected_flaws: 2000 };
+    const warmProgress = { complete: true, delivered_flaws: 2000, selected_flaws: 2000 };
     const firstEntries = botEntries(1, 1000);
     const lastEntries = botEntries(1001, 1000);
     const first = botPage(firstEntries, 'warm-2', warmProgress);
@@ -201,8 +201,8 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     // 1600 fresh ones already count as refreshed; the warm remainder is then
     // served in 1000-flaw pages, the last of which fits a single final
     // response without cursor or progress.
-    const refreshProgress = { complete: false, refreshed_flaws: 2000, selected_flaws: 2400 };
-    const warmProgress = { complete: true, refreshed_flaws: 2400, selected_flaws: 2400 };
+    const refreshProgress = { complete: false, delivered_flaws: 2000, selected_flaws: 2400 };
+    const warmProgress = { complete: true, delivered_flaws: 2400, selected_flaws: 2400 };
     const firstEntries = botEntries(1, 400);
     const secondEntries = botEntries(401, 400);
     const thirdEntries = botEntries(801, 1000);
@@ -278,7 +278,7 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
   });
 
   it('finishes an empty selection without a follow-up page', async () => {
-    const requests = servePages([botPage([], null, { complete: true, refreshed_flaws: 0, selected_flaws: 0 })]);
+    const requests = servePages([botPage([], null, { complete: true, delivered_flaws: 0, selected_flaws: 0 })]);
     const onSnapshot = vi.fn();
     service.onBotKpiProgress = vi.fn();
     await expect(service.getBotKpiMetrics({}, { onSnapshot })).resolves.toMatchObject({
@@ -315,7 +315,7 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     const partial = botPage(
       [botEntry('CVE-2026-1000')],
       'opaque',
-      { complete: false, refreshed_flaws: 1, selected_flaws: 3 },
+      { complete: false, delivered_flaws: 1, selected_flaws: 3 },
     );
     const requests: Request[] = [];
     server.use(http.get(botUrl, ({ request }) => {

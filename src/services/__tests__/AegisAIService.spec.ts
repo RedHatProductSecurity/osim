@@ -548,7 +548,7 @@ describe('aegisAIService', () => {
             entries: [botEntry('CVE-2026-0001')],
             features: {},
             next_cursor: 'CVE-2026-0002',
-            progress: { complete: false, refreshed_flaws: 1, selected_flaws: 4 },
+            progress: { complete: false, delivered_flaws: 1, selected_flaws: 4 },
             total_flaws_processed: 0,
           });
         }
@@ -557,7 +557,7 @@ describe('aegisAIService', () => {
             available_components: ['openssl'],
             entries: [botEntry('CVE-2026-0103')],
             features: finalFeatures,
-            progress: { complete: true, refreshed_flaws: 4, selected_flaws: 4 },
+            progress: { complete: true, delivered_flaws: 4, selected_flaws: 4 },
             total_flaws_processed: 4,
           });
         }
@@ -565,7 +565,7 @@ describe('aegisAIService', () => {
           entries: [botEntry('CVE-2026-0101'), botEntry('CVE-2026-0102')],
           features: {},
           next_cursor: 'CVE-2026-0102',
-          progress: { complete: false, refreshed_flaws: 2, selected_flaws: 4 },
+          progress: { complete: false, delivered_flaws: 2, selected_flaws: 4 },
           total_flaws_processed: 0,
         });
       }));
@@ -578,21 +578,21 @@ describe('aegisAIService', () => {
           entries: [botEntry('CVE-2026-0001'), botEntry('CVE-2026-0002')],
           features: {},
           next_cursor: 'CVE-2026-0003',
-          progress: { complete: false, refreshed_flaws: 2, selected_flaws: 5 },
+          progress: { complete: false, delivered_flaws: 2, selected_flaws: 5 },
           total_flaws_processed: 0,
         },
         'CVE-2026-0003': {
           entries: [botEntry('CVE-2026-0003'), botEntry('CVE-2026-0004')],
           features: {},
           next_cursor: 'CVE-2026-0005',
-          progress: { complete: false, refreshed_flaws: 4, selected_flaws: 5 },
+          progress: { complete: false, delivered_flaws: 4, selected_flaws: 5 },
           total_flaws_processed: 0,
         },
         'CVE-2026-0005': {
           available_components: ['kernel', 'openssl'],
           entries: [botEntry('CVE-2026-0005')],
           features: finalFeatures,
-          progress: { complete: true, refreshed_flaws: 5, selected_flaws: 5 },
+          progress: { complete: true, delivered_flaws: 5, selected_flaws: 5 },
           total_flaws_processed: 5,
         },
       });
@@ -636,7 +636,7 @@ describe('aegisAIService', () => {
           entries: [botEntry('CVE-2026-0001')],
           features: {},
           next_cursor: 'CVE-2026-0002',
-          progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+          progress: { complete: false, delivered_flaws: 1, selected_flaws: 2 },
           total_flaws_processed: 0,
         },
         'CVE-2026-0002': {
@@ -727,7 +727,7 @@ describe('aegisAIService', () => {
             entries: [botEntry('CVE-2026-0001')],
             features: {},
             next_cursor: 'CVE-2026-0002',
-            progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+            progress: { complete: false, delivered_flaws: 1, selected_flaws: 2 },
             total_flaws_processed: 0,
           })));
 
@@ -756,14 +756,14 @@ describe('aegisAIService', () => {
             available_components: ['kernel'],
             entries: [botEntry('CVE-2026-0002')],
             features: finalFeatures,
-            progress: { complete: true, refreshed_flaws: 2, selected_flaws: 2 },
+            progress: { complete: true, delivered_flaws: 2, selected_flaws: 2 },
             total_flaws_processed: 2,
           })
           : HttpResponse.json({
             entries: [botEntry('CVE-2026-0001')],
             features: {},
             next_cursor: 'CVE-2026-0002',
-            progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+            progress: { complete: false, delivered_flaws: 1, selected_flaws: 2 },
             total_flaws_processed: 0,
           });
       }));
@@ -859,7 +859,7 @@ describe('aegisAIService', () => {
         available_components: ['openssl'],
         entries: [botEntry('CVE-2026-0101'), botEntry('CVE-2026-0102'), botEntry('CVE-2026-0103')],
         features: finalFeatures,
-        progress: { complete: true, refreshed_flaws: 4, selected_flaws: 4 },
+        progress: { complete: true, delivered_flaws: 4, selected_flaws: 4 },
         total_flaws_processed: 4,
       });
       expect(requests.filter(url => url.searchParams.get('component') === 'openssl')).toHaveLength(2);
@@ -900,7 +900,7 @@ describe('aegisAIService', () => {
           entries: [botEntry('CVE-2026-0001')],
           features: {},
           next_cursor: 'CVE-2026-0002',
-          progress: { complete: false, refreshed_flaws: 1, selected_flaws: 2 },
+          progress: { complete: false, delivered_flaws: 1, selected_flaws: 2 },
           total_flaws_processed: 0,
         },
         'CVE-2026-0002': {

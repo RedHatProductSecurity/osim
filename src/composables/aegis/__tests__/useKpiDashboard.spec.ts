@@ -25,9 +25,9 @@ describe('useKpiDashboard', () => {
     features: {},
     total_flaws_processed: 0,
   };
-  const withProgress = (refreshed: number, selected: number): AegisBotKpiMetrics => ({
+  const withProgress = (delivered: number, selected: number): AegisBotKpiMetrics => ({
     ...snapshot,
-    progress: { complete: refreshed === selected, refreshed_flaws: refreshed, selected_flaws: selected },
+    progress: { complete: delivered === selected, delivered_flaws: delivered, selected_flaws: selected },
   });
   const publish = (call = 0) => getBot.mock.calls[call][1].onSnapshot(snapshot);
   const cacheStatus: AegisBotKpiCacheStatus = {
@@ -67,20 +67,20 @@ describe('useKpiDashboard', () => {
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, delivered: 0, selected: null });
     expect(dashboard.loading.value).toBe(true);
 
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 10, selected: 40 });
     expect(dashboard.bot.value).toEqual(withProgress(10, 40));
     expect(dashboard.botIncomplete.value).toBe(true);
 
     getBot.mock.calls[0][1].onSnapshot(withProgress(30, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 2, refreshed: 30, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 2, delivered: 30, selected: 40 });
 
     // A page without a progress block clears both counts but still counts as a received page.
     publish();
-    expect(dashboard.botProgress.value).toEqual({ pages: 3, refreshed: null, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 3, delivered: null, selected: null });
   });
 
   it('resets bot progress when a new refresh starts and ignores progress from the superseded fetch', async () => {
@@ -93,11 +93,11 @@ describe('useKpiDashboard', () => {
     await flushPromises();
 
     expect(signal.aborted).toBe(true);
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, delivered: 0, selected: null });
     getBot.mock.calls[0][1].onSnapshot(withProgress(20, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ pages: 0, delivered: 0, selected: null });
     getBot.mock.calls[1][1].onSnapshot(withProgress(5, 30));
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 5, selected: 30 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 5, selected: 30 });
   });
 
   it('publishes the resolved metrics with their final progress when the run finishes', async () => {
@@ -105,7 +105,7 @@ describe('useKpiDashboard', () => {
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 40, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 40, selected: 40 });
     expect(dashboard.botIncomplete.value).toBe(false);
     expect(dashboard.loading.value).toBe(false);
   });
@@ -121,7 +121,7 @@ describe('useKpiDashboard', () => {
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 2, refreshed: 40, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 2, delivered: 40, selected: 40 });
     expect(dashboard.botIncomplete.value).toBe(false);
   });
 
@@ -130,14 +130,14 @@ describe('useKpiDashboard', () => {
     await flushPromises();
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 10, selected: 40 });
 
     app!.unmount();
     getBot.mock.calls[0][1].onSnapshot({ ...snapshot, total_flaws_processed: 20 });
 
     expect(signal.aborted).toBe(true);
     expect(dashboard.bot.value).toEqual(withProgress(10, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 10, selected: 40 });
     app = undefined;
   });
 

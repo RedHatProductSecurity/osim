@@ -254,7 +254,7 @@ export class AegisAIService {
       if (fetchId !== this.botKpiFetchId) throw new Error('osidb-bot KPI fetch was superseded by a newer request.');
       const data = result.data as AegisBotKpiPage;
       const snapshot = delivery.accept(data);
-      if (data.progress) onProgress?.(data.progress.refreshed_flaws, data.progress.selected_flaws);
+      if (data.progress) onProgress?.(data.progress.delivered_flaws, data.progress.selected_flaws);
       options.onSnapshot?.(snapshot);
       nextCursor = continuation(data);
       if (!nextCursor) return snapshot;
