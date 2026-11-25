@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import { createPinia, setActivePinia } from 'pinia';
 
 import { encodeJWT } from '@/__tests__/helpers';
-import { botEntry, botFeatures, botPage, deferred } from '@/__tests__/kpiDeliveryFixtures';
+import { botEntries, botEntry, botFeatures, botPage, deferred } from '@/__tests__/kpiDeliveryFixtures';
 import { server } from '@/__tests__/setup';
 import { AegisAIService } from '@/services/AegisAIService';
 import { useAuthStore } from '@/stores/AuthStore';
@@ -143,6 +143,96 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     expect(new URL(requests[0].url).searchParams.has('cursor')).toBe(false);
     expect(onSnapshot).toHaveBeenCalledExactlyOnceWith(result);
     expect(service.onBotKpiProgress).not.toHaveBeenCalled();
+  });
+
+  it('completes a fully cached selection served as two warm pages despite complete progress', async () => {
+    // A fully warm 2000-flaw selection is served in 1000-flaw pages whatever
+    // limit the client requests, and progress.complete is already true on the
+    // first page because the whole selection is fresh: only the absent
+    // next_cursor of the last page may end the run.
+    const warmProgress = { complete: true, refreshed_flaws: 2000, selected_flaws: 2000 };
+    const firstEntries = botEntries(1, 1000);
+    const lastEntries = botEntries(1001, 1000);
+    const first = botPage(firstEntries, 'warm-2', warmProgress);
+    const last = botPage(lastEntries, null, warmProgress, {
+      available_components: ['kernel'],
+      features: botFeatures,
+      total_flaws_processed: 2000,
+    });
+    const requests = servePages([first, last]);
+    const onSnapshot = vi.fn();
+    const onBotKpiProgress = vi.fn();
+    service.onBotKpiProgress = onBotKpiProgress;
+
+    const result = await service.getBotKpiMetrics({}, { onSnapshot });
+
+    expect(requests).toHaveLength(2);
+    expect(requests.map(request => new URL(request.url).searchParams.get('cursor')))
+      .toEqual([null, 'warm-2']);
+    for (const request of requests) {
+      expect(new URL(request.url).searchParams.get('limit')).toBe('400');
+    }
+    const snapshots = onSnapshot.mock.calls.map(([metrics]) => metrics);
+    expect(snapshots.map(metrics => metrics.entries)).toEqual([
+      firstEntries,
+      [...firstEntries, ...lastEntries],
+    ]);
+    // The complete progress of the first page does not make its snapshot
+    // authoritative: only a page without next_cursor carries the aggregate.
+    expect(snapshots[0]).toMatchObject({
+      aggregates_available: false,
+      features: {},
+      progress: warmProgress,
+      total_flaws_processed: 0,
+    });
+    expect(result).toBe(snapshots[1]);
+    expect(result).toEqual({
+      available_components: ['kernel'],
+      entries: [...firstEntries, ...lastEntries],
+      features: botFeatures,
+      progress: warmProgress,
+      total_flaws_processed: 2000,
+    });
+    expect(onBotKpiProgress.mock.calls).toEqual([[2000, 2000], [2000, 2000]]);
+  });
+
+  it('follows cursors when refresh-paced pages give way to larger warm remainder pages', async () => {
+    // 800 stale flaws are refreshed at the requested 400-flaw pace while the
+    // 1600 fresh ones already count as refreshed; the warm remainder is then
+    // served in 1000-flaw pages, the last of which fits a single final
+    // response without cursor or progress.
+    const refreshProgress = { complete: false, refreshed_flaws: 2000, selected_flaws: 2400 };
+    const warmProgress = { complete: true, refreshed_flaws: 2400, selected_flaws: 2400 };
+    const firstEntries = botEntries(1, 400);
+    const secondEntries = botEntries(401, 400);
+    const thirdEntries = botEntries(801, 1000);
+    const lastEntries = botEntries(1801, 600);
+    const requests = servePages([
+      botPage(firstEntries, 'refresh-2', refreshProgress),
+      botPage(secondEntries, 'warm-1', warmProgress),
+      botPage(thirdEntries, 'warm-2', warmProgress),
+      botPage(lastEntries, null, null, {
+        available_components: ['kernel'],
+        features: botFeatures,
+        total_flaws_processed: 2400,
+      }),
+    ]);
+    const onSnapshot = vi.fn();
+    const onBotKpiProgress = vi.fn();
+    service.onBotKpiProgress = onBotKpiProgress;
+
+    const result = await service.getBotKpiMetrics({}, { onSnapshot });
+
+    expect(requests.map(request => new URL(request.url).searchParams.get('cursor')))
+      .toEqual([null, 'refresh-2', 'warm-1', 'warm-2']);
+    expect(result).toEqual({
+      available_components: ['kernel'],
+      entries: [...firstEntries, ...secondEntries, ...thirdEntries, ...lastEntries],
+      features: botFeatures,
+      total_flaws_processed: 2400,
+    });
+    expect(onSnapshot).toHaveBeenCalledTimes(4);
+    expect(onBotKpiProgress.mock.calls).toEqual([[2000, 2400], [2400, 2400], [2400, 2400]]);
   });
 
   it('rejects a later page whose entries is not an array before publishing it', async () => {

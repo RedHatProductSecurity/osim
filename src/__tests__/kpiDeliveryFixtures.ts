@@ -13,6 +13,11 @@ export const botEntry = (cve: string, feature = 'impact'): AegisBotKpiEntry => (
   confidence: 0.9,
 });
 
+// Consecutive per-flaw entries (CVE-2026-0001, CVE-2026-0002, …) for sizing
+// the pages of a selection, e.g. 1000-flaw warm-cache pages.
+export const botEntries = (first: number, count: number): AegisBotKpiEntry[] =>
+  Array.from({ length: count }, (_, index) => botEntry(`CVE-2026-${String(first + index).padStart(4, '0')}`));
+
 export const botFeatures: Record<string, AegisBotFeatureKpi> = {
   impact: {
     suggested: 2,
@@ -28,8 +33,12 @@ export const botFeatures: Record<string, AegisBotFeatureKpi> = {
 
 // One page of the cursor-paginated osidb-bot KPI protocol: `entries` covers
 // only this page's slice of the selection, `nextCursor` continues the run
-// (null ends it), and `progress` reports the cumulative cache-refresh counts.
-// A fully cached selection is served as one page without cursor or progress.
+// (null ends it), and `progress` reports the cumulative cache-refresh counts
+// (`complete` marks the refresh, not the delivery, so it is true from the
+// first page of a fully warm run while cursors remain). Warm-cache pages
+// carry up to 1000 flaws regardless of the requested limit; only a fully
+// cached remainder that fits one page is a single final response without
+// cursor or progress.
 export function botPage(
   entries: AegisBotKpiEntry[],
   nextCursor: null | string,

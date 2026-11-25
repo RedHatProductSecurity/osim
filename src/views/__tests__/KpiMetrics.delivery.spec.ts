@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw';
 import { createPinia, setActivePinia } from 'pinia';
 
 import { encodeJWT, mountWithConfig } from '@/__tests__/helpers';
-import { botEntry, botFeatures, botPage, deferred } from '@/__tests__/kpiDeliveryFixtures';
+import { botEntries, botEntry, botFeatures, botPage, deferred } from '@/__tests__/kpiDeliveryFixtures';
 import { server } from '@/__tests__/setup';
 import { useAuthStore } from '@/stores/AuthStore';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -110,6 +110,52 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     expect(button('Download CSV').attributes('disabled')).toBeDefined();
     expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
     expect(requests).toHaveLength(3);
+  });
+
+  it('streams a fully cached run as warm pages without mistaking complete progress for delivery', async () => {
+    const firstGate = gate();
+    const lastGate = gate();
+    // A fully warm 2000-flaw selection: the first 1000-flaw page already
+    // reports the whole selection refreshed, but the run only ends when the
+    // last page arrives without a cursor.
+    const warmProgress = { complete: true, refreshed_flaws: 2000, selected_flaws: 2000 };
+    const firstEntries = botEntries(1, 1000);
+    const lastEntries = botEntries(1001, 1000);
+    const first = botPage(firstEntries, 'warm-2', warmProgress);
+    const last = botPage(lastEntries, null, warmProgress, {
+      features: botFeatures, total_flaws_processed: 2000,
+    });
+    const requests: Request[] = [];
+    server.use(
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot`, async ({ request }) => {
+        const index = requests.push(request) - 1;
+        await (index === 0 ? firstGate : lastGate).promise;
+        return HttpResponse.json(index === 0 ? first : last);
+      }),
+      http.get(`${baseUrl}/analysis/kpi/cve`, () => HttpResponse.json(feedback)),
+      http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () => HttpResponse.json({
+        fresh_count: 2000, outdated_count: 0, stale_count: 0, total_flaws_selected: 2000, uncached_count: 0,
+      })),
+    );
+    wrapper = mountWithConfig(KpiMetrics, {}, [pinia]);
+    await vi.waitFor(() => expect(requests).toHaveLength(1));
+    firstGate.resolve();
+    await vi.waitFor(() => expect(requests).toHaveLength(2));
+    expect(wrapper.text()).toContain('2000 / 2000 flaws refreshed');
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('100');
+    expect(wrapper.text()).toContain('Partial Acceptance Rate');
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('1001 of 1001');
+    // The pending last page keeps the run loading: no aggregate placeholders.
+    expect(wrapper.find('[data-testid="processed-flaws"]').exists()).toBe(false);
+    expect(wrapper.find('tbody').exists()).toBe(false);
+    lastGate.resolve();
+    await vi.waitFor(() => expect(wrapper!.text()).toContain('Combined Acceptance Rate'));
+    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('2001 of 2001');
+    expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('2000 processed flaws');
+    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain('flaws refreshed');
+    expect(new URL(requests[1].url).searchParams.get('cursor')).toBe('warm-2');
+    expect(requests).toHaveLength(2);
   });
 
   it('closes the selection window at the original request moment for every page of a run', async () => {
