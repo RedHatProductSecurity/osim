@@ -58,8 +58,8 @@ export function useKpiDashboard() {
   const toDate = ref('');
   const feedback = ref<AegisKpiMetrics>({});
   const bot = ref<AegisBotKpiMetrics | null>(null);
-  const botProgress = ref<{ refreshed: null | number; selected: null | number }>(
-    { refreshed: 0, selected: null },
+  const botProgress = ref<{ pages: number; refreshed: null | number; selected: null | number }>(
+    { pages: 0, refreshed: 0, selected: null },
   );
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
@@ -76,6 +76,11 @@ export function useKpiDashboard() {
   const service = new AegisAIService();
   let requestId = 0;
   let controller: AbortController | undefined;
+  // Pages received in the current bot run: every accepted page publishes a
+  // fresh cumulative snapshot and the resolved run re-publishes the final
+  // snapshot object, so object identity separates new pages from re-publishes.
+  let botPages = 0;
+  let lastBotSnapshot: AegisBotKpiMetrics | undefined;
   onUnmounted(() => {
     requestId++;
     controller?.abort();
@@ -114,7 +119,9 @@ export function useKpiDashboard() {
   function resetResults() {
     feedback.value = {};
     bot.value = null;
-    botProgress.value = { refreshed: 0, selected: null };
+    botProgress.value = { pages: 0, refreshed: 0, selected: null };
+    botPages = 0;
+    lastBotSnapshot = undefined;
     botComplete.value = false;
     botCacheStatus.value = null;
     cacheStatusError.value = null;
@@ -126,8 +133,13 @@ export function useKpiDashboard() {
 
   function publishBot(metrics: AegisBotKpiMetrics, id: number) {
     if (id !== requestId) return;
+    if (metrics !== lastBotSnapshot) {
+      lastBotSnapshot = metrics;
+      botPages++;
+    }
     bot.value = metrics;
     botProgress.value = {
+      pages: botPages,
       refreshed: metrics.progress?.refreshed_flaws ?? null,
       selected: metrics.progress?.selected_flaws ?? null,
     };

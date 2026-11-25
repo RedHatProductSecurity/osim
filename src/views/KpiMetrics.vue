@@ -40,17 +40,17 @@ const botProgressPercent = computed(() => {
     ? selected === 0 ? 100 : Math.min(100, Math.round((refreshed / selected) * 100))
     : null;
 });
-// Refreshed pages and their estimated total, only once the run reports
-// progress: retries and short pages make the total approximate.
+// Received pages and their projected total. Warm-cache pages serve up to
+// 1000 flaws regardless of the requested limit, so the total projects from
+// the observed delivery pace — distinct delivered CVEs per page — floored at
+// the requested page size. Retries and short pages keep it approximate.
 const botPageEstimate = computed(() => {
-  const { refreshed } = botProgress.value;
-  const selected = botSelectedTotal.value;
-  return selected !== null && selected > 0 && refreshed !== null && refreshed > 0
-    ? {
-        delivered: Math.ceil(refreshed / BOT_KPI_MAX_FLAWS_PER_PAGE),
-        estimated: Math.ceil(selected / BOT_KPI_MAX_FLAWS_PER_PAGE),
-      }
-    : null;
+  const { pages } = botProgress.value;
+  const total = botSelectedTotal.value;
+  if (total === null || total <= 0 || pages <= 0) return null;
+  const deliveredFlaws = new Set(bot.value?.entries.map(entry => entry.cve_id)).size;
+  const pace = Math.max(BOT_KPI_MAX_FLAWS_PER_PAGE, Math.ceil(deliveredFlaws / pages));
+  return { delivered: pages, estimated: Math.max(pages, Math.ceil(total / pace)) };
 });
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
