@@ -262,7 +262,7 @@ export class AegisAIService {
     throw new Error('osidb-bot KPI pagination did not complete after 200 pages.');
   }
 
-  private async fetchKpi(config: AegisAIGetFetchOptions) {
+  private async fetchKpi(config: AegisAIGetFetchOptions | AegisAIPostFetchOptions) {
     for (let attempt = 0; ; attempt++) {
       config.signal?.throwIfAborted();
       try {
@@ -461,6 +461,26 @@ export class AegisAIService {
       return result.data;
     } catch (error) {
       console.error('AegisAIService::getKpiMetrics() Error:', error);
+      throw error;
+    }
+  }
+
+  /** Advance the osidb-bot KPI cache refresh by one server-side bounded
+   * slice and return the post-slice counts. Polling this method drains the
+   * backlog at the client's pace: every call makes progress and the poll
+   * rate bounds the OSIDB load. */
+  async refreshBotKpiCache(component?: string, signal?: AbortSignal): Promise<AegisBotKpiCacheStatus> {
+    try {
+      const result = await this.fetchKpi({
+        method: 'POST',
+        url: '/analysis/kpi/osidb-bot/cache-refresh',
+        params: { component },
+        signal,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error('AegisAIService::refreshBotKpiCache() Error:', error);
       throw error;
     }
   }

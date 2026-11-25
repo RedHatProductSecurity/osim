@@ -36,10 +36,15 @@ describe('rendered KPI pagination with real service and HTTP', () => {
     useAuthStore().accessToken = encodeJWT({ exp: Math.floor(Date.now() / 1000) + 3600, user_id: 1337 });
     // @ts-expect-error Runtime configuration is read-only outside tests.
     osimRuntime.value.backends.aegisai = baseUrl;
-    // The dashboard also queries the read-only cache-status endpoint; a fresh
-    // cache keeps its status text out of the assertions below.
+    // The dashboard also queries the read-only cache-status endpoint and
+    // drains the cache-refresh endpoint before fetching; an all-fresh cache
+    // completes the drain in one poll and keeps its status text out of the
+    // assertions below.
     server.use(
       http.get(`${baseUrl}/analysis/kpi/osidb-bot/cache-status`, () => HttpResponse.json({
+        fresh_count: 2, outdated_count: 0, stale_count: 0, total_flaws_selected: 2, uncached_count: 0,
+      })),
+      http.post(`${baseUrl}/analysis/kpi/osidb-bot/cache-refresh`, () => HttpResponse.json({
         fresh_count: 2, outdated_count: 0, stale_count: 0, total_flaws_selected: 2, uncached_count: 0,
       })),
     );

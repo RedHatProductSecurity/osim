@@ -106,6 +106,9 @@ describe('kPI dashboard', () => {
   // Resolves null so the auxiliary cache-status text stays out of the
   // pre-existing rendering assertions; cache-status behavior has its own tests.
   const getCacheStatus = vi.fn();
+  // Resolves an all-fresh cache so the drain completes in one poll and the
+  // pre-existing assertions are unaffected; drain behavior has its own tests.
+  const refreshCache = vi.fn();
   const mount = async () => {
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
@@ -117,9 +120,11 @@ describe('kPI dashboard', () => {
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
     getCacheStatus.mockReset().mockResolvedValue(null);
+    refreshCache.mockReset().mockResolvedValue({ stale_count: 0 });
     vi.mocked(AegisAIService).mockImplementation(function () {
       return {
         getBotKpiCacheStatus: getCacheStatus,
+        refreshBotKpiCache: refreshCache,
         getBotKpiMetrics: getBot,
         getKpiMetrics: getFeedback,
       } as unknown as AegisAIService;
@@ -619,6 +624,9 @@ describe('kPI dashboard', () => {
     getFeedback.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectFeedback = reject; }));
     getBot.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectBot = reject; }));
     wrapper = mountWithConfig(KpiMetrics);
+    // Let the initial scope's bot fetch start (the cache drain defers it one
+    // tick) so the filter change below supersedes it, not the other way round.
+    await flushPromises();
     await wrapper.get('#kpi-component').setValue('kernel');
     await flushPromises();
     rejectFeedback(new Error('Obsolete feedback failure'));
@@ -686,6 +694,7 @@ describe('kPI dashboard', () => {
     getBot.mockReset().mockReturnValue(new Promise((resolve) => { resolveBot = resolve; }));
     getFeedback.mockReturnValue(new Promise(() => {}));
     wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
     expect(wrapper.text()).toContain('0 flaws refreshed; awaiting the first page');
     expect(wrapper.text()).not.toContain('of ~');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
@@ -799,6 +808,7 @@ describe('kPI dashboard', () => {
       .mockReturnValueOnce(new Promise((resolve) => { resolveSuperseded = resolve; }))
       .mockReturnValueOnce(new Promise(() => {}));
     wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
     const supersededOptions = getBot.mock.calls[0][1];
     const feedbackSignal = getFeedback.mock.calls[0][2];
     publish(snapshot(100, 800));

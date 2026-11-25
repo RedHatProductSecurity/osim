@@ -16,6 +16,9 @@ describe('useKpiDashboard', () => {
   // Resolves null so the auxiliary cache-status load stays invisible to the
   // pre-existing assertions; cache-status behavior has its own tests.
   const getCacheStatus = vi.fn();
+  // Resolves an all-fresh cache so the drain completes in one poll and the
+  // pre-existing assertions are unaffected; drain behavior has its own tests.
+  const refreshCache = vi.fn();
   let app: App | undefined;
   const snapshot: AegisBotKpiMetrics = {
     entries: [],
@@ -39,9 +42,11 @@ describe('useKpiDashboard', () => {
     getFeedback.mockReset().mockResolvedValue({});
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     getCacheStatus.mockReset().mockResolvedValue(null);
+    refreshCache.mockReset().mockResolvedValue({ stale_count: 0 });
     vi.mocked(AegisAIService).mockImplementation(function () {
       return {
         getBotKpiCacheStatus: getCacheStatus,
+        refreshBotKpiCache: refreshCache,
         getBotKpiMetrics: getBot,
         getKpiMetrics: getFeedback,
       } as unknown as AegisAIService;
@@ -58,8 +63,9 @@ describe('useKpiDashboard', () => {
     return dashboard;
   }
 
-  it('starts at zero with unknown selected count and tracks progress from each snapshot', () => {
+  it('starts at zero with unknown selected count and tracks progress from each snapshot', async () => {
     const dashboard = mountDashboard();
+    await flushPromises();
 
     expect(dashboard.botProgress.value).toEqual({ pages: 0, refreshed: 0, selected: null });
     expect(dashboard.loading.value).toBe(true);
@@ -79,6 +85,7 @@ describe('useKpiDashboard', () => {
 
   it('resets bot progress when a new refresh starts and ignores progress from the superseded fetch', async () => {
     const dashboard = mountDashboard();
+    await flushPromises();
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
 
@@ -118,8 +125,9 @@ describe('useKpiDashboard', () => {
     expect(dashboard.botIncomplete.value).toBe(false);
   });
 
-  it('ignores snapshots after the dashboard unmounts', () => {
+  it('ignores snapshots after the dashboard unmounts', async () => {
     const dashboard = mountDashboard();
+    await flushPromises();
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
     expect(dashboard.botProgress.value).toEqual({ pages: 1, refreshed: 10, selected: 40 });

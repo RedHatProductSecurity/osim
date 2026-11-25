@@ -25,6 +25,12 @@ function isCacheStatusUnsupported(reason: unknown): boolean {
   return httpStatusOf(reason) === 404;
 }
 
+// A 404 marks an Aegis server that predates the cache-refresh endpoint;
+// draining is then skipped and pages serve whatever the server provides.
+function isCacheRefreshUnsupported(reason: unknown): boolean {
+  return httpStatusOf(reason) === 404;
+}
+
 function kpiErrorMessage(source: string, reason: unknown, what = 'metrics'): string {
   const error = reason && typeof reason === 'object' ? reason : {};
   const status = httpStatusOf(reason);
@@ -64,6 +70,11 @@ export function useKpiDashboard() {
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
   const botComplete = ref(false);
+  // Cache refresh counts observed while draining, for the refresh status.
+  const botRefresh = ref<{ remaining: null | number; total: null | number }>({
+    remaining: null,
+    total: null,
+  });
   const botCacheStatus = ref<AegisBotKpiCacheStatus | null>(null);
   const cacheStatusError = ref<null | string>(null);
   const loading = computed(() => botLoading.value || feedbackLoading.value);
@@ -123,6 +134,7 @@ export function useKpiDashboard() {
     botPages = 0;
     lastBotSnapshot = undefined;
     botComplete.value = false;
+    botRefresh.value = { remaining: null, total: null };
     botCacheStatus.value = null;
     cacheStatusError.value = null;
     errors.value = [];
@@ -174,6 +186,32 @@ export function useKpiDashboard() {
     }
   }
 
+  // Drain the cache-refresh endpoint until the selection is fully fresh.
+  // Pages never refresh, so the metrics are only current once this finishes;
+  // each call advances a server-side bounded slice, so the poll rate bounds
+  // the OSIDB load. The 10000-call cap is a safety bound: draining the
+  // largest selections takes hundreds of calls, never thousands.
+  async function drainBotCache(id: number, component: string | undefined, signal: AbortSignal) {
+    for (let call = 0; call < 10_000; call++) {
+      signal.throwIfAborted();
+      if (id !== requestId) return;
+      let counts;
+      try {
+        counts = await service.refreshBotKpiCache(component, signal);
+      } catch (reason) {
+        if (isCacheRefreshUnsupported(reason)) return;
+        throw reason;
+      }
+      if (id !== requestId) return;
+      botRefresh.value = {
+        remaining: counts.stale_count,
+        total: counts.total_flaws_selected,
+      };
+      if (counts.stale_count === 0) return;
+    }
+    throw new Error('osidb-bot KPI cache refresh did not drain. Select Refresh to try again.');
+  }
+
   async function refresh() {
     const id = ++requestId;
     controller?.abort();
@@ -196,6 +234,10 @@ export function useKpiDashboard() {
         collectOptions();
       }),
       loadSource('osidb-bot', id, async () => {
+        // Bring the cache up to date first: pages are pure cache reads, so
+        // without the drain they would serve last-known data.
+        await drainBotCache(id, currentQuery.component, signal);
+        if (id !== requestId) return;
         const metrics = await service.getBotKpiMetrics(currentQuery, {
           signal, onSnapshot: value => publishBot(value, id),
         });
@@ -239,6 +281,7 @@ export function useKpiDashboard() {
     bot,
     botProgress,
     botLoading,
+    botRefresh,
     feedbackLoading,
     botIncomplete,
     botCacheStatus,

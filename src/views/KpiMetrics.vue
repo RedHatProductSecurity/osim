@@ -14,7 +14,7 @@ import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
   availableComponents, availableFeatures, availableVersions,
-  bot, botCacheStatus, botIncomplete, botLoading, botProgress,
+  bot, botCacheStatus, botIncomplete, botLoading, botProgress, botRefresh,
   cacheStatusError, clearFilters, component, errors, feature, feedbackLoading, fromDate,
   invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
@@ -177,6 +177,13 @@ function applyComponent(event: Event) {
     <p v-if="invalidRange" role="alert">The start date must be on or before the end date.</p>
     <p v-if="feedbackLoading" role="status">Loading feedback metrics…</p>
     <div v-if="botLoading" class="mb-3">
+      <span v-if="botRefresh.remaining" role="status" class="d-block mb-1">
+        Refreshing osidb-bot cache…
+        <template v-if="botRefresh.total">
+          {{ botRefresh.total - botRefresh.remaining }} / {{ botRefresh.total }} flaws refreshed
+        </template>
+        <template v-else>{{ botRefresh.remaining }} flaws remaining</template>
+      </span>
       <span role="status">
         Loading osidb-bot metrics…
         <template v-if="botProgress.refreshed !== null && botSelectedTotal !== null">
