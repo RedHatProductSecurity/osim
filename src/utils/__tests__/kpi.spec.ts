@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { AegisBotKpiEntry } from '@/types/aegisAI';
 import {
-  botObservations, compareKpiVersions, feedbackObservations, kpiHistory, kpiSourceLabel, summarizeKpi,
+  botObservations, compareKpiVersions, feedbackObservations, kpiHistory, kpiSourceChannel,
+  kpiSourceDescription, kpiSourceLabel, summarizeKpi,
 } from '@/utils/kpi';
 
 const record = (overrides: Partial<AegisBotKpiEntry> = {}): AegisBotKpiEntry => ({
@@ -102,10 +103,27 @@ describe('kPI aggregation', () => {
   });
 
   it('labels known sources for display and passes the rest through unchanged', () => {
-    expect(kpiSourceLabel('programmatic')).toBe('Requested by User');
+    expect(kpiSourceLabel('feedback')).toBe('Google Form');
+    expect(kpiSourceLabel('manual')).toBe('Legacy Manual');
     expect(kpiSourceLabel('osidb-bot')).toBe('Automated (OSIDB Bot)');
-    expect(kpiSourceLabel('feedback')).toBe('feedback');
-    expect(kpiSourceLabel('manual')).toBe('manual');
+    expect(kpiSourceLabel('programmatic')).toBe('Requested by User');
+    expect(kpiSourceLabel('legacy-form')).toBe('legacy-form');
+  });
+
+  it('describes the provenance of each known source and none for unknown sources', () => {
+    expect(kpiSourceDescription('feedback')).toMatch(/Google Form.*before feedback sources were tracked/);
+    expect(kpiSourceDescription('manual')).toMatch(/rating buttons.*since been removed/);
+    expect(kpiSourceDescription('programmatic')).toMatch(/Recorded automatically.*saved flaw/);
+    expect(kpiSourceDescription('osidb-bot')).toMatch(/comparing.*current OSIDB flaw values/);
+    expect(kpiSourceDescription('legacy-form')).toBeUndefined();
+  });
+
+  it('maps each source to its export channel and passes unknown sources through', () => {
+    expect(kpiSourceChannel('feedback')).toBe('google_form');
+    expect(kpiSourceChannel('manual')).toBe('legacy_manual');
+    expect(kpiSourceChannel('osidb-bot')).toBe('osidb_bot');
+    expect(kpiSourceChannel('programmatic')).toBe('requested_by_user');
+    expect(kpiSourceChannel('legacy-form')).toBe('legacy-form');
   });
 
   it('canonicalizes osidb-bot statement and mitigation entries to their feedback features', () => {

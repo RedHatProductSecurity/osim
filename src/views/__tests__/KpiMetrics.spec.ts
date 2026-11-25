@@ -5,7 +5,7 @@ import { mountWithConfig } from '@/__tests__/helpers';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
 import type {
-  AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics,
+  AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiMetricsFeature,
 } from '@/types/aegisAI';
 import { downloadKpiCsv } from '@/utils/kpiReport';
 
@@ -124,10 +124,43 @@ describe('kPI dashboard', () => {
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
     expect(wrapper.get('[data-testid="processed-flaws"]').text()).toContain('1 processed flaws');
     expect(wrapper.text()).toContain('Unknown version');
-    expect(wrapper.text()).toContain('manual: 100.0%');
+    expect(wrapper.text()).toContain('Legacy Manual: 100.0%');
     expect(wrapper.text()).toContain('Requested by User: 0.0%');
     expect(wrapper.text()).toContain('Automated (OSIDB Bot): 100.0%');
     expect(wrapper.get('tbody').text()).toContain('0.80');
+  });
+
+  it('tooltips each By Source entry with its provenance and leaves unknown sources bare', async () => {
+    // A source the frontend does not recognize still renders, just without a tooltip.
+    const unrecognizedSourceEntry = {
+      datetime: '2026-09-01 12:00:00',
+      accepted: true,
+      aegis_version: '0.9.2',
+      feedback_source: 'legacy-form',
+    } as unknown as AegisKpiMetricsFeature['entries'][number];
+    getFeedback.mockResolvedValue({
+      'suggest-impact': {
+        acceptance_percentage: 50,
+        entries: [
+          { datetime: '2026-09-01 12:00:00', accepted: true, aegis_version: '0.9.2' },
+          { datetime: '2026-09-01 12:00:00', accepted: true, aegis_version: '0.9.2', feedback_source: 'manual' },
+          { datetime: '2026-09-01 12:00:00', accepted: false, aegis_version: '0.9.2', feedback_source: 'programmatic' },
+          unrecognizedSourceEntry,
+        ],
+      },
+    });
+    await mount();
+    const bySource = wrapper.findAll('ul')[1].findAll('li');
+    const titles = new Map(bySource.map(item => [item.text().split(':')[0], item.attributes('title')]));
+
+    expect([...titles.keys()]).toEqual([
+      'Google Form', 'Legacy Manual', 'Requested by User', 'legacy-form', 'Automated (OSIDB Bot)',
+    ]);
+    expect(titles.get('Google Form')).toContain('early Google Form');
+    expect(titles.get('Legacy Manual')).toContain('rating buttons');
+    expect(titles.get('Requested by User')).toContain('Recorded automatically');
+    expect(titles.get('Automated (OSIDB Bot)')).toContain('current OSIDB flaw values');
+    expect(titles.get('legacy-form')).toBeUndefined();
   });
 
   it('offers unique component suggestions and applies arbitrary component names to both sources', async () => {
@@ -159,10 +192,16 @@ describe('kPI dashboard', () => {
     expect(downloadKpiCsv).toHaveBeenCalledOnce();
     const csv = vi.mocked(downloadKpiCsv).mock.calls[0][0];
     expect(csv).toContain('"kernel","suggest-impact"');
-    expect(csv).toContain('"2","3","66.7"');
-    // The export keeps raw source values even though the list renders labels.
-    expect(csv).toContain('"programmatic","suggest-impact"');
-    expect(csv).toContain('"osidb-bot","suggest-impact"');
+    // Feedback and bot counts split across their columns, with the combined rate last.
+    expect(csv).toContain('"1","1","2","50.0","1","1","1","0","1","100.0","66.7","1"');
+    // The export uses channel names even though the list renders labels.
+    expect(csv).toContain('"legacy_manual","suggest-impact"');
+    expect(csv).toContain('"requested_by_user","suggest-impact"');
+    expect(csv).toContain('"osidb_bot","suggest-impact"');
+    expect(csv).not.toContain('"manual"');
+    expect(csv).not.toContain('"programmatic"');
+    expect(csv).not.toContain('"osidb-bot"');
+    expect(csv).not.toContain('Legacy Manual');
     expect(csv).not.toContain('Requested by User');
     expect(csv).not.toContain('Automated (OSIDB Bot)');
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
@@ -269,7 +308,8 @@ describe('kPI dashboard', () => {
     expect(wrapper.findComponent({ name: 'VueUiXy' }).props('dataset')).toEqual(originalDataset);
     expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
     await button('Download CSV').trigger('click');
-    expect(vi.mocked(downloadKpiCsv).mock.calls[0][0]).toContain('"2","3","66.7"');
+    expect(vi.mocked(downloadKpiCsv).mock.calls[0][0])
+      .toContain('"1","1","2","50.0","1","1","1","0","1","100.0","66.7","1"');
   });
 
   it('clears every filter together and restores the original API scope (OSIDB-5154)', async () => {
@@ -554,7 +594,8 @@ describe('kPI dashboard', () => {
     await button('Download CSV').trigger('click');
     expect(downloadKpiCsv).toHaveBeenCalledOnce();
     expect(vi.mocked(downloadKpiCsv).mock.calls[0][0]).toContain('"kernel","suggest-impact"');
-    expect(vi.mocked(downloadKpiCsv).mock.calls[0][0]).toContain('"2","3","66.7"');
+    expect(vi.mocked(downloadKpiCsv).mock.calls[0][0])
+      .toContain('"1","1","2","50.0","1","1","1","0","1","100.0","66.7","1"');
   });
 
   it('ignores older failures after a newer filter scope has loaded successfully', async () => {
