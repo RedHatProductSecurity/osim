@@ -1,5 +1,7 @@
 import type { AegisBotKpiMetrics } from '@/types/aegisAI';
-import { canonicalKpiFeature, kpiVersionLabel, kpiWeek, summarizeKpi, type KpiObservation } from '@/utils/kpi';
+import {
+  canonicalKpiFeature, kpiSourceChannel, kpiVersionLabel, kpiWeek, summarizeKpi, type KpiObservation,
+} from '@/utils/kpi';
 
 export type KpiReportScope = {
   bot: AegisBotKpiMetrics | null;
@@ -21,12 +23,13 @@ function reportGroups(observations: KpiObservation[]) {
   const groups = new Map<string, { entries: KpiObservation[]; feature: string; source: string; week: string }>();
   for (const entry of observations) {
     const week = kpiWeek(entry.datetime);
+    const source = kpiSourceChannel(entry.source);
     const keys = [
-      ['', 'combined', 'all'],
-      ['', 'combined', entry.feature],
-      ['', entry.source, 'all'],
-      ['', entry.source, entry.feature],
-      ...(week ? [[week, 'combined', entry.feature], [week, entry.source, entry.feature]] : []),
+      ['', 'all', 'all'],
+      ['', 'all', entry.feature],
+      ['', source, 'all'],
+      ['', source, entry.feature],
+      ...(week ? [[week, 'all', entry.feature], [week, source, entry.feature]] : []),
     ];
     for (const [week, source, feature] of keys) {
       const key = JSON.stringify([week, source, feature]);
@@ -47,17 +50,21 @@ export function createKpiCsv(observations: KpiObservation[], scope: KpiReportSco
     'version_filter',
     'from_utc',
     'through_utc',
-    'accepted_or_kept',
-    'scored',
-    'acceptance_percentage',
+    'feedback_accepted',
+    'feedback_rejected',
+    'feedback_scored',
+    'feedback_acceptance_pct',
     'bot_suggested',
     'bot_skipped',
     'bot_kept',
     'bot_modified',
-    'processed_flaws',
-    'avg_data_quality',
-    'avg_confidence',
-    'avg_suggestion_deviation',
+    'bot_scored',
+    'bot_keep_pct',
+    'overall_acceptance_pct',
+    'bot_processed_flaws',
+    'bot_avg_data_quality',
+    'bot_avg_confidence',
+    'bot_avg_suggestion_deviation',
     'total_category',
     'total_amount',
   ];
@@ -66,28 +73,36 @@ export function createKpiCsv(observations: KpiObservation[], scope: KpiReportSco
   const groups = reportGroups(observations);
   for (const feature of Object.keys(botFeatures)) {
     if (scope.feature !== 'all' && scope.feature !== feature) continue;
-    if (!groups.some(group => !group.week && group.source === 'osidb-bot' && group.feature === feature)) {
-      groups.push({ entries: [], feature, source: 'osidb-bot', week: '' });
+    if (!groups.some(group => !group.week && group.source === 'osidb_bot' && group.feature === feature)) {
+      groups.push({ entries: [], feature, source: 'osidb_bot', week: '' });
     }
   }
+  // A column is filled only where it applies: feedback columns on feedback
+  // channels and all-rows, bot columns on the bot channel and all-rows, and
+  // the overall rate only on all-rows. Blank means not applicable.
   const reportValues = ({ entries, feature, source, week }: typeof groups[number]) => {
-    const metrics = summarizeKpi(entries);
+    const feedbackMetrics = summarizeKpi(entries.filter(entry => entry.source !== 'osidb-bot'));
     const botMetrics = summarizeKpi(entries.filter(entry => entry.source === 'osidb-bot'));
-    const quality = !week && source === 'osidb-bot' ? botFeatures[feature] : undefined;
-    const processed = !week && feature === 'all' && scope.feature === 'all'
-      && ['combined', 'osidb-bot'].includes(source)
-      ? scope.bot?.total_flaws_processed ?? 0
-      : metrics.processedFlaws;
+    const overallMetrics = summarizeKpi(entries);
+    const isAll = source === 'all';
+    const isBot = source === 'osidb_bot';
+    const includeFeedback = isAll || !isBot;
+    const includeBot = isAll || isBot;
+    const quality = !week && isBot ? botFeatures[feature] : undefined;
     return {
       metrics: [
-        metrics.accepted,
-        metrics.total,
-        metrics.percentage?.toFixed(1),
-        metrics.suggested,
-        metrics.skipped,
-        botMetrics.accepted,
-        botMetrics.total - botMetrics.accepted,
-        processed,
+        includeFeedback ? feedbackMetrics.accepted : undefined,
+        includeFeedback ? feedbackMetrics.total - feedbackMetrics.accepted : undefined,
+        includeFeedback ? feedbackMetrics.total : undefined,
+        includeFeedback ? feedbackMetrics.percentage?.toFixed(1) : undefined,
+        includeBot ? botMetrics.suggested : undefined,
+        includeBot ? botMetrics.skipped : undefined,
+        includeBot ? botMetrics.accepted : undefined,
+        includeBot ? botMetrics.total - botMetrics.accepted : undefined,
+        includeBot ? botMetrics.total : undefined,
+        includeBot ? botMetrics.percentage?.toFixed(1) : undefined,
+        isAll ? overallMetrics.percentage?.toFixed(1) : undefined,
+        includeBot ? botMetrics.processedFlaws : undefined,
         quality?.avg_data_quality,
         quality?.avg_confidence,
         quality?.avg_suggestion_deviation,

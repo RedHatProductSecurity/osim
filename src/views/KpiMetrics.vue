@@ -7,8 +7,8 @@ import { useKpiDashboard } from '@/composables/aegis/useKpiDashboard';
 
 import { BOT_KPI_MAX_FLAWS_PER_PAGE } from '@/services/AegisAIService';
 import {
-  canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiSourceLabel, kpiVersionLabel, parseKpiDate,
-  summarizeKpi,
+  canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiSourceDescription, kpiSourceLabel, kpiVersionLabel,
+  parseKpiDate, summarizeKpi,
 } from '@/utils/kpi';
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
@@ -271,7 +271,11 @@ function applyComponent(event: Event) {
         </ul>
         <h3 class="h5">By Source</h3>
         <ul>
-          <li v-for="metrics in perSource" :key="metrics.source">
+          <li
+            v-for="metrics in perSource"
+            :key="metrics.source"
+            :title="kpiSourceDescription(metrics.source)"
+          >
             {{ kpiSourceLabel(metrics.source) }}: {{ percentage(metrics.percentage) }}
             ({{ metrics.accepted }} / {{ metrics.total }})
           </li>
