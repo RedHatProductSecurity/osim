@@ -199,7 +199,12 @@ export function useKpiDashboard() {
       try {
         counts = await service.refreshBotKpiCache(component, signal);
       } catch (reason) {
-        if (isCacheRefreshUnsupported(reason)) return;
+        if (isCacheRefreshUnsupported(reason)) {
+          // Clear any counts an earlier poll published so the status line
+          // does not claim a refresh is in progress after it was skipped.
+          if (id === requestId) botRefresh.value = { remaining: null, total: null };
+          return;
+        }
         throw reason;
       }
       if (id !== requestId) return;
@@ -209,7 +214,7 @@ export function useKpiDashboard() {
       };
       if (counts.stale_count === 0) return;
     }
-    throw new Error('osidb-bot KPI cache refresh did not drain. Select Refresh to try again.');
+    throw new Error('osidb-bot KPI cache refresh did not drain.');
   }
 
   async function refresh() {
