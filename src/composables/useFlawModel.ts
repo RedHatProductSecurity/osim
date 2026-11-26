@@ -377,6 +377,12 @@ export function useFlawModel() {
       };
     }
 
+    // Snapshot before any queue item can run a deferred setFlaw, which
+    // rebuilds the whole baseline from the working model: when no merge
+    // accepts a server response, unsaved attribution edits must stay dirty
+    // against this snapshot instead of reading as clean.
+    const preSaveAttributionBaselines = captureStagedBaselines();
+
     isSaving.value = true;
     const validatedFlaw = validate();
 
@@ -535,6 +541,12 @@ export function useFlawModel() {
             ? stagedAttributionBaselines?.references ?? attributionSource.references
             : attributionSource.references,
         }));
+      } else {
+        // No merge accepted a server response, but a deferred setFlaw from an
+        // earlier queue item may still have rebuilt the whole baseline from
+        // the working model; restore the pre-save baselines so unsaved
+        // attribution edits stay dirty and detectable.
+        afterSuccessQueue.push(() => acceptServerCollections(preSaveAttributionBaselines));
       }
       afterSaveSuccess(afterSuccessQueue);
     }

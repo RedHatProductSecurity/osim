@@ -77,6 +77,12 @@ function commitEdit() {
 
 function onSaveComplete() {
   savedValues.value = deepCopyFromRaw(items.value);
+  // A save that completed while the editor is open must not leave Cancel
+  // holding the pre-edit value: refresh the snapshot so a cancel cannot
+  // revert what the server already accepted.
+  if (indexBeingEdited.value !== null && items.value[indexBeingEdited.value] !== undefined) {
+    editSnapshot.value = deepCopyFromRaw(items.value[indexBeingEdited.value]);
+  }
 }
 
 defineExpose({ isExpanded, onSaveComplete });
