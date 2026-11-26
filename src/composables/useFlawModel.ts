@@ -38,6 +38,8 @@ import {
   ZodFlawFormSchema,
   ZodFlawSchema,
   type ZodFlawType,
+  type ZodFlawAcknowledgmentType,
+  type ZodFlawReferenceType,
   type ZodAffectType,
 } from '@/types';
 
@@ -327,7 +329,11 @@ export function useFlawModel() {
         pendingFlawConflict.value = null;
         toastAdoptedFields(pending.adopted);
       }
-      if (attributionPending) {
+      // The choices bind to the rows the dialog showed. When a flaw-field
+      // conflict was also pending, merging its PUT response may have
+      // re-staged or settled the attribution conflicts: only apply the
+      // reviewed choices while the reviewed pending is still the staged one.
+      if (attributionPending && pendingAttributionConflict.value === attributionPending) {
         await applyAttributionResolution(choices);
       }
     } catch {
@@ -345,8 +351,19 @@ export function useFlawModel() {
     const afterSuccessQueue: (() => void)[] = [];
     // The freshest server flaw this save saw. Every deferred setFlaw rebuilds
     // the whole baseline from the working model, so the attribution baseline
-    // is restored from this after they all run.
-    let serverAttributionSource: null | ZodFlawType = null;
+    // is restored from this after they all run. The union-typed initializer
+    // keeps the queue callbacks' assignments visible to the restore: a bare
+    // null would flow-narrow the variable to null outside those callbacks.
+    let serverAttributionSource = null as null | ZodFlawType;
+    // Baselines the save started from: a kind this save stages for the
+    // collision dialog must keep its pre-save baseline through the deferred
+    // setFlaw calls, which would otherwise rebuild it from the working model.
+    // initialFlaw exposes the baseline read-only; the cast matches it back to
+    // the mutable shape acceptServerCollections clones from.
+    const preSaveAttributions: Pick<ZodFlawType, 'acknowledgments' | 'references'> = {
+      acknowledgments: initialFlaw.value.acknowledgments as ZodFlawAcknowledgmentType[],
+      references: initialFlaw.value.references as ZodFlawReferenceType[],
+    };
 
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -489,10 +506,20 @@ export function useFlawModel() {
     } finally {
       // Deferred setFlaw calls (affects, CVSS, labels) rebuild the whole
       // baseline from the working model; restore the server attribution
-      // baseline after them all so unsaved reference edits stay dirty.
+      // baseline after them all so unsaved reference edits stay dirty. A kind
+      // still staged for the collision dialog instead keeps its pre-save
+      // baseline: re-baselining it to the server response would swallow the
+      // staged conflict when the dialog is canceled.
       const attributionSource = serverAttributionSource;
       if (attributionSource) {
-        afterSuccessQueue.push(() => acceptServerCollections(attributionSource));
+        afterSuccessQueue.push(() => acceptServerCollections({
+          acknowledgments: pendingAttributionConflict.value?.acknowledgments
+            ? preSaveAttributions.acknowledgments
+            : attributionSource.acknowledgments,
+          references: pendingAttributionConflict.value?.references
+            ? preSaveAttributions.references
+            : attributionSource.references,
+        }));
       }
       afterSaveSuccess(afterSuccessQueue);
     }

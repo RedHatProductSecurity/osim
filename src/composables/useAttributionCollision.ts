@@ -77,11 +77,18 @@ export function isAlreadyDeleted(error: unknown): boolean {
   return /does not exist/i.test(text);
 }
 
+type ResolvedRecreation<TItem> = {
+  /** The cleared copy to POST as a new item. */
+  item: TItem;
+  /** The conflicted row's uuid; restored when the POST fails so the row stays linked to its conflict. */
+  uuid: string;
+};
+
 type ResolvedAttributionCollection<TItem> = {
   /** The rewritten collection with server adoptions and user choices applied. */
   collection: TItem[];
-  /** Cleared copies of items kept over a server removal; POST them as new. */
-  recreate: TItem[];
+  /** Cleared copies of items kept over a server removal, with the conflict uuid each belongs to. */
+  recreate: ResolvedRecreation<TItem>[];
 };
 
 /**
@@ -110,7 +117,7 @@ function resolveAttributionCollection<TItem extends AttributionItem>(
     .filter(row => row.server === null && !dropUuids.has(row.uuid))
     .map(row => row.uuid));
 
-  const recreate: TItem[] = [];
+  const recreate: ResolvedRecreation<TItem>[] = [];
   const presentUuids = new Set<string>();
   const kept = current.flatMap((item) => {
     const uuid = item.uuid;
@@ -118,7 +125,7 @@ function resolveAttributionCollection<TItem extends AttributionItem>(
     if (dropUuids.has(uuid) || serverRemovals.has(uuid)) return [];
     if (recreateUuids.has(uuid)) {
       const cleared = { ...item, updated_dt: null, uuid: '' };
-      recreate.push(cleared);
+      recreate.push({ item: cleared, uuid });
       return [cleared];
     }
     presentUuids.add(uuid);
@@ -158,7 +165,7 @@ async function retryUnsavedItems<TItem extends AttributionItem>(
 /** Re-save the picked sides: kept items, confirmed removals, and kept removals as new items. */
 async function resaveResolvedChoices<TItem extends AttributionItem>(
   outcome: AttributionChoiceResult<TItem>,
-  recreate: readonly TItem[],
+  recreate: readonly ResolvedRecreation<TItem>[],
   savers: AttributionItemSavers<TItem>,
   onSaved: (uuid: string) => void,
 ): Promise<void> {
@@ -170,7 +177,7 @@ async function resaveResolvedChoices<TItem extends AttributionItem>(
     await savers.remove(uuid);
     onSaved(uuid);
   }
-  for (const item of recreate) {
+  for (const { item } of recreate) {
     await savers.create(item);
   }
 }
@@ -246,6 +253,24 @@ type AttributionKindMerge<TItem> = {
 };
 
 /**
+ * Replace rows whose editable values match the server copy with that copy so
+ * server-managed metadata (updated_dt, alerts) converges into the working
+ * array. Without this, a metadata-only server change leaves the working row
+ * stale against the advanced baseline and the flaw stays dirty forever.
+ */
+function syncMatchingRows<TItem extends AttributionItem, TField extends keyof TItem & string>(
+  config: AttributionConfig<TItem, TField>,
+  rows: readonly TItem[],
+  serverItems: readonly TItem[],
+): TItem[] {
+  const serverByUuid = new Map(serverItems.flatMap(item => item.uuid ? [[item.uuid, item] as const] : []));
+  return rows.map((item) => {
+    const server = item.uuid ? serverByUuid.get(item.uuid) : undefined;
+    return server && itemsEqual(item, server, config.fields) ? server : item;
+  });
+}
+
+/**
  * Merge one collection against the server. Conflicts stage the collision
  * dialog and leave the local array untouched; otherwise server-only changes
  * the local copy cannot see adopt. Updates the form already holds — converged
@@ -270,7 +295,14 @@ function mergeAttributionKind<TItem extends AttributionItem, TField extends keyo
     || result.adoptedAdditions.length > 0
     || result.adoptedRemovals.length > 0;
   if (!acted) {
-    return { adoptedLabels: [], collection: mine, removedLabels: [], staged: false };
+    return {
+      adoptedLabels: [],
+      // Metadata-only server changes still sync into the working copy so it
+      // does not stay dirty against the advanced baseline.
+      collection: syncMatchingRows(config, mine, serverItems),
+      removedLabels: [],
+      staged: false,
+    };
   }
 
   return {
@@ -278,7 +310,7 @@ function mergeAttributionKind<TItem extends AttributionItem, TField extends keyo
       ...unseenUpdates.map(config.itemLabel),
       ...result.adoptedAdditions.map(config.itemLabel),
     ],
-    collection: resolveAttributionCollection(mine, result, null).collection,
+    collection: syncMatchingRows(config, resolveAttributionCollection(mine, result, null).collection, serverItems),
     removedLabels: removalLabels(config.itemLabel, result.adoptedRemovals, mine),
     staged: false,
   };
@@ -309,22 +341,68 @@ export function useAttributionCollision(state: AttributionCollisionState) {
     return { acknowledgments: serverFlaw.acknowledgments, references: serverFlaw.references };
   }
 
-  /** Stage one kind's rebase result, keeping any pending result for the other kind. */
+  /**
+   * Rebase the other kind's retained result against the incoming snapshot so
+   * every staged result pairs with the same server read its confirmation
+   * baselines to. A retained result the fresh read settled is dropped: its
+   * rows must not resolve against a snapshot they were not computed from.
+   */
+  function rebaseRetainedResult(
+    kind: AttributionCollection,
+    server: ServerAttributions,
+  ): AttributionRebaseResult<ZodFlawAcknowledgmentType | ZodFlawReferenceType> | null {
+    if (!pendingAttributionConflict.value?.[kind]) return null;
+    const rebased = kind === 'references'
+      ? rebaseAttributionCollection(
+        // The rebase only reads the baseline; initialFlaw exposes it read-only.
+        initialFlaw.value.references as ZodFlawReferenceType[],
+        flaw.value.references,
+        server.references,
+        REFERENCE_CONFIG,
+      )
+      : rebaseAttributionCollection(
+        // The rebase only reads the baseline; initialFlaw exposes it read-only.
+        initialFlaw.value.acknowledgments as ZodFlawAcknowledgmentType[],
+        flaw.value.acknowledgments,
+        server.acknowledgments,
+        ACKNOWLEDGMENT_CONFIG,
+      );
+    return rebased.conflicts.length > 0 ? rebased : null;
+  }
+
+  /** Stage one kind's rebase result, rebasing the other kind's retained result against the same snapshot. */
   function stagePending(
     kind: AttributionCollection,
     result: AttributionRebaseResult<ZodFlawAcknowledgmentType | ZodFlawReferenceType>,
     server: ServerAttributions,
   ) {
+    // The other kind's retained result must pair with the snapshot this stage
+    // will baseline to: rebase it against the fresh read, or drop it when
+    // that read settled its conflict.
+    const retained = rebaseRetainedResult(kind === 'references' ? 'acknowledgments' : 'references', server);
     pendingAttributionConflict.value = {
       acknowledgments: kind === 'acknowledgments'
         ? result as AttributionRebaseResult<ZodFlawAcknowledgmentType>
-        : pendingAttributionConflict.value?.acknowledgments ?? null,
+        : retained as AttributionRebaseResult<ZodFlawAcknowledgmentType> | null,
       flawUuid: flaw.value.uuid,
       references: kind === 'references'
         ? result as AttributionRebaseResult<ZodFlawReferenceType>
-        : pendingAttributionConflict.value?.references ?? null,
+        : retained as AttributionRebaseResult<ZodFlawReferenceType> | null,
       server,
     };
+  }
+
+  /**
+   * Drop a settled kind's staged result: a conflict the fresh read no longer
+   * reports must not stay in the dialog resolving against an older snapshot.
+   * With no kind still conflicting, the pending conflict itself is dropped.
+   */
+  function clearStagedKind(kind: AttributionCollection) {
+    const pending = pendingAttributionConflict.value;
+    if (!pending?.[kind]) return;
+    pendingAttributionConflict.value = pending[kind === 'references' ? 'acknowledgments' : 'references']
+      ? { ...pending, [kind]: null }
+      : null;
   }
 
   /** Reject saver calls once the save's flaw stopped being the current flaw. */
@@ -345,17 +423,25 @@ export function useAttributionCollision(state: AttributionCollisionState) {
   }
 
   /**
-   * Reconcile a 409/404 from an item save. Either stages the conflicts for the
-   * collision dialog and rethrows the save error (so the edit list stays dirty),
-   * or adopts the server changes and retries the remaining unsaved items.
+   * Reconcile a 409/404 from an item save, bound to the flaw the save
+   * targeted. Either stages the conflicts for the collision dialog and
+   * rethrows the save error (so the edit list stays dirty), or adopts the
+   * server changes and retries the remaining unsaved items. A navigation away
+   * from the origin flaw rethrows without staging or retrying.
    */
   async function stageAttributionConflicts(
     kind: AttributionCollection,
     error: unknown,
     unsaved: readonly (ZodFlawAcknowledgmentType | ZodFlawReferenceType)[],
+    originUuid: string,
   ): Promise<void> {
     // Bind the whole continuation to the flaw the interrupted save targeted.
-    const originUuid = flaw.value.uuid;
+    // A navigation since the write must stop it before it reads, adopts, or
+    // writes against the newly loaded flaw.
+    if (flaw.value.uuid !== originUuid) {
+      createCatchHandler(CONFLICT_TOAST_TITLES[kind], false)(error);
+      throw error;
+    }
     let server: ServerAttributions;
     try {
       server = await readServerAttributions(originUuid);
@@ -420,11 +506,11 @@ export function useAttributionCollision(state: AttributionCollisionState) {
     const resolutions: {
       acknowledgments: {
         outcome: AttributionChoiceResult<ZodFlawAcknowledgmentType>;
-        recreate: ZodFlawAcknowledgmentType[];
+        recreate: ResolvedRecreation<ZodFlawAcknowledgmentType>[];
       } | null;
       references: {
         outcome: AttributionChoiceResult<ZodFlawReferenceType>;
-        recreate: ZodFlawReferenceType[];
+        recreate: ResolvedRecreation<ZodFlawReferenceType>[];
       } | null;
     } = { acknowledgments: null, references: null };
 
@@ -465,6 +551,10 @@ export function useAttributionCollision(state: AttributionCollisionState) {
         );
       }
 
+      // The writes may have outlived a navigation to another flaw: this
+      // flaw's staged collections must not re-baseline the newly loaded one.
+      if (flaw.value.uuid !== pending.flawUuid) return;
+
       // Baseline only the kinds this resolution settled; the other kind keeps
       // its baseline so its own conflicts stay detectable.
       acceptServerCollections({
@@ -473,11 +563,22 @@ export function useAttributionCollision(state: AttributionCollisionState) {
       });
       pendingAttributionConflict.value = null;
 
-      await integrateServerAttributions();
+      await integrateServerAttributions(pending.flawUuid);
     } catch (error) {
-      // A failed write keeps the dialog open. Re-stage against the fresh
-      // server so the next confirmation does not replay stale tokens or skip
-      // rows whose identity a previous attempt already cleared.
+      // A failed write keeps the dialog open. Re-link rows whose recreation
+      // POST never succeeded: restoring the conflict uuid undoes the blanking
+      // that would otherwise pass them through as plain local-new rows on the
+      // retry. Rows whose POST succeeded were already replaced in the form by
+      // their server copy, so restoring them changes nothing.
+      for (const recreation of [
+        ...resolutions.references?.recreate ?? [],
+        ...resolutions.acknowledgments?.recreate ?? [],
+      ]) {
+        recreation.item.uuid = recreation.uuid;
+      }
+      // Re-stage against the fresh server so the next confirmation does not
+      // replay stale tokens or skip rows whose identity a previous attempt
+      // already cleared.
       await refreshPendingAttributions();
       throw error;
     } finally {
@@ -530,6 +631,8 @@ export function useAttributionCollision(state: AttributionCollisionState) {
    * conflicts — for callers that apply them through a deferred setFlaw.
    * Settled kinds re-baseline, converged saves included; staged kinds do not,
    * so a canceled dialog can still surface its conflict on the next save.
+   * A kind the fresh read settles also loses any earlier staged result, and
+   * the pending conflict clears once no kind still conflicts.
    */
   function mergeServerAttributions(server: ServerAttributions): ServerAttributions {
     const referencesMerge = mergeAttributionKind(
@@ -542,6 +645,7 @@ export function useAttributionCollision(state: AttributionCollisionState) {
     );
     if (!referencesMerge.staged) {
       flaw.value.references = referencesMerge.collection;
+      clearStagedKind('references');
     }
 
     const acknowledgmentsMerge = mergeAttributionKind(
@@ -554,6 +658,7 @@ export function useAttributionCollision(state: AttributionCollisionState) {
     );
     if (!acknowledgmentsMerge.staged) {
       flaw.value.acknowledgments = acknowledgmentsMerge.collection;
+      clearStagedKind('acknowledgments');
     }
 
     acceptServerCollections({

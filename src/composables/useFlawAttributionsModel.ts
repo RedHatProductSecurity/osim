@@ -274,7 +274,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
           if (!isAttributionConflict(error)) throw error;
           // Staging either opens the collision dialog (it rethrows so the list
           // stays dirty) or adopts the server state and finishes the save.
-          await stageAttributionConflicts('references', error, unsaved);
+          await stageAttributionConflicts('references', error, unsaved, originUuid);
           break;
         }
       }
@@ -308,7 +308,7 @@ export function useFlawAttributionsModel(flaw: Ref<ZodFlawType>, isSaving: Ref<b
           if (!isAttributionConflict(error)) throw error;
           // Staging either opens the collision dialog (it rethrows so the list
           // stays dirty) or adopts the server state and finishes the save.
-          await stageAttributionConflicts('acknowledgments', error, unsaved);
+          await stageAttributionConflicts('acknowledgments', error, unsaved, originUuid);
           break;
         }
       }
