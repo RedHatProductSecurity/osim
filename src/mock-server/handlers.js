@@ -7,6 +7,8 @@
 import { HttpResponse, http } from "msw";
 import { faker } from "@faker-js/faker";
 
+import { withAegisMetaFixture } from "./aegisMetaFixtures";
+
 faker.seed(1);
 
 const baseURL = "http://localhost:3000";
@@ -432,19 +434,17 @@ export const handlers = [
 
     return HttpResponse.json(...resultArray[next() % resultArray.length]);
   }),
-  http.get(`${baseURL}/osidb/api/v2/flaws/*`, async () => {
-    const resultArray = [
-      [await getOsidbApiV2FlawsRetrieve200Response(), { status: 200 }],
-    ];
-
-    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  http.get(`${baseURL}/osidb/api/v2/flaws/*`, async ({ params }) => {
+    const flaw = await getOsidbApiV2FlawsRetrieve200Response();
+    return HttpResponse.json(withAegisMetaFixture(flaw, params?.["0"]), { status: 200 });
   }),
-  http.put(`${baseURL}/osidb/api/v2/flaws/*`, async () => {
-    const resultArray = [
-      [await getOsidbApiV2FlawsUpdate200Response(), { status: 200 }],
-    ];
-
-    return HttpResponse.json(...resultArray[next() % resultArray.length]);
+  http.put(`${baseURL}/osidb/api/v2/flaws/*`, async ({ request }) => {
+    const flaw = await getOsidbApiV2FlawsUpdate200Response();
+    const body = await request.json().catch(() => undefined);
+    return HttpResponse.json(
+      body && typeof body === "object" ? { ...flaw, ...body } : flaw,
+      { status: 200 },
+    );
   }),
   http.get(`${baseURL}/osidb/api/v2/trackers`, async () => {
     const resultArray = [
