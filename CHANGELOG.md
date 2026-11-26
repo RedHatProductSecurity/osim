@@ -6,6 +6,7 @@
 
 ## [2026.11.1]
 ### Added
+* Drain the osidb-bot KPI cache, then load metrics page by page with a live progress bar, time estimates, and cache status, and clearly split feedback and bot metrics in the dashboard and CSV export (`AEGIS-550`)
 * Add internal steering notes to the Aegis Multi Suggest dropdown, apply them locally to suggestion requests, and persist them with Save Changes (`AEGIS-520`)
 * Keep non-overlapping flaw edits when a save hits a newer server version (`OSIDB-5790`)
 * Choose which value to keep when a flaw save overlaps a newer server version (`OSIDB-5791`)

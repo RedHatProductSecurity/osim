@@ -6,17 +6,41 @@ import { VueUiXy } from 'vue-data-ui/vue-ui-xy';
 import { useKpiDashboard } from '@/composables/aegis/useKpiDashboard';
 
 import {
-  canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiVersionLabel, parseKpiDate, summarizeKpi,
+  canonicalKpiFeature, kpiFeatureLabel, kpiHistory, kpiSourceDescription, kpiSourceLabel, kpiVersionLabel,
+  parseKpiDate, summarizeKpi,
 } from '@/utils/kpi';
 import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
-  availableComponents, availableFeatures, availableVersions, availableWeeks, bot, clearFilters,
-  component, errors, feature, fromDate,
+  availableComponents, availableFeatures, availableVersions,
+  bot, botCacheStatus, botIncomplete, botLoading, botProgress, botRefresh,
+  cacheStatusError, clearFilters, component, errors, feature, feedbackLoading, fromDate,
   invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
-const allSourcesFailed = computed(() => errors.value.length > 0 && !loadedSources.value.length);
+const allSourcesFailed = computed(() => !loading.value && errors.value.length > 0 && !loadedSources.value.length);
+// The run's own progress.selected_flaws is authoritative once the first page
+// reports it; until then the cache-status selection total is the same flaw
+// population and serves as the progress total.
+const botSelectedTotal = computed(() =>
+  botProgress.value.selected ?? botCacheStatus.value?.total_flaws_selected ?? null);
+const botCacheStatusText = computed(() => {
+  const status = botCacheStatus.value;
+  if (!status) return null;
+  if (!status.total_flaws_selected) return 'No flaws match the current selection.';
+  if (!status.stale_count) return `All ${status.total_flaws_selected} selected flaws are cached fresh.`;
+  return `${status.stale_count} of ${status.total_flaws_selected} selected flaws are not cached fresh `
+    + `(${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB).`;
+});
+// The bar follows delivery exactly: the server's delivered_flaws counts
+// every selected flaw delivered through the latest page, so delivered over
+// selected is the true completion ratio with no estimation.
+const botProgressPercent = computed(() => {
+  const { delivered, selected } = botProgress.value;
+  return delivered !== null && selected !== null && selected > 0
+    ? Math.min(100, Math.round((delivered / selected) * 100))
+    : null;
+});
 const history = computed(() => kpiHistory(observations.value));
 const overall = computed(() => summarizeKpi(observations.value));
 const perFeature = computed(() => [...new Set(observations.value.map(entry => entry.feature))].map(name => ({
@@ -42,6 +66,14 @@ const config = computed(() => ({
 const percentage = (value: null | number) => value === null ? 'N/A' : `${value.toFixed(1)}%`;
 const quality = (value: null | number) => value === null ? 'N/A' : value.toFixed(2);
 
+function remainingText(etaMs: null | number) {
+  if (etaMs === null) return '';
+  const seconds = Math.max(1, Math.round(etaMs / 1000));
+  if (seconds < 60) return `~${seconds}s remaining`;
+  const minutes = Math.round(seconds / 60);
+  return minutes < 60 ? `~${minutes} min remaining` : `~${Math.round(minutes / 60)} h remaining`;
+}
+
 function downloadReport() {
   downloadKpiCsv(createKpiCsv(observations.value, {
     bot: bot.value,
@@ -55,26 +87,6 @@ function downloadReport() {
 
 function applyComponent(event: Event) {
   component.value = (event.target as HTMLInputElement).value.trim();
-}
-
-const rangeStart = computed(() => {
-  if (!fromDate.value) return 0;
-  const index = availableWeeks.value.findIndex(week =>
-    parseKpiDate(week).endOf('week').toISODate()! >= fromDate.value);
-  return index < 0 ? Math.max(0, availableWeeks.value.length - 1) : index;
-});
-const rangeEnd = computed(() => {
-  if (!toDate.value) return availableWeeks.value.length - 1;
-  const index = availableWeeks.value.findIndex(week => week > toDate.value);
-  return index < 0 ? availableWeeks.value.length - 1 : Math.max(0, index - 1);
-});
-
-function changeRange(event: Event, edge: 'end' | 'start') {
-  const index = Number((event.target as HTMLInputElement).value);
-  const week = availableWeeks.value[index];
-  if (!week) return;
-  if (edge === 'start') fromDate.value = index === 0 ? '' : week;
-  else toDate.value = index === availableWeeks.value.length - 1 ? '' : parseKpiDate(week).endOf('week').toISODate()!;
 }
 </script>
 
@@ -159,43 +171,70 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         Clear Version Filters
       </button>
     </section>
-    <fieldset v-if="availableWeeks.length > 1" class="mb-3" :disabled="loading || invalidRange">
-      <legend class="h5">History window</legend>
-      <div class="row">
-        <div class="col-md-6">
-          <label for="kpi-range-start">Start: {{ fromDate || 'All earlier dates' }}</label>
-          <input
-            id="kpi-range-start"
-            type="range"
-            class="form-range"
-            min="0"
-            :max="rangeEnd"
-            :value="rangeStart"
-            @change="changeRange($event, 'start')"
-          />
-        </div>
-        <div class="col-md-6">
-          <label for="kpi-range-end">Through: {{ toDate || 'All later dates' }}</label>
-          <input
-            id="kpi-range-end"
-            type="range"
-            class="form-range"
-            :min="rangeStart"
-            :max="availableWeeks.length - 1"
-            :value="rangeEnd"
-            @change="changeRange($event, 'end')"
-          />
-        </div>
-      </div>
-    </fieldset>
     <p v-if="invalidRange" role="alert">The start date must be on or before the end date.</p>
-    <p v-if="loading" role="status">Loading KPI metrics…</p>
+    <p v-if="feedbackLoading" role="status">Loading feedback metrics…</p>
+    <div v-if="botLoading" class="mb-3">
+      <span v-if="botRefresh.remaining" role="status" class="d-block mb-1">
+        Refreshing osidb-bot cache…
+        <template v-if="botRefresh.total">
+          {{ botRefresh.total - botRefresh.remaining }} / {{ botRefresh.total }} flaws refreshed
+        </template>
+        <template v-else>{{ botRefresh.remaining }} flaws remaining</template>
+        <template v-if="botRefresh.etaMs !== null">· {{ remainingText(botRefresh.etaMs) }}</template>
+      </span>
+      <span role="status">
+        Loading osidb-bot metrics…
+        <template v-if="botProgress.delivered !== null && botSelectedTotal !== null">
+          {{ botProgress.delivered }} / {{ botSelectedTotal }} flaws received
+        </template>
+        <template v-else-if="botProgress.delivered === 0">0 flaws received; awaiting the first page…</template>
+        <template v-else-if="botSelectedTotal !== null">
+          Flaw delivery counts unavailable from this server ({{ botSelectedTotal }} flaws selected).
+        </template>
+        <template v-else>Flaw delivery counts unavailable from this server.</template>
+        <template v-if="botProgress.etaMs !== null">· {{ remainingText(botProgress.etaMs) }}</template>
+        <template v-if="botCacheStatusText">· {{ botCacheStatusText }}</template>
+      </span>
+      <div
+        v-if="botProgressPercent !== 100"
+        class="progress"
+        role="progressbar"
+        aria-label="osidb-bot KPI refresh progress"
+        :aria-valuenow="botProgressPercent ?? undefined"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div
+          v-if="botProgressPercent !== null"
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          :style="{ width: `${botProgressPercent}%` }"
+        >{{ botProgressPercent }}%</div>
+        <div v-else class="progress-bar kpi-progress-indeterminate"></div>
+      </div>
+    </div>
+    <p v-if="botIncomplete && !botLoading" role="status" class="alert alert-warning">
+      Incomplete osidb-bot metrics:
+      <template v-if="botProgress.delivered !== null && botSelectedTotal !== null">
+        {{ botProgress.delivered }} / {{ botSelectedTotal }} selected flaws received.
+      </template>
+      <template v-else>The server does not report how many selected flaws have been delivered.</template>
+      Charts and totals cover only received data.
+      <template v-if="botCacheStatusText">
+        Cache status when the run started: {{ botCacheStatusText }}
+      </template>
+      <template v-if="bot?.aggregates_available === false">
+        Aggregate bot metrics are unavailable without a completed run.
+      </template>
+      Select Refresh to start a new run.
+    </p>
+    <p v-if="cacheStatusError" role="alert" class="alert alert-warning">{{ cacheStatusError }}</p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
       <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
       <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>
-      <p v-else>
+      <p v-else-if="loadedSources.length">
         Loaded sources: {{ loadedSources.join(', ') }}. Charts and totals include only these sources and are incomplete.
       </p>
+      <p v-else>Other KPI sources are still loading.</p>
       <p v-for="error in errors" :key="error">{{ error }}</p>
       <p>CSV download is unavailable until all KPI sources load successfully.</p>
       <button
@@ -207,13 +246,16 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         Retry loading metrics
       </button>
     </div>
-    <div v-if="!loading && !invalidRange && !allSourcesFailed" class="kpi-chart-container">
-      <p v-if="!observations.length && errors.length">
+    <div v-if="loadedSources.length && !invalidRange && !allSourcesFailed" class="kpi-chart-container">
+      <p v-if="!observations.length && loading">No KPI records received yet.</p>
+      <p v-else-if="!observations.length && errors.length">
         No KPI records match these filters in the loaded source. Records from the failed source may be missing.
       </p>
       <p v-else-if="!observations.length">No KPI records match these filters.</p>
       <template v-else>
-        <h2 class="h4">{{ errors.length ? 'Available-source' : 'Combined' }} Acceptance Rate</h2>
+        <h2 class="h4">
+          {{ loading || botIncomplete ? 'Partial' : errors.length ? 'Available-source' : 'Combined' }} Acceptance Rate
+        </h2>
         <p data-testid="overall-rate">
           {{ percentage(overall.percentage) }} — {{ overall.accepted }} of {{ overall.total }}
           scored suggestions accepted/kept
@@ -233,18 +275,24 @@ function changeRange(event: Event, edge: 'end' | 'start') {
         </ul>
         <h3 class="h5">By Source</h3>
         <ul>
-          <li v-for="metrics in perSource" :key="metrics.source">
-            {{ metrics.source }}: {{ percentage(metrics.percentage) }} ({{ metrics.accepted }} / {{ metrics.total }})
+          <li
+            v-for="metrics in perSource"
+            :key="metrics.source"
+            :title="kpiSourceDescription(metrics.source)"
+          >
+            {{ kpiSourceLabel(metrics.source) }}: {{ percentage(metrics.percentage) }}
+            ({{ metrics.accepted }} / {{ metrics.total }})
           </li>
         </ul>
       </template>
       <section v-if="bot" aria-labelledby="bot-heading">
         <h2 id="bot-heading" class="h4">osidb-bot</h2>
-        <p data-testid="processed-flaws">
-          {{ processedFlaws }} processed flaws in the selected scope (DONE workflow state).
+        <p v-if="bot.aggregates_available !== false" data-testid="processed-flaws">
+          {{ processedFlaws }} processed flaws in the
+          {{ botIncomplete ? 'received portion of the selected scope' : 'selected scope' }} (DONE workflow state).
         </p>
         <p>Bot history compares suggestions with current flaw values, grouped by suggestion date.</p>
-        <div class="table-responsive">
+        <div v-if="bot.aggregates_available !== false" class="table-responsive">
           <table class="table table-sm">
             <thead>
               <tr>
@@ -268,3 +316,27 @@ function changeRange(event: Event, edge: 'end' | 'start') {
     </div>
   </main>
 </template>
+
+<style scoped>
+.kpi-progress-indeterminate {
+  position: relative;
+  width: 30%;
+  animation: kpi-progress-slide 1.5s ease-in-out infinite;
+}
+
+@keyframes kpi-progress-slide {
+  from {
+    left: -30%;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-progress-indeterminate {
+    animation: none;
+  }
+}
+</style>

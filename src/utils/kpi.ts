@@ -14,6 +14,28 @@ export const KpiFeatureLabels: Record<string, string> = {
   'suggest-affected-components': 'Suggest Affected Components',
 };
 
+export const KpiSourceLabels: Record<string, string> = {
+  'feedback': 'Google Form',
+  'manual': 'Legacy Manual',
+  'osidb-bot': 'Automated (OSIDB Bot)',
+  'programmatic': 'Requested by User',
+};
+
+// Provenance of each metric source, surfaced as By Source tooltips.
+export const KpiSourceDescriptions: Record<string, string> = {
+  'feedback': 'Feedback collected through an early Google Form, before feedback sources were tracked.',
+  'manual': 'Feedback submitted with the suggestion rating buttons, which have since been removed.',
+  'osidb-bot': 'Suggestion outcomes computed by comparing osidb-bot suggestions against current OSIDB flaw values.',
+  'programmatic': 'Recorded automatically when a saved flaw kept or modified an AI suggestion.',
+};
+
+export const KpiSourceChannels: Record<string, string> = {
+  'feedback': 'google_form',
+  'manual': 'legacy_manual',
+  'osidb-bot': 'osidb_bot',
+  'programmatic': 'requested_by_user',
+};
+
 const featureAliases: Record<string, string> = {
   components: 'suggest-affected-components',
   source_component: 'suggest-affected-components',
@@ -22,10 +44,15 @@ const featureAliases: Record<string, string> = {
   impact: 'suggest-impact',
   cwe_id: 'suggest-cwe',
   cvss3_vector: 'suggest-cvss',
+  statement: 'suggest-statement',
+  mitigation: 'suggest-mitigation',
 };
 
 export const canonicalKpiFeature = (feature: string) => featureAliases[feature] ?? feature;
 export const kpiFeatureLabel = (feature: string) => KpiFeatureLabels[feature] ?? feature;
+export const kpiSourceLabel = (source: string) => KpiSourceLabels[source] ?? source;
+export const kpiSourceDescription = (source: string) => KpiSourceDescriptions[source];
+export const kpiSourceChannel = (source: string) => KpiSourceChannels[source] ?? source;
 export const kpiVersionLabel = (version: string) => version || 'Unknown version';
 
 const versionCollator = new Intl.Collator('en', { numeric: true });

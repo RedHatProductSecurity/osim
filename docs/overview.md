@@ -62,6 +62,43 @@
     * Therefore, Pinia would add complexity in this case without significant
       benefit
 
+## KPI pagination
+
+Before fetching pages, the dashboard drains the cache through
+`POST /analysis/kpi/osidb-bot/cache-refresh`, polling until the selection
+reports zero stale flaws; each call advances one server-side time-budgeted
+slice, so the poll rate bounds the OSIDB load. A 404 marks a server that
+predates the endpoint and skips the drain. The status line shows the drain
+(`X / Y flaws refreshed`) and, once a later poll has made progress, a
+remaining-time estimate from the observed refresh cadence.
+
+The dashboard then requests `/analysis/kpi/osidb-bot` with `limit=1000` and
+follows `next_cursor` page by page until a page arrives without it. Pages
+are pure cache reads; each carries its own slice of detail `entries` and a
+`progress` block (`selected_flaws`, `delivered_flaws`, `refreshed_flaws`,
+`complete`), and the final page adds the aggregate over the whole selection
+(`features`, `total_flaws_processed`, `available_components`).
+`progress.complete` marks the cache refresh, not the delivery, so the client
+completes on the absence of `next_cursor` instead. The bar and counts follow
+the exact `delivered_flaws`/`selected_flaws` ratio, and the status line
+estimates the remaining time from the observed page cadence once delivery
+has progressed past the first page. OSIM accumulates entries across pages so
+the result contains each entry exactly once, publishes a cumulative snapshot
+per page, and cuts off a server that never finishes paginating after 200
+pages. An older non-paginated Aegis server is supported unchanged.
+
+The read-only `/analysis/kpi/osidb-bot/cache-status` endpoint reports the
+selection's cache backlog (`fresh_count`, `stale_count`, `uncached_count`,
+`outdated_count`, `total_flaws_selected`). The dashboard renders it as loading
+text and uses `total_flaws_selected` as the progress denominator until the
+run's own `progress.selected_flaws` arrives: both cover the same
+component-scoped flaw population.
+
+Actual HTTP 503 failures receive up to three retries, unless `retry_exhausted: true` indicates
+that Aegis already exhausted its upstream retry budget. Failed, expired (410), or invalidated
+(409) runs retain received metrics with an incomplete warning and require a manual Refresh
+to establish a new run. CSV downloads remain disabled while results are incomplete.
+
 ## Deployment
 
 * `OSIM_`-prefixed environment variables store static information about the UI

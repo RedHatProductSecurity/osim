@@ -60,24 +60,28 @@ describe('kPI CSV reports', () => {
       'version_filter',
       'from_utc',
       'through_utc',
-      'accepted_or_kept',
-      'scored',
-      'acceptance_percentage',
+      'feedback_accepted',
+      'feedback_rejected',
+      'feedback_scored',
+      'feedback_acceptance_pct',
       'bot_suggested',
       'bot_skipped',
       'bot_kept',
       'bot_modified',
-      'processed_flaws',
-      'avg_data_quality',
-      'avg_confidence',
-      'avg_suggestion_deviation',
+      'bot_scored',
+      'bot_keep_pct',
+      'overall_acceptance_pct',
+      'bot_processed_flaws',
+      'bot_avg_data_quality',
+      'bot_avg_confidence',
+      'bot_avg_suggestion_deviation',
       'total_category',
       'total_amount',
     ]);
 
-    const weekly = records.find(record => record[0] === 'combined' && record[1] === 'suggest-impact')!;
+    const weekly = records.find(record => record[0] === 'all' && record[1] === 'suggest-impact')!;
     expect(weekly.slice(0, 8)).toEqual([
-      'combined',
+      'all',
       'suggest-impact',
       '2026-08-31',
       'kernel',
@@ -86,21 +90,27 @@ describe('kPI CSV reports', () => {
       '2026-09-01T00:00:00.000Z',
       '2026-09-30T23:59:59.999Z',
     ]);
-    expect(weekly.slice(8, 19)).toEqual(['2', '3', '66.7', '1', '1', '1', '0', '1', '', '', '']);
+    expect(weekly.slice(8, 23)).toEqual([
+      '1', '1', '2', '50.0', '1', '1', '1', '0', '1', '100.0', '66.7', '1', '', '', '',
+    ]);
 
-    const totals = new Map(records.map(record => [record[19], record[20]]));
-    expect(Object.fromEntries([...totals].filter(([category]) => category.startsWith('combined / all /'))))
+    const totals = new Map(records.map(record => [record[23], record[24]]));
+    expect(Object.fromEntries([...totals].filter(([category]) => category.startsWith('all / all /'))))
       .toEqual({
-        'combined / all / accepted_or_kept': '2',
-        'combined / all / scored': '3',
-        'combined / all / acceptance_percentage': '66.7',
-        'combined / all / bot_suggested': '1',
-        'combined / all / bot_skipped': '1',
-        'combined / all / bot_kept': '1',
-        'combined / all / bot_modified': '0',
-        'combined / all / processed_flaws': '1',
+        'all / all / feedback_accepted': '1',
+        'all / all / feedback_rejected': '1',
+        'all / all / feedback_scored': '2',
+        'all / all / feedback_acceptance_pct': '50.0',
+        'all / all / bot_suggested': '1',
+        'all / all / bot_skipped': '1',
+        'all / all / bot_kept': '1',
+        'all / all / bot_modified': '0',
+        'all / all / bot_scored': '1',
+        'all / all / bot_keep_pct': '100.0',
+        'all / all / overall_acceptance_pct': '66.7',
+        'all / all / bot_processed_flaws': '1',
       });
-    expect(totals.get('programmatic / suggest-impact / accepted_or_kept')).toBe('0');
+    expect(totals.get('requested_by_user / suggest-impact / feedback_accepted')).toBe('0');
   });
 
   it('preserves bot quality aggregates and respects the feature filter', () => {
@@ -120,11 +130,14 @@ describe('kPI CSV reports', () => {
       } },
     };
     const allFeatureRows = parseCsv(createKpiCsv([observation], { ...scope, feature: 'all', bot }));
-    const totals = new Map(allFeatureRows.slice(1).map(record => [record[19], record[20]]));
+    const totals = new Map(allFeatureRows.slice(1).map(record => [record[23], record[24]]));
 
-    expect(totals.get('osidb-bot / suggest-title / avg_data_quality')).toBe('0.8');
-    expect(totals.get('osidb-bot / suggest-title / avg_confidence')).toBe('0.7');
-    expect(totals.get('osidb-bot / suggest-title / avg_suggestion_deviation')).toBe('0.2');
+    expect(totals.get('osidb_bot / suggest-title / bot_avg_data_quality')).toBe('0.8');
+    expect(totals.get('osidb_bot / suggest-title / bot_avg_confidence')).toBe('0.7');
+    expect(totals.get('osidb_bot / suggest-title / bot_avg_suggestion_deviation')).toBe('0.2');
+    // The filler row counts zero-scored bot outcomes but leaves the rate blank on 0/0.
+    expect(totals.get('osidb_bot / suggest-title / bot_scored')).toBe('0');
+    expect([...totals.keys()].some(category => category.endsWith('/ bot_keep_pct'))).toBe(false);
     expect(createKpiCsv([observation], { ...scope, bot })).not.toContain('suggest-title');
   });
 
@@ -134,9 +147,11 @@ describe('kPI CSV reports', () => {
     ], scope)).slice(1);
 
     expect(records.length).toBeGreaterThan(0);
-    expect(records.every(record => record.slice(0, 19).every(cell => cell === ''))).toBe(true);
-    expect(records.some(record => record[19] === 'combined / all / scored' && record[20] === '0')).toBe(true);
-    expect(records.some(record => record[19].endsWith('/ acceptance_percentage'))).toBe(false);
+    expect(records.every(record => record.slice(0, 23).every(cell => cell === ''))).toBe(true);
+    expect(records.some(record => record[23] === 'all / all / feedback_scored' && record[24] === '0')).toBe(true);
+    expect(records.some(record => record[23] === 'all / all / bot_scored' && record[24] === '0')).toBe(true);
+    expect(records.some(record => record[23].endsWith('/ feedback_acceptance_pct'))).toBe(false);
+    expect(records.some(record => record[23].endsWith('/ overall_acceptance_pct'))).toBe(false);
   });
 
   it('leaves aggregate cells blank when weekly records outlast aggregate entries', () => {
@@ -147,15 +162,69 @@ describe('kPI CSV reports', () => {
     const records = parseCsv(createKpiCsv(observations, scope)).slice(1);
 
     expect(records).toHaveLength(34);
-    expect(records.slice(-2).every(record => record[0] !== '' && record.slice(-2).every(cell => cell === '')))
+    expect(records.slice(-4).every(record => record[0] !== '' && record.slice(-2).every(cell => cell === '')))
       .toBe(true);
   });
 
   it('escapes quotes, commas, line breaks and formula-like filter text', () => {
     const rows = parseCsv(createKpiCsv([observation], { ...scope, component: '=SUM(1,2)\n"kernel"' }));
-    const weekly = rows.slice(1).find(record => record[0] === 'combined')!;
+    const weekly = rows.slice(1).find(record => record[0] === 'all')!;
 
     expect(weekly[3]).toBe('\'=SUM(1,2)\n"kernel"');
+  });
+
+  it('maps sources to channels and fills only the columns that apply per row type', () => {
+    const rows = parseCsv(createKpiCsv([
+      observation,
+      { ...observation, source: 'manual' },
+      { ...observation, source: 'programmatic', accepted: false },
+      { ...observation, source: 'feedback', accepted: null },
+      { ...observation, source: 'osidb-bot', outcome: 'suggested', cveId: 'CVE-2026-1000' },
+      { ...observation, source: 'osidb-bot', outcome: 'suggested', accepted: false, cveId: 'CVE-2026-1001' },
+      { ...observation, source: 'osidb-bot', outcome: 'skipped', accepted: null, cveId: 'CVE-2026-1000' },
+    ], scope));
+    const weekly = new Map(rows.slice(1)
+      .filter(record => record[2])
+      .map(record => [record[0], record.slice(8, 23)]));
+
+    expect([...weekly.keys()].sort())
+      .toEqual(['all', 'google_form', 'legacy_manual', 'osidb_bot', 'requested_by_user']);
+    expect(weekly.get('all'))
+      .toEqual(['2', '1', '3', '66.7', '2', '1', '1', '1', '2', '50.0', '60.0', '2', '', '', '']);
+    expect(weekly.get('legacy_manual'))
+      .toEqual(['2', '0', '2', '100.0', '', '', '', '', '', '', '', '', '', '', '']);
+    expect(weekly.get('requested_by_user'))
+      .toEqual(['0', '1', '1', '0.0', '', '', '', '', '', '', '', '', '', '', '']);
+    // Unmarked feedback is exported as google_form: the counts apply, the rate stays blank on 0/0.
+    expect(weekly.get('google_form'))
+      .toEqual(['0', '0', '0', '', '', '', '', '', '', '', '', '', '', '', '']);
+    expect(weekly.get('osidb_bot'))
+      .toEqual(['', '', '', '', '2', '1', '1', '1', '2', '50.0', '', '2', '', '', '']);
+
+    // The overall rate belongs to the combined view only, never to a single channel.
+    const categories = rows.slice(1).map(record => record[23]).filter(Boolean);
+    expect(categories.filter(category => category.endsWith('/ overall_acceptance_pct')))
+      .toEqual(['all / all / overall_acceptance_pct', 'all / suggest-impact / overall_acceptance_pct']);
+  });
+
+  it('derives bot_processed_flaws from group observations instead of the backend selection total', () => {
+    const bot = { entries: [], available_components: [], total_flaws_processed: 42, features: {} };
+    const csv = createKpiCsv([
+      observation,
+      { ...observation, source: 'osidb-bot', outcome: 'suggested', cveId: 'CVE-2026-1000' },
+      { ...observation, source: 'osidb-bot', outcome: 'suggested', accepted: false, cveId: 'CVE-2026-1001' },
+      { ...observation, source: 'osidb-bot', outcome: 'skipped', accepted: null, cveId: 'CVE-2026-1002' },
+    ], { ...scope, feature: 'all', bot });
+    const records = parseCsv(csv).slice(1);
+    const totals = new Map(records.map(record => [record[23], record[24]]));
+
+    expect(totals.get('all / all / bot_processed_flaws')).toBe('3');
+    expect(totals.get('all / suggest-impact / bot_processed_flaws')).toBe('3');
+    expect(totals.get('osidb_bot / all / bot_processed_flaws')).toBe('3');
+    expect(totals.get('osidb_bot / suggest-impact / bot_processed_flaws')).toBe('3');
+    expect(records.find(record => record[0] === 'all' && record[2])![19]).toBe('3');
+    expect(records.find(record => record[0] === 'osidb_bot' && record[2])![19]).toBe('3');
+    expect(csv).not.toContain('42');
   });
 
   it('downloads a CSV blob and releases its object URL', () => {
