@@ -115,7 +115,7 @@ function selectTab(index: number) {
 }
 
 .osim-add-tab {
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }
 
 .osim-dropdown-menu {

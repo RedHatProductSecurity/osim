@@ -19,13 +19,17 @@ import { OsimRuntimeStatus } from '@/types/zodOsim';
 import { updateCWEData } from '@/services/CweService';
 import { useSettingsStore } from '@/stores/SettingsStore';
 
+const settingsStore = useSettingsStore();
+watch(() => settingsStore.settings.darkMode, (darkMode) => {
+  document.documentElement.setAttribute('data-bs-theme', darkMode ? 'dark' : 'light');
+}, { immediate: true });
+
 watch(osimRuntimeStatus, async () => {
   if (osimRuntimeStatus.value === OsimRuntimeStatus.READY) {
     updateRelativeOsimBuildDate();
     updateCWEData();
 
     // Initialize API keys after runtime is ready
-    const settingsStore = useSettingsStore();
     await settingsStore.initializeApiKeys();
   }
 });
@@ -133,8 +137,8 @@ onBeforeUnmount(() => {
 }
 
 .osim-status-bar.fixed-bottom {
-  background: #efefef;
-  border-top: 1px solid #ddd;
+  background: var(--osim-status-bar-bg);
+  border-top: 1px solid var(--bs-border-color);
   height: var(--osim-status-bar-height);
   display: flex;
   justify-content: flex-end;
@@ -145,7 +149,7 @@ onBeforeUnmount(() => {
 }
 
 .osim-status-bar > * {
-  border-left: 1px solid #ddd;
+  border-left: 1px solid var(--bs-border-color);
   padding: 0 3px;
 }
 </style>

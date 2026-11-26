@@ -14,9 +14,9 @@
   right: 0;
   z-index: 1030;
   display: block !important;
-  color: #212529;
-  background-color: #fff;
-  border: 1px solid rgb(0 0 0 / 15%);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
   border-radius: 0.25rem;
   max-height: 400px;
   overflow-y: auto;
@@ -33,7 +33,7 @@
     font-size: 0.85rem;
 
     &:hover {
-      background-color: #dee2e6;
+      background-color: var(--bs-secondary-bg);
     }
   }
 

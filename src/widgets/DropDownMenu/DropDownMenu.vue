@@ -165,8 +165,8 @@ defineExpose({
   left: calc(v-bind('dropdownPosition.left') * 1px);
   z-index: 9999;
   display: flex;
-  background: white;
-  border: 1px solid #d1d5db;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
   border-radius: 6px;
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 10%),

@@ -58,7 +58,7 @@ const getFactorColor = (weight: number, isHovered: boolean = false) => {
   >
     <span
       class="osim-cvss-score"
-      :style="isFocused ? {color: 'white'} : {color: 'black'}"
+      :style="{ color: isFocused ? 'white' : 'var(--bs-body-color)' }"
     >
       {{ cvssScore !== null ? `${cvssScore} ` : '' }}
     </span>

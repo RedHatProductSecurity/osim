@@ -17,5 +17,8 @@
 // Import Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
+// Theme-aware application surfaces
+@import './theme';
+
 // Vite scss loader is broken. See https://github.com/twbs/icons/issues/1381
 @import 'bootstrap-icons/font/bootstrap-icons.css';

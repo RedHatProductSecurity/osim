@@ -52,8 +52,8 @@ const isLoading = computed(() => !flaw.value && !didFetchFail);
 
 <style scoped>
 .osim-action-buttons {
-  background: white;
-  border-top: 1px solid #ddd;
+  background: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color);
   margin-left: 20px;
   margin-right: 20px;
   padding-right: 20px;
