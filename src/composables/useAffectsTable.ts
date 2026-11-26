@@ -202,6 +202,33 @@ export function useAffectsTable(
       : null,
     affect => trackerStatusError.value && !affect.tracker?.external_system_id,
   ));
+
+  /**
+   * Columns missing from a persisted column order (i.e. added after the user
+   * last saved their settings) would otherwise be appended by the table after
+   * the trailing sticky `actions` column, where they are effectively
+   * invisible. Reconcile instead: keep the persisted order for known ids,
+   * drop ids that no longer exist, and insert new columns just before
+   * `actions`.
+   *
+   * Column ids are only fully resolved once the table instantiates its
+   * columns (raw definitions leave function-accessor ids undefined), so the
+   * id list is captured from the table after creation below.
+   */
+  const resolvedColumnIds = ref<string[]>([]);
+  const reconciledColumnOrder = computed<string[]>(() => {
+    const persisted = settings.value.affectsColumnOrder;
+    if (!persisted.length) return [];
+    const columnIds = resolvedColumnIds.value;
+    const knownIds = new Set(columnIds);
+    const ordered = persisted.filter(id => knownIds.has(id));
+    const missing = columnIds.filter(id => !persisted.includes(id));
+    if (!missing.length) return ordered;
+    const actionsIndex = ordered.indexOf('actions');
+    if (actionsIndex === -1) return [...ordered, ...missing];
+    return [...ordered.slice(0, actionsIndex), ...missing, ...ordered.slice(actionsIndex)];
+  });
+
   const sorting = ref<SortingState>([]);
   const showAll = ref(false);
   const globalFilter = ref('');
@@ -303,7 +330,7 @@ export function useAffectsTable(
       get sorting() { return sorting.value; },
       get globalFilter() { return globalFilter.value; },
       get columnFilters() { return columnFilters.value; },
-      get columnOrder() { return settings.value.affectsColumnOrder; },
+      get columnOrder() { return reconciledColumnOrder.value; },
       get columnSizing() { return settings.value.affectsSizing; },
       get expanded() { return expandedRows.value; },
       get rowPinning() { return rowPinning.value; },
@@ -412,6 +439,11 @@ export function useAffectsTable(
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getExpandedRowModel: getExpandedRowModel(),
   });
+
+  // Capture the table's fully-resolved column ids for reconciledColumnOrder.
+  // The column set is static and header models build lazily, so a one-time
+  // capture right after table creation is sufficient.
+  resolvedColumnIds.value = table.getAllLeafColumns().map(column => column.id);
 
   function toggleColumnVisibility(column: Column<any, any>) {
     settings.value.affectsVisibility = {

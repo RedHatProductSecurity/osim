@@ -18,10 +18,12 @@ import {
   affectResolutions,
   possibleAffectResolutions,
 } from '@/types/zodAffect';
+import { classifyAffectProvenance } from '@/utils/affectProvenance';
 import { affectRhCvss3, formatDateWithTimezone } from '@/utils/helpers';
 import { labelColorMap } from '@/constants';
 
 import EditableCell from './EditableCell.vue';
+import ProvenanceBadge from './ProvenanceBadge.vue';
 import { validatePurl, validatePurlArray } from './purlValidation';
 import RowActions from './RowActions.vue';
 import TrackerLink from './TrackerLink.vue';
@@ -45,6 +47,13 @@ declare module '@tanstack/vue-table' {
 const editableCellRenderer: ColumnDefTemplate<CellContext<ZodAffectType, any>> =
  ({ column, getValue, row, table }) =>
    <EditableCell row={row} table={table} column={column} getValue={getValue} />;
+
+const provenanceFilterOptions: Record<string, string> = {
+  Automation: 'automation',
+  Hybrid: 'hybrid',
+  Human: 'human',
+  Legacy: 'legacy',
+};
 
 export default function AffectColumnDefinitions(
   trackerDisplayValue: (affect: ZodAffectType) => string = affect => affect.tracker?.external_system_id ?? '',
@@ -154,6 +163,16 @@ export default function AffectColumnDefinitions(
       filterFn: 'arrIncludesPartial',
       header: 'Label',
       size: 110,
+    }),
+    columnHelper.accessor(row => classifyAffectProvenance(row), {
+      id: 'provenance',
+      cell: ({ row }) => <ProvenanceBadge affect={row.original} />,
+      filterFn: 'arrIncludesWithBlanks',
+      header: 'Provenance',
+      meta: {
+        enum: provenanceFilterOptions,
+      },
+      size: 130,
     }),
     columnHelper.accessor('ps_update_stream', {
       cell: editableCellRenderer,

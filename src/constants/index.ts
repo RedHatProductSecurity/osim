@@ -108,3 +108,5 @@ export const labelColorMap: { [key: string]: string } = {
   'rhel': '#FF7B7B',
   'services': '#8292FF',
 };
+
+export const AUTOMATION_CREATED_BY: readonly string[] = ['AffectCreationEngine'];
