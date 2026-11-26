@@ -1149,6 +1149,31 @@ describe('kPI dashboard', () => {
     expect(wrapper.text()).toContain('0 flaws received; awaiting the first page');
   });
 
+  it('appends the drain time estimate once a later poll has reduced the stale count', async () => {
+    const startedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+
+    resolveFirst(drainCounts(120, 200));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 80 / 200 flaws refreshed');
+    expect(wrapper.text()).not.toContain('· ~');
+
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    resolveSecond(drainCounts(40, 200));
+    await flushPromises();
+    expect(wrapper.get('span.d-block[role="status"]').text())
+      .toMatch(/160 \/ 200 flaws refreshed\s*· ~5s remaining/);
+  });
+
   it('counts remaining stale flaws while the drain reports no selection total', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
     // A server response without a selection total: only the stale count arrives.
@@ -1175,6 +1200,50 @@ describe('kPI dashboard', () => {
     await flushPromises();
     expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
     expect(wrapper.text()).toContain('1800 / 1600 flaws received');
+  });
+
+  it('appends the page time estimate once a later page has grown the delivery', async () => {
+    const startedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    getCacheStatus.mockResolvedValueOnce(cacheStatus);
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+
+    publish(snapshot(1000, 4000));
+    await flushPromises();
+    expect(wrapper.text()).toContain('1000 / 4000 flaws received');
+    expect(wrapper.text()).not.toContain('· ~');
+
+    vi.setSystemTime(new Date(startedAt.getTime() + 5_000));
+    publish(snapshot(2000, 4000));
+    await flushPromises();
+    // The estimate sits between the delivery counts and the cache status.
+    expect(wrapper.get('span[role="status"]').text()).toMatch(
+      /2000 \/ 4000 flaws received\s*· ~10s remaining\s*· 2 of 5 selected flaws are not cached fresh/,
+    );
+  });
+
+  it.each([
+    { name: 'ten seconds', elapsed: 10_000, estimate: '~10s remaining' },
+    { name: 'a fraction of a second clamped up to one second', elapsed: 250, estimate: '~1s remaining' },
+    { name: 'fifty-nine seconds', elapsed: 59_000, estimate: '~59s remaining' },
+    { name: 'one minute', elapsed: 60_000, estimate: '~1 min remaining' },
+    { name: 'two minutes', elapsed: 120_000, estimate: '~2 min remaining' },
+    { name: 'ninety seconds rounding up to two minutes', elapsed: 90_000, estimate: '~2 min remaining' },
+    { name: 'fifty-nine minutes', elapsed: 59 * 60_000, estimate: '~59 min remaining' },
+    { name: 'one hour', elapsed: 60 * 60_000, estimate: '~1 h remaining' },
+  ])('formats the page time estimate as $name', async ({ elapsed, estimate }) => {
+    const startedAt = new Date('2026-11-12T12:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    getBot.mockReset().mockReturnValue(new Promise(() => {}));
+    wrapper = mountWithConfig(KpiMetrics);
+    await flushPromises();
+    publish(snapshot(1000, 3000));
+    vi.setSystemTime(new Date(startedAt.getTime() + elapsed));
+    publish(snapshot(2000, 3000));
+    await flushPromises();
+    expect(wrapper.text()).toContain(`· ${estimate}`);
   });
 
   it('keeps the dashboard usable when an older server lacks the cache-refresh endpoint', async () => {

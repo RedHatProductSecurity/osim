@@ -64,6 +64,7 @@ describe('useKpiDashboard', () => {
   afterEach(() => {
     app?.unmount();
     app = undefined;
+    vi.useRealTimers();
   });
 
   function mountDashboard() {
@@ -73,23 +74,26 @@ describe('useKpiDashboard', () => {
   }
 
   it('starts at zero with unknown selected count and tracks progress from each snapshot', async () => {
+    // Pinned time keeps the estimate absent: no page pair has spanned any
+    // observable delivery interval yet.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-25T12:00:00Z') });
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, delivered: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 0, etaMs: null, pages: 0, selected: null });
     expect(dashboard.loading.value).toBe(true);
 
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 10, etaMs: null, pages: 1, selected: 40 });
     expect(dashboard.bot.value).toEqual(withProgress(10, 40));
     expect(dashboard.botIncomplete.value).toBe(true);
 
     getBot.mock.calls[0][1].onSnapshot(withProgress(30, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 2, delivered: 30, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 30, etaMs: null, pages: 2, selected: 40 });
 
     // A page without a progress block clears both counts but still counts as a received page.
     publish();
-    expect(dashboard.botProgress.value).toEqual({ pages: 3, delivered: null, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ delivered: null, etaMs: null, pages: 3, selected: null });
   });
 
   it('resets bot progress when a new refresh starts and ignores progress from the superseded fetch', async () => {
@@ -102,11 +106,11 @@ describe('useKpiDashboard', () => {
     await flushPromises();
 
     expect(signal.aborted).toBe(true);
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, delivered: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 0, etaMs: null, pages: 0, selected: null });
     getBot.mock.calls[0][1].onSnapshot(withProgress(20, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 0, delivered: 0, selected: null });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 0, etaMs: null, pages: 0, selected: null });
     getBot.mock.calls[1][1].onSnapshot(withProgress(5, 30));
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 5, selected: 30 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 5, etaMs: null, pages: 1, selected: 30 });
   });
 
   it('publishes the resolved metrics with their final progress when the run finishes', async () => {
@@ -114,7 +118,7 @@ describe('useKpiDashboard', () => {
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 40, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 40, etaMs: null, pages: 1, selected: 40 });
     expect(dashboard.botIncomplete.value).toBe(false);
     expect(dashboard.loading.value).toBe(false);
   });
@@ -130,7 +134,7 @@ describe('useKpiDashboard', () => {
     const dashboard = mountDashboard();
     await flushPromises();
 
-    expect(dashboard.botProgress.value).toEqual({ pages: 2, delivered: 40, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 40, etaMs: null, pages: 2, selected: 40 });
     expect(dashboard.botIncomplete.value).toBe(false);
   });
 
@@ -139,15 +143,78 @@ describe('useKpiDashboard', () => {
     await flushPromises();
     getBot.mock.calls[0][1].onSnapshot(withProgress(10, 40));
     const signal = getBot.mock.calls[0][1].signal;
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 10, etaMs: null, pages: 1, selected: 40 });
 
     app!.unmount();
     getBot.mock.calls[0][1].onSnapshot({ ...snapshot, total_flaws_processed: 20 });
 
     expect(signal.aborted).toBe(true);
     expect(dashboard.bot.value).toEqual(withProgress(10, 40));
-    expect(dashboard.botProgress.value).toEqual({ pages: 1, delivered: 10, selected: 40 });
+    expect(dashboard.botProgress.value).toEqual({ delivered: 10, etaMs: null, pages: 1, selected: 40 });
     app = undefined;
+  });
+
+  it('estimates the remaining page time once a later page has grown the delivery', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    // The first page only anchors the delivery rate: nothing to extrapolate yet.
+    getBot.mock.calls[0][1].onSnapshot(withProgress(1000, 4000));
+    expect(dashboard.botProgress.value).toEqual({ delivered: 1000, etaMs: null, pages: 1, selected: 4000 });
+
+    // Five seconds later the delivery doubled with half the selection still
+    // to come: ten more seconds at the observed rate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 5_000));
+    getBot.mock.calls[0][1].onSnapshot(withProgress(2000, 4000));
+    expect(dashboard.botProgress.value).toEqual({ delivered: 2000, etaMs: 10_000, pages: 2, selected: 4000 });
+  });
+
+  it('keeps the page estimate null without growth, without counts, or once delivery completes', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    const dashboard = mountDashboard();
+    await flushPromises();
+    getBot.mock.calls[0][1].onSnapshot(withProgress(1000, 4000));
+
+    // A later page that delivered nothing new offers no rate to extrapolate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 20_000));
+    getBot.mock.calls[0][1].onSnapshot(withProgress(1000, 4000));
+    expect(dashboard.botProgress.value).toEqual({ delivered: 1000, etaMs: null, pages: 2, selected: 4000 });
+
+    // An older server's page without progress counts cannot anchor a rate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 40_000));
+    publish();
+    expect(dashboard.botProgress.value).toEqual({ delivered: null, etaMs: null, pages: 3, selected: null });
+
+    // A completed delivery has nothing left to estimate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 60_000));
+    getBot.mock.calls[0][1].onSnapshot(withProgress(4000, 4000));
+    expect(dashboard.botProgress.value).toEqual({ delivered: 4000, etaMs: null, pages: 4, selected: 4000 });
+  });
+
+  it('keeps a superseded run\'s late snapshot from updating the live run\'s page estimate', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    const dashboard = mountDashboard();
+    await flushPromises();
+    getBot.mock.calls[0][1].onSnapshot(withProgress(1000, 4000));
+
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+
+    // The replacement run anchors and estimates on its own pages.
+    vi.setSystemTime(new Date(startedAt.getTime() + 5_000));
+    getBot.mock.calls[1][1].onSnapshot(withProgress(1000, 4000));
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    getBot.mock.calls[1][1].onSnapshot(withProgress(2000, 4000));
+    expect(dashboard.botProgress.value).toEqual({ delivered: 2000, etaMs: 10_000, pages: 2, selected: 4000 });
+
+    // A late page from the superseded run must not disturb that estimate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 15_000));
+    getBot.mock.calls[0][1].onSnapshot(withProgress(4000, 4000));
+    expect(dashboard.botProgress.value).toEqual({ delivered: 2000, etaMs: 10_000, pages: 2, selected: 4000 });
   });
 
   it('aborts both sources on invalid dates and starts a fresh run after correction', async () => {
@@ -325,6 +392,9 @@ describe('useKpiDashboard', () => {
   });
 
   it('drains the cache before fetching pages, polling until the selection is fresh', async () => {
+    // Pinned time keeps both polls on the same instant, so the completed
+    // drain reports no elapsed cadence to extrapolate from.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-25T12:00:00Z') });
     refreshCache
       .mockResolvedValueOnce(drainCounts(5, 10))
       .mockResolvedValueOnce(drainCounts(0, 10));
@@ -336,7 +406,7 @@ describe('useKpiDashboard', () => {
     // Pages are fetched only after the drain finished, on the shared abort signal.
     expect(refreshCache.mock.invocationCallOrder[1]).toBeLessThan(getBot.mock.invocationCallOrder[0]);
     expect(refreshCache.mock.calls[0][1]).toBe(getBot.mock.calls[0][1].signal);
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 0, total: 10 });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 0, total: 10 });
     expect(dashboard.loading.value).toBe(true);
   });
 
@@ -355,6 +425,9 @@ describe('useKpiDashboard', () => {
   });
 
   it('tracks the observed drain counts and resets them when a new refresh starts', async () => {
+    // Pinned time keeps the estimate absent: both polls land on the same
+    // instant, so no refresh cadence has elapsed.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-25T12:00:00Z') });
     let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
     let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
     refreshCache.mockReset()
@@ -363,21 +436,92 @@ describe('useKpiDashboard', () => {
       .mockReturnValue(new Promise(() => {}));
     const dashboard = mountDashboard();
     await flushPromises();
-    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: null, total: null });
 
     resolveFirst(drainCounts(4, 6));
     await flushPromises();
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 4, total: 6 });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 4, total: 6 });
 
     resolveSecond(drainCounts(1, 6));
     await flushPromises();
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 1, total: 6 });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 1, total: 6 });
 
     // A new refresh clears the counts while its own drain is still pending.
     dashboard.component.value = 'kernel';
     await flushPromises();
-    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: null, total: null });
     expect(getBot).not.toHaveBeenCalled();
+  });
+
+  it('estimates the remaining drain time once a later poll has reduced the stale count', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveThird!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveThird = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    // The first poll only anchors the backlog: nothing to extrapolate yet.
+    resolveFirst(drainCounts(120, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 120, total: 200 });
+
+    // A later poll that reduced nothing offers no rate to extrapolate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    resolveSecond(drainCounts(120, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 120, total: 200 });
+
+    // Twenty seconds in, two thirds of the backlog is gone: ten more seconds
+    // at the observed rate cover the remaining third.
+    vi.setSystemTime(new Date(startedAt.getTime() + 20_000));
+    resolveThird(drainCounts(40, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: 10_000, remaining: 40, total: 200 });
+  });
+
+  it('resets the drain estimate when a new refresh starts', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveFinal!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveReplacement!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFinal = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveReplacement = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    const dashboard = mountDashboard();
+    await flushPromises();
+    resolveFirst(drainCounts(120, 200));
+    await flushPromises();
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    resolveSecond(drainCounts(40, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: 5_000, remaining: 40, total: 200 });
+
+    // The first run finishes its drain before the replacement starts.
+    vi.setSystemTime(new Date(startedAt.getTime() + 15_000));
+    resolveFinal(drainCounts(0, 200));
+    await flushPromises();
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: null, total: null });
+
+    // The replacement run re-anchors on its own first poll: no estimate yet,
+    // even though the earlier run's backlog and cadence are known.
+    vi.setSystemTime(new Date(startedAt.getTime() + 20_000));
+    resolveReplacement(drainCounts(100, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 100, total: 200 });
   });
 
   it('skips the drain when an older Aegis server lacks the cache-refresh endpoint', async () => {
@@ -388,7 +532,7 @@ describe('useKpiDashboard', () => {
     expect(refreshCache).toHaveBeenCalledTimes(1);
     expect(getBot).toHaveBeenCalledTimes(1);
     expect(dashboard.errors.value).toEqual([]);
-    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: null, total: null });
   });
 
   it('clears published drain counts when a later poll finds the endpoint unsupported', async () => {
@@ -399,7 +543,33 @@ describe('useKpiDashboard', () => {
     await flushPromises();
 
     expect(refreshCache).toHaveBeenCalledTimes(2);
-    expect(dashboard.botRefresh.value).toEqual({ remaining: null, total: null });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: null, total: null });
+    expect(getBot).toHaveBeenCalledTimes(1);
+    expect(dashboard.errors.value).toEqual([]);
+  });
+
+  it('clears the drain estimate with the counts when the endpoint turns unsupported mid-drain', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    let rejectThird!: (reason: unknown) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValueOnce(new Promise((_resolve, reject) => { rejectThird = reject; }));
+    const dashboard = mountDashboard();
+    await flushPromises();
+    resolveFirst(drainCounts(120, 200));
+    await flushPromises();
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    resolveSecond(drainCounts(40, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: 5_000, remaining: 40, total: 200 });
+
+    rejectThird({ response: { status: 404 }, message: 'Not Found' });
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: null, total: null });
     expect(getBot).toHaveBeenCalledTimes(1);
     expect(dashboard.errors.value).toEqual([]);
   });
@@ -416,17 +586,17 @@ describe('useKpiDashboard', () => {
     await flushPromises();
     resolveSupersededPoll(drainCounts(5, 10));
     await flushPromises();
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 5, total: 10 });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 5, total: 10 });
 
     dashboard.component.value = 'kernel';
     await flushPromises();
     // The replacement run observed a partially stale cache and is still draining.
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 2, total: 8 });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 2, total: 8 });
 
     rejectSupersededPoll({ response: { status: 404 }, message: 'Not Found' });
     await flushPromises();
     // The stale rejection neither clears the live counts nor surfaces an error.
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 2, total: 8 });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 2, total: 8 });
     expect(dashboard.errors.value).toEqual([]);
   });
 
@@ -495,10 +665,66 @@ describe('useKpiDashboard', () => {
 
     resolveSuperseded(drainCounts(7, 9));
     await flushPromises();
-    expect(dashboard.botRefresh.value).toEqual({ remaining: 0, total: undefined });
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 0, total: undefined });
     expect(refreshCache).toHaveBeenCalledTimes(2);
     expect(getBot).toHaveBeenCalledTimes(1);
     expect(dashboard.errors.value).toEqual([]);
+  });
+
+  it('keeps a superseded run\'s late poll from updating the live run\'s drain estimate', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    let resolveSuperseded!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSuperseded = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    const dashboard = mountDashboard();
+    await flushPromises();
+
+    dashboard.component.value = 'kernel';
+    await flushPromises();
+
+    // The replacement run anchors and estimates on its own polls.
+    resolveFirst(drainCounts(120, 200));
+    await flushPromises();
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    resolveSecond(drainCounts(40, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: 5_000, remaining: 40, total: 200 });
+
+    // A late poll from the superseded run must not disturb that estimate.
+    vi.setSystemTime(new Date(startedAt.getTime() + 20_000));
+    resolveSuperseded(drainCounts(0, 200));
+    await flushPromises();
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: 5_000, remaining: 40, total: 200 });
+  });
+
+  it('stops updating the drain estimate after the dashboard unmounts', async () => {
+    const startedAt = new Date('2026-11-25T12:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
+    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
+    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
+    refreshCache.mockReset()
+      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
+      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
+      .mockReturnValue(new Promise(() => {}));
+    const dashboard = mountDashboard();
+    await flushPromises();
+    resolveFirst(drainCounts(120, 200));
+    await flushPromises();
+
+    app!.unmount();
+    app = undefined;
+    vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
+    resolveSecond(drainCounts(40, 200));
+    await flushPromises();
+
+    // The anchored first poll stands; the post-unmount poll changes nothing.
+    expect(dashboard.botRefresh.value).toEqual({ etaMs: null, remaining: 120, total: 200 });
   });
 
   it('gives up the drain after ten thousand polls that never reach a fresh cache', async () => {
