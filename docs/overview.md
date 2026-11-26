@@ -64,33 +64,28 @@
 
 ## KPI pagination
 
-The dashboard requests `/analysis/kpi/osidb-bot` with `limit=400` and follows
-`next_cursor` page by page until a page arrives without it. Each page carries
-its own slice of detail `entries` and a `progress` block (`selected_flaws`,
-`refreshed_flaws`, `complete`); the final page adds the aggregate over the
-whole selection (`features`, `total_flaws_processed`,
-`available_components`). `progress.complete` marks the cache refresh, not the
-delivery — on a fully cached run it is true on the first page while cursors
-remain — so the client completes on the absence of `next_cursor` instead.
-OSIM accumulates entries across pages so the result contains each entry
-exactly once, publishes a cumulative snapshot per page, and cuts off a server
-that never finishes paginating after 200 pages.
+Before fetching pages, the dashboard drains the cache through
+`POST /analysis/kpi/osidb-bot/cache-refresh`, polling until the selection
+reports zero stale flaws; each call advances one server-side time-budgeted
+slice, so the poll rate bounds the OSIDB load. A 404 marks a server that
+predates the endpoint and skips the drain. The status line shows the drain
+(`X / Y flaws refreshed`) and, once a later poll has made progress, a
+remaining-time estimate from the observed refresh cadence.
 
-A selection that is entirely cached carries no refresh work, so the backend
-serves it in larger 1000-flaw pages regardless of the requested `limit`; a
-fully cached remainder that fits one page is served as a single final
-response with neither cursor nor progress, indistinguishable from an older
-non-paginated server. The client treats a response without `next_cursor` as
-final either way and makes no page-size assumptions, so warm and
-refresh-paced runs are handled identically. Because `refreshed_flaws` counts
-flaws fresh in the server cache (not only those already delivered), the
-refreshed counts in the status line can run ahead on a partially warm cache
-and saturate immediately on a fully warm one. The progress bar therefore
-follows delivery instead — received pages over the projected total — and
-disappears once it reaches 100%. The projection adapts to the observed
-delivery pace (distinct delivered CVEs per page), so it handles both
-400-flaw refresh pages and 1000-flaw warm pages; retries and
-time-budget-shortened pages keep it approximate.
+The dashboard then requests `/analysis/kpi/osidb-bot` with `limit=1000` and
+follows `next_cursor` page by page until a page arrives without it. Pages
+are pure cache reads; each carries its own slice of detail `entries` and a
+`progress` block (`selected_flaws`, `delivered_flaws`, `refreshed_flaws`,
+`complete`), and the final page adds the aggregate over the whole selection
+(`features`, `total_flaws_processed`, `available_components`).
+`progress.complete` marks the cache refresh, not the delivery, so the client
+completes on the absence of `next_cursor` instead. The bar and counts follow
+the exact `delivered_flaws`/`selected_flaws` ratio, and the status line
+estimates the remaining time from the observed page cadence once delivery
+has progressed past the first page. OSIM accumulates entries across pages so
+the result contains each entry exactly once, publishes a cumulative snapshot
+per page, and cuts off a server that never finishes paginating after 200
+pages. An older non-paginated Aegis server is supported unchanged.
 
 The read-only `/analysis/kpi/osidb-bot/cache-status` endpoint reports the
 selection's cache backlog (`fresh_count`, `stale_count`, `uncached_count`,

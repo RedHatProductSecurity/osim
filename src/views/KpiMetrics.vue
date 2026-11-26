@@ -66,6 +66,14 @@ const config = computed(() => ({
 const percentage = (value: null | number) => value === null ? 'N/A' : `${value.toFixed(1)}%`;
 const quality = (value: null | number) => value === null ? 'N/A' : value.toFixed(2);
 
+function remainingText(etaMs: null | number) {
+  if (etaMs === null) return '';
+  const seconds = Math.max(1, Math.round(etaMs / 1000));
+  if (seconds < 60) return `~${seconds}s remaining`;
+  const minutes = Math.round(seconds / 60);
+  return minutes < 60 ? `~${minutes} min remaining` : `~${Math.round(minutes / 60)} h remaining`;
+}
+
 function downloadReport() {
   downloadKpiCsv(createKpiCsv(observations.value, {
     bot: bot.value,
@@ -172,6 +180,7 @@ function applyComponent(event: Event) {
           {{ botRefresh.total - botRefresh.remaining }} / {{ botRefresh.total }} flaws refreshed
         </template>
         <template v-else>{{ botRefresh.remaining }} flaws remaining</template>
+        <template v-if="botRefresh.etaMs !== null">· {{ remainingText(botRefresh.etaMs) }}</template>
       </span>
       <span role="status">
         Loading osidb-bot metrics…
@@ -183,6 +192,7 @@ function applyComponent(event: Event) {
           Flaw delivery counts unavailable from this server ({{ botSelectedTotal }} flaws selected).
         </template>
         <template v-else>Flaw delivery counts unavailable from this server.</template>
+        <template v-if="botProgress.etaMs !== null">· {{ remainingText(botProgress.etaMs) }}</template>
         <template v-if="botCacheStatusText">· {{ botCacheStatusText }}</template>
       </span>
       <div

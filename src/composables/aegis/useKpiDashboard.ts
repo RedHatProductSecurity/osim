@@ -64,14 +64,15 @@ export function useKpiDashboard() {
   const toDate = ref('');
   const feedback = ref<AegisKpiMetrics>({});
   const bot = ref<AegisBotKpiMetrics | null>(null);
-  const botProgress = ref<{ delivered: null | number; pages: number; selected: null | number }>(
-    { pages: 0, delivered: 0, selected: null },
-  );
+  const botProgress = ref<{
+    delivered: null | number; etaMs: null | number; pages: number; selected: null | number;
+  }>({ delivered: 0, etaMs: null, pages: 0, selected: null });
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
   const botComplete = ref(false);
   // Cache refresh counts observed while draining, for the refresh status.
-  const botRefresh = ref<{ remaining: null | number; total: null | number }>({
+  const botRefresh = ref<{ etaMs: null | number; remaining: null | number; total: null | number }>({
+    etaMs: null,
     remaining: null,
     total: null,
   });
@@ -92,6 +93,13 @@ export function useKpiDashboard() {
   // snapshot object, so object identity separates new pages from re-publishes.
   let botPages = 0;
   let lastBotSnapshot: AegisBotKpiMetrics | undefined;
+  // Cadence anchors for the remaining-time estimates: the first completed
+  // poll of the drain and the first delivered page each baseline their
+  // phase's observed rate.
+  let drainFirstAt = 0;
+  let drainFirstRemaining = 0;
+  let pageFirstAt = 0;
+  let pageFirstDelivered = 0;
   onUnmounted(() => {
     requestId++;
     controller?.abort();
@@ -130,11 +138,15 @@ export function useKpiDashboard() {
   function resetResults() {
     feedback.value = {};
     bot.value = null;
-    botProgress.value = { pages: 0, delivered: 0, selected: null };
+    botProgress.value = { delivered: 0, etaMs: null, pages: 0, selected: null };
     botPages = 0;
     lastBotSnapshot = undefined;
     botComplete.value = false;
-    botRefresh.value = { remaining: null, total: null };
+    botRefresh.value = { etaMs: null, remaining: null, total: null };
+    drainFirstAt = 0;
+    drainFirstRemaining = 0;
+    pageFirstAt = 0;
+    pageFirstDelivered = 0;
     botCacheStatus.value = null;
     cacheStatusError.value = null;
     errors.value = [];
@@ -145,15 +157,28 @@ export function useKpiDashboard() {
 
   function publishBot(metrics: AegisBotKpiMetrics, id: number) {
     if (id !== requestId) return;
+    const now = Date.now();
     if (metrics !== lastBotSnapshot) {
       lastBotSnapshot = metrics;
       botPages++;
+      if (!pageFirstAt) {
+        pageFirstAt = now;
+        pageFirstDelivered = metrics.progress?.delivered_flaws ?? 0;
+      }
     }
     bot.value = metrics;
+    const delivered = metrics.progress?.delivered_flaws ?? null;
+    const selected = metrics.progress?.selected_flaws ?? null;
+    const deliveredDelta = delivered === null ? 0 : delivered - pageFirstDelivered;
+    const etaMs = delivered !== null && selected !== null && selected > delivered
+      && deliveredDelta > 0 && now > pageFirstAt
+      ? Math.round(((selected - delivered) / deliveredDelta) * (now - pageFirstAt))
+      : null;
     botProgress.value = {
+      delivered,
+      etaMs,
       pages: botPages,
-      delivered: metrics.progress?.delivered_flaws ?? null,
-      selected: metrics.progress?.selected_flaws ?? null,
+      selected,
     };
     if (!loadedSources.value.includes('osidb-bot')) loadedSources.value.push('osidb-bot');
     collectOptions();
@@ -202,13 +227,22 @@ export function useKpiDashboard() {
         if (isCacheRefreshUnsupported(reason)) {
           // Clear any counts an earlier poll published so the status line
           // does not claim a refresh is in progress after it was skipped.
-          if (id === requestId) botRefresh.value = { remaining: null, total: null };
+          if (id === requestId) botRefresh.value = { etaMs: null, remaining: null, total: null };
           return;
         }
         throw reason;
       }
       if (id !== requestId) return;
+      const now = Date.now();
+      if (!drainFirstAt) {
+        drainFirstAt = now;
+        drainFirstRemaining = counts.stale_count;
+      }
+      const refreshed = drainFirstRemaining - counts.stale_count;
       botRefresh.value = {
+        etaMs: refreshed > 0 && now > drainFirstAt
+          ? Math.round((counts.stale_count / refreshed) * (now - drainFirstAt))
+          : null,
         remaining: counts.stale_count,
         total: counts.total_flaws_selected,
       };
