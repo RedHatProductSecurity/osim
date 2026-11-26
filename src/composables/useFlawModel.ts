@@ -313,19 +313,24 @@ export function useFlawModel() {
     isSaving.value = true;
     try {
       if (pending) {
+        const originUuid = flaw.value.uuid;
         const saved = await putFlaw(
-          flaw.value.uuid,
+          originUuid,
           flawBodyFromChoices(pending.mine, pending.server, pending.formEdits, choices),
           shouldCreateJiraTask.value,
         );
-        acceptServerFlaw(
-          saved,
-          Object.keys(choices).filter(field => choices[field] === 'server'),
-        );
-        // acceptServerFlaw leaves the collections dirty; fold the server's
-        // collection changes in so they surface. Conflicts with local unsaved
-        // edits re-open the dialog as attribution rows.
-        mergeServerAttributions(saved);
+        // A navigation while the PUT was in flight must not apply flaw A's
+        // response to the newly loaded flaw's form and baseline.
+        if (flaw.value.uuid === originUuid) {
+          acceptServerFlaw(
+            saved,
+            Object.keys(choices).filter(field => choices[field] === 'server'),
+          );
+          // acceptServerFlaw leaves the collections dirty; fold the server's
+          // collection changes in so they surface. Conflicts with local unsaved
+          // edits re-open the dialog as attribution rows.
+          mergeServerAttributions(saved);
+        }
         pendingFlawConflict.value = null;
         toastAdoptedFields(pending.adopted);
       }
@@ -355,15 +360,22 @@ export function useFlawModel() {
     // keeps the queue callbacks' assignments visible to the restore: a bare
     // null would flow-narrow the variable to null outside those callbacks.
     let serverAttributionSource = null as null | ZodFlawType;
-    // Baselines the save started from: a kind this save stages for the
-    // collision dialog must keep its pre-save baseline through the deferred
-    // setFlaw calls, which would otherwise rebuild it from the working model.
-    // initialFlaw exposes the baseline read-only; the cast matches it back to
-    // the mutable shape acceptServerCollections clones from.
-    const preSaveAttributions: Pick<ZodFlawType, 'acknowledgments' | 'references'> = {
-      acknowledgments: initialFlaw.value.acknowledgments as ZodFlawAcknowledgmentType[],
-      references: initialFlaw.value.references as ZodFlawReferenceType[],
-    };
+    // Baselines each staged kind's confirmation was computed against,
+    // refreshed after every merge below. A merge that settles a kind advances
+    // its baseline, so a later merge that stages the kind must restore the
+    // newer baseline, not the pre-save snapshot: server values an earlier
+    // merge adopted would otherwise read as local edits. initialFlaw exposes
+    // the baseline read-only; the cast matches it back to the mutable shape
+    // acceptServerCollections clones from.
+    let stagedAttributionBaselines: null | Pick<ZodFlawType, 'acknowledgments' | 'references'> = null;
+
+    /** Capture the baselines the merges so far left behind for the deferred restore. */
+    function captureStagedBaselines(): Pick<ZodFlawType, 'acknowledgments' | 'references'> {
+      return {
+        acknowledgments: initialFlaw.value.acknowledgments as ZodFlawAcknowledgmentType[],
+        references: initialFlaw.value.references as ZodFlawReferenceType[],
+      };
+    }
 
     isSaving.value = true;
     const validatedFlaw = validate();
@@ -408,6 +420,7 @@ export function useFlawModel() {
         // setFlaw replaces the model wholesale.
         const mergedAttributions = mergeServerAttributions(response);
         serverAttributionSource = response;
+        stagedAttributionBaselines = captureStagedBaselines();
         // Apply the new updated_dt with setFlaw after the queue. Writing it here remounts
         // FlawEditView (keyed on updated_dt) and drops pending label edits before they save.
         afterSuccessQueue.push(() => {
@@ -483,6 +496,7 @@ export function useFlawModel() {
         // deferred setFlaw replaces the model wholesale.
         const mergedAttributions = mergeServerAttributions(updatedFlaw);
         serverAttributionSource = updatedFlaw;
+        stagedAttributionBaselines = captureStagedBaselines();
         afterSuccessQueue.push(() => setFlaw({
           ...updatedFlaw,
           affects: flaw.value.affects,
@@ -507,17 +521,18 @@ export function useFlawModel() {
       // Deferred setFlaw calls (affects, CVSS, labels) rebuild the whole
       // baseline from the working model; restore the server attribution
       // baseline after them all so unsaved reference edits stay dirty. A kind
-      // still staged for the collision dialog instead keeps its pre-save
-      // baseline: re-baselining it to the server response would swallow the
-      // staged conflict when the dialog is canceled.
+      // still staged for the collision dialog instead restores the baseline
+      // its staging was computed against, captured after the last merge:
+      // re-baselining it to the server response would swallow the staged
+      // conflict when the dialog is canceled.
       const attributionSource = serverAttributionSource;
       if (attributionSource) {
         afterSuccessQueue.push(() => acceptServerCollections({
           acknowledgments: pendingAttributionConflict.value?.acknowledgments
-            ? preSaveAttributions.acknowledgments
+            ? stagedAttributionBaselines?.acknowledgments ?? attributionSource.acknowledgments
             : attributionSource.acknowledgments,
           references: pendingAttributionConflict.value?.references
-            ? preSaveAttributions.references
+            ? stagedAttributionBaselines?.references ?? attributionSource.references
             : attributionSource.references,
         }));
       }

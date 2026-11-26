@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 import { equals } from 'ramda';
 
@@ -33,12 +33,12 @@ const isExpanded = ref(false);
 
 onMounted(() => {
   savedValues.value = deepCopyFromRaw(items.value);
-  priorValues.value = deepCopyFromRaw(items.value);
 });
 
 const indexBeingEdited = ref<null | number>(null);
 const isBeingEdited = (index: number) => indexBeingEdited.value === index;
-const priorValues = ref<any[]>([]);
+/** The row as it was when editing began; a cancel restores exactly this. */
+const editSnapshot = ref<any>(null);
 const savedValues = ref<any[]>([]);
 
 function modifiedItem(index: number) {
@@ -50,13 +50,6 @@ const itemsToSave = computed((): any[] => [
   ...items.value.filter(({ uuid }) => !uuid),
 ]);
 
-watch(indexBeingEdited, (nextIndex, prevIndex) => {
-  if (prevIndex != null && nextIndex != null) {
-    commitEdit();
-    setEdit(nextIndex);
-  }
-});
-
 function addItem() {
   isExpanded.value = true;
   emit('item:new');
@@ -67,22 +60,23 @@ function saveItems() {
 }
 
 function cancelEdit(index: number) {
-  items.value[index] = deepCopyFromRaw(priorValues.value[index]);
+  items.value[index] = deepCopyFromRaw(editSnapshot.value);
   indexBeingEdited.value = null;
 }
 
 function setEdit(index: number) {
+  // Capture the row as editing begins: server changes a background merge
+  // adopted since the last save must not be resurrected by a cancel.
+  editSnapshot.value = deepCopyFromRaw(items.value[index]);
   indexBeingEdited.value = index;
 }
 
 function commitEdit() {
-  priorValues.value = deepCopyFromRaw(items.value);
   indexBeingEdited.value = null;
 }
 
 function onSaveComplete() {
   savedValues.value = deepCopyFromRaw(items.value);
-  priorValues.value = deepCopyFromRaw(items.value);
 }
 
 defineExpose({ isExpanded, onSaveComplete });
