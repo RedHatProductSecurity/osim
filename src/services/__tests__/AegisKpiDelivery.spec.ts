@@ -146,11 +146,11 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
   });
 
   it('completes a fully cached selection served as two warm pages despite complete progress', async () => {
-    // A fully warm 2000-flaw selection is served in 1000-flaw pages whatever
-    // limit the client requests, and progress.complete is already true on the
-    // first page because the whole selection is fresh: only the absent
-    // next_cursor of the last page may end the run.
-    const warmProgress = { complete: true, delivered_flaws: 2000, selected_flaws: 2000 };
+    // A fully warm 2000-flaw selection is served in 1000-flaw pages, and
+    // progress.complete is already true on the first page because the whole
+    // selection is fresh: only the absent last_cve of the last page may end
+    // the run.
+    const warmProgress = { complete: true, delivered_flaws: 2000, refreshed_flaws: 2000, selected_flaws: 2000 };
     const firstEntries = botEntries(1, 1000);
     const lastEntries = botEntries(1001, 1000);
     const first = botPage(firstEntries, 'warm-2', warmProgress);
@@ -178,7 +178,7 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
       [...firstEntries, ...lastEntries],
     ]);
     // The complete progress of the first page does not make its snapshot
-    // authoritative: only a page without next_cursor carries the aggregate.
+    // authoritative: only a page without last_cve carries the aggregate.
     expect(snapshots[0]).toMatchObject({
       aggregates_available: false,
       features: {},
@@ -196,22 +196,22 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     expect(onBotKpiProgress.mock.calls).toEqual([[2000, 2000], [2000, 2000]]);
   });
 
-  it('follows cursors when refresh-paced pages give way to larger warm remainder pages', async () => {
-    // 800 stale flaws are refreshed at the requested 400-flaw pace while the
-    // 1600 fresh ones already count as refreshed; the warm remainder is then
-    // served in 1000-flaw pages, the last of which fits a single final
-    // response without cursor or progress.
-    const refreshProgress = { complete: false, delivered_flaws: 2000, selected_flaws: 2400 };
-    const warmProgress = { complete: true, delivered_flaws: 2400, selected_flaws: 2400 };
-    const firstEntries = botEntries(1, 400);
-    const secondEntries = botEntries(401, 400);
-    const thirdEntries = botEntries(801, 1000);
-    const lastEntries = botEntries(1801, 600);
+  it('follows cursors while each page refreshes its own slice of the selection', async () => {
+    // A 2400-flaw selection with 800 stale flaws: every page serves exactly
+    // the requested 1000-flaw limit and refreshes its own slice (400 stale
+    // flaws sit in the first page's slice, 400 in the second's), so the
+    // refreshed count grows page by page until the final page reports the
+    // whole-selection aggregate.
+    const firstProgress = { complete: false, delivered_flaws: 1000, refreshed_flaws: 2000, selected_flaws: 2400 };
+    const secondProgress = { complete: false, delivered_flaws: 2000, refreshed_flaws: 2400, selected_flaws: 2400 };
+    const finalProgress = { complete: true, delivered_flaws: 2400, refreshed_flaws: 2400, selected_flaws: 2400 };
+    const firstEntries = botEntries(1, 1000);
+    const secondEntries = botEntries(1001, 1000);
+    const lastEntries = botEntries(2001, 400);
     const requests = servePages([
-      botPage(firstEntries, 'refresh-2', refreshProgress),
-      botPage(secondEntries, 'warm-1', warmProgress),
-      botPage(thirdEntries, 'warm-2', warmProgress),
-      botPage(lastEntries, null, null, {
+      botPage(firstEntries, 'CVE-2026-1000', firstProgress),
+      botPage(secondEntries, 'CVE-2026-2000', secondProgress),
+      botPage(lastEntries, null, finalProgress, {
         available_components: ['kernel'],
         features: botFeatures,
         total_flaws_processed: 2400,
@@ -224,15 +224,16 @@ describe('osidb-bot KPI cursor pagination over HTTP', () => {
     const result = await service.getBotKpiMetrics({}, { onSnapshot });
 
     expect(requests.map(request => new URL(request.url).searchParams.get('cursor')))
-      .toEqual([null, 'refresh-2', 'warm-1', 'warm-2']);
+      .toEqual([null, 'CVE-2026-1000', 'CVE-2026-2000']);
     expect(result).toEqual({
       available_components: ['kernel'],
-      entries: [...firstEntries, ...secondEntries, ...thirdEntries, ...lastEntries],
+      entries: [...firstEntries, ...secondEntries, ...lastEntries],
       features: botFeatures,
+      progress: finalProgress,
       total_flaws_processed: 2400,
     });
-    expect(onSnapshot).toHaveBeenCalledTimes(4);
-    expect(onBotKpiProgress.mock.calls).toEqual([[2000, 2400], [2400, 2400], [2400, 2400]]);
+    expect(onSnapshot).toHaveBeenCalledTimes(3);
+    expect(onBotKpiProgress.mock.calls).toEqual([[1000, 2400], [2000, 2400], [2400, 2400]]);
   });
 
   it('rejects a later page whose entries is not an array before publishing it', async () => {

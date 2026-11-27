@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Changed
+* Load osidb-bot KPI metrics directly through paginated requests that refresh their own slice of flaws server-side, replacing the separate cache drain and status requests, and follow the renamed `last_cve` continuation field (`AEGIS-550`)
+
 ## [2026.11.2]
 ### Fixed
 * Do not break flaw view when an affect request fails (`OSIDB-5909`)

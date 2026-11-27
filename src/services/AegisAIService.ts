@@ -13,7 +13,6 @@ import type {
   AegisBotKpiPage,
   AegisBotKpiOptions,
   AegisBotKpiProgressCallback,
-  AegisBotKpiCacheStatus,
   AegisKpiFeatureParamType,
   AegisProgrammaticFeedbackPayload,
   AegisMultiAnalysisParams,
@@ -398,23 +397,6 @@ export class AegisAIService {
     }
   }
 
-  /** Read-only osidb-bot KPI cache refresh counts; never triggers a refresh. */
-  async getBotKpiCacheStatus(component?: string, signal?: AbortSignal): Promise<AegisBotKpiCacheStatus> {
-    try {
-      const result = await this.fetchKpi({
-        method: 'GET',
-        url: '/analysis/kpi/osidb-bot/cache-status',
-        params: { component },
-        signal,
-      });
-
-      return result.data;
-    } catch (error) {
-      console.error('AegisAIService::getBotKpiCacheStatus() Error:', error);
-      throw error;
-    }
-  }
-
   /** Publish cumulative snapshots while following the paginated bot KPI endpoint. */
   async getBotKpiMetrics(query: AegisKpiQuery = {}, options: AegisBotKpiOptions = {}): Promise<AegisBotKpiMetrics> {
     this.botKpiController?.abort(new Error('osidb-bot KPI fetch was superseded by a newer request.'));
@@ -463,26 +445,6 @@ export class AegisAIService {
       return result.data;
     } catch (error) {
       console.error('AegisAIService::getKpiMetrics() Error:', error);
-      throw error;
-    }
-  }
-
-  /** Advance the osidb-bot KPI cache refresh by one server-side bounded
-   * slice and return the post-slice counts. Polling this method drains the
-   * backlog at the client's pace: every call makes progress and the poll
-   * rate bounds the OSIDB load. */
-  async refreshBotKpiCache(component?: string, signal?: AbortSignal): Promise<AegisBotKpiCacheStatus> {
-    try {
-      const result = await this.fetchKpi({
-        method: 'POST',
-        url: '/analysis/kpi/osidb-bot/cache-refresh',
-        params: { component },
-        signal,
-      });
-
-      return result.data;
-    } catch (error) {
-      console.error('AegisAIService::refreshBotKpiCache() Error:', error);
       throw error;
     }
   }

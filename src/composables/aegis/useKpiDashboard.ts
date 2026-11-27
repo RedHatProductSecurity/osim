@@ -3,7 +3,7 @@ import { computed, onUnmounted, ref, watch } from 'vue';
 import { DateTime } from 'luxon';
 
 import type {
-  AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiQuery,
+  AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiQuery,
 } from '@/types/aegisAI';
 import { AegisAIService } from '@/services/AegisAIService';
 import {
@@ -17,18 +17,6 @@ function httpStatusOf(reason: unknown): number | undefined {
     ? error.response
     : {};
   return 'status' in response && typeof response.status === 'number' ? response.status : undefined;
-}
-
-// A 404 marks an Aegis server that predates the cache-status endpoint; the
-// indicator is then simply absent instead of reported as a failure.
-function isCacheStatusUnsupported(reason: unknown): boolean {
-  return httpStatusOf(reason) === 404;
-}
-
-// A 404 marks an Aegis server that predates the cache-refresh endpoint;
-// draining is then skipped and pages serve whatever the server provides.
-function isCacheRefreshUnsupported(reason: unknown): boolean {
-  return httpStatusOf(reason) === 404;
 }
 
 function kpiErrorMessage(source: string, reason: unknown, what = 'metrics'): string {
@@ -70,14 +58,13 @@ export function useKpiDashboard() {
   const botLoading = ref(false);
   const feedbackLoading = ref(false);
   const botComplete = ref(false);
-  // Cache refresh counts observed while draining, for the refresh status.
+  // Cache refresh counts observed in the pages' progress blocks: each page
+  // refreshes its own slice, so refreshed_flaws grows page by page.
   const botRefresh = ref<{ etaMs: null | number; remaining: null | number; total: null | number }>({
     etaMs: null,
     remaining: null,
     total: null,
   });
-  const botCacheStatus = ref<AegisBotKpiCacheStatus | null>(null);
-  const cacheStatusError = ref<null | string>(null);
   const loading = computed(() => botLoading.value || feedbackLoading.value);
   const botIncomplete = computed(() => !!bot.value && !botComplete.value);
   const errors = ref<string[]>([]);
@@ -93,13 +80,12 @@ export function useKpiDashboard() {
   // snapshot object, so object identity separates new pages from re-publishes.
   let botPages = 0;
   let lastBotSnapshot: AegisBotKpiMetrics | undefined;
-  // Cadence anchors for the remaining-time estimates: the first completed
-  // poll of the drain and the first delivered page each baseline their
-  // phase's observed rate.
-  let drainFirstAt = 0;
-  let drainFirstRemaining = 0;
+  // Cadence anchors for the remaining-time estimates: the first page
+  // baseline both phases' observed rates from its own counts.
   let pageFirstAt = 0;
   let pageFirstDelivered = 0;
+  let refreshFirstAt = 0;
+  let refreshFirstRemaining = 0;
   onUnmounted(() => {
     requestId++;
     controller?.abort();
@@ -143,12 +129,10 @@ export function useKpiDashboard() {
     lastBotSnapshot = undefined;
     botComplete.value = false;
     botRefresh.value = { etaMs: null, remaining: null, total: null };
-    drainFirstAt = 0;
-    drainFirstRemaining = 0;
     pageFirstAt = 0;
     pageFirstDelivered = 0;
-    botCacheStatus.value = null;
-    cacheStatusError.value = null;
+    refreshFirstAt = 0;
+    refreshFirstRemaining = 0;
     errors.value = [];
     loadedSources.value = [];
     botLoading.value = !invalidRange.value;
@@ -180,6 +164,21 @@ export function useKpiDashboard() {
       pages: botPages,
       selected,
     };
+    // Each page refreshes its own slice, so the pages' refreshed_flaws is
+    // the live refresh progress over the whole selection.
+    const refreshed = metrics.progress?.refreshed_flaws ?? null;
+    if (refreshed !== null && selected !== null) {
+      const remaining = Math.max(0, selected - refreshed);
+      if (!refreshFirstAt && remaining > 0) {
+        refreshFirstAt = now;
+        refreshFirstRemaining = remaining;
+      }
+      const refreshedDelta = refreshFirstRemaining - remaining;
+      const refreshEta = remaining > 0 && refreshedDelta > 0 && now > refreshFirstAt
+        ? Math.round((remaining / refreshedDelta) * (now - refreshFirstAt))
+        : null;
+      botRefresh.value = { etaMs: refreshEta, remaining, total: selected };
+    }
     if (!loadedSources.value.includes('osidb-bot')) loadedSources.value.push('osidb-bot');
     collectOptions();
   }
@@ -195,60 +194,6 @@ export function useKpiDashboard() {
         else botLoading.value = false;
       }
     }
-  }
-
-  // Best-effort auxiliary load: cache status never gates `loading` or CSV
-  // export, so its failure is reported through its own error instead of the
-  // metric-source `errors` array.
-  async function loadCacheStatus(id: number, component: string | undefined, signal: AbortSignal) {
-    try {
-      const status = await service.getBotKpiCacheStatus(component, signal);
-      if (id === requestId) botCacheStatus.value = status;
-    } catch (reason) {
-      if (id === requestId && !isCacheStatusUnsupported(reason)) {
-        cacheStatusError.value = kpiErrorMessage('The osidb-bot KPI cache', reason, 'status');
-      }
-    }
-  }
-
-  // Drain the cache-refresh endpoint until the selection is fully fresh.
-  // Pages never refresh, so the metrics are only current once this finishes;
-  // each call advances a server-side bounded slice, so the poll rate bounds
-  // the OSIDB load. The 10000-call cap is a safety bound: draining the
-  // largest selections takes hundreds of calls, never thousands.
-  async function drainBotCache(id: number, component: string | undefined, signal: AbortSignal) {
-    for (let call = 0; call < 10_000; call++) {
-      signal.throwIfAborted();
-      if (id !== requestId) return;
-      let counts;
-      try {
-        counts = await service.refreshBotKpiCache(component, signal);
-      } catch (reason) {
-        if (isCacheRefreshUnsupported(reason)) {
-          // Clear any counts an earlier poll published so the status line
-          // does not claim a refresh is in progress after it was skipped.
-          if (id === requestId) botRefresh.value = { etaMs: null, remaining: null, total: null };
-          return;
-        }
-        throw reason;
-      }
-      if (id !== requestId) return;
-      const now = Date.now();
-      if (!drainFirstAt) {
-        drainFirstAt = now;
-        drainFirstRemaining = counts.stale_count;
-      }
-      const refreshed = drainFirstRemaining - counts.stale_count;
-      botRefresh.value = {
-        etaMs: refreshed > 0 && now > drainFirstAt
-          ? Math.round((counts.stale_count / refreshed) * (now - drainFirstAt))
-          : null,
-        remaining: counts.stale_count,
-        total: counts.total_flaws_selected,
-      };
-      if (counts.stale_count === 0) return;
-    }
-    throw new Error('osidb-bot KPI cache refresh did not drain.');
   }
 
   async function refresh() {
@@ -273,10 +218,8 @@ export function useKpiDashboard() {
         collectOptions();
       }),
       loadSource('osidb-bot', id, async () => {
-        // Bring the cache up to date first: pages are pure cache reads, so
-        // without the drain they would serve last-known data.
-        await drainBotCache(id, currentQuery.component, signal);
-        if (id !== requestId) return;
+        // Each page refreshes its own slice of stale flaws server-side, so
+        // pagination alone brings the cache and the metrics up to date.
         const metrics = await service.getBotKpiMetrics(currentQuery, {
           signal, onSnapshot: value => publishBot(value, id),
         });
@@ -284,9 +227,6 @@ export function useKpiDashboard() {
         publishBot(metrics, id);
         botComplete.value = true;
       }),
-      // Only the component filter maps to the cache-status selection; the
-      // recorded_* windows scope suggestions, not flaw freshness.
-      loadCacheStatus(id, currentQuery.component, signal),
     ]);
   }
 
@@ -323,8 +263,6 @@ export function useKpiDashboard() {
     botRefresh,
     feedbackLoading,
     botIncomplete,
-    botCacheStatus,
-    cacheStatusError,
     loading,
     errors,
     loadedSources,

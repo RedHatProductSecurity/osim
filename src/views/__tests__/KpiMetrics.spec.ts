@@ -4,9 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountWithConfig } from '@/__tests__/helpers';
 import KpiMetrics from '@/views/KpiMetrics.vue';
 import { AegisAIService } from '@/services/AegisAIService';
-import type {
-  AegisBotKpiCacheStatus, AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiMetricsFeature,
-} from '@/types/aegisAI';
+import type { AegisBotKpiMetrics, AegisKpiMetrics, AegisKpiMetricsFeature } from '@/types/aegisAI';
 import { downloadKpiCsv } from '@/utils/kpiReport';
 
 vi.mock('@/services/AegisAIService');
@@ -62,13 +60,19 @@ const bot: AegisBotKpiMetrics = {
   ],
 };
 
-// A cumulative snapshot whose last page reported cache-refresh progress.
-const snapshot = (delivered: number, selected = 400): AegisBotKpiMetrics => ({
+// A cumulative snapshot whose last page reported delivery progress and,
+// optionally, the whole-selection refresh count.
+const snapshot = (delivered: number, selected = 400, refreshed?: number): AegisBotKpiMetrics => ({
   ...bot,
-  progress: { complete: delivered === selected, delivered_flaws: delivered, selected_flaws: selected },
+  progress: {
+    complete: delivered === selected,
+    delivered_flaws: delivered,
+    ...(refreshed !== undefined ? { refreshed_flaws: refreshed } : {}),
+    selected_flaws: selected,
+  },
 });
 // An intermediate snapshot whose pages carry no progress block: aggregate
-// placeholders only, so no refresh counts are known.
+// placeholders only, so no delivery or refresh counts are known.
 const uncountedSnapshot: AegisBotKpiMetrics = {
   ...bot,
   aggregates_available: false,
@@ -76,33 +80,10 @@ const uncountedSnapshot: AegisBotKpiMetrics = {
   total_flaws_processed: 0,
 };
 
-const cacheStatus: AegisBotKpiCacheStatus = {
-  fresh_count: 3,
-  outdated_count: 1,
-  stale_count: 2,
-  total_flaws_selected: 5,
-  uncached_count: 1,
-};
-// A post-slice cache-refresh response: the drain status consumes only the
-// stale and selection counts, but the payload mirrors the server's full shape.
-const drainCounts = (staleCount: number, totalFlaws: number): AegisBotKpiCacheStatus => ({
-  fresh_count: totalFlaws - staleCount,
-  outdated_count: 0,
-  stale_count: staleCount,
-  total_flaws_selected: totalFlaws,
-  uncached_count: staleCount,
-});
-
 describe('kPI dashboard', () => {
   let wrapper: VueWrapper;
   const getFeedback = vi.fn();
   const getBot = vi.fn();
-  // Resolves null so the auxiliary cache-status text stays out of the
-  // pre-existing rendering assertions; cache-status behavior has its own tests.
-  const getCacheStatus = vi.fn();
-  // Resolves an all-fresh cache so the drain completes in one poll and the
-  // pre-existing assertions are unaffected; drain behavior has its own tests.
-  const refreshCache = vi.fn();
   const mount = async () => {
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
@@ -113,12 +94,8 @@ describe('kPI dashboard', () => {
     vi.mocked(downloadKpiCsv).mockClear();
     getFeedback.mockReset().mockResolvedValue(feedback);
     getBot.mockReset().mockResolvedValue(bot);
-    getCacheStatus.mockReset().mockResolvedValue(null);
-    refreshCache.mockReset().mockResolvedValue({ stale_count: 0 });
     vi.mocked(AegisAIService).mockImplementation(function () {
       return {
-        getBotKpiCacheStatus: getCacheStatus,
-        refreshBotKpiCache: refreshCache,
         getBotKpiMetrics: getBot,
         getKpiMetrics: getFeedback,
       } as unknown as AegisAIService;
@@ -618,8 +595,8 @@ describe('kPI dashboard', () => {
     getFeedback.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectFeedback = reject; }));
     getBot.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectBot = reject; }));
     wrapper = mountWithConfig(KpiMetrics);
-    // Let the initial scope's bot fetch start (the cache drain defers it one
-    // tick) so the filter change below supersedes it, not the other way round.
+    // Let the initial scope's bot fetch start so the filter change below
+    // supersedes it, not the other way round.
     await flushPromises();
     await wrapper.get('#kpi-component').setValue('kernel');
     await flushPromises();
@@ -854,11 +831,8 @@ describe('kPI dashboard', () => {
 
   it('keeps the bar indeterminate for an empty selection instead of completing it', async () => {
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    getCacheStatus.mockResolvedValueOnce({
-      ...cacheStatus, fresh_count: 0, outdated_count: 0, stale_count: 0, total_flaws_selected: 0, uncached_count: 0,
-    });
     await mount();
-    expect(wrapper.text()).toContain('No flaws match the current selection.');
+    expect(wrapper.text()).toContain('0 flaws received; awaiting the first page');
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
     // A page reporting an empty selection keeps the bar indeterminate: with
@@ -869,324 +843,49 @@ describe('kPI dashboard', () => {
     expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
   });
 
-  it('uses the cache-status total as the fallback denominator until the run reports its own', async () => {
+  it('renders the refresh progress from page snapshots and clears it once fresh', async () => {
+    // Pinned time keeps the estimate absent: no page pair has spanned any
+    // observable refresh interval yet.
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-25T12:00:00Z') });
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    getCacheStatus.mockResolvedValueOnce({ ...cacheStatus, fresh_count: 1998, total_flaws_selected: 2000 });
-    await mount();
-    // Before the first page, the cache-status total already sizes the counts,
-    // but with no pages delivered the bar stays indeterminate.
-    expect(wrapper.text()).toContain('0 / 2000 flaws received');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
-    expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
-
-    // A page without progress keeps the cache-status denominator in the
-    // notice, but with no delivered count the bar stays indeterminate.
-    publish(uncountedSnapshot);
-    await flushPromises();
-    expect(wrapper.text()).toContain('Flaw delivery counts unavailable from this server (2000 flaws selected).');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
-    expect(wrapper.get('[role="progressbar"] .progress-bar').classes()).toContain('kpi-progress-indeterminate');
-
-    // The run's own selection total is authoritative once progress reports
-    // it, and the exact ratio drives the bar.
-    publish(snapshot(2, 10));
-    await flushPromises();
-    expect(wrapper.text()).toContain('2 / 10 flaws received');
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('20');
-  });
-
-  it('sizes the unavailable-counts notice with the cache-status total', async () => {
-    getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    getCacheStatus.mockResolvedValueOnce(cacheStatus);
-    await mount();
-    publish(uncountedSnapshot);
-    await flushPromises();
-    expect(wrapper.text()).toContain('Flaw delivery counts unavailable from this server (5 flaws selected).');
-    // Without delivered counts the bar stays indeterminate rather than
-    // inventing a completion.
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
-  });
-
-  it.each([
-    {
-      name: 'a fully fresh cache',
-      status: { ...cacheStatus, fresh_count: 5, stale_count: 0, outdated_count: 0, uncached_count: 0 },
-      text: 'All 5 selected flaws are cached fresh.',
-    },
-    {
-      name: 'a partially stale cache',
-      status: cacheStatus,
-      text: '2 of 5 selected flaws are not cached fresh (1 uncached, 1 changed in OSIDB).',
-    },
-    {
-      name: 'an empty selection',
-      status: {
-        ...cacheStatus,
-        fresh_count: 0,
-        stale_count: 0,
-        outdated_count: 0,
-        total_flaws_selected: 0,
-        uncached_count: 0,
-      },
-      text: 'No flaws match the current selection.',
-    },
-    {
-      name: 'a cold cache with no fresh flaws yet',
-      status: {
-        ...cacheStatus,
-        fresh_count: 0,
-        stale_count: 4,
-        outdated_count: 0,
-        total_flaws_selected: 4,
-        uncached_count: 4,
-      },
-      text: '4 of 4 selected flaws are not cached fresh (4 uncached, 0 changed in OSIDB).',
-    },
-    {
-      name: 'a cache stale only from OSIDB changes',
-      status: { ...cacheStatus, fresh_count: 2, stale_count: 3, outdated_count: 3, uncached_count: 0 },
-      text: '3 of 5 selected flaws are not cached fresh (0 uncached, 3 changed in OSIDB).',
-    },
-  ])('renders $name as plain text appended to the loading line (AEGIS-550)', async ({ status, text }) => {
-    let resolveBot!: (value: AegisBotKpiMetrics) => void;
-    getBot.mockReset().mockReturnValueOnce(new Promise((resolve) => { resolveBot = resolve; }));
-    getCacheStatus.mockResolvedValueOnce(status);
-    await mount();
-    expect(wrapper.get('span[role="status"]').text()).toContain(text);
-    expect(wrapper.find('.badge').exists()).toBe(false);
-
-    resolveBot(bot);
-    await flushPromises();
-    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
-    expect(wrapper.text()).not.toContain(text);
-    expect(wrapper.find('.badge').exists()).toBe(false);
-  });
-
-  it('omits the cache status text entirely while no cache status is available', async () => {
-    await mount();
-    expect(wrapper.find('.badge').exists()).toBe(false);
-    expect(wrapper.text()).not.toContain('cached fresh');
-    expect(wrapper.text()).not.toContain('No flaws match the current selection');
-    expect(wrapper.text()).not.toContain('could not be loaded');
-  });
-
-  it('replaces the cache status text with each refreshed selection and removes it once loaded', async () => {
-    let resolveBot!: (value: AegisBotKpiMetrics) => void;
-    getBot.mockReset().mockReturnValueOnce(new Promise((resolve) => { resolveBot = resolve; }));
-    getCacheStatus.mockResolvedValueOnce(cacheStatus);
-    await mount();
-    expect(wrapper.get('span[role="status"]').text())
-      .toContain('2 of 5 selected flaws are not cached fresh (1 uncached, 1 changed in OSIDB).');
-
-    resolveBot(bot);
-    await flushPromises();
-    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
-    expect(wrapper.text()).not.toContain('not cached fresh');
-
-    getBot.mockReturnValueOnce(new Promise(() => {}));
-    getCacheStatus.mockResolvedValueOnce({
-      ...cacheStatus, fresh_count: 5, stale_count: 0, outdated_count: 0, uncached_count: 0,
-    });
-    await button('Refresh').trigger('click');
-    await flushPromises();
-    expect(wrapper.get('span[role="status"]').text()).toContain('All 5 selected flaws are cached fresh.');
-
-    getBot.mockReturnValueOnce(new Promise(() => {}));
-    getCacheStatus.mockReturnValueOnce(new Promise(() => {}));
-    await wrapper.get('#kpi-component').setValue('kernel');
-    await flushPromises();
-    expect(wrapper.text()).not.toContain('cached fresh');
-    expect(wrapper.text()).toContain('0 flaws received; awaiting the first page');
-    expect(wrapper.find('.badge').exists()).toBe(false);
-  });
-
-  it('repeats the cache status inside the incomplete warning only after the failed load ends', async () => {
-    let rejectBot!: (reason: unknown) => void;
-    getBot.mockReset().mockReturnValueOnce(new Promise((_resolve, reject) => { rejectBot = reject; }));
-    getCacheStatus.mockResolvedValueOnce(cacheStatus);
-    const stale = '2 of 5 selected flaws are not cached fresh (1 uncached, 1 changed in OSIDB).';
-    await mount();
-    publish(snapshot(1, 5));
-    await flushPromises();
-    // While the run is still loading only the loading line shows, with the
-    // cache status separated from the page estimate like the other fragments.
-    expect(wrapper.find('p[role="status"]').exists()).toBe(false);
-    const line = wrapper.get('span[role="status"]').text();
-    expect(line).toContain('1 / 5 flaws received');
-    expect(line).toContain(`· ${stale}`);
-
-    rejectBot({ response: { status: 500 }, message: 'Run stopped' });
-    await flushPromises();
-    expect(wrapper.find('[role="progressbar"]').exists()).toBe(false);
-    const failed = wrapper.get('p[role="status"]');
-    expect(failed.text()).toContain('Incomplete osidb-bot metrics: 1 / 5 selected flaws received');
-    expect(failed.text()).toContain(`Cache status when the run started: ${stale}`);
-    expect(failed.text()).toContain('Select Refresh to start a new run.');
-    expect(failed.find('.badge').exists()).toBe(false);
-  });
-
-  it('leaves the cache status absent and unreported on a 404 from an older Aegis server (AEGIS-550)', async () => {
-    getCacheStatus.mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
-    await mount();
-    expect(wrapper.find('.badge').exists()).toBe(false);
-    expect(wrapper.text()).not.toContain('cached fresh');
-    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
-    expect(wrapper.text()).not.toContain('could not be loaded');
-    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
-  });
-
-  it.each([
-    {
-      name: 'expired authentication',
-      reason: { response: { status: 401 }, message: 'Token expired' },
-      detail: 'HTTP 401: Token expired',
-      guidance: 'Sign in again',
-    },
-    {
-      name: 'forbidden access',
-      reason: { response: { status: 403 }, message: 'Access denied' },
-      detail: 'HTTP 403: Access denied',
-      guidance: 'Contact support',
-    },
-    {
-      name: 'network failure',
-      reason: { isNetworkError: true, message: 'Failed to fetch' },
-      detail: 'Failed to fetch',
-      guidance: 'Check your network connection',
-    },
-    {
-      name: 'rate limiting',
-      reason: { response: { status: 429 }, message: 'Request quota exceeded' },
-      detail: 'HTTP 429: Request quota exceeded',
-      guidance: 'Wait a moment',
-    },
-    {
-      name: 'backend failure',
-      reason: { response: { status: 503 }, message: 'Report service unavailable' },
-      detail: 'HTTP 503: Report service unavailable',
-      guidance: 'Select Refresh to try again',
-    },
-    {
-      name: 'a failure without an HTTP status',
-      reason: new Error('Offline'),
-      detail: 'Offline',
-      guidance: 'Select Refresh to try again',
-    },
-  ])('reports $name on the cache status without gating the dashboard', async ({ detail, guidance, reason }) => {
-    getCacheStatus.mockRejectedValueOnce(reason);
-    await mount();
-    expect(wrapper.findAll('[role="alert"]')).toHaveLength(1);
-    const alert = wrapper.get('[role="alert"]');
-    expect(alert.classes()).toEqual(expect.arrayContaining(['alert', 'alert-warning']));
-    expect(alert.text()).toContain('The osidb-bot KPI cache status could not be loaded');
-    expect(alert.text()).toContain(detail);
-    expect(alert.text()).toContain(guidance);
-    expect(wrapper.text()).not.toContain('Incomplete KPI results');
-    expect(wrapper.text()).toContain('Combined Acceptance Rate');
-    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
-    expect(button('Download CSV').attributes('title')).toBeUndefined();
-  });
-
-  it('keeps the CSV download working when only the cache status fails (AEGIS-550)', async () => {
-    getCacheStatus.mockRejectedValueOnce({ response: { status: 500 }, message: 'Cache read failed' });
-    await mount();
-    await button('Download CSV').trigger('click');
-    expect(downloadKpiCsv).toHaveBeenCalledOnce();
-  });
-
-  it('keeps a cache status failure out of the shared metric-source error block', async () => {
-    getBot.mockRejectedValue(new Error('Offline'));
-    getCacheStatus.mockRejectedValueOnce({ response: { status: 500 }, message: 'Cache read failed' });
-    await mount();
-    const cacheAlert = wrapper.get('p[role="alert"]');
-    expect(cacheAlert.text()).toContain('The osidb-bot KPI cache status could not be loaded');
-    const sourceAlert = wrapper.get('div[role="alert"]');
-    expect(sourceAlert.text()).toContain('Incomplete KPI results');
-    expect(sourceAlert.text()).toContain('osidb-bot metrics could not be loaded');
-    expect(sourceAlert.text()).not.toContain('KPI cache status');
-    expect(button('Download CSV').attributes('disabled')).toBeDefined();
-  });
-
-  it('renders results and keeps the CSV export available while the cache status is pending', async () => {
-    getCacheStatus.mockReturnValue(new Promise(() => {}));
-    await mount();
-    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
-    expect(wrapper.text()).toContain('Combined Acceptance Rate');
-    expect(wrapper.text()).not.toContain('cached fresh');
-    expect(wrapper.find('.badge').exists()).toBe(false);
-    expect(wrapper.find('[role="alert"]').exists()).toBe(false);
-    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
-  });
-
-  it('renders the cache drain progress while flaws remain stale and clears it once fresh', async () => {
-    getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
-    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
-    let resolveThird!: (value: AegisBotKpiCacheStatus) => void;
-    refreshCache.mockReset()
-      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
-      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
-      .mockReturnValueOnce(new Promise((resolve) => { resolveThird = resolve; }));
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
     expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
     expect(wrapper.text()).toContain('Loading osidb-bot metrics');
 
-    resolveFirst(drainCounts(8, 10));
+    publish(snapshot(2, 10, 2));
     await flushPromises();
     expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 2 / 10 flaws refreshed');
-    // Pages have not started, so the delivery bar stays indeterminate.
-    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBeUndefined();
+    // The bar tracks the exact delivery ratio: 2 of 10 flaws so far.
+    expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('20');
 
-    resolveSecond(drainCounts(3, 10));
+    publish(snapshot(7, 10, 7));
     await flushPromises();
     expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 7 / 10 flaws refreshed');
 
-    resolveThird(drainCounts(0, 10));
+    publish(snapshot(10, 10, 10));
     await flushPromises();
     expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
-    expect(getBot).toHaveBeenCalledTimes(1);
-    expect(wrapper.text()).toContain('0 flaws received; awaiting the first page');
+    expect(wrapper.text()).toContain('10 / 10 flaws received');
   });
 
-  it('appends the drain time estimate once a later poll has reduced the stale count', async () => {
+  it('appends the refresh time estimate once a later page has grown the refreshed count', async () => {
     const startedAt = new Date('2026-11-12T12:00:00.000Z');
     vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
-    let resolveSecond!: (value: AegisBotKpiCacheStatus) => void;
-    refreshCache.mockReset()
-      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
-      .mockReturnValueOnce(new Promise((resolve) => { resolveSecond = resolve; }))
-      .mockReturnValue(new Promise(() => {}));
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
 
-    resolveFirst(drainCounts(120, 200));
+    publish(snapshot(80, 200, 80));
     await flushPromises();
     expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 80 / 200 flaws refreshed');
     expect(wrapper.text()).not.toContain('· ~');
 
     vi.setSystemTime(new Date(startedAt.getTime() + 10_000));
-    resolveSecond(drainCounts(40, 200));
+    publish(snapshot(160, 200, 160));
     await flushPromises();
     expect(wrapper.get('span.d-block[role="status"]').text())
       .toMatch(/160 \/ 200 flaws refreshed\s*· ~5s remaining/);
-  });
-
-  it('counts remaining stale flaws while the drain reports no selection total', async () => {
-    getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    // A server response without a selection total: only the stale count arrives.
-    let resolvePoll!: (value: Partial<AegisBotKpiCacheStatus>) => void;
-    refreshCache.mockReset()
-      .mockReturnValueOnce(new Promise((resolve) => { resolvePoll = resolve; }))
-      .mockReturnValue(new Promise(() => {}));
-    wrapper = mountWithConfig(KpiMetrics);
-    await flushPromises();
-    resolvePoll({ stale_count: 4 });
-    await flushPromises();
-    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 4 flaws remaining');
-    expect(wrapper.text()).not.toContain('flaws refreshed');
   });
 
   it('caps the delivery bar at 100 percent when the server over-delivers the selection', async () => {
@@ -1206,7 +905,6 @@ describe('kPI dashboard', () => {
     const startedAt = new Date('2026-11-12T12:00:00.000Z');
     vi.useFakeTimers({ toFake: ['Date'], now: startedAt });
     getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    getCacheStatus.mockResolvedValueOnce(cacheStatus);
     wrapper = mountWithConfig(KpiMetrics);
     await flushPromises();
 
@@ -1218,9 +916,8 @@ describe('kPI dashboard', () => {
     vi.setSystemTime(new Date(startedAt.getTime() + 5_000));
     publish(snapshot(2000, 4000));
     await flushPromises();
-    // The estimate sits between the delivery counts and the cache status.
     expect(wrapper.get('span[role="status"]').text()).toMatch(
-      /2000 \/ 4000 flaws received\s*· ~10s remaining\s*· 2 of 5 selected flaws are not cached fresh/,
+      /2000 \/ 4000 flaws received\s*· ~10s remaining/,
     );
   });
 
@@ -1244,46 +941,5 @@ describe('kPI dashboard', () => {
     publish(snapshot(2000, 3000));
     await flushPromises();
     expect(wrapper.text()).toContain(`· ${estimate}`);
-  });
-
-  it('keeps the dashboard usable when an older server lacks the cache-refresh endpoint', async () => {
-    refreshCache.mockRejectedValueOnce({ response: { status: 404 }, message: 'Not Found' });
-    await mount();
-    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
-    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
-    expect(wrapper.get('[data-testid="overall-rate"]').text()).toContain('66.7% — 2 of 3');
-    expect(button('Download CSV').attributes('disabled')).toBeUndefined();
-  });
-
-  it('clears the drain status line when a mid-drain poll hits an unsupported endpoint', async () => {
-    getBot.mockReset().mockReturnValue(new Promise(() => {}));
-    let resolveFirst!: (value: AegisBotKpiCacheStatus) => void;
-    let rejectSecond!: (reason: unknown) => void;
-    refreshCache.mockReset()
-      .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve; }))
-      .mockReturnValueOnce(new Promise((_resolve, reject) => { rejectSecond = reject; }));
-    wrapper = mountWithConfig(KpiMetrics);
-    await flushPromises();
-    resolveFirst(drainCounts(5, 10));
-    await flushPromises();
-    expect(wrapper.text()).toContain('Refreshing osidb-bot cache… 5 / 10 flaws refreshed');
-
-    rejectSecond({ response: { status: 404 }, message: 'Not Found' });
-    await flushPromises();
-    // The skipped drain stops claiming progress while pages still load.
-    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
-    expect(wrapper.text()).toContain('Loading osidb-bot metrics');
-    expect(getBot).toHaveBeenCalledTimes(1);
-    expect(wrapper.findAll('[role="alert"]')).toHaveLength(0);
-  });
-
-  it('reports a failed cache drain as an osidb-bot load failure without fetching pages', async () => {
-    refreshCache.mockRejectedValueOnce({ response: { status: 503 }, message: 'Cache refresh unavailable' });
-    await mount();
-    const alert = wrapper.get('[role="alert"]').text();
-    expect(alert).toContain('osidb-bot metrics could not be loaded');
-    expect(alert).toContain('HTTP 503: Cache refresh unavailable');
-    expect(getBot).not.toHaveBeenCalled();
-    expect(wrapper.text()).not.toContain('Refreshing osidb-bot cache');
   });
 });

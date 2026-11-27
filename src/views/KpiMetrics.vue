@@ -13,25 +13,15 @@ import { createKpiCsv, downloadKpiCsv } from '@/utils/kpiReport';
 
 const {
   availableComponents, availableFeatures, availableVersions,
-  bot, botCacheStatus, botIncomplete, botLoading, botProgress, botRefresh,
-  cacheStatusError, clearFilters, component, errors, feature, feedbackLoading, fromDate,
+  bot, botIncomplete, botLoading, botProgress, botRefresh,
+  clearFilters, component, errors, feature, feedbackLoading, fromDate,
   invalidRange, loadedSources, loading, observations, refresh, toDate, toggleVersion, versions,
 } = useKpiDashboard();
 
 const allSourcesFailed = computed(() => !loading.value && errors.value.length > 0 && !loadedSources.value.length);
 // The run's own progress.selected_flaws is authoritative once the first page
-// reports it; until then the cache-status selection total is the same flaw
-// population and serves as the progress total.
-const botSelectedTotal = computed(() =>
-  botProgress.value.selected ?? botCacheStatus.value?.total_flaws_selected ?? null);
-const botCacheStatusText = computed(() => {
-  const status = botCacheStatus.value;
-  if (!status) return null;
-  if (!status.total_flaws_selected) return 'No flaws match the current selection.';
-  if (!status.stale_count) return `All ${status.total_flaws_selected} selected flaws are cached fresh.`;
-  return `${status.stale_count} of ${status.total_flaws_selected} selected flaws are not cached fresh `
-    + `(${status.uncached_count} uncached, ${status.outdated_count} changed in OSIDB).`;
-});
+// reports it.
+const botSelectedTotal = computed(() => botProgress.value.selected ?? null);
 // The bar follows delivery exactly: the server's delivered_flaws counts
 // every selected flaw delivered through the latest page, so delivered over
 // selected is the true completion ratio with no estimation.
@@ -179,7 +169,6 @@ function applyComponent(event: Event) {
         <template v-if="botRefresh.total">
           {{ botRefresh.total - botRefresh.remaining }} / {{ botRefresh.total }} flaws refreshed
         </template>
-        <template v-else>{{ botRefresh.remaining }} flaws remaining</template>
         <template v-if="botRefresh.etaMs !== null">· {{ remainingText(botRefresh.etaMs) }}</template>
       </span>
       <span role="status">
@@ -193,7 +182,6 @@ function applyComponent(event: Event) {
         </template>
         <template v-else>Flaw delivery counts unavailable from this server.</template>
         <template v-if="botProgress.etaMs !== null">· {{ remainingText(botProgress.etaMs) }}</template>
-        <template v-if="botCacheStatusText">· {{ botCacheStatusText }}</template>
       </span>
       <div
         v-if="botProgressPercent !== 100"
@@ -219,15 +207,11 @@ function applyComponent(event: Event) {
       </template>
       <template v-else>The server does not report how many selected flaws have been delivered.</template>
       Charts and totals cover only received data.
-      <template v-if="botCacheStatusText">
-        Cache status when the run started: {{ botCacheStatusText }}
-      </template>
       <template v-if="bot?.aggregates_available === false">
         Aggregate bot metrics are unavailable without a completed run.
       </template>
       Select Refresh to start a new run.
     </p>
-    <p v-if="cacheStatusError" role="alert" class="alert alert-warning">{{ cacheStatusError }}</p>
     <div v-if="errors.length" role="alert" class="alert alert-warning">
       <h2 class="h5">{{ allSourcesFailed ? 'KPI metrics unavailable' : 'Incomplete KPI results' }}</h2>
       <p v-if="allSourcesFailed">Neither feedback nor osidb-bot metrics loaded. No KPI totals are available.</p>

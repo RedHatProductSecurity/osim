@@ -14,7 +14,7 @@ export const botEntry = (cve: string, feature = 'impact'): AegisBotKpiEntry => (
 });
 
 // Consecutive per-flaw entries (CVE-2026-0001, CVE-2026-0002, …) for sizing
-// the pages of a selection, e.g. 1000-flaw warm-cache pages.
+// the pages of a selection, e.g. 1000-flaw pages.
 export const botEntries = (first: number, count: number): AegisBotKpiEntry[] =>
   Array.from({ length: count }, (_, index) => botEntry(`CVE-2026-${String(first + index).padStart(4, '0')}`));
 
@@ -32,23 +32,25 @@ export const botFeatures: Record<string, AegisBotFeatureKpi> = {
 };
 
 // One page of the cursor-paginated osidb-bot KPI protocol: `entries` covers
-// only this page's slice of the selection, `nextCursor` continues the run
-// (null ends it), and `progress` reports the cumulative cache-refresh counts
-// (`complete` marks the refresh, not the delivery, so it is true from the
-// first page of a fully warm run while cursors remain). Warm-cache pages
-// carry up to 1000 flaws regardless of the requested limit; only a fully
-// cached remainder that fits one page is a single final response without
-// cursor or progress.
+// only this page's slice of the selection, `lastCve` (the CVE ID of the last
+// flaw delivered by this page) continues the run (null ends it), and
+// `progress` reports the cumulative delivery and cache-freshness counts over
+// the whole selection (`refreshed_flaws` grows page by page as each page
+// refreshes its own slice, and `complete` marks that refresh, not the
+// delivery, so it is true from the first page of a fully warm run while
+// cursors remain). Pages serve exactly the requested limit of flaws; a
+// selection that fits one page is served as a single final page with no
+// continuation.
 export function botPage(
   entries: AegisBotKpiEntry[],
-  nextCursor: null | string,
+  lastCve: null | string,
   progress?: AegisBotKpiProgress | null,
   overrides: Partial<AegisBotKpiPage> = {},
 ): AegisBotKpiPage {
   return {
     entries,
     features: {},
-    next_cursor: nextCursor,
+    last_cve: lastCve,
     progress: progress ?? undefined,
     total_flaws_processed: 0,
     ...overrides,

@@ -189,7 +189,8 @@ export type AegisBotFeatureKpi = {
 export type AegisBotKpiProgress = {
   complete: boolean;
   delivered_flaws: number;
-  // Cache-freshness count; still sent by the server but unused here.
+  // Cache-freshness count over the whole selection; drives the refresh
+  // indicator while pages refresh their own slices.
   refreshed_flaws?: number;
   selected_flaws: number;
 };
@@ -200,15 +201,15 @@ export type AegisBotKpiOptions = {
 };
 
 // One page of the paginated osidb-bot KPI response: `entries` covers only the
-// page's slice of flaws, `next_cursor` continues pagination, and the
-// aggregate is a placeholder until the final page. A selection that is
-// entirely cached is served as one pre-pagination response with neither
-// cursor nor progress.
+// page's slice of flaws, `last_cve` (the CVE ID of the last flaw delivered by
+// this page) continues pagination, and the aggregate is a placeholder until
+// the final page. A selection that fits one page is served as a single final
+// page with no continuation.
 export type AegisBotKpiPage = {
   available_components?: null | string[];
   entries?: AegisBotKpiEntry[];
   features: Record<string, AegisBotFeatureKpi>;
-  next_cursor?: null | string;
+  last_cve?: null | string;
   progress?: AegisBotKpiProgress;
   total_flaws_processed: number;
 };
@@ -225,17 +226,6 @@ export type AegisBotKpiMetrics = {
 
 // Invoked after each page with the server's delivery counts.
 export type AegisBotKpiProgressCallback = (deliveredFlaws: number, selectedFlaws: number) => void;
-
-// Read-only osidb-bot KPI cache refresh counts, scoped to the flaw selection
-// of the request. Invariants: total_flaws_selected = fresh_count + stale_count,
-// and stale_count = uncached_count + outdated_count.
-export type AegisBotKpiCacheStatus = {
-  fresh_count: number;
-  outdated_count: number;
-  stale_count: number;
-  total_flaws_selected: number;
-  uncached_count: number;
-};
 
 export type AegisKpiFeatureParamType =
   'all'

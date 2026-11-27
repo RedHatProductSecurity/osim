@@ -1,7 +1,7 @@
 import type { AegisBotKpiMetrics, AegisBotKpiPage } from '@/types/aegisAI';
 
 export function continuation(page: AegisBotKpiPage): null | string {
-  const token = page.next_cursor;
+  const token = page.last_cve;
   if (token != null && (typeof token !== 'string' || !token)) {
     throw new Error('KPI pagination continuation is invalid. Select Refresh.');
   }
