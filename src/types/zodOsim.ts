@@ -24,6 +24,12 @@ export const OsimRuntime = z.object({
     tag: z.string(),
     timestamp: z.string(),
   }),
+  telemetry: z.object({
+    otlpEndpoint: z.union([
+      z.url({ protocol: /^https?$/ }), z.literal('/proxy/otlp/v1/traces'), z.literal(''),
+    ]).optional(),
+    sampleRate: z.number().min(0).max(1).default(0.1),
+  }).nullish(),
   error: z.string().default(''),
   readOnly: z.boolean().default(false),
   flags: z.record(z.string(), z.union([z.boolean(), z.string()])).optional(),

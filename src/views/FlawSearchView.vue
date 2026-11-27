@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, nextTick, onUnmounted, ref, watch, type Ref } from 'vue';
 
 import IssueSearchAdvanced from '@/components/IssueSearchAdvanced/IssueSearchAdvanced.vue';
 import IssueQueue from '@/components/IssueQueue/IssueQueue.vue';
 
 import { useFlawsFetching } from '@/composables/useFlawsFetching';
 import { useSearchParams } from '@/composables/useSearchParams';
+
+import { recordView } from '@/services/telemetryRecorder';
 
 const { isFinalPageFetched, isLoading, issues, loadFlaws, loadMoreFlaws, total } = useFlawsFetching();
 const { getSearchParams } = useSearchParams();
@@ -29,10 +31,31 @@ const params = computed(() => {
   return paramsObj;
 });
 
+let startedAt = 0;
+let generation = 0;
+let frame = 0;
+onUnmounted(() => {
+  generation++;
+  cancelAnimationFrame(frame);
+});
 watch(() => params, () => {
+  startedAt = performance.now();
+  generation++;
   loadFlaws(params);
-}, {
-  deep: true,
+}, { deep: true });
+watch(isLoading, async (loading) => {
+  if (loading || !startedAt) return;
+  const current = generation;
+  const dataReadyAt = performance.now();
+  await nextTick();
+  frame = requestAnimationFrame(() => {
+    frame = requestAnimationFrame(() => {
+      if (current === generation) {
+        const readyAt = performance.now();
+        recordView('flaw.search', readyAt - startedAt, readyAt - dataReadyAt);
+      }
+    });
+  });
 });
 
 function fetchMoreFlaws() {

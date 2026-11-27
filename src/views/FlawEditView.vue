@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, watch, onUnmounted } from 'vue';
+import { computed, watch, onUnmounted, nextTick } from 'vue';
 
 import FlawForm from '@/components/FlawForm/FlawForm.vue';
 
 import { useFetchFlaw } from '@/composables/useFetchFlaw';
 import { useFlaw } from '@/composables/useFlaw';
+
+import { recordView } from '@/services/telemetryRecorder';
 
 const props = defineProps<{
   id: string;
@@ -14,9 +16,34 @@ const { resetFlaw } = useFlaw();
 
 const { didFetchFail, fetchFlaw, flaw } = useFetchFlaw();
 
-watch(() => props.id, fetchFlaw, { immediate: true });
+let startedAt = performance.now();
+let generation = 0;
+let frame = 0;
+watch(() => props.id, (id) => {
+  startedAt = performance.now();
+  generation++;
+  void fetchFlaw(id);
+}, { immediate: true });
+watch(() => flaw.value?.uuid, async (uuid) => {
+  if (!uuid) return;
+  const current = generation;
+  const dataReadyAt = performance.now();
+  await nextTick();
+  frame = requestAnimationFrame(() => {
+    frame = requestAnimationFrame(() => {
+      if (current === generation) {
+        const readyAt = performance.now();
+        recordView('flaw.edit', readyAt - startedAt, readyAt - dataReadyAt);
+      }
+    });
+  });
+});
 
-onUnmounted(resetFlaw);
+onUnmounted(() => {
+  generation++;
+  cancelAnimationFrame(frame);
+  resetFlaw();
+});
 
 const isLoading = computed(() => !flaw.value && !didFetchFail);
 </script>
