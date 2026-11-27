@@ -18,6 +18,8 @@ import {
   putAffectCvssScore,
 } from '@/services/AffectService';
 import { fileTrackingFor, findExistingTracker, parseTrackerId, updateExistingTracker } from '@/services/TrackerService';
+import { affectConflictLabel } from '@/utils/affectRebase';
+import { cvssScope, isCvssWriteConflict, rebaseCvssScore, replaceMatchingCvssScore } from '@/utils/cvssRebase';
 import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 
 import {
@@ -30,6 +32,7 @@ import {
   isDuplicateAffectFailure,
   useAffectCollision,
 } from './useAffectCollision';
+import { clearCvssConflict, pendingCvssConflict, recordCvssConflict } from './cvssConflictState';
 import { useFlaw } from './useFlaw';
 
 // A score that has not been given a server uuid yet still has to be posted.
@@ -52,6 +55,15 @@ function keepUnsavedCvss(local: ZodAffectType, saved: ZodAffectType) {
   if (!persisted) {
     saved.cvss_scores = structuredClone(toRaw(local.cvss_scores));
   }
+}
+
+function scoreWriteLanded(local: ZodAffectType, saved: ZodAffectType): boolean {
+  const localScore = affectRhCvss3(local);
+  const savedScore = affectRhCvss3(saved);
+  if (!localScore?.score || !localScore.uuid) return true;
+  return savedScore?.uuid === localScore.uuid
+    && savedScore.vector === localScore.vector
+    && (savedScore.comment ?? '') === (localScore.comment ?? '');
 }
 
 function useAffects() {
@@ -88,6 +100,7 @@ function useAffects() {
     // yet. Match a PURL row by stream and PURL, and any other row by stream and
     // component. Assigning the saved uuid and ps_module lets mergeBy replace the
     // local affect in place, so a later edit is an update.
+    const preservedScores = new Map<string, ZodAffectCVSSType>();
     for (const affect of savedAffects) {
       const wasNew = currentAffects.value.find(
         currentAffect =>
@@ -97,6 +110,10 @@ function useAffects() {
           && affectIdentityKey(currentAffect) === affectIdentityKey(affect),
       );
       const local = wasNew ?? currentAffects.value.find(current => current.uuid && current.uuid === affect.uuid);
+      const localScore = local ? affectRhCvss3(local) : undefined;
+      if (local && localScore && affect.uuid && !scoreWriteLanded(local, affect)) {
+        preservedScores.set(affect.uuid, structuredClone(toRaw(localScore)));
+      }
       if (local) keepUnsavedCvss(local, affect);
 
       if (wasNew?._uuid) {
@@ -122,6 +139,14 @@ function useAffects() {
       if (affect.uuid && savedUuids.has(affect.uuid) && score?.score && !score.uuid) {
         modifiedAffects.add(affect.uuid);
       }
+    }
+    if (preservedScores.size) {
+      currentAffects.value = currentAffects.value.map((row) => {
+        const score = row.uuid ? preservedScores.get(row.uuid) : undefined;
+        if (!score || !row.uuid) return row;
+        modifiedAffects.add(row.uuid);
+        return { ...row, cvss_scores: replaceMatchingCvssScore(row.cvss_scores ?? [], score) };
+      });
     }
   }
 
@@ -217,6 +242,7 @@ function useAffects() {
     removedAffects.clear();
     affectIdAliases.value = {};
     pendingAffectConflict.value = null;
+    clearCvssConflict();
   }
 
   const requestBodyFromAffect = (affect: ZodAffectType) => affectWriteBody(affect);
@@ -281,7 +307,7 @@ function useAffects() {
       const affect = affects.find(item => item.uuid === score.affect)
         ?? currentAffects.value.find(item => item.uuid === score.affect);
       if (affect) {
-        affect.cvss_scores = mergeBy(affect.cvss_scores, [score], 'uuid');
+        affect.cvss_scores = replaceMatchingCvssScore(affect.cvss_scores ?? [], score);
       }
     });
 
@@ -297,22 +323,69 @@ function useAffects() {
   }
 
   async function saveCvssScores(updatedAffects: ZodAffectType[], origin: ZodFlawType) {
+    const originAffects = currentAffects.value;
+    const stillHere = () => flawStillLoaded(origin) && currentAffects.value === originAffects;
     const { toCreate, toDelete, toUpdate } = buildCvssOperations(updatedAffects);
 
     const savedCvssScores: ZodAffectCVSSType[] = [];
     const deletedScores: Record<string, string> = {};
 
-    // Create operations in parallel
+    const writeOptions = { suppressConflictToast: true };
+    const writeAffectScore = async (
+      affectUuid: string,
+      cvssScore: ZodAffectCVSSType,
+      mode: 'create' | 'delete' | 'update',
+    ) => {
+      const send = (nextMode: typeof mode, score: ZodAffectCVSSType) => {
+        if (nextMode === 'delete') return deleteAffectCvssScore(affectUuid, score.uuid!, writeOptions);
+        if (nextMode === 'update') return putAffectCvssScore(affectUuid, score.uuid!, score, writeOptions);
+        return postAffectCvssScore(affectUuid, score, writeOptions);
+      };
+      const match = (score: ZodAffectCVSSType) =>
+        score.issuer === cvssScore.issuer && score.cvss_version === cvssScore.cvss_version;
+      try {
+        return await send(mode, cvssScore);
+      } catch (error) {
+        if (!isCvssWriteConflict(error)) throw error;
+        if (!stillHere()) throw new AffectReloadDiscarded();
+        const serverAffect = await getAffect(affectUuid);
+        if (!stillHere()) throw new AffectReloadDiscarded();
+        const loaded = initialAffects.value.find(affect => affect.uuid === affectUuid);
+        const current = currentAffects.value.find(affect => affect.uuid === affectUuid) ?? serverAffect;
+        const serverScore = serverAffect.cvss_scores?.find(match);
+        const scope = cvssScope(cvssScore, affectUuid);
+        const label = `${affectConflictLabel(current)} ${cvssScore.issuer} CVSS${cvssScore.cvss_version}`;
+        const result = rebaseCvssScore(loaded?.cvss_scores?.find(match), cvssScore, serverScore, label, scope);
+        if (result.conflicts.length) {
+          recordCvssConflict({
+            affectUuid,
+            formEdits: result.formEdits,
+            issuer: cvssScore.issuer,
+            local: cvssScore,
+            scope,
+            server: serverScore,
+            version: cvssScore.cvss_version,
+          }, result.conflicts);
+          throw new Error('CVSS scores conflict');
+        }
+        if (!result.merged) throw error;
+        Object.assign(cvssScore, result.merged);
+        if (result.remove && result.merged.uuid) return send('delete', cvssScore);
+        const retryMode = mode === 'create' && cvssScore.uuid ? 'update' : mode;
+        return send(retryMode, cvssScore);
+      }
+    };
+
     const createOps = Object.entries(toCreate).map(([affectUuid, cvssScore]) =>
-      postAffectCvssScore(affectUuid, cvssScore),
+      writeAffectScore(affectUuid, cvssScore, 'create'),
     );
 
     const updateOps = Object.entries(toUpdate).map(([affectUuid, cvssScore]) =>
-      putAffectCvssScore(affectUuid, cvssScore.uuid!, cvssScore),
+      writeAffectScore(affectUuid, cvssScore, 'update'),
     );
 
     const deleteOps = Object.entries(toDelete).map(([affectUuid, scoreUuid]) =>
-      deleteAffectCvssScore(affectUuid, scoreUuid).then(() => ({ affectUuid, scoreUuid })),
+      deleteAffectCvssScore(affectUuid, scoreUuid, writeOptions).then(() => ({ affectUuid, scoreUuid })),
     );
 
     // Execute all operations in parallel
@@ -326,13 +399,22 @@ function useAffects() {
       deletedScores[affectUuid] = scoreUuid;
     });
 
+    const failed = [...createResults.failed, ...updateResults.failed, ...deleteResults.failed];
+    if (failed.some(failure => isAffectReloadDiscarded(failure))) {
+      clearCvssConflict();
+      throw new AffectReloadDiscarded();
+    }
+
     // The requests finished on the affect that started the save. Skip the local
     // merge when another flaw is now loaded.
-    if (flawStillLoaded(origin)) {
+    if (stillHere()) {
       updateCvssScoresInAffects(updatedAffects, savedCvssScores, deletedScores);
+      if (pendingCvssConflict.value?.conflicts.length) throw new Error('CVSS scores conflict');
       showSuccessToast(createResults.successful.length, 'CVSS score', 'created');
       showSuccessToast(updateResults.successful.length, 'CVSS score', 'updated');
       showSuccessToast(deleteResults.successful.length, 'CVSS score', 'deleted');
+    } else {
+      clearCvssConflict();
     }
 
     return createResults.hasErrors || updateResults.hasErrors || deleteResults.hasErrors;
@@ -664,6 +746,28 @@ function useAffects() {
     };
   }
 
+  async function saveAffectCvss() {
+    const origin = useFlaw().flaw.value;
+    const originAffects = currentAffects.value;
+    const targets = currentAffects.value.filter(affect => affect.uuid && modifiedAffects.has(affect.uuid));
+    const hasErrors = await saveCvssScores(targets.length ? targets : currentAffects.value, origin);
+    if (!flawStillLoaded(origin) || currentAffects.value !== originAffects) {
+      clearCvssConflict();
+      throw new AffectReloadDiscarded();
+    }
+    if (hasErrors || pendingCvssConflict.value?.conflicts.length) return hasErrors;
+    const fresh = await Promise.all(targets.map(affect => getAffect(affect.uuid!)));
+    if (!flawStillLoaded(origin) || currentAffects.value !== originAffects) {
+      clearCvssConflict();
+      throw new AffectReloadDiscarded();
+    }
+    if (fresh.length) {
+      resetSavedAffects(fresh);
+      useFlaw().acceptSavedAffects(fresh);
+    }
+    return false;
+  }
+
   return {
     state: {
       // Data
@@ -697,6 +801,7 @@ function useAffects() {
       integrateServerAffects,
       linkExistingTracker,
       saveAffects,
+      saveAffectCvss,
       stageAffectConflicts,
       removeAffects,
     },

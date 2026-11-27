@@ -12,12 +12,14 @@ import {
   formatCvss3Factors,
   useCvss3Calculator,
 } from '@/composables/useCvss3Calculator';
+import { clearCvssConflict, pendingCvssConflict, recordCvssConflict } from '@/composables/cvssConflictState';
 
+import { type CvssScoreSnapshot, cvssScope, isCvssWriteConflict, rebaseCvssScore } from '@/utils/cvssRebase';
 import { matcherForAffect } from '@/utils/helpers';
 import { CVSS40 } from '@/utils/cvss40';
 import { CvssVersionDisplayMap, CvssVersions, DEFAULT_CVSS_VERSION, CorrespondingCvssFactors } from '@/constants';
 import { IssuerEnum } from '@/generated-client';
-import { deleteFlawCvssScores, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
+import { deleteFlawCvssScores, getFlaw, postFlawCvssScores, putFlawCvssScores } from '@/services/FlawService';
 import type {
   Dict,
   Nullable,
@@ -238,35 +240,91 @@ export function useCvssScores(cvssEntity?: CvssEntity) {
     }
   }
 
-  async function saveCvssScores() {
-    const queue = [];
-    for (const cvssData of Object.values(rhFlawCvssScores.value)) {
-      // Update logic, if the CVSS score already exists in OSIDB
-      if (cvssData.created_dt) {
-        // Handle existing CVSS score
-        if (['', null].includes(cvssData.vector) && cvssData.uuid) {
-          queue.push(deleteFlawCvssScores(flaw.value.uuid, cvssData.uuid));
-        } else if (cvssData.vector !== null && cvssData.uuid) {
-          // Update embargoed state from parent flaw
-          cvssData.embargoed = flaw.value.embargoed;
-          queue.push(putFlawCvssScores(flaw.value.uuid, cvssData.uuid, cvssData));
-        }
-        // Handle new CVSS score, since it does not exist in OSIDB yet
-      } else if (cvssData.vector !== null) {
-        const requestBody = {
-          // "score":  is recalculated based on the vector by OSIDB and does not need to be included
-          comment: cvssData.comment,
-          cvss_version: cvssData.cvss_version,
-          issuer: IssuerEnum.Rh,
-          vector: cvssData.vector,
-          embargoed: flaw.value.embargoed,
-        };
-        queue.push(postFlawCvssScores(flaw.value.uuid, requestBody));
+  async function writeFlawScore(cvssData: ZodFlawCVSSType, flawId: string, embargoed: boolean) {
+    const options = { suppressConflictToast: true };
+    if (cvssData.created_dt) {
+      if (['', null].includes(cvssData.vector as null | string) && cvssData.uuid) {
+        return deleteFlawCvssScores(flawId, cvssData.uuid, options);
       }
-      // Handle newly created CVSS score
+      if (cvssData.vector !== null && cvssData.uuid) {
+        cvssData.embargoed = embargoed;
+        return putFlawCvssScores(flawId, cvssData.uuid, cvssData, options);
+      }
+      return undefined;
     }
+    if (cvssData.vector == null) return undefined;
+    return postFlawCvssScores(flawId, {
+      comment: cvssData.comment,
+      cvss_version: cvssData.cvss_version,
+      issuer: IssuerEnum.Rh,
+      vector: cvssData.vector,
+      embargoed,
+    }, options);
+  }
 
-    return Promise.all(queue);
+  async function saveOneFlawScore(
+    cvssData: ZodFlawCVSSType,
+    origin: ZodFlawType,
+    baseline: { cvss_scores?: null | readonly CvssScoreSnapshot[] },
+  ) {
+    const match = (score: { cvss_version?: null | string; issuer?: null | string }) =>
+      score.issuer === cvssData.issuer && score.cvss_version === cvssData.cvss_version;
+    const stillHere = () => flaw.value === origin;
+    try {
+      return await writeFlawScore(cvssData, origin.uuid, Boolean(origin.embargoed));
+    } catch (error) {
+      if (!isCvssWriteConflict(error)) throw error;
+      if (!stillHere()) throw new Error('Affect reload discarded because the flaw changed.');
+      const serverFlaw = await getFlaw(origin.uuid, true);
+      if (!stillHere() || serverFlaw.uuid !== origin.uuid) {
+        throw new Error('Affect reload discarded because the flaw changed.');
+      }
+      const scope = cvssScope(cvssData, 'flaw');
+      const result = rebaseCvssScore(
+        baseline.cvss_scores?.find(match),
+        cvssData,
+        serverFlaw.cvss_scores?.find(match),
+        `Flaw ${cvssData.issuer} CVSS${cvssData.cvss_version}`,
+        scope,
+      );
+      if (result.conflicts.length) {
+        recordCvssConflict({
+          formEdits: result.formEdits,
+          issuer: cvssData.issuer,
+          local: cvssData,
+          scope,
+          server: serverFlaw.cvss_scores?.find(match),
+          version: cvssData.cvss_version,
+        }, result.conflicts);
+        return undefined;
+      }
+      if (!result.merged) throw error;
+      if (!stillHere()) throw new Error('Affect reload discarded because the flaw changed.');
+      Object.assign(cvssData, result.merged);
+      if (result.remove && cvssData.uuid) {
+        return deleteFlawCvssScores(origin.uuid, cvssData.uuid, { suppressConflictToast: true });
+      }
+      return writeFlawScore(cvssData, origin.uuid, Boolean(origin.embargoed));
+    }
+  }
+
+  async function saveCvssScores() {
+    const origin = flaw.value;
+    const baseline = initialFlaw.value;
+    const conflictsBefore = pendingCvssConflict.value?.conflicts.length ?? 0;
+    const saved = [];
+    for (const cvssData of Object.values(rhFlawCvssScores.value)) {
+      if (flaw.value !== origin) {
+        clearCvssConflict();
+        throw new Error('Affect reload discarded because the flaw changed.');
+      }
+      const response = await saveOneFlawScore(cvssData, origin, baseline);
+      if (response) saved.push(response);
+    }
+    if ((pendingCvssConflict.value?.conflicts.length ?? 0) > conflictsBefore) {
+      throw new Error('CVSS scores conflict');
+    }
+    return saved;
   }
 
   function updateScore(score: null | number) {

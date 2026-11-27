@@ -69,6 +69,11 @@ describe('useCvssScores', () => {
     saveCvssScores();
 
     expect(vi.mocked(putFlawCvssScores))
-      .toHaveBeenCalledWith(flaw.uuid, flaw.cvss_scores[0].uuid, expect.objectContaining({ embargoed: false }));
+      .toHaveBeenCalledWith(
+        flaw.uuid,
+        flaw.cvss_scores[0].uuid,
+        expect.objectContaining({ embargoed: false }),
+        { suppressConflictToast: true },
+      );
   });
 });

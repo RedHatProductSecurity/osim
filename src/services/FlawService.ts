@@ -1,6 +1,7 @@
 import { createCatchHandler, createSuccessHandler } from '@/composables/service-helpers';
 
 import type { ZodFlawCVSSType, ZodFlawType } from '@/types';
+import { isCvssWriteConflict } from '@/utils/cvssRebase';
 import { osidbFetch } from '@/services/OsidbAuthService';
 import router from '@/router';
 import { osimRuntime } from '@/stores/osimRuntime';
@@ -88,48 +89,76 @@ export async function putFlaw(
   }
 }
 
+type CvssWriteOptions = {
+  /** Leave a stale-token or duplicate-score error for the caller. */
+  suppressConflictToast?: boolean;
+};
+
+function rejectCvssWrite(title: string, options: CvssWriteOptions, error: unknown): never {
+  if (!(options.suppressConflictToast && isCvssWriteConflict(error))) {
+    createCatchHandler(title, false)(error);
+  }
+  throw error;
+}
+
 export async function putFlawCvssScores(
   flawId: string,
   cvssScoresId: string,
   cvssScoreObject: ZodFlawCVSSType,
+  options: CvssWriteOptions = {},
 ) {
   const putObject: Partial<ZodFlawCVSSType> = Object.assign({}, cvssScoreObject);
   delete putObject['uuid'];
   delete putObject['flaw'];
   delete putObject['created_dt'];
-  return osidbFetch({
-    method: 'put',
-    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
-    data: putObject,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
-    .then(response => response.data)
-    .catch(createCatchHandler('CVSS Scores Update Error'));
+  try {
+    const response = await osidbFetch({
+      method: 'put',
+      url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
+      data: putObject,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' })({ data: response.data });
+    return response.data;
+  } catch (error) {
+    rejectCvssWrite('CVSS Scores Update Error', options, error);
+  }
 }
 
 export async function deleteFlawCvssScores(
   flawId: string,
   cvssScoresId: string,
+  options: CvssWriteOptions = {},
 ) {
-  return osidbFetch({
-    method: 'delete',
-    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'CVSS score deleted.' }))
-    .catch(createCatchHandler('Error deleting CVSS score:'));
+  try {
+    const response = await osidbFetch({
+      method: 'delete',
+      url: `/osidb/api/v1/flaws/${flawId}/cvss_scores/${cvssScoresId}`,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'CVSS score deleted.' })({ data: response.data });
+    return response.data;
+  } catch (error) {
+    rejectCvssWrite('Error deleting CVSS score:', options, error);
+  }
 }
 
 type PostFlawCvssScores = Omit<ZodFlawCVSSType, 'alerts' | 'flaw' | 'score' | 'updated_dt' | 'uuid'>;
-export async function postFlawCvssScores(flawId: string, cvssScoreObject: PostFlawCvssScores) {
+export async function postFlawCvssScores(
+  flawId: string,
+  cvssScoreObject: PostFlawCvssScores,
+  options: CvssWriteOptions = {},
+) {
   const postObject = Object.assign({}, cvssScoreObject);
-  return osidbFetch({
-    method: 'post',
-    url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
-    data: postObject,
-  })
-    .then(createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' }))
-    .then(response => response.data)
-    .catch(createCatchHandler('CVSS scores Update Error'));
+  try {
+    const response = await osidbFetch({
+      method: 'post',
+      url: `/osidb/api/v1/flaws/${flawId}/cvss_scores`,
+      data: postObject,
+    });
+    createSuccessHandler({ title: 'Success!', body: 'Saved CVSS Scores' })({ data: response.data });
+    return response.data;
+  } catch (error) {
+    rejectCvssWrite('CVSS scores Update Error', options, error);
+  }
 }
 
 export async function postFlawComment(
