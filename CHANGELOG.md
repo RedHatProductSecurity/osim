@@ -1,5 +1,9 @@
 # OSIM Changelog
 
+## [Unreleased]
+### Added
+* Provide conflict handling solutions for flaw affects operations (`OSIDB-5794`)
+
 ## [2026.11.2]
 ### Fixed
 * Do not break flaw view when an affect request fails (`OSIDB-5909`)

@@ -8,7 +8,7 @@ import {
   showSuccessToast,
 } from '@/composables/service-helpers';
 
-import type { ZodAffectCVSSType, ZodAffectType } from '@/types';
+import type { ZodAffectCVSSType, ZodAffectType, ZodFlawType } from '@/types';
 import {
   deleteAffectCvssScore,
   deleteAffects,
@@ -16,18 +16,52 @@ import {
   postAffectCvssScore,
   postAffects,
   putAffectCvssScore,
-  putAffects,
 } from '@/services/AffectService';
-import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 import { fileTrackingFor, findExistingTracker, parseTrackerId, updateExistingTracker } from '@/services/TrackerService';
+import { affectRhCvss3, affectUUID, deepCopyFromRaw, jsonEquals, mergeBy } from '@/utils/helpers';
 
+import {
+  AffectReloadDiscarded,
+  affectIdentityKey,
+  affectWriteBody,
+  bulkFailures,
+  isAffectReloadDiscarded,
+  isAlreadyDeleted,
+  isDuplicateAffectFailure,
+  useAffectCollision,
+} from './useAffectCollision';
 import { useFlaw } from './useFlaw';
+
+// A score that has not been given a server uuid yet still has to be posted.
+// Copy it onto the saved row so a later merge does not drop it.
+function flawStillLoaded(origin: ZodFlawType) {
+  return useFlaw().flaw.value === origin;
+}
+
+type AffectSession = {
+  affects: ZodAffectType[];
+  baseline: ZodAffectType[];
+  flaw: ZodFlawType;
+};
+
+function keepUnsavedCvss(local: ZodAffectType, saved: ZodAffectType) {
+  const localScore = affectRhCvss3(local);
+  if (!localScore?.score || localScore.uuid) return;
+  const persisted = (saved.cvss_scores ?? []).some(score =>
+    score.uuid && score.issuer === localScore.issuer && score.cvss_version === localScore.cvss_version);
+  if (!persisted) {
+    saved.cvss_scores = structuredClone(toRaw(local.cvss_scores));
+  }
+}
 
 function useAffects() {
   // Metadata
   const modifiedAffects = reactive<Set<string>>(new Set());
   const newAffects = reactive<Set<string>>(new Set());
   const removedAffects = reactive<Set<string>>(new Set());
+  // Local ids replaced when a new row is linked to the server affect. Selection
+  // and row actions may still hold the old id until the table refreshes.
+  const affectIdAliases = shallowRef<Record<string, string>>({});
 
   // Data
   const initialAffects = shallowRef<ZodAffectType[]>([]);
@@ -44,32 +78,26 @@ function useAffects() {
     reset();
   }
 
-  function reset() {
-    modifiedAffects.clear();
-    newAffects.clear();
-    removedAffects.clear();
-  }
-
   function resetSavedAffects(savedAffects: ZodAffectType[]) {
     if (!savedAffects.length) {
       return;
     }
 
     // Adopt the server identity for successfully created affects before merging.
-    // New affects are tracked by a local _uuid and have no server uuid or
-    // ps_module yet (OSIDB derives ps_module from ps_update_stream on creation),
-    // so match them by ps_update_stream + ps_component. Assigning the saved uuid
-    // and ps_module lets mergeBy replace the local affect in place (rather than
-    // duplicating it) and ensures later edits are classified as updates.
+    // New affects are tracked by a local _uuid and have no server uuid or ps_module
+    // yet. Match a PURL row by stream and PURL, and any other row by stream and
+    // component. Assigning the saved uuid and ps_module lets mergeBy replace the
+    // local affect in place, so a later edit is an update.
     for (const affect of savedAffects) {
       const wasNew = currentAffects.value.find(
         currentAffect =>
           currentAffect._uuid
           && newAffects.has(currentAffect._uuid)
           && !currentAffect.uuid
-          && currentAffect.ps_update_stream === affect.ps_update_stream
-          && currentAffect.ps_component === affect.ps_component,
+          && affectIdentityKey(currentAffect) === affectIdentityKey(affect),
       );
+      const local = wasNew ?? currentAffects.value.find(current => current.uuid && current.uuid === affect.uuid);
+      if (local) keepUnsavedCvss(local, affect);
 
       if (wasNew?._uuid) {
         wasNew.uuid = affect.uuid;
@@ -89,9 +117,25 @@ function useAffects() {
         modifiedAffects.delete(uuid);
       }
     }
+    for (const affect of currentAffects.value) {
+      const score = affectRhCvss3(affect);
+      if (affect.uuid && savedUuids.has(affect.uuid) && score?.score && !score.uuid) {
+        modifiedAffects.add(affect.uuid);
+      }
+    }
   }
 
-  function markModified(uuid: string) {
+  function resolveAffectId(id: string) {
+    return affectIdAliases.value[id] ?? id;
+  }
+
+  function aliasAffectId(from: string, to: string) {
+    if (!from || from === to) return;
+    affectIdAliases.value = { ...affectIdAliases.value, [from]: to };
+  }
+
+  function markModified(id: string) {
+    const uuid = resolveAffectId(id);
     if (!newAffects.has(uuid)) {
       modifiedAffects.add(uuid);
     }
@@ -101,7 +145,8 @@ function useAffects() {
     newAffects.add(uuid);
   }
 
-  function markRemoved(uuid: string) {
+  function markRemoved(id: string) {
+    const uuid = resolveAffectId(id);
     if (newAffects.has(uuid)) {
       newAffects.delete(uuid);
       currentAffects.value = currentAffects.value.filter(a => a._uuid !== uuid);
@@ -111,7 +156,8 @@ function useAffects() {
     removedAffects.add(uuid);
   }
 
-  function revertAffect(uuid: string) {
+  function revertAffect(id: string) {
+    const uuid = resolveAffectId(id);
     if (newAffects.has(uuid)) {
       // Remove new affect entirely from currentAffects
       newAffects.delete(uuid);
@@ -144,11 +190,36 @@ function useAffects() {
     triggerRef(currentAffects);
   }
 
-  const requestBodyFromAffect = (affect: ZodAffectType) => ({
-    ...affect,
-    ps_component: affect.purl ? '' : affect.ps_component,
-    embargoed: affect.embargoed || false,
+  const {
+    applyAffectResolution,
+    holdDeletesOfEditedAffects,
+    integrateServerAffects,
+    pendingAffectConflict,
+    readServerAffects,
+    reconcileDuplicateCreates,
+    saveAffectUpdates,
+    stageAffectConflicts,
+    stageReloadedDeleteConflicts,
+  } = useAffectCollision({
+    aliasAffectId,
+    currentAffects,
+    initialAffects,
+    markNew,
+    modifiedAffects,
+    newAffects,
+    refreshData,
+    removedAffects,
   });
+
+  function reset() {
+    modifiedAffects.clear();
+    newAffects.clear();
+    removedAffects.clear();
+    affectIdAliases.value = {};
+    pendingAffectConflict.value = null;
+  }
+
+  const requestBodyFromAffect = (affect: ZodAffectType) => affectWriteBody(affect);
 
   function buildAffectOperations() {
     const toCreate: ZodAffectType[] = [];
@@ -185,12 +256,10 @@ function useAffects() {
           toDelete[affect.uuid] = initialCvssScore.uuid!;
         }
       } else if (affect._uuid && newAffects.has(affect._uuid) && rhCvss3Score?.score) {
-        // Find corresponding saved affect for new affects
-        // Match by ps_update_stream and ps_component (ps_module is empty
-        // locally until OSIDB derives it from ps_update_stream on creation)
+        // ps_module is empty locally until OSIDB derives it. Match a PURL row by
+        // stream and PURL, and any other row by stream and component.
         const matchingUpdatedAffect = updatedAffects.find(updatedAffect =>
-          updatedAffect.ps_update_stream === affect.ps_update_stream
-          && updatedAffect.ps_component === affect.ps_component,
+          affectIdentityKey(updatedAffect) === affectIdentityKey(affect),
         );
 
         if (matchingUpdatedAffect?.uuid) {
@@ -209,9 +278,10 @@ function useAffects() {
   ) {
     // Merge new/updated CVSS scores
     cvssScores.forEach((score) => {
-      const affect = affects.find(affect => affect.uuid === score.affect);
+      const affect = affects.find(item => item.uuid === score.affect)
+        ?? currentAffects.value.find(item => item.uuid === score.affect);
       if (affect) {
-        affect.cvss_scores = mergeBy(affect?.cvss_scores, [score], 'uuid');
+        affect.cvss_scores = mergeBy(affect.cvss_scores, [score], 'uuid');
       }
     });
 
@@ -226,7 +296,7 @@ function useAffects() {
     }
   }
 
-  async function saveCvssScores(updatedAffects: ZodAffectType[]) {
+  async function saveCvssScores(updatedAffects: ZodAffectType[], origin: ZodFlawType) {
     const { toCreate, toDelete, toUpdate } = buildCvssOperations(updatedAffects);
 
     const savedCvssScores: ZodAffectCVSSType[] = [];
@@ -256,63 +326,109 @@ function useAffects() {
       deletedScores[affectUuid] = scoreUuid;
     });
 
-    // Update state with successful operations
-    updateCvssScoresInAffects(updatedAffects, savedCvssScores, deletedScores);
-
-    // Show separate success notifications for each operation type
-    showSuccessToast(createResults.successful.length, 'CVSS score', 'created');
-    showSuccessToast(updateResults.successful.length, 'CVSS score', 'updated');
-    showSuccessToast(deleteResults.successful.length, 'CVSS score', 'deleted');
+    // The requests finished on the affect that started the save. Skip the local
+    // merge when another flaw is now loaded.
+    if (flawStillLoaded(origin)) {
+      updateCvssScoresInAffects(updatedAffects, savedCvssScores, deletedScores);
+      showSuccessToast(createResults.successful.length, 'CVSS score', 'created');
+      showSuccessToast(updateResults.successful.length, 'CVSS score', 'updated');
+      showSuccessToast(deleteResults.successful.length, 'CVSS score', 'deleted');
+    }
 
     return createResults.hasErrors || updateResults.hasErrors || deleteResults.hasErrors;
   }
 
+  // Post CVSS while new rows are still tracked, then adopt the saved identity.
+  async function commitSavedAffects(affects: ZodAffectType[], origin: ZodFlawType) {
+    if (!flawStillLoaded(origin)) return false;
+    const cvssHasErrors = await saveCvssScores(affects, origin);
+    if (!flawStillLoaded(origin)) return cvssHasErrors;
+    resetSavedAffects(affects);
+    return cvssHasErrors;
+  }
+
+  function affectSession(): AffectSession {
+    return {
+      affects: currentAffects.value,
+      baseline: initialAffects.value,
+      flaw: useFlaw().flaw.value,
+    };
+  }
+
+  function sessionDiffers(origin: AffectSession) {
+    const current = affectSession();
+    return current.flaw !== origin.flaw
+      || current.affects !== origin.affects
+      || current.baseline !== origin.baseline;
+  }
+
   async function saveAffects() {
+    const origin = useFlaw().flaw.value;
+    const session = affectSession();
     const { toCreate, toUpdate } = buildAffectOperations();
-
-    // OSIDB bulk endpoints return 200 with per-item failures in `failed`
-    const bulkOps = [
-      ...(toCreate.length
-        ? [{ errorTitle: 'Error creating Affects:', operation: 'created', request: postAffects(toCreate) }]
-        : []),
-      ...(toUpdate.length
-        ? [{ errorTitle: 'Error updating Affects:', operation: 'updated', request: putAffects(toUpdate) }]
-        : []),
-    ];
-
-    // Keep index alignment with bulkOps (unlike executeOperationsInParallel's compacted successful[])
-    const settled = await Promise.allSettled(bulkOps.map(({ request }) => request));
-
     const savedAffects: ZodAffectType[] = [];
     let hasErrors = false;
-    let hasBulkFailures = false;
 
-    for (const [index, { errorTitle, operation }] of bulkOps.entries()) {
-      const settledResult = settled[index];
-      if (settledResult.status === 'rejected' || !settledResult.value?.data) {
+    if (toCreate.length) {
+      let conflict = false;
+      try {
+        let failed: ReturnType<typeof bulkFailures> = [];
+        try {
+          const response = await postAffects(toCreate, { suppressErrorToast: true });
+          const created = response?.data?.results ?? [];
+          savedAffects.push(...created);
+          showSuccessToast(created.length, 'affect', 'created');
+          failed = bulkFailures(response?.data);
+        } catch (error) {
+          failed = bulkFailures((error as { response?: { data?: unknown } })?.response?.data);
+          if (!failed.some(isDuplicateAffectFailure)) throw error;
+        }
+        // The PUT guard starts when the update begins. A switch during this POST would load the new flaw.
+        if (sessionDiffers(session)) throw new AffectReloadDiscarded();
+        const reconciled = await reconcileDuplicateCreates(toCreate, failed);
+        savedAffects.push(...reconciled.adopted);
+        if (reconciled.hadOtherErrors) hasErrors = true;
+        conflict = reconciled.conflict;
+      } catch (error) {
+        if (isAffectReloadDiscarded(error)) throw error;
+        createCatchHandler('Error creating Affects:', false)(error);
         hasErrors = true;
-        continue;
       }
-
-      const { data } = settledResult.value;
-      const successfulAffects = data.results ?? [];
-      savedAffects.push(...successfulAffects);
-      showSuccessToast(successfulAffects.length, 'affect', operation);
-
-      const failures = data.failed ?? [];
-      if (failures.length) {
-        hasBulkFailures = true;
-        createCatchHandler(errorTitle, false)(
-          failures.flatMap((f: { errors?: Record<string, string | string[]> }) =>
-            Object.values(f.errors ?? {}).flat(),
-          ).join('\n'),
-        );
+      if (conflict) {
+        if (flawStillLoaded(origin)) {
+          await commitSavedAffects(savedAffects, origin);
+          if (flawStillLoaded(origin)) useFlaw().acceptSavedAffects(savedAffects);
+        }
+        throw new Error('Affect already exists');
       }
     }
 
-    const cvssHasErrors = await saveCvssScores(savedAffects);
+    if (!flawStillLoaded(origin)) throw new AffectReloadDiscarded();
+    try {
+      const updated = await saveAffectUpdates(toUpdate);
+      if (flawStillLoaded(origin)) {
+        if (updated.hasErrors) hasErrors = true;
+        if (updated.results.length) {
+          savedAffects.push(...updated.results);
+          showSuccessToast(updated.results.length, 'affect', 'updated');
+        }
+      }
+    } catch (error) {
+      if (isAffectReloadDiscarded(error)) throw error;
+      if (pendingAffectConflict.value?.conflicts.length && flawStillLoaded(origin)) {
+        await commitSavedAffects(savedAffects, origin);
+        if (flawStillLoaded(origin)) useFlaw().acceptSavedAffects(savedAffects);
+        throw error;
+      }
+      if (!flawStillLoaded(origin)) throw new AffectReloadDiscarded();
+      hasErrors = true;
+    }
 
-    return { savedAffects, hasErrors: hasErrors || hasBulkFailures || cvssHasErrors };
+    if (!flawStillLoaded(origin)) throw new AffectReloadDiscarded();
+    const cvssHasErrors = await commitSavedAffects(savedAffects, origin);
+    if (!flawStillLoaded(origin)) throw new AffectReloadDiscarded();
+
+    return { savedAffects, hasErrors: hasErrors || cvssHasErrors };
   }
 
   type fileTrackerFields = Pick<ZodAffectType, 'ps_update_stream' | 'updated_dt' | 'uuid'>;
@@ -456,29 +572,96 @@ function useAffects() {
     return { refreshFailed };
   }
 
-  async function removeAffects() {
+  function forgetDeletedAffects(uuids: string[]) {
+    if (!uuids.length) return;
+    const gone = new Set(uuids);
+    currentAffects.value = currentAffects.value.filter(affect => !gone.has(affect.uuid ?? ''));
+    for (const uuid of uuids) removedAffects.delete(uuid);
+    useFlaw().dropAffects(uuids);
+  }
+
+  async function deleteMarkedAffects(
+    uuids: string[],
+    options?: { recheck?: boolean },
+  ): Promise<{ deletedUuids: string[]; hasErrors: boolean }> {
+    if (!uuids.length) return { deletedUuids: [], hasErrors: false };
+
+    const session = affectSession();
+    try {
+      await deleteAffects(uuids, { suppressErrorToast: true });
+    } catch (error) {
+      if (!isAlreadyDeleted(error)) {
+        createCatchHandler('Error deleting Affect:', false)(error);
+        return { deletedUuids: [], hasErrors: true };
+      }
+      // The reload guard starts at the GET. A switch during this DELETE would read the new flaw.
+      if (sessionDiffers(session)) throw new AffectReloadDiscarded();
+
+      let serverAffects: null | ZodAffectType[];
+      try {
+        serverAffects = await readServerAffects();
+      } catch (reloadError) {
+        console.error('useAffectsModel::removeAffects() failed to reload affects', reloadError);
+        createCatchHandler('Error deleting Affect:', false)(error);
+        return { deletedUuids: [], hasErrors: true };
+      }
+      if (!serverAffects) throw new AffectReloadDiscarded();
+
+      const present = new Set(serverAffects.flatMap(affect => affect.uuid ? [affect.uuid] : []));
+      const gone = uuids.filter(uuid => !present.has(uuid));
+      const stillThere = uuids.filter(uuid => present.has(uuid));
+      forgetDeletedAffects(gone);
+
+      const blocked = new Set(options?.recheck
+        ? stageReloadedDeleteConflicts(stillThere, serverAffects)
+        : []);
+      const clear = stillThere.filter(uuid => !blocked.has(uuid));
+      if (clear.length) {
+        const retrySession = affectSession();
+        try {
+          await deleteAffects(clear);
+        } catch {
+          return { deletedUuids: gone, hasErrors: true };
+        }
+        if (sessionDiffers(retrySession)) throw new AffectReloadDiscarded();
+        forgetDeletedAffects(clear);
+      }
+      if (blocked.size) throw new Error('Affect was edited on the server');
+
+      const deletedUuids = [...gone, ...clear];
+      showSuccessToast(deletedUuids.length, 'affect', 'deleted');
+      return { deletedUuids, hasErrors: false };
+    }
+
+    if (sessionDiffers(session)) throw new AffectReloadDiscarded();
+    forgetDeletedAffects(uuids);
+    showSuccessToast(uuids.length, 'affect', 'deleted');
+    return { deletedUuids: uuids, hasErrors: false };
+  }
+
+  async function removeAffects(options?: { skipCheckFor?: string[] }) {
     const uuidsToDelete = [...removedAffects.values()];
 
     if (uuidsToDelete.length === 0) {
       return { deletedUuids: [], hasErrors: false };
     }
 
-    try {
-      await deleteAffects(uuidsToDelete);
+    const skip = new Set(options?.skipCheckFor ?? []);
+    const approved = uuidsToDelete.filter(uuid => skip.has(uuid));
+    const toCheck = uuidsToDelete.filter(uuid => !skip.has(uuid));
+    const approvedResult = await deleteMarkedAffects(approved);
+    if (!toCheck.length) return approvedResult;
 
-      // If successful, remove from currentAffects and clear removedAffects tracking
-      currentAffects.value = currentAffects.value.filter(({ uuid }) => !removedAffects.has(uuid!));
-      removedAffects.clear();
+    const held = await holdDeletesOfEditedAffects(toCheck);
+    if (held === 'discarded') throw new AffectReloadDiscarded();
+    if (held === 'error') return { deletedUuids: approvedResult.deletedUuids, hasErrors: true };
+    if (held === 'conflict') throw new Error('Affect was edited on the server');
 
-      // Show success notification
-      showSuccessToast(uuidsToDelete.length, 'affect', 'deleted');
-
-      return { deletedUuids: uuidsToDelete, hasErrors: false };
-    } catch (error) {
-      // If delete fails, keep affects in removedAffects Set so user can retry
-      // The error toast will be shown by the createCatchHandler in the service
-      return { deletedUuids: [], hasErrors: true };
-    }
+    const checked = await deleteMarkedAffects(toCheck, { recheck: true });
+    return {
+      deletedUuids: [...approvedResult.deletedUuids, ...checked.deletedUuids],
+      hasErrors: approvedResult.hasErrors || checked.hasErrors,
+    };
   }
 
   return {
@@ -486,8 +669,10 @@ function useAffects() {
       // Data
       currentAffects,
       initialAffects: readonly(initialAffects),
+      pendingAffectConflict,
 
       // Metadata
+      affectIdAliases,
       affectUUIDMap,
       hasChanges,
       modifiedAffects,
@@ -507,9 +692,12 @@ function useAffects() {
       revertAffect,
 
       // External
+      applyAffectResolution,
       fileTracker,
+      integrateServerAffects,
       linkExistingTracker,
       saveAffects,
+      stageAffectConflicts,
       removeAffects,
     },
 

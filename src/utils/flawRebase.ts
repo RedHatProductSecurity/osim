@@ -89,7 +89,7 @@ export type FlawRebaseResult = {
   merged: null | ZodFlawType;
 };
 
-function valuesEqual(left: unknown, right: unknown): boolean {
+export function valuesEqual(left: unknown, right: unknown): boolean {
   return jsonEquals(left ?? null, right ?? null);
 }
 

@@ -11,7 +11,9 @@ createTestingPinia();
 
 vi.mock('@/services/AffectService', async importOriginal => ({
   ...await importOriginal<typeof import('@/services/AffectService')>(),
+  deleteAffects: vi.fn(),
   getAffect: vi.fn(),
+  getAffects: vi.fn(),
   postAffectCvssScore: vi.fn(),
   postAffects: vi.fn(),
   putAffectCvssScore: vi.fn(),
@@ -53,6 +55,23 @@ function newLocalAffect(overrides: Partial<ZodAffectType> = {}): ZodAffectType {
   } as unknown as ZodAffectType;
 }
 
+function duplicateCreateError() {
+  return {
+    response: {
+      status: 400,
+      data: {
+        results: [],
+        failed: [{
+          index: 0,
+          errors: {
+            __all__: ['Affect with this Flaw, Ps update stream and Ps component already exists.'],
+          },
+        }],
+      },
+    },
+  };
+}
+
 function savedAffectFromOsidb(overrides: Partial<ZodAffectType> = {}): ZodAffectType {
   return {
     uuid: 'saved-uuid',
@@ -68,6 +87,28 @@ function savedAffectFromOsidb(overrides: Partial<ZodAffectType> = {}): ZodAffect
     subpackage_purls: [],
     ...overrides,
   } as unknown as ZodAffectType;
+}
+
+async function promoteDifferingDuplicate() {
+  useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+  useFlaw().flaw.value.title = 'unsaved title';
+  const model = useAffectsModel();
+  const localAffect = newLocalAffect({ cvss_scores: [], impact: 'CRITICAL' });
+  const localId = localAffect._uuid!;
+  model.state.currentAffects.value = [localAffect];
+  model.actions.markNew(localId);
+  vi.mocked(AffectService.postAffects).mockRejectedValue(duplicateCreateError());
+  vi.mocked(AffectService.getAffects).mockResolvedValue({
+    data: {
+      results: [savedAffectFromOsidb({
+        cvss_scores: [],
+        impact: 'IMPORTANT',
+        updated_dt: '2026-03-01T00:00:00Z',
+      })],
+    },
+  } as any);
+  await expect(model.actions.saveAffects()).rejects.toThrow('Affect already exists');
+  return { localId, model };
 }
 
 describe('useAffectsModel', () => {
@@ -297,6 +338,1003 @@ describe('useAffectsModel', () => {
     expect(AffectService.postAffects).not.toHaveBeenCalled();
     expect(AffectService.putAffects).toHaveBeenCalledWith([
       expect.objectContaining({ uuid: 'saved-uuid' }),
+    ], { suppressConflictToast: true });
+  });
+
+  it('adopts a purl draft whose server row stored the derived component', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const { actions: { markNew, saveAffects }, state: { currentAffects, newAffects } } = useAffectsModel();
+    const localAffect = newLocalAffect({
+      ps_component: '',
+      purl: 'pkg:rpm/redhat/widget',
+    });
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+    vi.mocked(AffectService.postAffects).mockRejectedValue(duplicateCreateError());
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          ps_component: 'widget',
+          purl: 'pkg:rpm/redhat/widget',
+          updated_dt: '2026-03-01T00:00:00Z',
+        })],
+      },
+    } as any);
+    vi.mocked(AffectService.postAffectCvssScore).mockResolvedValue({
+      affect: 'saved-uuid',
+      cvss_version: 'V3',
+      issuer: 'RH',
+      score: 7.5,
+      uuid: 'cvss-uuid',
+    } as any);
+
+    await saveAffects();
+
+    expect(currentAffects.value).toHaveLength(1);
+    expect(currentAffects.value[0]).toMatchObject({ ps_component: 'widget', uuid: 'saved-uuid' });
+    expect(newAffects.size).toBe(0);
+    expect(AffectService.postAffectCvssScore).toHaveBeenCalledWith(
+      'saved-uuid',
+      expect.objectContaining({ score: 7.5 }),
+    );
+  });
+
+  it('replaces a created purl draft with the row that derived the component', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const { actions: { markNew, saveAffects }, state: { currentAffects, newAffects } } = useAffectsModel();
+    const localAffect = newLocalAffect({
+      cvss_scores: [],
+      ps_component: '',
+      purl: 'pkg:rpm/redhat/widget',
+    });
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+    vi.mocked(AffectService.postAffects).mockResolvedValue({
+      data: {
+        failed: [],
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          ps_component: 'widget',
+          purl: 'pkg:rpm/redhat/widget',
+          uuid: 'created-uuid',
+        })],
+      },
+    } as any);
+
+    await saveAffects();
+
+    expect(currentAffects.value).toHaveLength(1);
+    expect(currentAffects.value[0].uuid).toBe('created-uuid');
+    expect(newAffects.size).toBe(0);
+  });
+
+  it('asks about a purl duplicate field other than the derived component', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { markNew, saveAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const localAffect = newLocalAffect({
+      cvss_scores: [],
+      impact: 'CRITICAL',
+      ps_component: '',
+      purl: 'pkg:rpm/redhat/widget',
+    });
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+    vi.mocked(AffectService.postAffects).mockRejectedValue(duplicateCreateError());
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          impact: 'LOW',
+          ps_component: 'widget',
+          purl: 'pkg:rpm/redhat/widget',
+        })],
+      },
+    } as any);
+
+    await expect(saveAffects()).rejects.toThrow('Affect already exists');
+
+    expect(pendingAffectConflict.value?.conflicts.map(conflict => conflict.field)).toEqual(['impact']);
+    expect(pendingAffectConflict.value?.conflicted[0].formEdits).toEqual(['impact']);
+  });
+
+  it('does not treat a blank purl component as a local edit', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { pendingAffectConflict },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'LOW',
+      ps_component: 'widget',
+      purl: 'pkg:rpm/redhat/widget',
+      uuid: 'saved-uuid',
+    });
+    initializeAffects([affect]);
+    useAffectsModel().state.currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          impact: 'LOW',
+          ps_component: 'other-widget',
+          purl: 'pkg:rpm/redhat/other',
+          updated_dt: '2026-03-01T00:00:00Z',
+          uuid: 'saved-uuid',
+        })],
+      },
+    } as any);
+    vi.mocked(AffectService.putAffects)
+      .mockRejectedValueOnce({ response: { status: 409 } })
+      .mockResolvedValueOnce({
+        data: { results: [savedAffectFromOsidb({ cvss_scores: [], uuid: 'saved-uuid' })] },
+      } as any);
+
+    await expect(saveAffects()).resolves.toMatchObject({ hasErrors: false });
+
+    expect(pendingAffectConflict.value).toBeNull();
+    expect(vi.mocked(AffectService.putAffects).mock.calls[1][0]).toEqual([
+      expect.objectContaining({
+        impact: 'CRITICAL',
+        ps_component: '',
+        purl: 'pkg:rpm/redhat/other',
+      }),
+    ]);
+  });
+
+  it('adopts a new affect when the server already has the same one', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const { actions: { markNew, saveAffects }, state: { currentAffects, newAffects } } = useAffectsModel();
+    const localAffect = newLocalAffect({ cvss_scores: [] });
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+
+    const server = savedAffectFromOsidb({ cvss_scores: [], updated_dt: '2026-03-01T00:00:00Z' });
+    vi.mocked(AffectService.postAffects).mockRejectedValue(duplicateCreateError());
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: { results: [server] },
+    } as any);
+
+    await saveAffects();
+
+    expect(currentAffects.value).toHaveLength(1);
+    expect(currentAffects.value[0]).toMatchObject({
+      ps_module: 'my-module',
+      updated_dt: '2026-03-01T00:00:00Z',
+      uuid: 'saved-uuid',
+    });
+    expect(newAffects.size).toBe(0);
+    expect(AffectService.getAffects).toHaveBeenCalledWith('flaw-uuid', undefined, true);
+  });
+
+  it('asks which value to keep when the existing affect differs', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { markNew, saveAffects },
+      state: { currentAffects, initialAffects, modifiedAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const localAffect = newLocalAffect({ cvss_scores: [], impact: 'CRITICAL' });
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+
+    vi.mocked(AffectService.postAffects).mockRejectedValue(duplicateCreateError());
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          impact: 'IMPORTANT',
+          updated_dt: '2026-03-01T00:00:00Z',
+        })],
+      },
+    } as any);
+
+    await expect(saveAffects()).rejects.toThrow('Affect already exists');
+
+    expect(pendingAffectConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ field: 'impact', mine: 'CRITICAL', server: 'IMPORTANT' }),
+    ]);
+    expect(currentAffects.value[0]).toMatchObject({ impact: 'CRITICAL', uuid: 'saved-uuid' });
+    expect(currentAffects.value[0]._uuid).toBeUndefined();
+    expect(initialAffects.value[0]).toMatchObject({ impact: 'IMPORTANT', uuid: 'saved-uuid' });
+    expect(modifiedAffects.has('saved-uuid')).toBe(true);
+    expect(AffectService.putAffects).not.toHaveBeenCalled();
+  });
+
+  it('reverts a promoted affect from its old row id back to the server value', async () => {
+    const { localId, model } = await promoteDifferingDuplicate();
+    model.state.pendingAffectConflict.value = null;
+
+    model.actions.revertAffect(localId);
+
+    expect(model.state.currentAffects.value[0]).toMatchObject({ impact: 'IMPORTANT', uuid: 'saved-uuid' });
+    expect(model.state.modifiedAffects.has('saved-uuid')).toBe(false);
+  });
+
+  it('keeps a reverted promoted affect when the affect list is reset', async () => {
+    const { flaw, initialFlaw } = useFlaw();
+    const { localId, model } = await promoteDifferingDuplicate();
+    expect(flaw.value.affects.map(row => row.uuid)).toEqual(['saved-uuid']);
+    expect(flaw.value.affects[0]).toMatchObject({ impact: 'IMPORTANT' });
+    expect(flaw.value.title).toBe('unsaved title');
+    expect(initialFlaw.value.title).toBe('');
+
+    model.state.pendingAffectConflict.value = null;
+    model.actions.revertAffect(localId);
+    model.actions.initializeAffects(flaw.value.affects);
+
+    expect(model.state.currentAffects.value).toEqual([
+      expect.objectContaining({ impact: 'IMPORTANT', uuid: 'saved-uuid' }),
+    ]);
+    expect(flaw.value.title).toBe('unsaved title');
+  });
+
+  it('deletes a promoted affect when the selection still has the old row id', async () => {
+    const { localId, model } = await promoteDifferingDuplicate();
+
+    model.actions.markRemoved(localId);
+
+    expect(model.state.removedAffects.has('saved-uuid')).toBe(true);
+    expect(model.state.removedAffects.has(localId)).toBe(false);
+    expect(model.state.currentAffects.value).toHaveLength(1);
+  });
+
+  it('asks whether to keep an edit when the server affect was deleted', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { applyAffectResolution, initializeAffects, markModified, saveAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'LOW',
+      updated_dt: '2026-01-01T00:00:00Z',
+    });
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+
+    vi.mocked(AffectService.putAffects).mockRejectedValue({ response: { status: 404 } });
+    vi.mocked(AffectService.getAffects).mockResolvedValue({ data: { results: [] } } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 404 } });
+
+    expect(pendingAffectConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ field: 'removed', id: `${affect.uuid}:removed`, server: 'Removed' }),
+    ]);
+    expect(AffectService.putAffects).toHaveBeenCalledTimes(1);
+
+    applyAffectResolution({ [`${affect.uuid}:removed`]: 'server' });
+    expect(currentAffects.value).toEqual([]);
+  });
+
+  it('drops the old affect id when keeping a local edit of a deleted affect', async () => {
+    const affect = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'CRITICAL',
+      updated_dt: '2026-01-01T00:00:00Z',
+    });
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [affect] });
+    const {
+      actions: { applyAffectResolution, initializeAffects, markModified, saveAffects },
+      state: { currentAffects, newAffects },
+    } = useAffectsModel();
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.putAffects).mockRejectedValue({ response: { status: 404 } });
+    vi.mocked(AffectService.getAffects).mockResolvedValue({ data: { results: [] } } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 404 } });
+    applyAffectResolution({ [`${affect.uuid}:removed`]: 'mine' });
+
+    expect(useFlaw().flaw.value.affects.map(row => row.uuid)).toEqual([]);
+    expect(newAffects.size).toBe(1);
+    expect(currentAffects.value[0].uuid).toBeNull();
+    expect(currentAffects.value[0].impact).toBe('CRITICAL');
+  });
+
+  it('drops an affect that was already deleted on the server', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markRemoved, removeAffects },
+      state: { currentAffects, removedAffects },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({ cvss_scores: [] });
+    initializeAffects([affect]);
+    markRemoved(affect.uuid!);
+
+    vi.mocked(AffectService.deleteAffects).mockRejectedValue({
+      response: { data: { uuid: ['Affect matching query does not exist.'] }, status: 400 },
+    });
+    vi.mocked(AffectService.getAffects).mockResolvedValue({ data: { results: [] } } as any);
+
+    await expect(removeAffects()).resolves.toEqual({ deletedUuids: [affect.uuid], hasErrors: false });
+    expect(currentAffects.value).toEqual([]);
+    expect(removedAffects.size).toBe(0);
+  });
+
+  it('does not report deletes when the flaw changes during a missing-row recovery', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-a', affects: [] });
+    const {
+      actions: { initializeAffects, markRemoved, removeAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+    const gone = savedAffectFromOsidb({ cvss_scores: [], uuid: 'gone-uuid' });
+    const stays = savedAffectFromOsidb({ cvss_scores: [], ps_component: 'stays', uuid: 'stays-uuid' });
+    initializeAffects([gone, stays]);
+    markRemoved(gone.uuid!);
+    markRemoved(stays.uuid!);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: { results: [gone, stays] },
+    } as any);
+    vi.mocked(AffectService.deleteAffects).mockImplementation(async () => {
+      useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-b', affects: [] });
+      initializeAffects([]);
+      throw { response: { data: { uuid: ['Affect matching query does not exist.'] }, status: 400 } };
+    });
+
+    await expect(removeAffects()).rejects.toThrow('Affect reload discarded');
+
+    expect(AffectService.getAffects).toHaveBeenCalledTimes(1);
+    expect(AffectService.deleteAffects).toHaveBeenCalledTimes(1);
+    expect(useFlaw().flaw.value.uuid).toBe('flaw-b');
+    expect(currentAffects.value).toEqual([]);
+  });
+
+  it('asks before deleting an affect the server has edited', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { applyAffectResolution, initializeAffects, markRemoved, removeAffects },
+      state: { currentAffects, pendingAffectConflict, removedAffects },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'LOW',
+      updated_dt: '2026-01-01T00:00:00Z',
+    });
+    initializeAffects([affect]);
+    markRemoved(affect.uuid!);
+
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          impact: 'IMPORTANT',
+          updated_dt: '2026-03-01T00:00:00Z',
+        })],
+      },
+    } as any);
+
+    await expect(removeAffects()).rejects.toThrow('Affect was edited on the server');
+    expect(AffectService.deleteAffects).not.toHaveBeenCalled();
+    expect(pendingAffectConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ field: 'deleted', mine: 'Deleted', server: 'Impact: IMPORTANT' }),
+    ]);
+
+    applyAffectResolution({ [`${affect.uuid}:deleted`]: 'server' });
+    expect(removedAffects.size).toBe(0);
+    expect(currentAffects.value[0]).toMatchObject({ impact: 'IMPORTANT', uuid: affect.uuid });
+  });
+
+  it('asks again before a recovery delete of an affect the server edited', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markRemoved, removeAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const clear = savedAffectFromOsidb({ cvss_scores: [], ps_component: 'clear', uuid: 'clear-uuid' });
+    const edited = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'LOW',
+      ps_component: 'edited',
+      uuid: 'edited-uuid',
+    });
+    initializeAffects([clear, edited]);
+    markRemoved(clear.uuid!);
+    markRemoved(edited.uuid!);
+    vi.mocked(AffectService.getAffects)
+      .mockResolvedValueOnce({ data: { results: [clear, edited] } } as any)
+      .mockResolvedValueOnce({
+        data: { results: [clear, { ...edited, impact: 'IMPORTANT' }] },
+      } as any);
+    vi.mocked(AffectService.deleteAffects)
+      .mockRejectedValueOnce({
+        response: { data: { uuid: ['Affect matching query does not exist.'] }, status: 400 },
+      })
+      .mockResolvedValueOnce(undefined as any);
+
+    await expect(removeAffects()).rejects.toThrow('Affect was edited on the server');
+
+    expect(AffectService.deleteAffects).toHaveBeenNthCalledWith(2, ['clear-uuid']);
+    expect(pendingAffectConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ field: 'deleted', id: 'edited-uuid:deleted' }),
+    ]);
+    expect(currentAffects.value.map(affect => affect.uuid)).toEqual(['edited-uuid']);
+  });
+
+  it('adds a server affect that replaces a saved row with the same component', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, integrateServerAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+    const local = savedAffectFromOsidb({ cvss_scores: [], ps_component: 'widget', uuid: 'local-uuid' });
+    initializeAffects([local]);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          ps_component: 'widget',
+          uuid: 'server-uuid',
+        })],
+      },
+    } as any);
+
+    await integrateServerAffects();
+
+    expect(currentAffects.value.map(affect => affect.uuid)).toEqual(['local-uuid', 'server-uuid']);
+  });
+
+  it('does not add a server affect that has the same purl as a draft', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, integrateServerAffects, markNew },
+      state: { currentAffects },
+    } = useAffectsModel();
+    initializeAffects([]);
+    const draft = newLocalAffect({
+      _uuid: 'draft-uuid',
+      cvss_scores: [],
+      ps_component: '',
+      purl: 'pkg:rpm/redhat/widget',
+    });
+    currentAffects.value = [draft];
+    markNew(draft._uuid!);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          ps_component: 'widget',
+          purl: 'pkg:rpm/redhat/widget',
+          uuid: 'server-uuid',
+        })],
+      },
+    } as any);
+
+    await integrateServerAffects();
+
+    expect(currentAffects.value.map(affect => affect.uuid ?? affect._uuid)).toEqual(['draft-uuid']);
+  });
+
+  it('adds an affect that only the server has', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, integrateServerAffects, markNew },
+      state: { currentAffects, initialAffects },
+    } = useAffectsModel();
+    const local = savedAffectFromOsidb({ cvss_scores: [], ps_component: 'local-component', uuid: 'local-uuid' });
+    initializeAffects([local]);
+    const draft = newLocalAffect({
+      _uuid: 'draft-uuid',
+      cvss_scores: [],
+      ps_component: 'draft-component',
+      ps_update_stream: 'draft-stream',
+    });
+    currentAffects.value = [...currentAffects.value, draft];
+    markNew(draft._uuid!);
+
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [
+          local,
+          savedAffectFromOsidb({ cvss_scores: [], ps_component: 'server-component', uuid: 'server-uuid' }),
+          savedAffectFromOsidb({
+            cvss_scores: [],
+            ps_component: 'draft-component',
+            ps_update_stream: 'draft-stream',
+            uuid: 'draft-server-uuid',
+          }),
+        ],
+      },
+    } as any);
+
+    await integrateServerAffects();
+
+    expect(currentAffects.value.map(affect => affect.uuid ?? affect._uuid)).toEqual([
+      'local-uuid',
+      'draft-uuid',
+      'server-uuid',
+    ]);
+    expect(initialAffects.value.map(affect => affect.uuid)).toEqual(['local-uuid', 'server-uuid']);
+    expect(useFlaw().flaw.value.affects.map(affect => affect.uuid)).toEqual(['server-uuid']);
+  });
+
+  it('drops an affect reload that finishes after the flaw changes', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-a', affects: [] });
+    const { actions: { initializeAffects, integrateServerAffects }, state: { currentAffects } } = useAffectsModel();
+    initializeAffects([]);
+    vi.mocked(AffectService.getAffects).mockImplementation(async () => {
+      useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-b', affects: [] });
+      initializeAffects([]);
+      return { data: { results: [savedAffectFromOsidb({ cvss_scores: [], uuid: 'server-uuid' })] } } as any;
+    });
+
+    await expect(integrateServerAffects()).rejects.toThrow('Affect reload discarded');
+
+    expect(useFlaw().flaw.value.uuid).toBe('flaw-b');
+    expect(useFlaw().flaw.value.affects).toEqual([]);
+    expect(currentAffects.value).toEqual([]);
+  });
+
+  it('reports bulk update failures so the failed edit stays queued', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { currentAffects, modifiedAffects },
+    } = useAffectsModel();
+    const kept = savedAffectFromOsidb({ cvss_scores: [], uuid: 'kept-uuid' });
+    const failed = savedAffectFromOsidb({ cvss_scores: [], ps_component: 'other', uuid: 'failed-uuid' });
+    initializeAffects([kept, failed]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    currentAffects.value[1].impact = 'CRITICAL';
+    markModified('kept-uuid');
+    markModified('failed-uuid');
+    vi.mocked(AffectService.putAffects).mockResolvedValue({
+      data: {
+        failed: [{ errors: { impact: ['invalid'] }, index: 1 }],
+        results: [savedAffectFromOsidb({ cvss_scores: [], impact: 'CRITICAL', uuid: 'kept-uuid' })],
+      },
+    } as any);
+
+    await expect(saveAffects()).resolves.toMatchObject({ hasErrors: true });
+
+    expect(modifiedAffects.has('kept-uuid')).toBe(false);
+    expect(modifiedAffects.has('failed-uuid')).toBe(true);
+    expect(currentAffects.value[1].impact).toBe('CRITICAL');
+  });
+
+  it('opens the dialog when a bulk save reports a stale affect as 400', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'saved-uuid' });
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.putAffects).mockRejectedValue({
+      response: {
+        data: { updated_dt: 'Affect has changed since it was retrieved.' },
+        status: 400,
+      },
+    });
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          impact: 'IMPORTANT',
+          updated_dt: '2026-03-01T00:00:00Z',
+          uuid: 'saved-uuid',
+        })],
+      },
+    } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 400 } });
+
+    expect(pendingAffectConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ field: 'impact', id: 'saved-uuid:impact', mine: 'CRITICAL', server: 'IMPORTANT' }),
+    ]);
+    expect(currentAffects.value[0].impact).toBe('CRITICAL');
+  });
+
+  it('keeps a resolved choice when the server value does not change again', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { applyAffectResolution, initializeAffects, markModified, saveAffects },
+      state: { currentAffects, initialAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'saved-uuid' });
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [savedAffectFromOsidb({
+          cvss_scores: [],
+          impact: 'IMPORTANT',
+          updated_dt: '2026-03-01T00:00:00Z',
+          uuid: 'saved-uuid',
+        })],
+      },
+    } as any);
+    vi.mocked(AffectService.putAffects)
+      .mockRejectedValueOnce({ response: { status: 409 } })
+      .mockRejectedValueOnce({ response: { status: 409 } })
+      .mockResolvedValueOnce({
+        data: {
+          results: [savedAffectFromOsidb({
+            cvss_scores: [],
+            impact: 'CRITICAL',
+            updated_dt: '2026-04-01T00:00:00Z',
+            uuid: 'saved-uuid',
+          })],
+        },
+      } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 409 } });
+    applyAffectResolution({ 'saved-uuid:impact': 'mine' });
+    pendingAffectConflict.value = null;
+
+    expect(currentAffects.value[0].impact).toBe('CRITICAL');
+    expect(initialAffects.value[0].impact).toBe('IMPORTANT');
+
+    await expect(saveAffects()).resolves.toMatchObject({ hasErrors: false });
+    expect(pendingAffectConflict.value).toBeNull();
+    expect(AffectService.putAffects).toHaveBeenCalledTimes(3);
+  });
+
+  it('takes a server field back when that field changes again after a silent merge', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { applyAffectResolution, initializeAffects, markModified, saveAffects },
+      state: { currentAffects, initialAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const conflict = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'conflict-uuid' });
+    const disjoint = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'LOW',
+      ps_component: 'other-component',
+      uuid: 'disjoint-uuid',
+    });
+    initializeAffects([conflict, disjoint]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    currentAffects.value[1].ps_component = 'edited-component';
+    markModified(conflict.uuid!);
+    markModified(disjoint.uuid!);
+    const firstServer = [
+      savedAffectFromOsidb({
+        cvss_scores: [],
+        impact: 'IMPORTANT',
+        updated_dt: '2026-03-01T00:00:00Z',
+        uuid: 'conflict-uuid',
+      }),
+      savedAffectFromOsidb({
+        cvss_scores: [],
+        impact: 'IMPORTANT',
+        ps_component: 'other-component',
+        updated_dt: '2026-03-01T00:00:00Z',
+        uuid: 'disjoint-uuid',
+      }),
+    ];
+    const revertedServer = [
+      savedAffectFromOsidb({
+        cvss_scores: [],
+        impact: 'IMPORTANT',
+        updated_dt: '2026-04-01T00:00:00Z',
+        uuid: 'conflict-uuid',
+      }),
+      savedAffectFromOsidb({
+        cvss_scores: [],
+        impact: 'LOW',
+        ps_component: 'other-component',
+        updated_dt: '2026-04-01T00:00:00Z',
+        uuid: 'disjoint-uuid',
+      }),
+    ];
+    vi.mocked(AffectService.getAffects)
+      .mockResolvedValueOnce({ data: { results: firstServer } } as any)
+      .mockResolvedValueOnce({ data: { results: revertedServer } } as any);
+    vi.mocked(AffectService.putAffects)
+      .mockRejectedValueOnce({ response: { status: 409 } })
+      .mockRejectedValueOnce({ response: { status: 409 } })
+      .mockResolvedValueOnce({ data: { results: revertedServer } } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 409 } });
+    applyAffectResolution({ 'conflict-uuid:impact': 'mine' });
+    pendingAffectConflict.value = null;
+
+    expect(currentAffects.value[1]).toMatchObject({ impact: 'IMPORTANT', ps_component: 'edited-component' });
+    expect(initialAffects.value[1]).toMatchObject({ impact: 'IMPORTANT', ps_component: 'other-component' });
+
+    await expect(saveAffects()).resolves.toMatchObject({ hasErrors: false });
+    const retry = vi.mocked(AffectService.putAffects).mock.calls[2][0];
+    expect(retry).toEqual(expect.arrayContaining([
+      expect.objectContaining({ impact: 'LOW', ps_component: 'edited-component', uuid: 'disjoint-uuid' }),
+    ]));
+  });
+
+  it('discards a stale affect write when the flaw changes during the PUT', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-a', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'saved-uuid' });
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.putAffects).mockImplementation(async () => {
+      useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-b', affects: [] });
+      initializeAffects([]);
+      throw { response: { data: { detail: 'outdated' }, status: 409 } };
+    });
+
+    await expect(saveAffects()).rejects.toThrow('Affect reload discarded');
+
+    expect(AffectService.getAffects).not.toHaveBeenCalled();
+    expect(pendingAffectConflict.value).toBeNull();
+    expect(currentAffects.value).toEqual([]);
+    expect(useFlaw().flaw.value.uuid).toBe('flaw-b');
+  });
+
+  it('discards a stale affect write when the affect list is replaced during the PUT', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'saved-uuid' });
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.putAffects).mockImplementation(async () => {
+      initializeAffects([]);
+      throw { response: { status: 409 } };
+    });
+
+    await expect(saveAffects()).rejects.toThrow('Affect reload discarded');
+
+    expect(AffectService.getAffects).not.toHaveBeenCalled();
+    expect(pendingAffectConflict.value).toBeNull();
+  });
+
+  it('does not merge a saved affect into a flaw loaded during the CVSS write', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-a', affects: [] });
+    const {
+      actions: { initializeAffects, markNew, saveAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+    initializeAffects([]);
+    const draft = newLocalAffect();
+    currentAffects.value = [draft];
+    markNew(draft._uuid!);
+    vi.mocked(AffectService.postAffects).mockResolvedValue({
+      data: { failed: [], results: [savedAffectFromOsidb({ cvss_scores: [], uuid: 'saved-uuid' })] },
+    } as any);
+    vi.mocked(AffectService.postAffectCvssScore).mockImplementation(async () => {
+      useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-b', affects: [] });
+      initializeAffects([]);
+      return {
+        affect: 'saved-uuid',
+        cvss_version: 'V3',
+        issuer: 'RH',
+        score: 7.5,
+        uuid: 'cvss-uuid',
+      } as any;
+    });
+
+    await expect(saveAffects()).rejects.toThrow('Affect reload discarded');
+
+    expect(useFlaw().flaw.value.uuid).toBe('flaw-b');
+    expect(useFlaw().flaw.value.affects).toEqual([]);
+    expect(currentAffects.value).toEqual([]);
+  });
+
+  it('does not update affects after the flaw changes during create', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-a', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, markNew, saveAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+    const existing = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'existing-uuid' });
+    initializeAffects([existing]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(existing.uuid!);
+    const draft = newLocalAffect({ _uuid: 'new-uuid', cvss_scores: [], ps_component: 'new-component' });
+    currentAffects.value = [...currentAffects.value, draft];
+    markNew(draft._uuid!);
+    vi.mocked(AffectService.postAffects).mockImplementation(async () => {
+      useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-b', affects: [] });
+      initializeAffects([]);
+      return {
+        data: {
+          failed: [],
+          results: [savedAffectFromOsidb({ cvss_scores: [], ps_component: 'new-component', uuid: 'created-uuid' })],
+        },
+      } as any;
+    });
+
+    await expect(saveAffects()).rejects.toThrow('Affect reload discarded');
+
+    expect(AffectService.putAffects).not.toHaveBeenCalled();
+    expect(AffectService.getAffects).not.toHaveBeenCalled();
+    expect(useFlaw().flaw.value.uuid).toBe('flaw-b');
+    expect(currentAffects.value).toEqual([]);
+  });
+
+  it('reports failures from the retry after a disjoint affect update', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, saveAffects },
+      state: { currentAffects, modifiedAffects },
+    } = useAffectsModel();
+    const affect = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', updated_dt: '2026-01-01T00:00:00Z' });
+    initializeAffects([affect]);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(affect.uuid!);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: { results: [savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', updated_dt: '2026-03-01T00:00:00Z' })] },
+    } as any);
+    vi.mocked(AffectService.putAffects)
+      .mockRejectedValueOnce({ response: { status: 409 } })
+      .mockResolvedValueOnce({
+        data: { failed: [{ errors: { impact: ['invalid'] }, index: 0 }], results: [] },
+      } as any);
+
+    await expect(saveAffects()).resolves.toMatchObject({ hasErrors: true });
+
+    expect(AffectService.putAffects).toHaveBeenCalledTimes(2);
+    expect(modifiedAffects.has(affect.uuid!)).toBe(true);
+    expect(currentAffects.value[0].impact).toBe('CRITICAL');
+  });
+
+  it('posts the local CVSS score when an identical affect is adopted', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const { actions: { markNew, saveAffects }, state: { currentAffects, newAffects } } = useAffectsModel();
+    const localAffect = newLocalAffect();
+    currentAffects.value = [localAffect];
+    markNew(localAffect._uuid!);
+    vi.mocked(AffectService.postAffects).mockRejectedValue(duplicateCreateError());
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: { results: [savedAffectFromOsidb({ cvss_scores: [] })] },
+    } as any);
+    vi.mocked(AffectService.postAffectCvssScore).mockResolvedValue({
+      affect: 'saved-uuid',
+      score: 7.5,
+      uuid: 'cvss-uuid',
+      issuer: 'RH',
+      cvss_version: 'V3',
+    } as any);
+
+    await saveAffects();
+
+    expect(AffectService.postAffectCvssScore).toHaveBeenCalledWith(
+      'saved-uuid',
+      expect.objectContaining({ score: 7.5 }),
+    );
+    expect(newAffects.size).toBe(0);
+    expect(currentAffects.value[0].cvss_scores).toEqual([
+      expect.objectContaining({ score: 7.5, uuid: 'cvss-uuid' }),
+    ]);
+  });
+
+  it('posts CVSS for a created affect when a later update conflicts', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markModified, markNew, saveAffects },
+      state: { currentAffects },
+    } = useAffectsModel();
+    const existing = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'existing-uuid' });
+    initializeAffects([existing]);
+    const created = newLocalAffect({ _uuid: 'new-uuid', ps_component: 'new-component' });
+    currentAffects.value = [...currentAffects.value, created];
+    markNew(created._uuid!);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(existing.uuid!);
+    vi.mocked(AffectService.postAffects).mockResolvedValue({
+      data: {
+        failed: [],
+        results: [savedAffectFromOsidb({ cvss_scores: [], ps_component: 'new-component', uuid: 'created-uuid' })],
+      },
+    } as any);
+    vi.mocked(AffectService.putAffects).mockRejectedValue({ response: { status: 409 } });
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: { results: [savedAffectFromOsidb({ cvss_scores: [], impact: 'IMPORTANT', uuid: 'existing-uuid' })] },
+    } as any);
+    vi.mocked(AffectService.postAffectCvssScore).mockResolvedValue({
+      affect: 'created-uuid',
+      score: 7.5,
+      uuid: 'cvss-uuid',
+      issuer: 'RH',
+      cvss_version: 'V3',
+    } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 409 } });
+
+    expect(AffectService.postAffectCvssScore).toHaveBeenCalledWith(
+      'created-uuid',
+      expect.objectContaining({ score: 7.5 }),
+    );
+    expect(currentAffects.value.find(affect => affect.ps_component === 'new-component')).toMatchObject({
+      uuid: 'created-uuid',
+    });
+  });
+
+  it('keeps a created affect on the flaw when a later update conflicts', async () => {
+    const { flaw, setFlaw } = useFlaw();
+    const existing = savedAffectFromOsidb({ cvss_scores: [], impact: 'LOW', uuid: 'existing-uuid' });
+    setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [existing] });
+    flaw.value.title = 'unsaved title';
+    const {
+      actions: { initializeAffects, markModified, markNew, revertAffect, saveAffects },
+      state: { currentAffects, pendingAffectConflict },
+    } = useAffectsModel();
+    initializeAffects([existing]);
+    const created = newLocalAffect({ _uuid: 'new-uuid', cvss_scores: [], ps_component: 'new-component' });
+    currentAffects.value = [...currentAffects.value, created];
+    markNew(created._uuid!);
+    currentAffects.value[0].impact = 'CRITICAL';
+    markModified(existing.uuid!);
+    vi.mocked(AffectService.postAffects).mockResolvedValue({
+      data: {
+        failed: [],
+        results: [savedAffectFromOsidb({ cvss_scores: [], ps_component: 'new-component', uuid: 'created-uuid' })],
+      },
+    } as any);
+    vi.mocked(AffectService.putAffects).mockRejectedValue({ response: { status: 409 } });
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: { results: [savedAffectFromOsidb({ cvss_scores: [], impact: 'IMPORTANT', uuid: 'existing-uuid' })] },
+    } as any);
+
+    await expect(saveAffects()).rejects.toMatchObject({ response: { status: 409 } });
+
+    expect(flaw.value.affects.map(affect => affect.uuid).sort()).toEqual(['created-uuid', 'existing-uuid']);
+    expect(flaw.value.title).toBe('unsaved title');
+    pendingAffectConflict.value = null;
+    revertAffect(existing.uuid!);
+    initializeAffects(flaw.value.affects);
+
+    expect(currentAffects.value.map(affect => affect.uuid).sort()).toEqual(['created-uuid', 'existing-uuid']);
+  });
+
+  it('deletes a confirmed row and still asks about a delete the dialog did not approve', async () => {
+    useFlaw().setFlaw({ ...blankFlaw(), uuid: 'flaw-uuid', affects: [] });
+    const {
+      actions: { initializeAffects, markRemoved, removeAffects },
+      state: { currentAffects, pendingAffectConflict, removedAffects },
+    } = useAffectsModel();
+    const approved = savedAffectFromOsidb({ cvss_scores: [], uuid: 'approved-uuid' });
+    const other = savedAffectFromOsidb({
+      cvss_scores: [],
+      impact: 'LOW',
+      ps_component: 'other',
+      uuid: 'other-uuid',
+    });
+    initializeAffects([approved, other]);
+    useFlaw().setFlaw({ ...useFlaw().flaw.value, affects: [approved, other] });
+    markRemoved(approved.uuid!);
+    markRemoved(other.uuid!);
+    vi.mocked(AffectService.deleteAffects).mockResolvedValue(undefined as any);
+    vi.mocked(AffectService.getAffects).mockResolvedValue({
+      data: {
+        results: [
+          savedAffectFromOsidb({
+            cvss_scores: [],
+            impact: 'IMPORTANT',
+            ps_component: 'other',
+            uuid: 'other-uuid',
+          }),
+        ],
+      },
+    } as any);
+
+    await expect(removeAffects({ skipCheckFor: [approved.uuid!] })).rejects.toThrow('Affect was edited on the server');
+
+    expect(AffectService.deleteAffects).toHaveBeenCalledTimes(1);
+    expect(AffectService.deleteAffects).toHaveBeenCalledWith([approved.uuid], { suppressErrorToast: true });
+    expect(currentAffects.value.map(affect => affect.uuid)).toEqual([other.uuid]);
+    expect(removedAffects.has(other.uuid!)).toBe(true);
+    expect(useFlaw().flaw.value.affects.map(affect => affect.uuid)).toEqual([other.uuid]);
+    expect(pendingAffectConflict.value?.conflicts).toEqual([
+      expect.objectContaining({ field: 'deleted', id: `${other.uuid}:deleted` }),
     ]);
   });
 });
