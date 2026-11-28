@@ -64,35 +64,24 @@
 
 ## KPI pagination
 
-Before fetching pages, the dashboard drains the cache through
-`POST /analysis/kpi/osidb-bot/cache-refresh`, polling until the selection
-reports zero stale flaws; each call advances one server-side time-budgeted
-slice, so the poll rate bounds the OSIDB load. A 404 marks a server that
-predates the endpoint and skips the drain. The status line shows the drain
-(`X / Y flaws refreshed`) and, once a later poll has made progress, a
-remaining-time estimate from the observed refresh cadence.
-
-The dashboard then requests `/analysis/kpi/osidb-bot` with `limit=1000` and
-follows `next_cursor` page by page until a page arrives without it. Pages
-are pure cache reads; each carries its own slice of detail `entries` and a
-`progress` block (`selected_flaws`, `delivered_flaws`, `refreshed_flaws`,
-`complete`), and the final page adds the aggregate over the whole selection
-(`features`, `total_flaws_processed`, `available_components`).
-`progress.complete` marks the cache refresh, not the delivery, so the client
-completes on the absence of `next_cursor` instead. The bar and counts follow
-the exact `delivered_flaws`/`selected_flaws` ratio, and the status line
-estimates the remaining time from the observed page cadence once delivery
-has progressed past the first page. OSIM accumulates entries across pages so
-the result contains each entry exactly once, publishes a cumulative snapshot
-per page, and cuts off a server that never finishes paginating after 200
-pages. An older non-paginated Aegis server is supported unchanged.
-
-The read-only `/analysis/kpi/osidb-bot/cache-status` endpoint reports the
-selection's cache backlog (`fresh_count`, `stale_count`, `uncached_count`,
-`outdated_count`, `total_flaws_selected`). The dashboard renders it as loading
-text and uses `total_flaws_selected` as the progress denominator until the
-run's own `progress.selected_flaws` arrives: both cover the same
-component-scoped flaw population.
+The dashboard requests `/analysis/kpi/osidb-bot` with `limit=1000` and follows
+`last_cve` (the CVE ID of the last flaw delivered by a page) page by page
+until a page arrives without it. Each page refreshes exactly its own slice's
+stale flaws server-side, so per-request OSIDB work is bounded by the page
+size and no request can run long; a fully warm page is a pure cache read.
+Every page carries its own slice of detail `entries` and a `progress` block
+(`selected_flaws`, `delivered_flaws`, `refreshed_flaws`, `complete`), and the
+final page adds the aggregate over the whole selection (`features`,
+`total_flaws_processed`, `available_components`). There is no separate cache
+drain or status request: the client asks for pages and the server does what
+is needed. The status line shows the refresh (`X / Y flaws refreshed` from
+`refreshed_flaws`, which counts the whole selection and grows page by page)
+and the delivery (`X / Y flaws received`), each with a remaining-time
+estimate from its observed cadence; the bar follows the exact
+`delivered_flaws`/`selected_flaws` ratio. OSIM accumulates entries across
+pages so the result contains each entry exactly once, publishes a cumulative
+snapshot per page, and cuts off a server that never finishes paginating after
+200 pages.
 
 Actual HTTP 503 failures receive up to three retries, unless `retry_exhausted: true` indicates
 that Aegis already exhausted its upstream retry budget. Failed, expired (410), or invalidated
